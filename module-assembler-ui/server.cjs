@@ -14,6 +14,9 @@ const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
+// Industry Layout System
+const { INDUSTRY_LAYOUTS, buildLayoutContext, getLayoutConfig } = require('./config/industry-layouts.cjs');
+
 // Database and Admin Routes
 let db = null;
 let adminRoutes = null;
@@ -1840,12 +1843,17 @@ Replace any standard elements with the user's specified alternatives.
 ══════════════════════════════════════════════════════════════
 ` : '';
 
+  // EXTRACT INDUSTRY LAYOUT CONFIG
+  const industryLayoutKey = description.industryKey || null;
+  const selectedLayoutKey = description.layoutKey || null;
+  const layoutContext = industryLayoutKey ? buildLayoutContext(industryLayoutKey, selectedLayoutKey) : '';
+
   return `You are a high-end UI/UX Architect. Create a stunning, unique ${pageId} page.
 
 BUSINESS: ${description.text || 'A professional business'}
 INDUSTRY: ${industry.name || 'Business'}
 VIBE: ${industry.vibe || 'Unique and modern'}
-${rebuildContext}${inspiredContext}${assetsContext}${extraDetailsContext}
+${rebuildContext}${inspiredContext}${assetsContext}${extraDetailsContext}${layoutContext}
 ══════════════════════════════════════════════════════════════
 CORE VISUAL ARCHETYPE: ${selectedArchetype}
 ══════════════════════════════════════════════════════════════

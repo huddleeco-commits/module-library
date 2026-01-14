@@ -6,6 +6,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { INDUSTRY_LAYOUTS, getLayoutConfig, buildLayoutPromptContext } from '../config/industry-layouts.js';
 
 const API_BASE = 'http://localhost:3001';
 
@@ -168,6 +169,7 @@ export default function App() {
     tagline: '',
     industry: null,
     industryKey: null,
+    layoutKey: null, // Selected layout within industry
 
     // NEW: Business basics
     location: '',
@@ -3451,7 +3453,7 @@ function CustomizeStep({ projectData, updateProject, industries, layouts, effect
                   updateProject({
                     industryKey: e.target.value,
                     industry: ind,
-                    layoutKey: ind?.defaultLayout,
+                    layoutKey: null, // Reset layout when industry changes
                     effects: ind?.effects || []
                   });
                 }}
@@ -3462,6 +3464,87 @@ function CustomizeStep({ projectData, updateProject, industries, layouts, effect
                   <option key={key} value={key}>{ind.icon} {ind.name}</option>
                 ))}
               </select>
+            </div>
+          )}
+
+          {/* Layout Selection - Industry-Specific */}
+          {projectData.industryKey && INDUSTRY_LAYOUTS[projectData.industryKey] && (
+            <div style={styles.formSection}>
+              <label style={styles.formLabel}>
+                Layout Style
+                <span style={layoutStyles.detectedBadge}>
+                  {INDUSTRY_LAYOUTS[projectData.industryKey]?.name}
+                </span>
+              </label>
+              <p style={customizeStyles.fieldHint}>Choose how your site will be structured</p>
+              <div style={layoutStyles.layoutGrid}>
+                {Object.entries(INDUSTRY_LAYOUTS[projectData.industryKey].layouts).map(([layoutKey, layout]) => (
+                  <button
+                    key={layoutKey}
+                    style={{
+                      ...layoutStyles.layoutCard,
+                      ...(projectData.layoutKey === layoutKey ? layoutStyles.layoutCardActive : {})
+                    }}
+                    onClick={() => updateProject({ layoutKey })}
+                  >
+                    <div style={layoutStyles.layoutIcon}>
+                      {layoutKey === 'trust-builder' && '🏆'}
+                      {layoutKey === 'lead-generator' && '🎯'}
+                      {layoutKey === 'corporate-clean' && '✨'}
+                      {layoutKey === 'appetizing-visual' && '📸'}
+                      {layoutKey === 'menu-focused' && '📋'}
+                      {layoutKey === 'story-driven' && '📖'}
+                      {layoutKey === 'patient-first' && '💚'}
+                      {layoutKey === 'credibility-focused' && '🎓'}
+                      {layoutKey === 'booking-optimized' && '📅'}
+                      {layoutKey === 'product-showcase' && '🛍️'}
+                      {layoutKey === 'conversion-focused' && '💰'}
+                      {layoutKey === 'brand-story' && '✨'}
+                      {layoutKey === 'trust-and-call' && '📞'}
+                      {layoutKey === 'quote-generator' && '💬'}
+                      {layoutKey === 'portfolio-showcase' && '🖼️'}
+                      {layoutKey === 'motivation-driven' && '💪'}
+                      {layoutKey === 'class-scheduler' && '🗓️'}
+                      {layoutKey === 'wellness-calm' && '🧘'}
+                      {layoutKey === 'property-search' && '🏠'}
+                      {layoutKey === 'agent-brand' && '👔'}
+                      {layoutKey === 'luxury-focused' && '💎'}
+                      {layoutKey === 'course-catalog' && '📚'}
+                      {layoutKey === 'coach-personal' && '🎤'}
+                      {layoutKey === 'results-focused' && '📈'}
+                      {layoutKey === 'portfolio-first' && '🎨'}
+                      {layoutKey === 'process-driven' && '⚙️'}
+                      {layoutKey === 'brand-bold' && '🔥'}
+                      {layoutKey === 'service-focused' && '🔧'}
+                      {layoutKey === 'inventory-showcase' && '🚗'}
+                      {layoutKey === 'premium-detail' && '✨'}
+                      {!['trust-builder', 'lead-generator', 'corporate-clean', 'appetizing-visual', 'menu-focused', 'story-driven', 'patient-first', 'credibility-focused', 'booking-optimized', 'product-showcase', 'conversion-focused', 'brand-story', 'trust-and-call', 'quote-generator', 'portfolio-showcase', 'motivation-driven', 'class-scheduler', 'wellness-calm', 'property-search', 'agent-brand', 'luxury-focused', 'course-catalog', 'coach-personal', 'results-focused', 'portfolio-first', 'process-driven', 'brand-bold', 'service-focused', 'inventory-showcase', 'premium-detail'].includes(layoutKey) && '📐'}
+                    </div>
+                    <div style={layoutStyles.layoutInfo}>
+                      <div style={layoutStyles.layoutName}>{layout.name}</div>
+                      <div style={layoutStyles.layoutDesc}>{layout.description}</div>
+                    </div>
+                    {projectData.layoutKey === layoutKey && (
+                      <div style={layoutStyles.layoutCheck}>✓</div>
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {/* Section Preview for Selected Layout */}
+              {projectData.layoutKey && INDUSTRY_LAYOUTS[projectData.industryKey].layouts[projectData.layoutKey] && (
+                <div style={layoutStyles.sectionPreview}>
+                  <div style={layoutStyles.sectionPreviewLabel}>Section Order:</div>
+                  <div style={layoutStyles.sectionFlow}>
+                    {INDUSTRY_LAYOUTS[projectData.industryKey].layouts[projectData.layoutKey].sectionOrder.map((section, idx) => (
+                      <span key={idx} style={layoutStyles.sectionChip}>
+                        {section.label || section.section}
+                        {!section.required && <span style={layoutStyles.optionalTag}>opt</span>}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -3631,6 +3714,122 @@ const customizeStyles = {
     borderRadius: '4px',
     fontSize: '11px',
     color: '#666'
+  }
+};
+
+// Layout Selection Styles
+const layoutStyles = {
+  detectedBadge: {
+    marginLeft: '10px',
+    padding: '3px 10px',
+    background: 'rgba(34, 197, 94, 0.15)',
+    borderRadius: '12px',
+    fontSize: '11px',
+    color: '#22c55e',
+    fontWeight: 'normal'
+  },
+  layoutGrid: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
+    marginTop: '12px'
+  },
+  layoutCard: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '14px',
+    padding: '14px 16px',
+    background: 'rgba(255,255,255,0.03)',
+    border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: '10px',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    textAlign: 'left',
+    width: '100%',
+    position: 'relative'
+  },
+  layoutCardActive: {
+    background: 'rgba(34, 197, 94, 0.1)',
+    borderColor: '#22c55e',
+    boxShadow: '0 0 20px rgba(34, 197, 94, 0.15)'
+  },
+  layoutIcon: {
+    fontSize: '24px',
+    width: '44px',
+    height: '44px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'rgba(255,255,255,0.05)',
+    borderRadius: '10px',
+    flexShrink: 0
+  },
+  layoutInfo: {
+    flex: 1,
+    minWidth: 0
+  },
+  layoutName: {
+    color: '#fff',
+    fontSize: '14px',
+    fontWeight: '600',
+    marginBottom: '4px'
+  },
+  layoutDesc: {
+    color: '#888',
+    fontSize: '12px',
+    lineHeight: '1.4'
+  },
+  layoutCheck: {
+    width: '24px',
+    height: '24px',
+    borderRadius: '50%',
+    background: '#22c55e',
+    color: '#fff',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '12px',
+    fontWeight: 'bold',
+    flexShrink: 0
+  },
+  sectionPreview: {
+    marginTop: '16px',
+    padding: '14px',
+    background: 'rgba(255,255,255,0.02)',
+    borderRadius: '8px',
+    border: '1px solid rgba(255,255,255,0.05)'
+  },
+  sectionPreviewLabel: {
+    color: '#666',
+    fontSize: '11px',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    marginBottom: '10px'
+  },
+  sectionFlow: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '6px'
+  },
+  sectionChip: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '4px',
+    padding: '4px 10px',
+    background: 'rgba(34, 197, 94, 0.1)',
+    border: '1px solid rgba(34, 197, 94, 0.2)',
+    borderRadius: '4px',
+    color: '#22c55e',
+    fontSize: '11px',
+    textTransform: 'capitalize'
+  },
+  optionalTag: {
+    padding: '1px 4px',
+    background: 'rgba(255,255,255,0.1)',
+    borderRadius: '3px',
+    fontSize: '9px',
+    color: '#666',
+    marginLeft: '4px'
   }
 };
 
