@@ -41,13 +41,75 @@ function sleep(ms) {
 // PRE-DEPLOYMENT SETUP
 // ============================================
 
+/**
+ * Regenerate package-lock.json for a folder
+ * Deletes existing lock file and runs npm install to create fresh one
+ * This prevents "npm ci" errors on Railway when package.json was modified
+ */
+function regeneratePackageLock(folderPath, folderName) {
+  const packageJsonPath = path.join(folderPath, 'package.json');
+  const packageLockPath = path.join(folderPath, 'package-lock.json');
+
+  // Only process if package.json exists
+  if (!fs.existsSync(packageJsonPath)) {
+    return false;
+  }
+
+  console.log(`   📦 Regenerating package-lock.json for ${folderName}...`);
+
+  try {
+    // Delete existing package-lock.json if it exists
+    if (fs.existsSync(packageLockPath)) {
+      fs.unlinkSync(packageLockPath);
+      console.log(`      🗑️ Deleted old package-lock.json`);
+    }
+
+    // Run npm install to generate fresh package-lock.json
+    // Use --package-lock-only to just update the lock file without installing node_modules
+    // This is faster and we remove node_modules anyway before push
+    execSync('npm install --package-lock-only --legacy-peer-deps', {
+      cwd: folderPath,
+      stdio: 'pipe',
+      timeout: 120000, // 2 minute timeout
+      windowsHide: true
+    });
+
+    if (fs.existsSync(packageLockPath)) {
+      console.log(`      ✅ Generated fresh package-lock.json`);
+      return true;
+    } else {
+      console.log(`      ⚠️ package-lock.json not created (npm may have failed silently)`);
+      return false;
+    }
+  } catch (error) {
+    console.log(`      ⚠️ Failed to regenerate package-lock.json: ${error.message}`);
+    // Try fallback: full npm install
+    try {
+      console.log(`      🔄 Trying full npm install as fallback...`);
+      execSync('npm install --legacy-peer-deps', {
+        cwd: folderPath,
+        stdio: 'pipe',
+        timeout: 180000, // 3 minute timeout
+        windowsHide: true
+      });
+      if (fs.existsSync(packageLockPath)) {
+        console.log(`      ✅ Generated package-lock.json via full install`);
+        return true;
+      }
+    } catch (fallbackError) {
+      console.log(`      ❌ Fallback also failed: ${fallbackError.message}`);
+    }
+    return false;
+  }
+}
+
 function prepareProjectForDeployment(projectPath, subdomain) {
   console.log(`📋 Preparing project for deployment...`);
-  
+
   // FIX #1: Create frontend/.env.production with correct API URL
   const frontendEnvPath = path.join(projectPath, 'frontend', '.env.production');
   const frontendEnvContent = `VITE_API_URL=https://api.${subdomain}.be1st.io\n`;
-  
+
   if (fs.existsSync(path.join(projectPath, 'frontend'))) {
     fs.writeFileSync(frontendEnvPath, frontendEnvContent);
     console.log(`   ✅ Created frontend/.env.production`);
@@ -166,6 +228,16 @@ dist/
     if (fs.existsSync(nodeModulesPath)) {
       fs.rmSync(nodeModulesPath, { recursive: true, force: true });
       console.log(`   ✅ Removed ${folder}/node_modules`);
+    }
+  }
+
+  // FIX #11: Regenerate package-lock.json files to prevent "npm ci" errors on Railway
+  // This must happen AFTER all package.json modifications but BEFORE git push
+  console.log(`\n📦 Regenerating package-lock.json files...`);
+  for (const folder of ['backend', 'frontend', 'admin']) {
+    const folderPath = path.join(projectPath, folder);
+    if (fs.existsSync(folderPath)) {
+      regeneratePackageLock(folderPath, folder);
     }
   }
 

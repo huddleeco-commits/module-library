@@ -16,6 +16,7 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { execSync } = require('child_process');
 
 // ============================================
 // PATHS - Environment-based with sensible defaults
@@ -294,18 +295,77 @@ function copyDirectorySync(src, dest) {
   if (!fs.existsSync(dest)) {
     fs.mkdirSync(dest, { recursive: true });
   }
-  
+
   const entries = fs.readdirSync(src, { withFileTypes: true });
-  
+
   for (const entry of entries) {
     const srcPath = path.join(src, entry.name);
     const destPath = path.join(dest, entry.name);
-    
+
     if (entry.isDirectory()) {
       copyDirectorySync(srcPath, destPath);
     } else {
       fs.copyFileSync(srcPath, destPath);
     }
+  }
+}
+
+/**
+ * Regenerate package-lock.json for a folder
+ * Deletes existing lock file and runs npm install to create fresh one
+ * This prevents "npm ci" errors on Railway when package.json was modified
+ */
+function regeneratePackageLock(folderPath, folderName) {
+  const packageJsonPath = path.join(folderPath, 'package.json');
+  const packageLockPath = path.join(folderPath, 'package-lock.json');
+
+  // Only process if package.json exists
+  if (!fs.existsSync(packageJsonPath)) {
+    return false;
+  }
+
+  console.log(`   📦 Regenerating package-lock.json for ${folderName}...`);
+
+  try {
+    // Delete existing package-lock.json if it exists
+    if (fs.existsSync(packageLockPath)) {
+      fs.unlinkSync(packageLockPath);
+    }
+
+    // Run npm install to generate fresh package-lock.json
+    // Use --package-lock-only to just update the lock file without installing node_modules
+    execSync('npm install --package-lock-only --legacy-peer-deps', {
+      cwd: folderPath,
+      stdio: 'pipe',
+      timeout: 120000, // 2 minute timeout
+      windowsHide: true
+    });
+
+    if (fs.existsSync(packageLockPath)) {
+      console.log(`      ✅ Generated fresh package-lock.json`);
+      return true;
+    } else {
+      console.log(`      ⚠️ package-lock.json not created`);
+      return false;
+    }
+  } catch (error) {
+    console.log(`      ⚠️ Failed to regenerate: ${error.message}`);
+    // Try fallback: full npm install
+    try {
+      execSync('npm install --legacy-peer-deps', {
+        cwd: folderPath,
+        stdio: 'pipe',
+        timeout: 180000, // 3 minute timeout
+        windowsHide: true
+      });
+      if (fs.existsSync(packageLockPath)) {
+        console.log(`      ✅ Generated via full install`);
+        return true;
+      }
+    } catch (fallbackError) {
+      // Silently fail - deployment script will handle it
+    }
+    return false;
   }
 }
 
@@ -2284,6 +2344,14 @@ if (fs.existsSync(effectsSrc)) {
   // Generate project files
   fs.writeFileSync(path.join(projectDir, 'README.md'), generateReadme(name, backendModules, frontendModules, industry));
   fs.writeFileSync(path.join(projectDir, 'project-manifest.json'), generateManifest(name, backendModules, frontendModules, industry, bundles));
+
+  // Regenerate package-lock.json files to prevent Railway "npm ci" errors
+  // This ensures lock files are in sync with generated package.json files
+  console.log('');
+  console.log('📦 Regenerating package-lock.json files for deployment...');
+  regeneratePackageLock(backendDir, 'backend');
+  regeneratePackageLock(frontendDir, 'frontend');
+  regeneratePackageLock(path.join(projectDir, 'admin'), 'admin');
 
   // Run Ralph Wiggum validation
   const validation = validateGeneratedProject(projectDir);
