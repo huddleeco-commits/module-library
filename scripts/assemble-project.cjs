@@ -63,6 +63,7 @@ const ROUTE_MAPPINGS = {
   // Dashboard
   'admin-dashboard': { route: '/api/admin', routeFile: 'routes/admin.js' },
   'analytics': { route: '/api/analytics', routeFile: 'routes/analytics.js' },
+  'admin-api': { route: '/api/admin', routeFile: 'index.js', isModule: true },
   
   // Commerce
   'stripe-payments': { route: '/api/payments', routeFile: 'routes/payments.js' },
@@ -162,7 +163,7 @@ const BUNDLES = {
   frontend: ['login-form', 'register-form', 'header-nav', 'footer-section', 'modal-system', 'auth-context', 'auth-pages']
 },
   'dashboard': {
-    backend: ['admin-dashboard', 'analytics'],
+    backend: ['admin-dashboard', 'analytics', 'admin-api'],
     frontend: ['stat-cards', 'data-table', 'admin-panel']
   },
   'commerce': {
