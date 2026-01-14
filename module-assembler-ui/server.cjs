@@ -1905,6 +1905,33 @@ EXAMPLE:
 TECHNICAL RULES (MUST FOLLOW):
 1. Use inline styles ONLY: style={{ }} - NO className or Tailwind.
 2. Use Lucide icons: import { IconName } from 'lucide-react'.
+   VALID ICONS (use ONLY these): ArrowRight, ArrowLeft, ArrowUp, ArrowDown, Check, X, Menu,
+   ChevronRight, ChevronLeft, ChevronDown, ChevronUp, Plus, Minus, Search, Filter,
+   Star, Heart, Mail, Phone, MapPin, Clock, Calendar, User, Users, Settings,
+   Home, Building, Briefcase, Shield, Award, Target, Zap, Sparkles, Crown,
+   DollarSign, CreditCard, ShoppingCart, Package, Truck, Gift, Tag, Percent,
+   Eye, EyeOff, Lock, Unlock, Key, Bell, MessageSquare, Send, Share, Download, Upload,
+   Image, Camera, Play, Pause, Volume, VolumeX, Mic, Video, Music, File, FileText, Folder,
+   Link, ExternalLink, Globe, Wifi, Database, Server, Code, Terminal, Cpu,
+   Sun, Moon, Cloud, Thermometer, Droplet, Wind, Umbrella,
+   Car, Plane, Ship, Train, Bike, MapPinned, Navigation, Compass,
+   Utensils, Coffee, Wine, Pizza, Cake, Apple,
+   Stethoscope, Activity, Pill, Syringe, Bone, Brain,
+   GraduationCap, BookOpen, Pencil, Ruler, Calculator,
+   Wrench, Hammer, Scissors, Paintbrush, Palette,
+   Dog, Cat, Bird, Fish, Bug, Leaf, Flower, Tree,
+   Facebook, Twitter, Instagram, Linkedin, Youtube, Github,
+   AlertCircle, AlertTriangle, Info, HelpCircle, CheckCircle, XCircle,
+   RefreshCw, RotateCw, Loader, MoreHorizontal, MoreVertical, Grip,
+   Copy, Clipboard, Save, Trash, Edit, Edit2, Maximize, Minimize,
+   LogIn, LogOut, UserPlus, UserMinus, UserCheck, Smile, Frown, Meh,
+   ThumbsUp, ThumbsDown, Flag, Bookmark, Archive, Inbox, Layers,
+   Layout, Grid, List, Table, BarChart, BarChart2, BarChart3, PieChart, LineChart, TrendingUp, TrendingDown,
+   Quote, Hash, AtSign, Percent, Receipt, Wallet, Banknote, Coins,
+   Headphones, Speaker, Radio, Tv, Monitor, Smartphone, Tablet, Watch, Printer,
+   Power, Battery, BatteryCharging, Plug, Lightbulb, Flashlight, Flame,
+   Anchor, Rocket, Award, Medal, Trophy, Crown, Gem, Diamond
+   DO NOT use icons not in this list. If you need "Handshake", use "Users" or "Link" instead.
 3. NAVIGATION: Use <Link to="/path"> from react-router-dom.
 4. NO nav/footer - those are provided by App.jsx.
 5. WHITESPACE: Use THEME.spacing.sectionPadding for top/bottom margins.
@@ -2598,27 +2625,80 @@ const VALID_LUCIDE_ICONS = [
   'CodeXml', 'Coins', 'Columns', 'Combine', 'Command', 'Component', 'Computer', 'ConciergeBell', 'Cone',
   'Construction', 'Contact', 'Container', 'Contrast', 'Cookie', 'CopyCheck', 'Copyright', 'CornerLeftDown',
   'CornerLeftUp', 'CornerRightDown', 'CornerRightUp', 'CornerUpLeft', 'CornerUpRight', 'Cpu', 'CreativeCommons',
-  'Crown', 'Cuboid', 'CupSoda', 'Currency', 'Cylinder'
+  'Crown', 'Cuboid', 'CupSoda', 'Currency', 'Cylinder',
+  // Additional valid icons in lucide-react ^0.454.0
+  'Hammer', 'Wrench', 'Paintbrush', 'Palette', 'Ruler', 'Pipette', 'Eraser',
+  'PenTool', 'Highlighter', 'Stamp', 'Sticker', 'Wand', 'Wand2',
+  'Plane', 'PlaneTakeoff', 'PlaneLanding', 'Ship', 'Sailboat', 'Train', 'Tram', 'Bus',
+  'Ambulance', 'FireExtinguisher', 'Siren', 'Construction',
+  'Pill', 'Stethoscope', 'Syringe', 'HeartPulse', 'Microscope', 'TestTube', 'Dna',
+  'GraduationCap', 'Library', 'BookText', 'NotebookPen', 'FileQuestion',
+  'Presentation', 'Projector', 'ScreenShare', 'MonitorPlay',
+  'Gamepad', 'Joystick', 'Dice1', 'Dice2', 'Dice3', 'Dice4', 'Dice5', 'Dice6',
+  'Piano', 'Guitar', 'Drum', 'Mic2', 'MicVocal', 'Headset',
+  'Shirt', 'Watch', 'Glasses', 'Gem', 'Diamond', 'Crown', 'Ring',
+  'Martini', 'GlassWater', 'CoffeeIcon', 'Soup', 'Drumstick',
+  'Sunrise', 'Sunset', 'CloudRain', 'CloudSnow', 'CloudLightning', 'Snowflake',
+  'Palmtree', 'Mountain', 'MountainSnow', 'Waves', 'Rainbow',
+  'Fingerprint', 'Scan', 'ScanFace', 'QrCode', 'Barcode',
+  'PlugZap', 'Cable', 'Usb', 'HardDrive', 'MemoryStick',
+  'ShieldAlert', 'ShieldBan', 'ShieldOff', 'KeyRound', 'KeySquare',
+  'Waypoints', 'Route', 'Signpost', 'SignpostBig', 'Milestone'
 ];
 
 // Icon replacement map for invalid icons
+// Note: Icons like Handshake, Trophy, Medal ARE valid in lucide-react ^0.454.0
+// Only map truly non-existent or problematic icons
 const ICON_REPLACEMENTS = {
   'Rifle': 'Target',
-  'Gun': 'Crosshair', 
+  'Gun': 'Crosshair',
   'Pistol': 'Circle',
-  'Trophy': 'Award',
-  'Handshake': 'Users',
-  'Medal': 'Award',
-  'Bullet': 'Dot',
+  'Bullet': 'Circle',
   'Weapon': 'Shield',
-  'Knife': 'Utensils',
   'Sword': 'Shield',
-  'Axe': 'Tool',
-  'Hammer': 'Tool',
-  'Drill': 'Tool',
-  'Saw': 'Tool',
-  'Wrench': 'Tool',
-  'Screwdriver': 'Tool'
+  'Axe': 'Wrench',
+  'Drill': 'Wrench',
+  'Saw': 'Wrench',
+  'Screwdriver': 'Wrench',
+  // Common AI hallucinations - map to valid alternatives
+  'Partnership': 'Users',
+  'Team': 'Users',
+  'Group': 'Users',
+  'People': 'Users',
+  'Agreement': 'FileText',
+  'Contract': 'FileText',
+  'Document': 'FileText',
+  'Paper': 'FileText',
+  'Money': 'DollarSign',
+  'Cash': 'Banknote',
+  'Price': 'Tag',
+  'Cost': 'Receipt',
+  'Location': 'MapPin',
+  'Address': 'MapPin',
+  'Place': 'MapPin',
+  'Time': 'Clock',
+  'Duration': 'Clock',
+  'Schedule': 'Calendar',
+  'Date': 'Calendar',
+  'Email': 'Mail',
+  'Message': 'MessageSquare',
+  'Chat': 'MessageSquare',
+  'Call': 'Phone',
+  'Telephone': 'Phone',
+  'Website': 'Globe',
+  'Internet': 'Globe',
+  'Web': 'Globe',
+  'Social': 'Share',
+  'Network': 'Share',
+  'Success': 'CheckCircle',
+  'Complete': 'CheckCircle',
+  'Done': 'Check',
+  'Error': 'AlertCircle',
+  'Warning': 'AlertTriangle',
+  'Danger': 'AlertTriangle',
+  'Info': 'Info',
+  'Help': 'HelpCircle',
+  'Question': 'HelpCircle'
 };
 
 // ============================================
