@@ -1,0 +1,10 @@
+{
+  "name": "card-components",
+  "type": "frontend",
+  "source": "financial",
+  "extractedAt": "2026-01-08T13:05:46.435Z",
+  "files": [
+    "components/cards/CardPrice.js",
+    "components/cards/CardMarketplace.js"
+  ]
+}

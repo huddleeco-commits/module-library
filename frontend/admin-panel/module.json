@@ -1,0 +1,10 @@
+{
+  "name": "admin-panel",
+  "type": "frontend",
+  "source": "financial",
+  "extractedAt": "2026-01-08T13:05:46.422Z",
+  "files": [
+    "components/admin/Dashboard.js",
+    "components/admin/SettingsPanel.js"
+  ]
+}

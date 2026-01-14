@@ -1,0 +1,14 @@
+﻿{
+  "name": "layout-desktop",
+  "type": "frontend",
+  "source": "be1st-builder",
+  "extractedAt": "2026-01-12T12:00:00.000Z",
+  "description": "Desktop-optimized layout components with sidebar navigation and wide content areas",
+  "files": [
+    "components/DesktopLayout.jsx",
+    "components/DesktopSidebar.jsx",
+    "components/DesktopHeader.jsx",
+    "components/DesktopGrid.jsx"
+  ],
+  "dependencies": []
+}

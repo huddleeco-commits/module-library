@@ -1,0 +1,10 @@
+{
+  "name": "leaderboard",
+  "type": "backend",
+  "source": "huddle",
+  "extractedAt": "2026-01-08T13:05:46.341Z",
+  "files": [
+    "models/Leaderboard.js",
+    "routes/leaderboard.js"
+  ]
+}

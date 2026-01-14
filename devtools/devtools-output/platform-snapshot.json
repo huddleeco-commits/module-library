@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-01-12T13:03:26.950Z",
+  "backendModules": {},
+  "frontendModules": {},
+  "templates": {},
+  "configs": {},
+  "scripts": {},
+  "industries": {},
+  "stats": {
+    "totalBackendModules": 0,
+    "totalFrontendModules": 0,
+    "totalModules": 0,
+    "totalTemplates": 0,
+    "totalIndustries": 0,
+    "totalScripts": 0,
+    "backendLines": 0,
+    "frontendLines": 0,
+    "backendFiles": 0,
+    "frontendFiles": 0,
+    "totalEndpoints": 0,
+    "totalComponents": 0,
+    "backendCategories": [],
+    "frontendCategories": []
+  }
+}

@@ -1,0 +1,11 @@
+﻿{
+  "name": "balance-display",
+  "type": "frontend",
+  "source": "commoncents",
+  "extractedAt": "2026-01-12T00:00:00.000Z",
+  "files": [
+    "components/wallet/BalanceDisplay.jsx",
+    "components/wallet/TransactionList.jsx",
+    "components/wallet/CashoutFlow.jsx"
+  ]
+}

@@ -1,0 +1,6808 @@
+{
+  "timestamp": "2026-01-13T17:05:01.294Z",
+  "backendModules": {
+    "achievements": {
+      "category": "gamification",
+      "name": "achievements",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\achievements",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 194,
+          "modified": "2026-01-08T13:05:46.396Z",
+          "hash": "9f68c937",
+          "lines": 10
+        },
+        "routes\\achievements.js": {
+          "size": 3129,
+          "modified": "2026-01-08T13:05:46.395Z",
+          "hash": "3fc0d444",
+          "lines": 72
+        },
+        "routes\\challenges.js": {
+          "size": 2098,
+          "modified": "2026-01-08T13:05:46.395Z",
+          "hash": "7f73710a",
+          "lines": 70
+        }
+      },
+      "fileCount": 3,
+      "totalLines": 152,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "achievements.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/all"
+              },
+              {
+                "method": "GET",
+                "path": "/my-achievements"
+              },
+              {
+                "method": "GET",
+                "path": "/progress"
+              },
+              {
+                "method": "PUT",
+                "path": "/showcase"
+              }
+            ]
+          },
+          {
+            "file": "challenges.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/"
+              },
+              {
+                "method": "GET",
+                "path": "/:id"
+              },
+              {
+                "method": "POST",
+                "path": "/create"
+              },
+              {
+                "method": "POST",
+                "path": "/:id/join"
+              },
+              {
+                "method": "GET",
+                "path": "/:id/leaderboard"
+              },
+              {
+                "method": "GET",
+                "path": "/my-challenges"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "admin-dashboard": {
+      "category": "core",
+      "name": "admin-dashboard",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\admin-dashboard",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 165,
+          "modified": "2026-01-08T13:05:46.323Z",
+          "hash": "a1281ff3",
+          "lines": 9
+        },
+        "routes\\admin.js": {
+          "size": 79805,
+          "modified": "2026-01-08T13:05:46.322Z",
+          "hash": "1617b52b",
+          "lines": 2197
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 2206,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "admin.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/users"
+              },
+              {
+                "method": "GET",
+                "path": "/analytics"
+              },
+              {
+                "method": "GET",
+                "path": "/system"
+              },
+              {
+                "method": "GET",
+                "path": "/transactions"
+              },
+              {
+                "method": "PUT",
+                "path": "/user/:id"
+              },
+              {
+                "method": "POST",
+                "path": "/actions"
+              },
+              {
+                "method": "GET",
+                "path": "/logs"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "ai-scanner": {
+      "category": "collectibles",
+      "name": "ai-scanner",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\ai-scanner",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 223,
+          "modified": "2026-01-08T13:05:46.327Z",
+          "hash": "bf0a118b",
+          "lines": 11
+        },
+        "routes\\scanner.js": {
+          "size": 52871,
+          "modified": "2026-01-08T13:05:46.325Z",
+          "hash": "eb12675a",
+          "lines": 1222
+        },
+        "services\\ai-scanner.js": {
+          "size": 0,
+          "modified": "2026-01-08T13:05:46.326Z",
+          "hash": "d41d8cd9",
+          "lines": 1
+        },
+        "services\\claude-scanner.js": {
+          "size": 29621,
+          "modified": "2026-01-08T13:05:46.326Z",
+          "hash": "9965f84b",
+          "lines": 766
+        }
+      },
+      "fileCount": 4,
+      "totalLines": 2000,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "scanner.js",
+            "endpoints": [
+              {
+                "method": "POST",
+                "path": "/scan"
+              },
+              {
+                "method": "POST",
+                "path": "/analyze"
+              },
+              {
+                "method": "POST",
+                "path": "/confirm"
+              },
+              {
+                "method": "POST",
+                "path": "/demo-scan"
+              },
+              {
+                "method": "POST",
+                "path": "/price"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "analytics": {
+      "category": "core",
+      "name": "analytics",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\analytics",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 188,
+          "modified": "2026-01-08T13:05:46.324Z",
+          "hash": "e09fc7e4",
+          "lines": 10
+        },
+        "routes\\metrics.js": {
+          "size": 592,
+          "modified": "2026-01-08T13:05:46.324Z",
+          "hash": "1240afa2",
+          "lines": 18
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 28,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "metrics.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/live"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "auth": {
+      "category": "core",
+      "name": "auth",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\auth",
+      "config": {},
+      "files": {
+        "middleware\\auth.js": {
+          "size": 1899,
+          "modified": "2026-01-08T13:05:46.308Z",
+          "hash": "ef24eca5",
+          "lines": 52
+        },
+        "models\\User.js": {
+          "size": 0,
+          "modified": "2026-01-08T13:05:46.309Z",
+          "hash": "d41d8cd9",
+          "lines": 1
+        },
+        "module.json": {
+          "size": 232,
+          "modified": "2026-01-08T13:05:46.311Z",
+          "hash": "420e0a8f",
+          "lines": 12
+        },
+        "routes\\auth.js": {
+          "size": 10630,
+          "modified": "2026-01-08T13:05:46.308Z",
+          "hash": "92d3d450",
+          "lines": 307
+        },
+        "services\\password-reset.js": {
+          "size": 2985,
+          "modified": "2026-01-08T13:05:46.310Z",
+          "hash": "bf31fcdc",
+          "lines": 67
+        }
+      },
+      "fileCount": 5,
+      "totalLines": 439,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "auth.js",
+            "endpoints": [
+              {
+                "method": "POST",
+                "path": "/register"
+              },
+              {
+                "method": "POST",
+                "path": "/login"
+              },
+              {
+                "method": "GET",
+                "path": "/me"
+              },
+              {
+                "method": "POST",
+                "path": "/forgot-password"
+              },
+              {
+                "method": "GET",
+                "path": "/reset-password/:token"
+              },
+              {
+                "method": "POST",
+                "path": "/reset-password/:token"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "betting": {
+      "category": "sports",
+      "name": "betting",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\betting",
+      "config": {},
+      "files": {
+        "models\\Bet.js": {
+          "size": 494,
+          "modified": "2026-01-08T13:05:46.339Z",
+          "hash": "e08f24dd",
+          "lines": 13
+        },
+        "models\\Pick.js": {
+          "size": 965,
+          "modified": "2026-01-08T13:05:46.340Z",
+          "hash": "722305c5",
+          "lines": 26
+        },
+        "module.json": {
+          "size": 245,
+          "modified": "2026-01-08T13:05:46.340Z",
+          "hash": "c3581ee6",
+          "lines": 13
+        },
+        "routes\\betting.js": {
+          "size": 4933,
+          "modified": "2026-01-08T13:05:46.338Z",
+          "hash": "970d1a02",
+          "lines": 151
+        },
+        "routes\\picks.js": {
+          "size": 1370,
+          "modified": "2026-01-08T13:05:46.339Z",
+          "hash": "7a1e1610",
+          "lines": 29
+        },
+        "routes\\sidebets.js": {
+          "size": 7312,
+          "modified": "2026-01-08T13:05:46.339Z",
+          "hash": "9294fb9e",
+          "lines": 230
+        }
+      },
+      "fileCount": 6,
+      "totalLines": 462,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "betting.js",
+            "endpoints": [
+              {
+                "method": "POST",
+                "path": "/formations/matchup"
+              },
+              {
+                "method": "POST",
+                "path": "/formations/player"
+              },
+              {
+                "method": "POST",
+                "path": "/formations/full-field"
+              },
+              {
+                "method": "POST",
+                "path": "/props/quick"
+              },
+              {
+                "method": "POST",
+                "path": "/props/player"
+              },
+              {
+                "method": "POST",
+                "path": "/props/parlay"
+              }
+            ]
+          },
+          {
+            "file": "picks.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/weekly-games"
+              },
+              {
+                "method": "POST",
+                "path": "/submit-picks"
+              },
+              {
+                "method": "GET",
+                "path": "/line-movement/:gameId"
+              },
+              {
+                "method": "GET",
+                "path": "/weekly-games/:betType"
+              },
+              {
+                "method": "GET",
+                "path": "/weekly-props"
+              },
+              {
+                "method": "POST",
+                "path": "/submit-league-picks"
+              },
+              {
+                "method": "GET",
+                "path": "/moneyline-odds/:week"
+              },
+              {
+                "method": "GET",
+                "path": "/totals/:week"
+              }
+            ]
+          },
+          {
+            "file": "sidebets.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/lines"
+              },
+              {
+                "method": "POST",
+                "path": "/challenge"
+              },
+              {
+                "method": "POST",
+                "path": "/challenge/respond"
+              },
+              {
+                "method": "GET",
+                "path": "/my-bets"
+              },
+              {
+                "method": "GET",
+                "path": "/open-challenges"
+              },
+              {
+                "method": "POST",
+                "path": "/challenge/cancel"
+              },
+              {
+                "method": "GET",
+                "path": "/leaderboard"
+              },
+              {
+                "method": "GET",
+                "path": "/opponents"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "booking": {
+      "category": "business",
+      "name": "booking",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\booking",
+      "config": {},
+      "files": {
+        "database\\db.js": {
+          "size": 630,
+          "modified": "2026-01-10T20:15:16.689Z",
+          "hash": "7b8c5fb9",
+          "lines": 24
+        },
+        "module.json": {
+          "size": 415,
+          "modified": "2026-01-10T20:16:30.595Z",
+          "hash": "d8cc4ee1",
+          "lines": 17
+        },
+        "routes\\booking.js": {
+          "size": 9951,
+          "modified": "2026-01-10T20:16:08.318Z",
+          "hash": "41e62818",
+          "lines": 385
+        },
+        "routes\\services.js": {
+          "size": 22656,
+          "modified": "2026-01-08T13:05:46.321Z",
+          "hash": "167f9a63",
+          "lines": 712
+        }
+      },
+      "fileCount": 4,
+      "totalLines": 1138,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "booking.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/"
+              },
+              {
+                "method": "GET",
+                "path": "/:id"
+              },
+              {
+                "method": "GET",
+                "path": "/slots/:date"
+              },
+              {
+                "method": "POST",
+                "path": "/"
+              },
+              {
+                "method": "PUT",
+                "path": "/:id"
+              },
+              {
+                "method": "PATCH",
+                "path": "/:id/status"
+              },
+              {
+                "method": "POST",
+                "path": "/:id/cancel"
+              },
+              {
+                "method": "DELETE",
+                "path": "/:id"
+              },
+              {
+                "method": "GET",
+                "path": "/user/:userId"
+              }
+            ]
+          },
+          {
+            "file": "services.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/"
+              },
+              {
+                "method": "GET",
+                "path": "/:id"
+              },
+              {
+                "method": "GET",
+                "path": "/meta/categories"
+              },
+              {
+                "method": "GET",
+                "path": "/meta/featured"
+              },
+              {
+                "method": "GET",
+                "path": "/meta/wait-time"
+              },
+              {
+                "method": "POST",
+                "path": "/"
+              },
+              {
+                "method": "PUT",
+                "path": "/:id"
+              },
+              {
+                "method": "DELETE",
+                "path": "/:id"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "calendar": {
+      "category": "productivity",
+      "name": "calendar",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\calendar",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 162,
+          "modified": "2026-01-08T13:05:46.359Z",
+          "hash": "5d6e46bd",
+          "lines": 9
+        },
+        "routes\\calendar.js": {
+          "size": 12920,
+          "modified": "2026-01-08T13:05:46.358Z",
+          "hash": "9e68189e",
+          "lines": 374
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 383,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "calendar.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/events/:familyId"
+              },
+              {
+                "method": "POST",
+                "path": "/events"
+              },
+              {
+                "method": "PUT",
+                "path": "/events/:eventId"
+              },
+              {
+                "method": "DELETE",
+                "path": "/events/:eventId"
+              },
+              {
+                "method": "GET",
+                "path": "/family/:familyId/events"
+              },
+              {
+                "method": "POST",
+                "path": "/family/:familyId/events"
+              },
+              {
+                "method": "GET",
+                "path": "/upcoming"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "cashouts": {
+      "category": "other",
+      "name": "cashouts",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\cashouts",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 165,
+          "modified": "2026-01-12T00:58:33.717Z",
+          "hash": "c1e14421",
+          "lines": 10
+        },
+        "routes\\cashouts.js": {
+          "size": 4326,
+          "modified": "2026-01-12T00:58:33.875Z",
+          "hash": "dcce1d4f",
+          "lines": 143
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 153,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "cashouts.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/options/:userId"
+              },
+              {
+                "method": "POST",
+                "path": "/request"
+              },
+              {
+                "method": "GET",
+                "path": "/history/:userId"
+              },
+              {
+                "method": "GET",
+                "path": "/status/:cashoutId"
+              },
+              {
+                "method": "POST",
+                "path": "/admin/process/:cashoutId"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "chat": {
+      "category": "social",
+      "name": "chat",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\chat",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 180,
+          "modified": "2026-01-08T13:05:46.319Z",
+          "hash": "f1fc10b9",
+          "lines": 10
+        },
+        "routes\\chat.js": {
+          "size": 4743,
+          "modified": "2026-01-08T13:05:46.318Z",
+          "hash": "9a0938d0",
+          "lines": 153
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 163,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "chat.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/messages/:familyId"
+              },
+              {
+                "method": "POST",
+                "path": "/messages"
+              },
+              {
+                "method": "POST",
+                "path": "/typing"
+              },
+              {
+                "method": "DELETE",
+                "path": "/messages/:messageId"
+              },
+              {
+                "method": "POST",
+                "path": "/messages/:messageId/react"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "collections": {
+      "category": "collectibles",
+      "name": "collections",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\collections",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 164,
+          "modified": "2026-01-08T13:05:46.330Z",
+          "hash": "1f916d5f",
+          "lines": 9
+        },
+        "routes\\collections.js": {
+          "size": 10330,
+          "modified": "2026-01-08T13:05:46.330Z",
+          "hash": "e79ddb53",
+          "lines": 301
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 310,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "collections.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/"
+              },
+              {
+                "method": "GET",
+                "path": "/:id/cards"
+              },
+              {
+                "method": "POST",
+                "path": "/"
+              },
+              {
+                "method": "PATCH",
+                "path": "/:id"
+              },
+              {
+                "method": "DELETE",
+                "path": "/:id"
+              },
+              {
+                "method": "POST",
+                "path": "/:id/cards"
+              },
+              {
+                "method": "DELETE",
+                "path": "/:id/cards"
+              },
+              {
+                "method": "POST",
+                "path": "/:id/export-ebay"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "daily-spin": {
+      "category": "other",
+      "name": "daily-spin",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\daily-spin",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 166,
+          "modified": "2026-01-12T00:50:36.737Z",
+          "hash": "27ec3008",
+          "lines": 9
+        },
+        "routes\\spin.js": {
+          "size": 3367,
+          "modified": "2026-01-12T00:51:05.206Z",
+          "hash": "e9c20f17",
+          "lines": 112
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 121,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "spin.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/status/:userId"
+              },
+              {
+                "method": "POST",
+                "path": "/spin/:userId"
+              },
+              {
+                "method": "GET",
+                "path": "/history/:userId"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "documents": {
+      "category": "productivity",
+      "name": "documents",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\documents",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 193,
+          "modified": "2026-01-08T13:05:46.371Z",
+          "hash": "8ece018e",
+          "lines": 10
+        },
+        "routes\\documents.js": {
+          "size": 19924,
+          "modified": "2026-01-08T13:05:46.370Z",
+          "hash": "ca7527e4",
+          "lines": 628
+        },
+        "services\\documents.js": {
+          "size": 22429,
+          "modified": "2026-01-08T13:05:46.371Z",
+          "hash": "287e2261",
+          "lines": 644
+        }
+      },
+      "fileCount": 3,
+      "totalLines": 1282,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "documents.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/family/:familyId"
+              },
+              {
+                "method": "GET",
+                "path": "/category/:familyId/:category"
+              },
+              {
+                "method": "GET",
+                "path": "/member/:familyId/:memberId"
+              },
+              {
+                "method": "POST",
+                "path": "/upload"
+              },
+              {
+                "method": "POST",
+                "path": "/search"
+              },
+              {
+                "method": "GET",
+                "path": "/insights/:familyId"
+              },
+              {
+                "method": "POST",
+                "path": "/share/:documentId"
+              },
+              {
+                "method": "DELETE",
+                "path": "/:documentId"
+              },
+              {
+                "method": "POST",
+                "path": "/batch/categorize"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "ebay-integration": {
+      "category": "collectibles",
+      "name": "ebay-integration",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\ebay-integration",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 247,
+          "modified": "2026-01-08T13:05:46.336Z",
+          "hash": "2d6b7da1",
+          "lines": 12
+        },
+        "routes\\ebay-auth.js": {
+          "size": 24972,
+          "modified": "2026-01-08T13:05:46.334Z",
+          "hash": "3557d0ee",
+          "lines": 675
+        },
+        "routes\\ebay.js": {
+          "size": 97293,
+          "modified": "2026-01-08T13:05:46.334Z",
+          "hash": "6b02d75a",
+          "lines": 2597
+        },
+        "services\\ebay-api.js": {
+          "size": 0,
+          "modified": "2026-01-08T13:05:46.335Z",
+          "hash": "d41d8cd9",
+          "lines": 1
+        },
+        "services\\ebay-oauth.js": {
+          "size": 82914,
+          "modified": "2026-01-08T13:05:46.335Z",
+          "hash": "4ead4d2c",
+          "lines": 2291
+        }
+      },
+      "fileCount": 5,
+      "totalLines": 5576,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "ebay-auth.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/status"
+              },
+              {
+                "method": "GET",
+                "path": "/connect"
+              },
+              {
+                "method": "GET",
+                "path": "/callback"
+              },
+              {
+                "method": "POST",
+                "path": "/disconnect"
+              }
+            ]
+          },
+          {
+            "file": "ebay.js",
+            "endpoints": [
+              {
+                "method": "POST",
+                "path": "/price-card"
+              },
+              {
+                "method": "POST",
+                "path": "/preview-listing"
+              },
+              {
+                "method": "GET",
+                "path": "/recent-sales/:cardId"
+              },
+              {
+                "method": "GET",
+                "path": "/current-listings/:cardId"
+              },
+              {
+                "method": "GET",
+                "path": "/grading-analysis/:cardId"
+              },
+              {
+                "method": "GET",
+                "path": "/sold-comps/:cardId"
+              },
+              {
+                "method": "GET",
+                "path": "/parallel-pricing/:cardId"
+              },
+              {
+                "method": "GET",
+                "path": "/connect-seller"
+              },
+              {
+                "method": "GET",
+                "path": "/seller-callback"
+              },
+              {
+                "method": "GET",
+                "path": "/seller-status"
+              },
+              {
+                "method": "POST",
+                "path": "/disconnect-seller"
+              },
+              {
+                "method": "POST",
+                "path": "/create-listing"
+              },
+              {
+                "method": "GET",
+                "path": "/fix-policies"
+              },
+              {
+                "method": "POST",
+                "path": "/bulk-create-listings"
+              },
+              {
+                "method": "POST",
+                "path": "/end-listing/:cardId"
+              },
+              {
+                "method": "GET",
+                "path": "/listing-status/:cardId"
+              },
+              {
+                "method": "PATCH",
+                "path": "/remove-listing/:cardId"
+              },
+              {
+                "method": "GET",
+                "path": "/listings-history"
+              },
+              {
+                "method": "GET",
+                "path": "/test-category-specs"
+              },
+              {
+                "method": "POST",
+                "path": "/create-auction"
+              },
+              {
+                "method": "POST",
+                "path": "/bulk-create-auctions"
+              },
+              {
+                "method": "POST",
+                "path": "/create-lot-listing"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "family-groups": {
+      "category": "family",
+      "name": "family-groups",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\family-groups",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 165,
+          "modified": "2026-01-08T13:05:46.368Z",
+          "hash": "770e89ed",
+          "lines": 9
+        },
+        "routes\\groups.js": {
+          "size": 1214,
+          "modified": "2026-01-08T13:05:46.368Z",
+          "hash": "9c1ccb6a",
+          "lines": 34
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 43,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "groups.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/cline"
+              },
+              {
+                "method": "GET",
+                "path": "/:familyId"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "fantasy": {
+      "category": "sports",
+      "name": "fantasy",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\fantasy",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 251,
+          "modified": "2026-01-08T13:05:46.338Z",
+          "hash": "8a7ffe4f",
+          "lines": 12
+        },
+        "routes\\draft.js": {
+          "size": 3549,
+          "modified": "2026-01-08T13:05:46.337Z",
+          "hash": "337ce4cd",
+          "lines": 107
+        },
+        "routes\\fantasy-leagues.js": {
+          "size": 23118,
+          "modified": "2026-01-08T13:05:46.336Z",
+          "hash": "059cfcf3",
+          "lines": 526
+        },
+        "services\\draft-optimizer.js": {
+          "size": 90,
+          "modified": "2026-01-08T13:05:46.337Z",
+          "hash": "9d553c21",
+          "lines": 3
+        },
+        "services\\trade-engine.js": {
+          "size": 87,
+          "modified": "2026-01-08T13:05:46.337Z",
+          "hash": "be90456f",
+          "lines": 3
+        }
+      },
+      "fileCount": 5,
+      "totalLines": 651,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "draft.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/api/fantasy/draft/:leagueId/board"
+              },
+              {
+                "method": "POST",
+                "path": "/api/fantasy/draft/:leagueId/pick"
+              },
+              {
+                "method": "GET",
+                "path": "/api/fantasy/draft/:leagueId/order"
+              },
+              {
+                "method": "POST",
+                "path": "/api/fantasy/draft/:leagueId/start"
+              },
+              {
+                "method": "POST",
+                "path": "/api/fantasy/draft/:leagueId/autodraft"
+              }
+            ]
+          },
+          {
+            "file": "fantasy-leagues.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/api/fantasy/leagues/:leagueId"
+              },
+              {
+                "method": "POST",
+                "path": "/api/fantasy/leagues/create"
+              },
+              {
+                "method": "POST",
+                "path": "/api/fantasy/leagues/:leagueId/join"
+              },
+              {
+                "method": "GET",
+                "path": "/api/fantasy/leagues/:leagueId/standings"
+              },
+              {
+                "method": "GET",
+                "path": "/api/fantasy/leagues/:leagueId/transactions"
+              },
+              {
+                "method": "PUT",
+                "path": "/api/fantasy/leagues/:leagueId/settings"
+              },
+              {
+                "method": "POST",
+                "path": "/api/fantasy/espn/sync"
+              },
+              {
+                "method": "GET",
+                "path": "/api/fantasy/espn/matchups/:leagueId/:week"
+              },
+              {
+                "method": "GET",
+                "path": "/api/fantasy/espn/players/:leagueId"
+              },
+              {
+                "method": "GET",
+                "path": "/api/fantasy/espn/activity/:leagueId"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "file-upload": {
+      "category": "core",
+      "name": "file-upload",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\file-upload",
+      "config": {},
+      "files": {
+        "middleware\\upload.js": {
+          "size": 1296,
+          "modified": "2026-01-08T13:05:46.327Z",
+          "hash": "1ce09f13",
+          "lines": 45
+        },
+        "module.json": {
+          "size": 228,
+          "modified": "2026-01-08T13:05:46.328Z",
+          "hash": "54b6a7e3",
+          "lines": 11
+        },
+        "services\\cloudinary.js": {
+          "size": 4407,
+          "modified": "2026-01-08T13:05:46.327Z",
+          "hash": "e41d11b1",
+          "lines": 119
+        },
+        "services\\image-processor.js": {
+          "size": 1477,
+          "modified": "2026-01-08T13:05:46.328Z",
+          "hash": "a91002f6",
+          "lines": 48
+        }
+      },
+      "fileCount": 4,
+      "totalLines": 223,
+      "dependencies": [],
+      "exports": {
+        "routes": [],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "fraud-detection": {
+      "category": "other",
+      "name": "fraud-detection",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\fraud-detection",
+      "config": {},
+      "files": {
+        "middleware\\fraud-check.js": {
+          "size": 2076,
+          "modified": "2026-01-12T13:08:50.918Z",
+          "hash": "8924e91e",
+          "lines": 84
+        },
+        "models\\FraudEvent.js": {
+          "size": 1202,
+          "modified": "2026-01-12T13:08:12.520Z",
+          "hash": "ae464244",
+          "lines": 34
+        },
+        "module.json": {
+          "size": 694,
+          "modified": "2026-01-12T13:08:02.219Z",
+          "hash": "63caf268",
+          "lines": 27
+        },
+        "routes\\fraud.js": {
+          "size": 3174,
+          "modified": "2026-01-12T13:39:51.095Z",
+          "hash": "d8842d81",
+          "lines": 110
+        },
+        "services\\fingerprint.js": {
+          "size": 2070,
+          "modified": "2026-01-12T13:08:22.181Z",
+          "hash": "ced86cdb",
+          "lines": 77
+        },
+        "services\\fraud-detection.js": {
+          "size": 5188,
+          "modified": "2026-01-12T13:08:43.253Z",
+          "hash": "6955cd1f",
+          "lines": 175
+        },
+        "services\\velocity-tracker.js": {
+          "size": 2998,
+          "modified": "2026-01-12T13:08:29.045Z",
+          "hash": "cdba34fc",
+          "lines": 114
+        }
+      },
+      "fileCount": 7,
+      "totalLines": 621,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "fraud.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/events"
+              },
+              {
+                "method": "GET",
+                "path": "/user/:userId"
+              },
+              {
+                "method": "PUT",
+                "path": "/events/:eventId/resolve"
+              },
+              {
+                "method": "GET",
+                "path": "/stats"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "honeypot": {
+      "category": "other",
+      "name": "honeypot",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\honeypot",
+      "config": {},
+      "files": {
+        "middleware\\honeypot.js": {
+          "size": 2091,
+          "modified": "2026-01-12T13:09:58.329Z",
+          "hash": "e75abe3e",
+          "lines": 90
+        },
+        "models\\BotDetection.js": {
+          "size": 974,
+          "modified": "2026-01-12T13:09:43.794Z",
+          "hash": "7fa03764",
+          "lines": 35
+        },
+        "module.json": {
+          "size": 548,
+          "modified": "2026-01-12T13:09:36.383Z",
+          "hash": "99bff847",
+          "lines": 22
+        },
+        "services\\honeypot.js": {
+          "size": 3496,
+          "modified": "2026-01-12T13:09:53.342Z",
+          "hash": "136d9486",
+          "lines": 139
+        }
+      },
+      "fileCount": 4,
+      "totalLines": 286,
+      "dependencies": [],
+      "exports": {
+        "routes": [],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "inventory": {
+      "category": "business",
+      "name": "inventory",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\inventory",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 177,
+          "modified": "2026-01-08T13:05:46.375Z",
+          "hash": "872cc7f0",
+          "lines": 10
+        },
+        "routes\\inventory.js": {
+          "size": 23980,
+          "modified": "2026-01-08T13:05:46.374Z",
+          "hash": "771f2d7e",
+          "lines": 752
+        },
+        "routes\\items.js": {
+          "size": 48210,
+          "modified": "2026-01-08T13:05:46.375Z",
+          "hash": "0965495d",
+          "lines": 1237
+        }
+      },
+      "fileCount": 3,
+      "totalLines": 1999,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "inventory.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/"
+              },
+              {
+                "method": "POST",
+                "path": "/add"
+              },
+              {
+                "method": "DELETE",
+                "path": "/remove/:cardId"
+              },
+              {
+                "method": "POST",
+                "path": "/bulk"
+              },
+              {
+                "method": "PUT",
+                "path": "/profile/:cardId"
+              }
+            ]
+          },
+          {
+            "file": "items.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/login"
+              },
+              {
+                "method": "GET",
+                "path": "/marketplace"
+              },
+              {
+                "method": "GET",
+                "path": "/all"
+              },
+              {
+                "method": "GET",
+                "path": "/:cardId"
+              },
+              {
+                "method": "POST",
+                "path": "/sell"
+              },
+              {
+                "method": "POST",
+                "path": "/purchase"
+              },
+              {
+                "method": "POST",
+                "path": "/marketplace"
+              },
+              {
+                "method": "DELETE",
+                "path": "/marketplace"
+              },
+              {
+                "method": "PATCH",
+                "path": "/assign"
+              },
+              {
+                "method": "PATCH",
+                "path": "/profile"
+              },
+              {
+                "method": "POST",
+                "path": "/purchase-coin"
+              },
+              {
+                "method": "GET",
+                "path": "/ownership"
+              },
+              {
+                "method": "PATCH",
+                "path": "/:id"
+              },
+              {
+                "method": "PATCH",
+                "path": "/unassign"
+              },
+              {
+                "method": "DELETE",
+                "path": "/:id"
+              },
+              {
+                "method": "DELETE",
+                "path": "/set/:setName"
+              },
+              {
+                "method": "POST",
+                "path": "/proxy-xai"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "kids-banking": {
+      "category": "payments",
+      "name": "kids-banking",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\kids-banking",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 247,
+          "modified": "2026-01-08T13:05:46.367Z",
+          "hash": "8b38f4e5",
+          "lines": 11
+        },
+        "routes\\kids-banking.js": {
+          "size": 11247,
+          "modified": "2026-01-08T13:05:46.364Z",
+          "hash": "8271539c",
+          "lines": 378
+        },
+        "routes\\virtual-currency.js": {
+          "size": 7694,
+          "modified": "2026-01-08T13:05:46.365Z",
+          "hash": "20dbd294",
+          "lines": 230
+        },
+        "services\\virtual-currency-engine.js": {
+          "size": 12236,
+          "modified": "2026-01-08T13:05:46.366Z",
+          "hash": "a6f2fde2",
+          "lines": 439
+        }
+      },
+      "fileCount": 4,
+      "totalLines": 1058,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "kids-banking.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/:familyId"
+              },
+              {
+                "method": "GET",
+                "path": "/account/:memberId"
+              },
+              {
+                "method": "POST",
+                "path": "/earn"
+              },
+              {
+                "method": "POST",
+                "path": "/transfer"
+              },
+              {
+                "method": "POST",
+                "path": "/purchase/request"
+              },
+              {
+                "method": "POST",
+                "path": "/purchase/approve"
+              },
+              {
+                "method": "POST",
+                "path": "/purchase/deny"
+              },
+              {
+                "method": "GET",
+                "path": "/purchases/pending"
+              },
+              {
+                "method": "POST",
+                "path": "/withdraw"
+              },
+              {
+                "method": "POST",
+                "path": "/deposit"
+              },
+              {
+                "method": "POST",
+                "path": "/interest/:memberId"
+              },
+              {
+                "method": "GET",
+                "path": "/transactions/:memberId"
+              },
+              {
+                "method": "GET",
+                "path": "/receipts/:memberId"
+              },
+              {
+                "method": "PUT",
+                "path": "/settings/:memberId"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              }
+            ]
+          },
+          {
+            "file": "virtual-currency.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/wallet/:userId/:familyId"
+              },
+              {
+                "method": "POST",
+                "path": "/convert"
+              },
+              {
+                "method": "POST",
+                "path": "/transfer"
+              },
+              {
+                "method": "POST",
+                "path": "/redeem"
+              },
+              {
+                "method": "POST",
+                "path": "/approve-redemption"
+              },
+              {
+                "method": "GET",
+                "path": "/history/:userId/:familyId"
+              },
+              {
+                "method": "POST",
+                "path": "/add"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "leaderboard": {
+      "category": "sports",
+      "name": "leaderboard",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\leaderboard",
+      "config": {},
+      "files": {
+        "models\\Leaderboard.js": {
+          "size": 21955,
+          "modified": "2026-01-08T13:05:46.341Z",
+          "hash": "8ad8145f",
+          "lines": 623
+        },
+        "module.json": {
+          "size": 190,
+          "modified": "2026-01-08T13:05:46.342Z",
+          "hash": "e99a1296",
+          "lines": 10
+        },
+        "routes\\leaderboard.js": {
+          "size": 10839,
+          "modified": "2026-01-08T13:05:46.342Z",
+          "hash": "4344bcdc",
+          "lines": 308
+        }
+      },
+      "fileCount": 3,
+      "totalLines": 941,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "leaderboard.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/api/reputation/:userId"
+              },
+              {
+                "method": "POST",
+                "path": "/api/bets/create"
+              },
+              {
+                "method": "POST",
+                "path": "/api/bets/:betId/accept"
+              },
+              {
+                "method": "POST",
+                "path": "/api/bets/:betId/complete"
+              },
+              {
+                "method": "POST",
+                "path": "/api/bets/:betId/payment-sent"
+              },
+              {
+                "method": "POST",
+                "path": "/api/bets/:betId/payment-received"
+              },
+              {
+                "method": "GET",
+                "path": "/api/bets/user/:userId"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "marketplace": {
+      "category": "collectibles",
+      "name": "marketplace",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\marketplace",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 183,
+          "modified": "2026-01-08T13:05:46.379Z",
+          "hash": "06bdcb8d",
+          "lines": 10
+        },
+        "routes\\marketplace.js": {
+          "size": 26730,
+          "modified": "2026-01-08T13:05:46.377Z",
+          "hash": "1e6c20a5",
+          "lines": 824
+        },
+        "routes\\trading.js": {
+          "size": 41221,
+          "modified": "2026-01-08T13:05:46.378Z",
+          "hash": "0932f9a3",
+          "lines": 1229
+        }
+      },
+      "fileCount": 3,
+      "totalLines": 2063,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "marketplace.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/listings"
+              },
+              {
+                "method": "GET",
+                "path": "/listings/:id"
+              },
+              {
+                "method": "POST",
+                "path": "/sell"
+              },
+              {
+                "method": "POST",
+                "path": "/buy"
+              },
+              {
+                "method": "DELETE",
+                "path": "/listings/:id"
+              },
+              {
+                "method": "GET",
+                "path": "/history"
+              }
+            ]
+          },
+          {
+            "file": "trading.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/incoming"
+              },
+              {
+                "method": "GET",
+                "path": "/outgoing"
+              },
+              {
+                "method": "GET",
+                "path": "/:id"
+              },
+              {
+                "method": "POST",
+                "path": "/submit"
+              },
+              {
+                "method": "POST",
+                "path": "/counter"
+              },
+              {
+                "method": "POST",
+                "path": "/accept"
+              },
+              {
+                "method": "POST",
+                "path": "/reject"
+              },
+              {
+                "method": "GET",
+                "path": "/stats/:userId"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "meals": {
+      "category": "family",
+      "name": "meals",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\meals",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 156,
+          "modified": "2026-01-08T13:05:46.363Z",
+          "hash": "22d6f857",
+          "lines": 9
+        },
+        "routes\\meals.js": {
+          "size": 33554,
+          "modified": "2026-01-08T13:05:46.362Z",
+          "hash": "71c15c05",
+          "lines": 1140
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 1149,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "meals.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/family"
+              },
+              {
+                "method": "GET",
+                "path": "/:familyId/plan"
+              },
+              {
+                "method": "POST",
+                "path": "/plan/add"
+              },
+              {
+                "method": "POST",
+                "path": "/grocery-list/generate"
+              },
+              {
+                "method": "POST",
+                "path": "/plan/remove"
+              },
+              {
+                "method": "GET",
+                "path": "/recipes"
+              },
+              {
+                "method": "POST",
+                "path": "/recipes"
+              },
+              {
+                "method": "GET",
+                "path": "/grocery-list/:listId"
+              },
+              {
+                "method": "POST",
+                "path": "/grocery-list/check"
+              },
+              {
+                "method": "GET",
+                "path": "/pantry"
+              },
+              {
+                "method": "POST",
+                "path": "/pantry/add"
+              },
+              {
+                "method": "POST",
+                "path": "/pantry/remove"
+              },
+              {
+                "method": "PUT",
+                "path": "/pantry/quantity"
+              },
+              {
+                "method": "GET",
+                "path": "/pantry/expiring"
+              },
+              {
+                "method": "GET",
+                "path": "/meals"
+              },
+              {
+                "method": "POST",
+                "path": "/meals"
+              },
+              {
+                "method": "POST",
+                "path": "/meals/generate-ai-plan"
+              },
+              {
+                "method": "GET",
+                "path": "/shopping"
+              },
+              {
+                "method": "POST",
+                "path": "/shopping"
+              },
+              {
+                "method": "PUT",
+                "path": "/shopping/:id"
+              },
+              {
+                "method": "POST",
+                "path": "/shopping/voice"
+              },
+              {
+                "method": "GET",
+                "path": "/inventory"
+              },
+              {
+                "method": "PUT",
+                "path": "/inventory/:id"
+              },
+              {
+                "method": "POST",
+                "path": "/inventory/sync-fridge"
+              },
+              {
+                "method": "GET",
+                "path": "/recipes"
+              },
+              {
+                "method": "POST",
+                "path": "/recipes/generate"
+              },
+              {
+                "method": "POST",
+                "path": "/recipes/share"
+              },
+              {
+                "method": "POST",
+                "path": "/receipts/scan"
+              },
+              {
+                "method": "GET",
+                "path": "/prices"
+              },
+              {
+                "method": "GET",
+                "path": "/prices/alerts"
+              },
+              {
+                "method": "POST",
+                "path": "/nutrition/analyze"
+              },
+              {
+                "method": "GET",
+                "path": "/nutrition/goals"
+              },
+              {
+                "method": "POST",
+                "path": "/community/bulk-buy"
+              },
+              {
+                "method": "POST",
+                "path": "/sync"
+              },
+              {
+                "method": "GET",
+                "path": "/waste/stats"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              },
+              {
+                "method": "GET",
+                "path": "io"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "nfc-tags": {
+      "category": "collectibles",
+      "name": "nfc-tags",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\nfc-tags",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 153,
+          "modified": "2026-01-08T13:05:46.333Z",
+          "hash": "6417bc15",
+          "lines": 9
+        },
+        "routes\\nfc.js": {
+          "size": 11374,
+          "modified": "2026-01-08T13:05:46.333Z",
+          "hash": "3349106a",
+          "lines": 394
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 403,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "nfc.js",
+            "endpoints": [
+              {
+                "method": "POST",
+                "path": "/register-tag"
+              },
+              {
+                "method": "GET",
+                "path": "/scan/:nfc_uid"
+              },
+              {
+                "method": "GET",
+                "path": "/card/:shortId"
+              },
+              {
+                "method": "GET",
+                "path": "/tags"
+              },
+              {
+                "method": "DELETE",
+                "path": "/tags/:nfc_uid"
+              },
+              {
+                "method": "POST",
+                "path": "/bulk-register"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "notifications": {
+      "category": "core",
+      "name": "notifications",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\notifications",
+      "config": {},
+      "files": {
+        "models\\Notification.js": {
+          "size": 1379,
+          "modified": "2026-01-08T13:05:46.317Z",
+          "hash": "5d9308aa",
+          "lines": 50
+        },
+        "module.json": {
+          "size": 252,
+          "modified": "2026-01-08T13:05:46.318Z",
+          "hash": "ba505e61",
+          "lines": 12
+        },
+        "routes\\notifications.js": {
+          "size": 3667,
+          "modified": "2026-01-08T13:05:46.315Z",
+          "hash": "0aafb9a8",
+          "lines": 122
+        },
+        "services\\email.js": {
+          "size": 41303,
+          "modified": "2026-01-08T13:05:46.317Z",
+          "hash": "18684a6a",
+          "lines": 1110
+        }
+      },
+      "fileCount": 4,
+      "totalLines": 1294,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "notifications.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/"
+              },
+              {
+                "method": "PUT",
+                "path": "/:notificationId/read"
+              },
+              {
+                "method": "PUT",
+                "path": "/read-all"
+              },
+              {
+                "method": "GET",
+                "path": "/unread-count"
+              },
+              {
+                "method": "DELETE",
+                "path": "/:notificationId"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "onboarding": {
+      "category": "other",
+      "name": "onboarding",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\onboarding",
+      "config": {},
+      "files": {
+        "models\\OnboardingProgress.js": {
+          "size": 2721,
+          "modified": "2026-01-12T13:12:03.795Z",
+          "hash": "70347ae7",
+          "lines": 83
+        },
+        "module.json": {
+          "size": 733,
+          "modified": "2026-01-12T13:11:55.954Z",
+          "hash": "15271d2d",
+          "lines": 28
+        },
+        "routes\\onboarding.js": {
+          "size": 3397,
+          "modified": "2026-01-12T13:39:56.018Z",
+          "hash": "42b175df",
+          "lines": 128
+        },
+        "services\\onboarding.js": {
+          "size": 5221,
+          "modified": "2026-01-12T13:12:22.027Z",
+          "hash": "0af2c71e",
+          "lines": 197
+        }
+      },
+      "fileCount": 4,
+      "totalLines": 436,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "onboarding.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/status"
+              },
+              {
+                "method": "GET",
+                "path": "/progress"
+              },
+              {
+                "method": "POST",
+                "path": "/complete/:step"
+              },
+              {
+                "method": "POST",
+                "path": "/profile"
+              },
+              {
+                "method": "POST",
+                "path": "/dismiss"
+              },
+              {
+                "method": "GET",
+                "path": "/rewards"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "page-generator": {
+      "category": "ai",
+      "name": "page-generator",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\page-generator",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 185,
+          "modified": "2026-01-08T13:05:46.381Z",
+          "hash": "70cbc4d9",
+          "lines": 10
+        },
+        "routes\\ai-editor.js": {
+          "size": 52614,
+          "modified": "2026-01-08T13:05:46.381Z",
+          "hash": "37c7f5aa",
+          "lines": 1559
+        },
+        "routes\\generate.js": {
+          "size": 7187,
+          "modified": "2026-01-08T13:05:46.380Z",
+          "hash": "be25d843",
+          "lines": 202
+        }
+      },
+      "fileCount": 3,
+      "totalLines": 1771,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "ai-editor.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/status"
+              },
+              {
+                "method": "POST",
+                "path": "/chat"
+              },
+              {
+                "method": "POST",
+                "path": "/enhance-selection"
+              },
+              {
+                "method": "POST",
+                "path": "/improve-code"
+              },
+              {
+                "method": "POST",
+                "path": "/generate-content"
+              },
+              {
+                "method": "POST",
+                "path": "/explain-code"
+              },
+              {
+                "method": "POST",
+                "path": "/enhance-element"
+              },
+              {
+                "method": "GET",
+                "path": "/health"
+              }
+            ]
+          },
+          {
+            "file": "generate.js",
+            "endpoints": [
+              {
+                "method": "POST",
+                "path": "/api/ai/extract-business-info"
+              },
+              {
+                "method": "POST",
+                "path": "/api/generate/business"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "payments": {
+      "category": "payments",
+      "name": "payments",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\payments",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 184,
+          "modified": "2026-01-08T13:05:46.401Z",
+          "hash": "cb2fc909",
+          "lines": 10
+        },
+        "routes\\payments.js": {
+          "size": 1212,
+          "modified": "2026-01-08T13:05:46.399Z",
+          "hash": "eafe31ed",
+          "lines": 39
+        },
+        "services\\stripe.js": {
+          "size": 350,
+          "modified": "2026-01-08T13:05:46.401Z",
+          "hash": "c4b5c997",
+          "lines": 14
+        }
+      },
+      "fileCount": 3,
+      "totalLines": 63,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "payments.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/config"
+              },
+              {
+                "method": "POST",
+                "path": "/create-subscription"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "payout-verification": {
+      "category": "other",
+      "name": "payout-verification",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\payout-verification",
+      "config": {},
+      "files": {
+        "middleware\\verified-only.js": {
+          "size": 2218,
+          "modified": "2026-01-12T13:11:08.870Z",
+          "hash": "df4419ff",
+          "lines": 93
+        },
+        "models\\Verification.js": {
+          "size": 1709,
+          "modified": "2026-01-12T13:10:37.739Z",
+          "hash": "a15a758c",
+          "lines": 60
+        },
+        "module.json": {
+          "size": 822,
+          "modified": "2026-01-12T13:10:30.972Z",
+          "hash": "2f485ae8",
+          "lines": 28
+        },
+        "routes\\verification.js": {
+          "size": 4633,
+          "modified": "2026-01-12T13:39:53.888Z",
+          "hash": "b8773873",
+          "lines": 159
+        },
+        "services\\payout-providers.js": {
+          "size": 3968,
+          "modified": "2026-01-12T13:11:00.288Z",
+          "hash": "3e5e1e8c",
+          "lines": 159
+        },
+        "services\\phone-verify.js": {
+          "size": 4205,
+          "modified": "2026-01-12T13:10:46.656Z",
+          "hash": "59ea7d92",
+          "lines": 140
+        }
+      },
+      "fileCount": 6,
+      "totalLines": 639,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "verification.js",
+            "endpoints": [
+              {
+                "method": "POST",
+                "path": "/phone/send"
+              },
+              {
+                "method": "POST",
+                "path": "/phone/verify"
+              },
+              {
+                "method": "GET",
+                "path": "/status"
+              },
+              {
+                "method": "POST",
+                "path": "/payout-method"
+              },
+              {
+                "method": "GET",
+                "path": "/providers"
+              },
+              {
+                "method": "DELETE",
+                "path": "/payout-method/:provider"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "pools": {
+      "category": "sports",
+      "name": "pools",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\pools",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 154,
+          "modified": "2026-01-08T13:05:46.384Z",
+          "hash": "1e4a7e3a",
+          "lines": 9
+        },
+        "routes\\pools.js": {
+          "size": 18267,
+          "modified": "2026-01-08T13:05:46.383Z",
+          "hash": "f9774dc6",
+          "lines": 519
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 528,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "pools.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/active"
+              },
+              {
+                "method": "GET",
+                "path": "/:schoolId/groups"
+              },
+              {
+                "method": "POST",
+                "path": "/:schoolId/groups/join"
+              },
+              {
+                "method": "GET",
+                "path": "/:schoolId"
+              },
+              {
+                "method": "POST",
+                "path": "/create"
+              },
+              {
+                "method": "POST",
+                "path": "/:schoolId/enter"
+              },
+              {
+                "method": "GET",
+                "path": "/:schoolId/entries"
+              },
+              {
+                "method": "GET",
+                "path": "/my-entries/:userId"
+              },
+              {
+                "method": "POST",
+                "path": "/:schoolId/update-odds"
+              },
+              {
+                "method": "GET",
+                "path": "/stats/trending"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "portfolio": {
+      "category": "business",
+      "name": "portfolio",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\portfolio",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 185,
+          "modified": "2026-01-08T13:05:46.393Z",
+          "hash": "8302384f",
+          "lines": 10
+        },
+        "routes\\grading.js": {
+          "size": 9411,
+          "modified": "2026-01-08T13:05:46.393Z",
+          "hash": "c009790a",
+          "lines": 268
+        },
+        "routes\\portfolio.js": {
+          "size": 11885,
+          "modified": "2026-01-08T13:05:46.391Z",
+          "hash": "9f966735",
+          "lines": 376
+        }
+      },
+      "fileCount": 3,
+      "totalLines": 654,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "grading.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/services"
+              },
+              {
+                "method": "GET",
+                "path": "/submissions"
+              },
+              {
+                "method": "POST",
+                "path": "/submit"
+              },
+              {
+                "method": "GET",
+                "path": "/submission/:id"
+              },
+              {
+                "method": "PUT",
+                "path": "/submission/:id/status"
+              },
+              {
+                "method": "POST",
+                "path": "/estimate"
+              },
+              {
+                "method": "GET",
+                "path": "/history/:cardId"
+              },
+              {
+                "method": "GET",
+                "path": "/track/:trackingNumber"
+              },
+              {
+                "method": "GET",
+                "path": "/stats"
+              }
+            ]
+          },
+          {
+            "file": "portfolio.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/"
+              },
+              {
+                "method": "POST",
+                "path": "/add"
+              },
+              {
+                "method": "PUT",
+                "path": "/:id"
+              },
+              {
+                "method": "DELETE",
+                "path": "/:id"
+              },
+              {
+                "method": "POST",
+                "path": "/bulk"
+              },
+              {
+                "method": "GET",
+                "path": "/export"
+              },
+              {
+                "method": "POST",
+                "path": "/:id/list"
+              },
+              {
+                "method": "GET",
+                "path": "/stats"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "posts": {
+      "category": "social",
+      "name": "posts",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\posts",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 154,
+          "modified": "2026-01-08T13:05:46.389Z",
+          "hash": "146cb409",
+          "lines": 9
+        },
+        "routes\\posts.js": {
+          "size": 18879,
+          "modified": "2026-01-08T13:05:46.389Z",
+          "hash": "2b5412ed",
+          "lines": 548
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 557,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "posts.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/feed"
+              },
+              {
+                "method": "POST",
+                "path": "/"
+              },
+              {
+                "method": "POST",
+                "path": "/:postId/like"
+              },
+              {
+                "method": "POST",
+                "path": "/:postId/dislike"
+              },
+              {
+                "method": "POST",
+                "path": "/:postId/comment"
+              },
+              {
+                "method": "GET",
+                "path": "/:postId/comments"
+              },
+              {
+                "method": "GET",
+                "path": "/:postId"
+              },
+              {
+                "method": "POST",
+                "path": "/:postId/accept-bet"
+              },
+              {
+                "method": "POST",
+                "path": "/:postId/cancel-bet"
+              },
+              {
+                "method": "POST",
+                "path": "/:postId/leave-bet"
+              },
+              {
+                "method": "DELETE",
+                "path": "/:postId"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "schools": {
+      "category": "family",
+      "name": "schools",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\schools",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 185,
+          "modified": "2026-01-08T13:05:46.387Z",
+          "hash": "be27297d",
+          "lines": 10
+        },
+        "routes\\platforms.js": {
+          "size": 41384,
+          "modified": "2026-01-08T13:05:46.387Z",
+          "hash": "df711973",
+          "lines": 1015
+        },
+        "routes\\schools.js": {
+          "size": 10712,
+          "modified": "2026-01-08T13:05:46.385Z",
+          "hash": "f686a264",
+          "lines": 290
+        }
+      },
+      "fileCount": 3,
+      "totalLines": 1315,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "platforms.js",
+            "endpoints": [
+              {
+                "method": "POST",
+                "path": "/api/platforms/generate"
+              },
+              {
+                "method": "POST",
+                "path": "/api/platforms/quick-generate"
+              },
+              {
+                "method": "POST",
+                "path": "/api/platforms/:platformId/join"
+              },
+              {
+                "method": "POST",
+                "path": "/api/platforms/:platformId/invite"
+              },
+              {
+                "method": "GET",
+                "path": "/api/platforms/:platformId/members"
+              },
+              {
+                "method": "POST",
+                "path": "/api/platforms/accept-invite"
+              },
+              {
+                "method": "GET",
+                "path": "/api/platforms"
+              },
+              {
+                "method": "DELETE",
+                "path": "/api/platforms/:platformId"
+              },
+              {
+                "method": "GET",
+                "path": "/api/platforms/my-platforms"
+              },
+              {
+                "method": "POST",
+                "path": "/api/platforms/:platformId/picks"
+              }
+            ]
+          },
+          {
+            "file": "schools.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/"
+              },
+              {
+                "method": "GET",
+                "path": "/conference/:conference"
+              },
+              {
+                "method": "GET",
+                "path": "/conferences/list"
+              },
+              {
+                "method": "GET",
+                "path": "/:schoolId"
+              },
+              {
+                "method": "GET",
+                "path": "/pools/active"
+              },
+              {
+                "method": "POST",
+                "path": "/:schoolId/update-odds"
+              },
+              {
+                "method": "POST",
+                "path": "/bulk/update-odds"
+              },
+              {
+                "method": "POST",
+                "path": "/seed"
+              },
+              {
+                "method": "DELETE",
+                "path": "/clear-all"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "showcase": {
+      "category": "collectibles",
+      "name": "showcase",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\showcase",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 158,
+          "modified": "2026-01-08T13:05:46.331Z",
+          "hash": "05a229ab",
+          "lines": 9
+        },
+        "routes\\showcase.js": {
+          "size": 34004,
+          "modified": "2026-01-08T13:05:46.331Z",
+          "hash": "399cd7ad",
+          "lines": 1098
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 1107,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "showcase.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/user/list"
+              },
+              {
+                "method": "GET",
+                "path": "/card-mappings"
+              },
+              {
+                "method": "POST",
+                "path": "/create"
+              },
+              {
+                "method": "PATCH",
+                "path": "/:showcaseId/set-default"
+              },
+              {
+                "method": "PATCH",
+                "path": "/:showcaseId"
+              },
+              {
+                "method": "DELETE",
+                "path": "/:showcaseId"
+              },
+              {
+                "method": "GET",
+                "path": "/:showcaseId/cards"
+              },
+              {
+                "method": "POST",
+                "path": "/:showcaseId/cards"
+              },
+              {
+                "method": "DELETE",
+                "path": "/:showcaseId/cards/:cardId"
+              },
+              {
+                "method": "PATCH",
+                "path": "/settings"
+              },
+              {
+                "method": "POST",
+                "path": "/vendor-setup"
+              },
+              {
+                "method": "GET",
+                "path": "/:username"
+              },
+              {
+                "method": "GET",
+                "path": "/:username/:showcaseSlug"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "social-feed": {
+      "category": "social",
+      "name": "social-feed",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\social-feed",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 157,
+          "modified": "2026-01-08T13:05:46.398Z",
+          "hash": "3b27f008",
+          "lines": 9
+        },
+        "routes\\feed.js": {
+          "size": 32135,
+          "modified": "2026-01-08T13:05:46.397Z",
+          "hash": "e8a036ad",
+          "lines": 996
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 1005,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "feed.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/"
+              },
+              {
+                "method": "GET",
+                "path": "/featured"
+              },
+              {
+                "method": "GET",
+                "path": "/trending"
+              },
+              {
+                "method": "GET",
+                "path": "/ending-soon"
+              },
+              {
+                "method": "POST",
+                "path": "/list"
+              },
+              {
+                "method": "GET",
+                "path": "/my-listings"
+              },
+              {
+                "method": "PUT",
+                "path": "/card/:cardId"
+              },
+              {
+                "method": "DELETE",
+                "path": "/card/:cardId"
+              },
+              {
+                "method": "POST",
+                "path": "/promote-to-platform"
+              },
+              {
+                "method": "GET",
+                "path": "/categories"
+              },
+              {
+                "method": "GET",
+                "path": "/stats"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "streaks": {
+      "category": "other",
+      "name": "streaks",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\streaks",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 166,
+          "modified": "2026-01-12T00:48:36.634Z",
+          "hash": "e7a61f51",
+          "lines": 9
+        },
+        "routes\\streaks.js": {
+          "size": 2501,
+          "modified": "2026-01-12T00:49:15.752Z",
+          "hash": "d38af578",
+          "lines": 89
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 98,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "streaks.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/:userId"
+              },
+              {
+                "method": "POST",
+                "path": "/:userId/checkin"
+              },
+              {
+                "method": "GET",
+                "path": "/leaderboard/top"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "stripe-payments": {
+      "category": "payments",
+      "name": "stripe-payments",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\stripe-payments",
+      "config": {},
+      "files": {
+        "config\\plans.js": {
+          "size": 7868,
+          "modified": "2026-01-08T13:05:46.312Z",
+          "hash": "a47a2596",
+          "lines": 291
+        },
+        "module.json": {
+          "size": 242,
+          "modified": "2026-01-08T13:05:46.313Z",
+          "hash": "fa7324c6",
+          "lines": 12
+        },
+        "routes\\stripe.js": {
+          "size": 14228,
+          "modified": "2026-01-08T13:05:46.311Z",
+          "hash": "2deb96a3",
+          "lines": 408
+        },
+        "routes\\subscription.js": {
+          "size": 0,
+          "modified": "2026-01-08T13:05:46.312Z",
+          "hash": "d41d8cd9",
+          "lines": 1
+        },
+        "services\\stripe.js": {
+          "size": 2382,
+          "modified": "2026-01-08T13:05:46.312Z",
+          "hash": "a06bbe90",
+          "lines": 71
+        }
+      },
+      "fileCount": 5,
+      "totalLines": 783,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "stripe.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/plans"
+              },
+              {
+                "method": "POST",
+                "path": "/create-checkout-session"
+              },
+              {
+                "method": "GET",
+                "path": "/subscription"
+              },
+              {
+                "method": "POST",
+                "path": "/create-portal-session"
+              },
+              {
+                "method": "POST",
+                "path": "/portal-session"
+              },
+              {
+                "method": "GET",
+                "path": "/scan-limit"
+              },
+              {
+                "method": "POST",
+                "path": "/webhook"
+              }
+            ]
+          },
+          {
+            "file": "subscription.js",
+            "endpoints": []
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "surveys": {
+      "category": "other",
+      "name": "surveys",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\surveys",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 163,
+          "modified": "2026-01-12T00:52:30.957Z",
+          "hash": "cc24647f",
+          "lines": 10
+        },
+        "routes\\surveys.js": {
+          "size": 3605,
+          "modified": "2026-01-12T00:52:31.106Z",
+          "hash": "8a0bc460",
+          "lines": 136
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 146,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "surveys.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/available/:userId"
+              },
+              {
+                "method": "POST",
+                "path": "/start/:surveyId"
+              },
+              {
+                "method": "POST",
+                "path": "/complete"
+              },
+              {
+                "method": "GET",
+                "path": "/history/:userId"
+              },
+              {
+                "method": "GET",
+                "path": "/stats/:userId"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "tasks": {
+      "category": "productivity",
+      "name": "tasks",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\tasks",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 156,
+          "modified": "2026-01-08T13:05:46.361Z",
+          "hash": "e3866097",
+          "lines": 9
+        },
+        "routes\\tasks.js": {
+          "size": 13492,
+          "modified": "2026-01-08T13:05:46.360Z",
+          "hash": "9971961e",
+          "lines": 382
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 391,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "tasks.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/config"
+              },
+              {
+                "method": "GET",
+                "path": "/family/:familyId"
+              },
+              {
+                "method": "PUT",
+                "path": "/family/:familyId"
+              },
+              {
+                "method": "GET",
+                "path": "/devices/:familyId"
+              },
+              {
+                "method": "POST",
+                "path": "/devices/:familyId"
+              },
+              {
+                "method": "PUT",
+                "path": "/devices/:deviceId"
+              },
+              {
+                "method": "DELETE",
+                "path": "/devices/:deviceId"
+              },
+              {
+                "method": "POST",
+                "path": "/devices/:deviceId/control"
+              },
+              {
+                "method": "GET",
+                "path": "/automations/:familyId"
+              },
+              {
+                "method": "POST",
+                "path": "/automations/:familyId"
+              },
+              {
+                "method": "PUT",
+                "path": "/automations/:automationId"
+              },
+              {
+                "method": "DELETE",
+                "path": "/automations/:automationId"
+              },
+              {
+                "method": "POST",
+                "path": "/automations/:automationId/execute"
+              },
+              {
+                "method": "GET",
+                "path": "/predictions/:familyId"
+              },
+              {
+                "method": "POST",
+                "path": "/predictions/:familyId/generate"
+              },
+              {
+                "method": "POST",
+                "path": "/ai/command"
+              },
+              {
+                "method": "GET",
+                "path": "/ai/patterns/:familyId"
+              },
+              {
+                "method": "POST",
+                "path": "/ai/learn"
+              },
+              {
+                "method": "GET",
+                "path": "/energy/:familyId"
+              },
+              {
+                "method": "GET",
+                "path": "/energy/:familyId/history"
+              },
+              {
+                "method": "POST",
+                "path": "/energy/:familyId/optimize"
+              },
+              {
+                "method": "GET",
+                "path": "/security/:familyId"
+              },
+              {
+                "method": "POST",
+                "path": "/security/:familyId/arm"
+              },
+              {
+                "method": "POST",
+                "path": "/security/:familyId/disarm"
+              },
+              {
+                "method": "GET",
+                "path": "/security/:familyId/events"
+              },
+              {
+                "method": "POST",
+                "path": "/security/emergency"
+              },
+              {
+                "method": "GET",
+                "path": "/health/:familyId"
+              },
+              {
+                "method": "POST",
+                "path": "/health/:familyId/update"
+              },
+              {
+                "method": "GET",
+                "path": "/health/:familyId/alerts"
+              },
+              {
+                "method": "GET",
+                "path": "/supplies/:familyId"
+              },
+              {
+                "method": "POST",
+                "path": "/supplies/:familyId/order"
+              },
+              {
+                "method": "PUT",
+                "path": "/supplies/:familyId/update"
+              },
+              {
+                "method": "GET",
+                "path": "/vehicles/:familyId"
+              },
+              {
+                "method": "POST",
+                "path": "/vehicles/:familyId/control"
+              },
+              {
+                "method": "GET",
+                "path": "/maintenance/:familyId"
+              },
+              {
+                "method": "POST",
+                "path": "/maintenance/:familyId/complete"
+              },
+              {
+                "method": "POST",
+                "path": "/sync/:familyId"
+              },
+              {
+                "method": "GET",
+                "path": "/sync/:familyId/status"
+              },
+              {
+                "method": "GET",
+                "path": "/integrations/:familyId"
+              },
+              {
+                "method": "POST",
+                "path": "/integrations/:familyId/connect"
+              },
+              {
+                "method": "DELETE",
+                "path": "/integrations/:familyId/:apiName"
+              },
+              {
+                "method": "POST",
+                "path": "/integrations/:familyId/test"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "transfers": {
+      "category": "collectibles",
+      "name": "transfers",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\transfers",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 159,
+          "modified": "2026-01-08T13:05:46.332Z",
+          "hash": "ca105efd",
+          "lines": 9
+        },
+        "routes\\transfer.js": {
+          "size": 4270,
+          "modified": "2026-01-08T13:05:46.332Z",
+          "hash": "70d69e0a",
+          "lines": 152
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 161,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "transfer.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/validate/:code"
+              },
+              {
+                "method": "POST",
+                "path": "/claim/:code"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "user-balance": {
+      "category": "other",
+      "name": "user-balance",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\user-balance",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 168,
+          "modified": "2026-01-12T01:00:58.627Z",
+          "hash": "ffe6fcd4",
+          "lines": 10
+        },
+        "routes\\balance.js": {
+          "size": 3643,
+          "modified": "2026-01-12T01:00:58.768Z",
+          "hash": "fc17ccf4",
+          "lines": 145
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 155,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "balance.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/:userId"
+              },
+              {
+                "method": "POST",
+                "path": "/:userId/credit"
+              },
+              {
+                "method": "POST",
+                "path": "/:userId/debit"
+              },
+              {
+                "method": "GET",
+                "path": "/:userId/transactions"
+              },
+              {
+                "method": "GET",
+                "path": "/:userId/earnings"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    },
+    "vendor-system": {
+      "category": "collectibles",
+      "name": "vendor-system",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\backend\\vendor-system",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 191,
+          "modified": "2026-01-08T13:05:46.329Z",
+          "hash": "5d3f26fc",
+          "lines": 10
+        },
+        "routes\\vendor-sales.js": {
+          "size": 30831,
+          "modified": "2026-01-08T13:05:46.329Z",
+          "hash": "99ac5ca4",
+          "lines": 987
+        },
+        "routes\\vendor.js": {
+          "size": 22400,
+          "modified": "2026-01-08T13:05:46.328Z",
+          "hash": "abd988b4",
+          "lines": 719
+        }
+      },
+      "fileCount": 3,
+      "totalLines": 1716,
+      "dependencies": [],
+      "exports": {
+        "routes": [
+          {
+            "file": "vendor-sales.js",
+            "endpoints": [
+              {
+                "method": "POST",
+                "path": "/sales/mark-sold"
+              },
+              {
+                "method": "GET",
+                "path": "/sales/history"
+              },
+              {
+                "method": "GET",
+                "path": "/sales/summary"
+              },
+              {
+                "method": "POST",
+                "path": "/shows/create"
+              },
+              {
+                "method": "POST",
+                "path": "/shows/:id/snapshot"
+              },
+              {
+                "method": "POST",
+                "path": "/shows/:id/end"
+              },
+              {
+                "method": "GET",
+                "path": "/shows"
+              },
+              {
+                "method": "GET",
+                "path": "/shows/:id"
+              },
+              {
+                "method": "GET",
+                "path": "/shows/:id/export"
+              },
+              {
+                "method": "GET",
+                "path": "/analytics/summary"
+              },
+              {
+                "method": "GET",
+                "path": "/analytics/cards-out"
+              },
+              {
+                "method": "POST",
+                "path": "/sales/unsell/:cardId"
+              },
+              {
+                "method": "DELETE",
+                "path": "/sales/clear-all"
+              },
+              {
+                "method": "DELETE",
+                "path": "/shows/:showId/clear-sales"
+              }
+            ]
+          },
+          {
+            "file": "vendor.js",
+            "endpoints": [
+              {
+                "method": "GET",
+                "path": "/showcases/card-mappings"
+              },
+              {
+                "method": "GET",
+                "path": "/showcases"
+              },
+              {
+                "method": "POST",
+                "path": "/showcases"
+              },
+              {
+                "method": "PUT",
+                "path": "/showcases/:id"
+              },
+              {
+                "method": "DELETE",
+                "path": "/showcases/:id"
+              },
+              {
+                "method": "GET",
+                "path": "/screen-config"
+              },
+              {
+                "method": "POST",
+                "path": "/screen-config"
+              },
+              {
+                "method": "GET",
+                "path": "/display/:screenId"
+              },
+              {
+                "method": "GET",
+                "path": "/info/:userId"
+              },
+              {
+                "method": "GET",
+                "path": "/tablet-configs"
+              },
+              {
+                "method": "POST",
+                "path": "/tablet-config"
+              },
+              {
+                "method": "DELETE",
+                "path": "/tablet-config/:id"
+              }
+            ]
+          }
+        ],
+        "middleware": [],
+        "services": []
+      }
+    }
+  },
+  "frontendModules": {
+    "admin-panel": {
+      "category": "other",
+      "name": "admin-panel",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\admin-panel",
+      "config": {},
+      "files": {
+        "components\\admin\\Dashboard.js": {
+          "size": 50972,
+          "modified": "2026-01-08T13:05:46.419Z",
+          "hash": "ceecbab3",
+          "lines": 1113
+        },
+        "components\\admin\\SettingsPanel.js": {
+          "size": 75584,
+          "modified": "2026-01-08T13:05:46.422Z",
+          "hash": "77b3b213",
+          "lines": 1648
+        },
+        "module.json": {
+          "size": 214,
+          "modified": "2026-01-08T13:05:46.423Z",
+          "hash": "fd1b8881",
+          "lines": 10
+        }
+      },
+      "fileCount": 3,
+      "totalLines": 2771,
+      "components": [],
+      "dependencies": []
+    },
+    "auth-context": {
+      "category": "other",
+      "name": "auth-context",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\auth-context",
+      "config": {},
+      "files": {
+        "api\\auth.js": {
+          "size": 426,
+          "modified": "2026-01-08T13:05:46.357Z",
+          "hash": "533fa650",
+          "lines": 13
+        },
+        "context\\AuthContext.jsx": {
+          "size": 4175,
+          "modified": "2026-01-08T13:05:46.356Z",
+          "hash": "04a5c81b",
+          "lines": 119
+        },
+        "hooks\\useAuth.js": {
+          "size": 0,
+          "modified": "2026-01-08T13:05:46.356Z",
+          "hash": "d41d8cd9",
+          "lines": 1
+        },
+        "module.json": {
+          "size": 211,
+          "modified": "2026-01-08T13:05:46.357Z",
+          "hash": "a31dcf62",
+          "lines": 11
+        }
+      },
+      "fileCount": 4,
+      "totalLines": 144,
+      "components": [
+        {
+          "name": "AuthContext",
+          "file": "context\\AuthContext.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect",
+            "useContext"
+          ],
+          "hasStyles": false
+        }
+      ],
+      "dependencies": []
+    },
+    "auth-pages": {
+      "category": "other",
+      "name": "auth-pages",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\auth-pages",
+      "config": {},
+      "files": {
+        "components\\AuthProvider.jsx": {
+          "size": 3192,
+          "modified": "2026-01-12T16:58:20.300Z",
+          "hash": "cf65f053",
+          "lines": 124
+        },
+        "components\\LoginPage.jsx": {
+          "size": 6396,
+          "modified": "2026-01-12T17:05:54.401Z",
+          "hash": "b2bb270f",
+          "lines": 256
+        },
+        "components\\ProtectedRoute.jsx": {
+          "size": 1220,
+          "modified": "2026-01-12T17:05:18.535Z",
+          "hash": "f623eb2d",
+          "lines": 55
+        },
+        "components\\RegisterPage.jsx": {
+          "size": 8799,
+          "modified": "2026-01-12T17:06:32.593Z",
+          "hash": "41bf188a",
+          "lines": 329
+        },
+        "hooks\\useAuth.js": {
+          "size": 158,
+          "modified": "2026-01-12T17:08:00.216Z",
+          "hash": "ce7c0693",
+          "lines": 6
+        },
+        "index.js": {
+          "size": 287,
+          "modified": "2026-01-12T17:08:16.085Z",
+          "hash": "b31fa497",
+          "lines": 8
+        },
+        "module.json": {
+          "size": 688,
+          "modified": "2026-01-12T16:57:52.110Z",
+          "hash": "d41bba5a",
+          "lines": 25
+        }
+      },
+      "fileCount": 7,
+      "totalLines": 803,
+      "components": [
+        {
+          "name": "AuthProvider",
+          "file": "components\\AuthProvider.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect",
+            "useContext"
+          ],
+          "hasStyles": false
+        },
+        {
+          "name": "LoginPage",
+          "file": "components\\LoginPage.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "ProtectedRoute",
+          "file": "components\\ProtectedRoute.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        },
+        {
+          "name": "RegisterPage",
+          "file": "components\\RegisterPage.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "balance-display": {
+      "category": "other",
+      "name": "balance-display",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\balance-display",
+      "config": {},
+      "files": {
+        "components\\wallet\\BalanceDisplay.jsx": {
+          "size": 2333,
+          "modified": "2026-01-12T01:10:03.032Z",
+          "hash": "ebdb4a7a",
+          "lines": 108
+        },
+        "components\\wallet\\CashoutFlow.jsx": {
+          "size": 7290,
+          "modified": "2026-01-12T01:10:03.434Z",
+          "hash": "565064e5",
+          "lines": 277
+        },
+        "components\\wallet\\TransactionList.jsx": {
+          "size": 3279,
+          "modified": "2026-01-12T01:10:03.160Z",
+          "hash": "052b2b06",
+          "lines": 134
+        },
+        "module.json": {
+          "size": 277,
+          "modified": "2026-01-12T01:10:02.919Z",
+          "hash": "d74a04b1",
+          "lines": 12
+        }
+      },
+      "fileCount": 4,
+      "totalLines": 531,
+      "components": [
+        {
+          "name": "BalanceDisplay",
+          "file": "components\\wallet\\BalanceDisplay.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        },
+        {
+          "name": "CashoutFlow",
+          "file": "components\\wallet\\CashoutFlow.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "TransactionList",
+          "file": "components\\wallet\\TransactionList.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "business-admin": {
+      "category": "other",
+      "name": "business-admin",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\business-admin",
+      "config": {},
+      "files": {
+        "components\\AdminLayout.jsx": {
+          "size": 7153,
+          "modified": "2026-01-11T19:43:46.091Z",
+          "hash": "334890b5",
+          "lines": 296
+        },
+        "components\\AdminSidebar.jsx": {
+          "size": 11728,
+          "modified": "2026-01-11T19:32:07.573Z",
+          "hash": "6769aa0d",
+          "lines": 428
+        },
+        "components\\ai\\AIChat.jsx": {
+          "size": 17977,
+          "modified": "2026-01-11T16:10:39.099Z",
+          "hash": "bb21f02d",
+          "lines": 534
+        },
+        "components\\ai\\AICompetitors.jsx": {
+          "size": 24996,
+          "modified": "2026-01-11T16:15:37.454Z",
+          "hash": "46957f62",
+          "lines": 823
+        },
+        "components\\ai\\AIHistory.jsx": {
+          "size": 29489,
+          "modified": "2026-01-11T16:22:41.391Z",
+          "hash": "ba9a0f12",
+          "lines": 954
+        },
+        "components\\ai\\AIInsights.jsx": {
+          "size": 21300,
+          "modified": "2026-01-11T16:13:41.441Z",
+          "hash": "0fb0ea79",
+          "lines": 727
+        },
+        "components\\ai\\AILocalPulse.jsx": {
+          "size": 27888,
+          "modified": "2026-01-11T16:19:15.046Z",
+          "hash": "3e53f18c",
+          "lines": 983
+        },
+        "components\\ai\\AIManagerPage.jsx": {
+          "size": 10405,
+          "modified": "2026-01-11T16:08:47.185Z",
+          "hash": "b14b6e35",
+          "lines": 375
+        },
+        "components\\ai\\AIPreview.jsx": {
+          "size": 23345,
+          "modified": "2026-01-11T16:12:09.042Z",
+          "hash": "b3d3a672",
+          "lines": 792
+        },
+        "components\\ai\\AITasks.jsx": {
+          "size": 23236,
+          "modified": "2026-01-11T16:20:28.413Z",
+          "hash": "1d89e2c3",
+          "lines": 771
+        },
+        "components\\ai\\index.js": {
+          "size": 461,
+          "modified": "2026-01-11T19:42:02.577Z",
+          "hash": "03d681ef",
+          "lines": 16
+        },
+        "components\\AIManager.jsx": {
+          "size": 14025,
+          "modified": "2026-01-11T15:18:19.712Z",
+          "hash": "309abc76",
+          "lines": 535
+        },
+        "components\\analytics\\AnalyticsCustomers.jsx": {
+          "size": 36435,
+          "modified": "2026-01-11T17:17:16.772Z",
+          "hash": "680ee377",
+          "lines": 1156
+        },
+        "components\\analytics\\AnalyticsDashboard.jsx": {
+          "size": 32038,
+          "modified": "2026-01-11T17:11:17.589Z",
+          "hash": "09b8be0f",
+          "lines": 1054
+        },
+        "components\\analytics\\AnalyticsProducts.jsx": {
+          "size": 32337,
+          "modified": "2026-01-11T17:19:24.768Z",
+          "hash": "48fd0c74",
+          "lines": 1029
+        },
+        "components\\analytics\\AnalyticsReports.jsx": {
+          "size": 29229,
+          "modified": "2026-01-11T18:46:36.127Z",
+          "hash": "8217ccfb",
+          "lines": 979
+        },
+        "components\\analytics\\AnalyticsSales.jsx": {
+          "size": 32279,
+          "modified": "2026-01-11T17:14:01.796Z",
+          "hash": "59cf5cdf",
+          "lines": 1066
+        },
+        "components\\analytics\\index.js": {
+          "size": 566,
+          "modified": "2026-01-11T19:42:02.502Z",
+          "hash": "9940fdd0",
+          "lines": 17
+        },
+        "components\\analytics\\TrafficAnalytics.jsx": {
+          "size": 36033,
+          "modified": "2026-01-11T17:22:05.136Z",
+          "hash": "e44c28b7",
+          "lines": 1179
+        },
+        "components\\AnalyticsPage.jsx": {
+          "size": 23280,
+          "modified": "2026-01-11T15:25:26.801Z",
+          "hash": "06dbae3d",
+          "lines": 843
+        },
+        "components\\AssetsManager.jsx": {
+          "size": 28283,
+          "modified": "2026-01-11T15:19:51.768Z",
+          "hash": "ec476721",
+          "lines": 1034
+        },
+        "components\\BillingPage.jsx": {
+          "size": 25485,
+          "modified": "2026-01-11T15:32:16.422Z",
+          "hash": "656bb8d8",
+          "lines": 913
+        },
+        "components\\customers\\CustomerActivity.jsx": {
+          "size": 25086,
+          "modified": "2026-01-11T17:46:12.066Z",
+          "hash": "edff890e",
+          "lines": 835
+        },
+        "components\\customers\\CustomerCommunication.jsx": {
+          "size": 42307,
+          "modified": "2026-01-11T17:48:54.232Z",
+          "hash": "b7ea61b9",
+          "lines": 1417
+        },
+        "components\\customers\\CustomerDetail.jsx": {
+          "size": 39808,
+          "modified": "2026-01-11T16:39:49.631Z",
+          "hash": "b3ad7786",
+          "lines": 1305
+        },
+        "components\\customers\\CustomerFilters.jsx": {
+          "size": 14873,
+          "modified": "2026-01-11T16:42:17.918Z",
+          "hash": "00381548",
+          "lines": 512
+        },
+        "components\\customers\\CustomerLoyalty.jsx": {
+          "size": 45177,
+          "modified": "2026-01-11T17:54:06.416Z",
+          "hash": "b70008a8",
+          "lines": 1473
+        },
+        "components\\customers\\CustomersDashboard.jsx": {
+          "size": 33665,
+          "modified": "2026-01-11T17:44:22.805Z",
+          "hash": "2ba28be3",
+          "lines": 1071
+        },
+        "components\\customers\\CustomerSegments.jsx": {
+          "size": 19952,
+          "modified": "2026-01-11T16:43:41.648Z",
+          "hash": "e30b8b63",
+          "lines": 710
+        },
+        "components\\customers\\CustomersList.jsx": {
+          "size": 29091,
+          "modified": "2026-01-11T16:37:27.186Z",
+          "hash": "0c3ceb9c",
+          "lines": 932
+        },
+        "components\\customers\\index.js": {
+          "size": 650,
+          "modified": "2026-01-11T19:42:02.156Z",
+          "hash": "25afe657",
+          "lines": 19
+        },
+        "components\\DashboardHome.jsx": {
+          "size": 14635,
+          "modified": "2026-01-11T15:15:17.056Z",
+          "hash": "53ba9810",
+          "lines": 545
+        },
+        "components\\HealthPage.jsx": {
+          "size": 20166,
+          "modified": "2026-01-11T15:31:12.794Z",
+          "hash": "66928584",
+          "lines": 743
+        },
+        "components\\inventory\\index.js": {
+          "size": 633,
+          "modified": "2026-01-11T19:42:02.246Z",
+          "hash": "4e44a865",
+          "lines": 19
+        },
+        "components\\inventory\\InventoryAlerts.jsx": {
+          "size": 37273,
+          "modified": "2026-01-11T16:55:57.771Z",
+          "hash": "8192efec",
+          "lines": 1212
+        },
+        "components\\inventory\\InventoryCategories.jsx": {
+          "size": 25965,
+          "modified": "2026-01-11T16:58:29.240Z",
+          "hash": "b9a89d28",
+          "lines": 895
+        },
+        "components\\inventory\\InventoryDashboard.jsx": {
+          "size": 33747,
+          "modified": "2026-01-11T17:30:17.902Z",
+          "hash": "24cf36c2",
+          "lines": 1070
+        },
+        "components\\inventory\\InventoryDetail.jsx": {
+          "size": 48283,
+          "modified": "2026-01-11T16:52:55.995Z",
+          "hash": "43b56d3b",
+          "lines": 1537
+        },
+        "components\\inventory\\InventoryList.jsx": {
+          "size": 38224,
+          "modified": "2026-01-11T17:33:29.128Z",
+          "hash": "57a784b1",
+          "lines": 1189
+        },
+        "components\\inventory\\InventoryLocations.jsx": {
+          "size": 38765,
+          "modified": "2026-01-11T17:38:23.533Z",
+          "hash": "f08daf03",
+          "lines": 1311
+        },
+        "components\\inventory\\InventoryMovements.jsx": {
+          "size": 30980,
+          "modified": "2026-01-11T17:35:40.099Z",
+          "hash": "9bbbbd4f",
+          "lines": 1056
+        },
+        "components\\inventory\\InventoryPage.jsx": {
+          "size": 38363,
+          "modified": "2026-01-11T16:47:17.290Z",
+          "hash": "6f6912dd",
+          "lines": 1211
+        },
+        "components\\marketing\\AutomationFlows.jsx": {
+          "size": 35041,
+          "modified": "2026-01-11T18:36:04.256Z",
+          "hash": "4f8bb393",
+          "lines": 1123
+        },
+        "components\\marketing\\CampaignBuilder.jsx": {
+          "size": 57076,
+          "modified": "2026-01-11T18:29:15.153Z",
+          "hash": "e3ad6a4b",
+          "lines": 1912
+        },
+        "components\\marketing\\CampaignList.jsx": {
+          "size": 40165,
+          "modified": "2026-01-11T18:25:38.831Z",
+          "hash": "34285635",
+          "lines": 1343
+        },
+        "components\\marketing\\EmailTemplates.jsx": {
+          "size": 50754,
+          "modified": "2026-01-11T18:39:08.873Z",
+          "hash": "f6c1a354",
+          "lines": 1754
+        },
+        "components\\marketing\\index.js": {
+          "size": 501,
+          "modified": "2026-01-11T19:42:02.648Z",
+          "hash": "db4e43bc",
+          "lines": 15
+        },
+        "components\\marketing\\MarketingDashboard.jsx": {
+          "size": 32076,
+          "modified": "2026-01-11T18:22:46.762Z",
+          "hash": "5d07d466",
+          "lines": 1102
+        },
+        "components\\marketing\\MarketingSocial.jsx": {
+          "size": 42334,
+          "modified": "2026-01-11T19:12:22.181Z",
+          "hash": "9dbe4ac2",
+          "lines": 1406
+        },
+        "components\\marketing\\PromotionsManager.jsx": {
+          "size": 44892,
+          "modified": "2026-01-11T18:32:14.053Z",
+          "hash": "77008375",
+          "lines": 1553
+        },
+        "components\\orders\\index.js": {
+          "size": 510,
+          "modified": "2026-01-11T19:42:02.417Z",
+          "hash": "14c36bfd",
+          "lines": 18
+        },
+        "components\\orders\\OrderActions.jsx": {
+          "size": 9889,
+          "modified": "2026-01-11T16:34:44.612Z",
+          "hash": "1e9e590e",
+          "lines": 374
+        },
+        "components\\orders\\OrderDetail.jsx": {
+          "size": 30721,
+          "modified": "2026-01-11T16:32:28.439Z",
+          "hash": "1002b347",
+          "lines": 1029
+        },
+        "components\\orders\\OrderFilters.jsx": {
+          "size": 15572,
+          "modified": "2026-01-11T16:33:48.874Z",
+          "hash": "8e60f550",
+          "lines": 516
+        },
+        "components\\orders\\OrderFulfillment.jsx": {
+          "size": 46686,
+          "modified": "2026-01-11T18:52:47.699Z",
+          "hash": "050155aa",
+          "lines": 1511
+        },
+        "components\\orders\\OrderReturns.jsx": {
+          "size": 37614,
+          "modified": "2026-01-11T18:55:30.746Z",
+          "hash": "01ca1bde",
+          "lines": 1228
+        },
+        "components\\orders\\OrdersDashboard.jsx": {
+          "size": 30638,
+          "modified": "2026-01-11T16:27:43.581Z",
+          "hash": "f0d3bb2c",
+          "lines": 948
+        },
+        "components\\orders\\OrdersList.jsx": {
+          "size": 35815,
+          "modified": "2026-01-11T18:49:35.183Z",
+          "hash": "825e0015",
+          "lines": 1171
+        },
+        "components\\products\\index.js": {
+          "size": 618,
+          "modified": "2026-01-11T19:42:02.327Z",
+          "hash": "d265d81f",
+          "lines": 19
+        },
+        "components\\products\\ProductCategories.jsx": {
+          "size": 45672,
+          "modified": "2026-01-11T18:07:26.588Z",
+          "hash": "d5e0e7fe",
+          "lines": 1498
+        },
+        "components\\products\\ProductDetail.jsx": {
+          "size": 54677,
+          "modified": "2026-01-11T18:03:46.924Z",
+          "hash": "d41bbaf4",
+          "lines": 1684
+        },
+        "components\\products\\ProductForm.jsx": {
+          "size": 49835,
+          "modified": "2026-01-11T18:58:23.955Z",
+          "hash": "9053c5d2",
+          "lines": 1560
+        },
+        "components\\products\\ProductInventory.jsx": {
+          "size": 53445,
+          "modified": "2026-01-11T19:02:02.075Z",
+          "hash": "eac8d9c5",
+          "lines": 1770
+        },
+        "components\\products\\ProductPricing.jsx": {
+          "size": 48642,
+          "modified": "2026-01-11T18:13:17.861Z",
+          "hash": "c78132d9",
+          "lines": 1536
+        },
+        "components\\products\\ProductsDashboard.jsx": {
+          "size": 33963,
+          "modified": "2026-01-11T17:58:23.418Z",
+          "hash": "917810d0",
+          "lines": 1077
+        },
+        "components\\products\\ProductsList.jsx": {
+          "size": 42779,
+          "modified": "2026-01-11T18:00:54.542Z",
+          "hash": "268d9db1",
+          "lines": 1300
+        },
+        "components\\products\\ProductVariants.jsx": {
+          "size": 41498,
+          "modified": "2026-01-11T18:09:52.989Z",
+          "hash": "83b1c018",
+          "lines": 1341
+        },
+        "components\\settings\\index.js": {
+          "size": 792,
+          "modified": "2026-01-11T19:42:02.728Z",
+          "hash": "d20ff2d5",
+          "lines": 21
+        },
+        "components\\settings\\SettingsAdvanced.jsx": {
+          "size": 26015,
+          "modified": "2026-01-11T15:56:30.779Z",
+          "hash": "59b21783",
+          "lines": 898
+        },
+        "components\\settings\\SettingsAI.jsx": {
+          "size": 30208,
+          "modified": "2026-01-11T15:43:30.874Z",
+          "hash": "0d7e0dcc",
+          "lines": 945
+        },
+        "components\\settings\\SettingsAnalytics.jsx": {
+          "size": 28204,
+          "modified": "2026-01-11T15:46:54.111Z",
+          "hash": "b27042bf",
+          "lines": 872
+        },
+        "components\\settings\\SettingsAPIs.jsx": {
+          "size": 26872,
+          "modified": "2026-01-11T15:36:53.520Z",
+          "hash": "6a179dc2",
+          "lines": 838
+        },
+        "components\\settings\\SettingsEmail.jsx": {
+          "size": 31937,
+          "modified": "2026-01-11T15:45:17.621Z",
+          "hash": "7ae12a53",
+          "lines": 927
+        },
+        "components\\settings\\SettingsGeneral.jsx": {
+          "size": 14464,
+          "modified": "2026-01-11T15:34:04.711Z",
+          "hash": "598dadea",
+          "lines": 492
+        },
+        "components\\settings\\SettingsInfra.jsx": {
+          "size": 21077,
+          "modified": "2026-01-11T15:35:17.012Z",
+          "hash": "48065681",
+          "lines": 681
+        },
+        "components\\settings\\SettingsIntegrations.jsx": {
+          "size": 17466,
+          "modified": "2026-01-11T15:54:14.271Z",
+          "hash": "9bb7a8af",
+          "lines": 558
+        },
+        "components\\settings\\SettingsPage.jsx": {
+          "size": 5929,
+          "modified": "2026-01-11T15:33:05.366Z",
+          "hash": "cba6ec58",
+          "lines": 222
+        },
+        "components\\settings\\SettingsPayments.jsx": {
+          "size": 27004,
+          "modified": "2026-01-11T15:38:23.553Z",
+          "hash": "85f59f3e",
+          "lines": 860
+        },
+        "components\\settings\\SettingsSecurity.jsx": {
+          "size": 28838,
+          "modified": "2026-01-11T15:52:58.361Z",
+          "hash": "aa9fdddf",
+          "lines": 934
+        },
+        "components\\settings\\SettingsShipping.jsx": {
+          "size": 34880,
+          "modified": "2026-01-11T15:40:12.406Z",
+          "hash": "35f1b4ef",
+          "lines": 1073
+        },
+        "components\\settings\\SettingsUsers.jsx": {
+          "size": 43821,
+          "modified": "2026-01-11T19:15:19.839Z",
+          "hash": "c66b9e81",
+          "lines": 1478
+        },
+        "hooks\\useAI.js": {
+          "size": 1376,
+          "modified": "2026-01-11T19:43:45.595Z",
+          "hash": "8cee816b",
+          "lines": 59
+        },
+        "hooks\\useApi.js": {
+          "size": 659,
+          "modified": "2026-01-11T19:39:07.322Z",
+          "hash": "5ba9577f",
+          "lines": 32
+        },
+        "hooks\\useBrain.js": {
+          "size": 2246,
+          "modified": "2026-01-12T14:10:39.539Z",
+          "hash": "df5afb6d",
+          "lines": 91
+        },
+        "hooks\\useHealth.js": {
+          "size": 1147,
+          "modified": "2026-01-11T19:43:45.474Z",
+          "hash": "efce1a59",
+          "lines": 55
+        },
+        "index.html": {
+          "size": 569,
+          "modified": "2026-01-12T13:39:31.738Z",
+          "hash": "af965b2f",
+          "lines": 16
+        },
+        "module.json": {
+          "size": 1433,
+          "modified": "2026-01-11T15:09:04.962Z",
+          "hash": "eca59ab8",
+          "lines": 41
+        },
+        "package-lock.json": {
+          "size": 74854,
+          "modified": "2026-01-11T19:34:01.338Z",
+          "hash": "01806305",
+          "lines": 2105
+        },
+        "package.json": {
+          "size": 514,
+          "modified": "2026-01-11T19:23:18.397Z",
+          "hash": "b9498380",
+          "lines": 22
+        },
+        "src\\App.jsx": {
+          "size": 6486,
+          "modified": "2026-01-11T19:25:57.363Z",
+          "hash": "c98e8c43",
+          "lines": 143
+        },
+        "src\\config\\brain.json": {
+          "size": 2233,
+          "modified": "2026-01-11T19:27:11.328Z",
+          "hash": "4d8eb45e",
+          "lines": 84
+        },
+        "src\\context\\AppContext.jsx": {
+          "size": 3582,
+          "modified": "2026-01-11T19:26:28.981Z",
+          "hash": "2d1c9b85",
+          "lines": 155
+        },
+        "src\\hooks\\useApi.js": {
+          "size": 699,
+          "modified": "2026-01-11T19:39:02.935Z",
+          "hash": "7b90ce1d",
+          "lines": 33
+        },
+        "src\\main.jsx": {
+          "size": 446,
+          "modified": "2026-01-11T19:24:41.749Z",
+          "hash": "e0549636",
+          "lines": 16
+        },
+        "src\\styles\\globals.css": {
+          "size": 3371,
+          "modified": "2026-01-11T19:25:14.223Z",
+          "hash": "723a9fc6",
+          "lines": 158
+        },
+        "vite.config.js": {
+          "size": 366,
+          "modified": "2026-01-11T19:23:50.987Z",
+          "hash": "95e2b423",
+          "lines": 17
+        }
+      },
+      "fileCount": 96,
+      "totalLines": 78180,
+      "components": [
+        {
+          "name": "AdminLayout",
+          "file": "components\\AdminLayout.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        },
+        {
+          "name": "AdminSidebar",
+          "file": "components\\AdminSidebar.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "AIChat",
+          "file": "components\\ai\\AIChat.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect",
+            "useRef"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "AICompetitors",
+          "file": "components\\ai\\AICompetitors.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "AIHistory",
+          "file": "components\\ai\\AIHistory.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "AIInsights",
+          "file": "components\\ai\\AIInsights.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "AILocalPulse",
+          "file": "components\\ai\\AILocalPulse.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "AIManagerPage",
+          "file": "components\\ai\\AIManagerPage.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "AIPreview",
+          "file": "components\\ai\\AIPreview.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "AITasks",
+          "file": "components\\ai\\AITasks.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "AIManager",
+          "file": "components\\AIManager.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect",
+            "useRef"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "AnalyticsCustomers",
+          "file": "components\\analytics\\AnalyticsCustomers.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "AnalyticsDashboard",
+          "file": "components\\analytics\\AnalyticsDashboard.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "AnalyticsProducts",
+          "file": "components\\analytics\\AnalyticsProducts.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "AnalyticsReports",
+          "file": "components\\analytics\\AnalyticsReports.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "AnalyticsSales",
+          "file": "components\\analytics\\AnalyticsSales.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "TrafficAnalytics",
+          "file": "components\\analytics\\TrafficAnalytics.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "AnalyticsPage",
+          "file": "components\\AnalyticsPage.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "AssetsManager",
+          "file": "components\\AssetsManager.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect",
+            "useCallback",
+            "useRef"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "BillingPage",
+          "file": "components\\BillingPage.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "CustomerActivity",
+          "file": "components\\customers\\CustomerActivity.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "CustomerCommunication",
+          "file": "components\\customers\\CustomerCommunication.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "CustomerDetail",
+          "file": "components\\customers\\CustomerDetail.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "CustomerFilters",
+          "file": "components\\customers\\CustomerFilters.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "CustomerLoyalty",
+          "file": "components\\customers\\CustomerLoyalty.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "CustomersDashboard",
+          "file": "components\\customers\\CustomersDashboard.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "CustomerSegments",
+          "file": "components\\customers\\CustomerSegments.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "CustomersList",
+          "file": "components\\customers\\CustomersList.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "DashboardHome",
+          "file": "components\\DashboardHome.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "HealthPage",
+          "file": "components\\HealthPage.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "InventoryAlerts",
+          "file": "components\\inventory\\InventoryAlerts.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "InventoryCategories",
+          "file": "components\\inventory\\InventoryCategories.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "InventoryDashboard",
+          "file": "components\\inventory\\InventoryDashboard.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "InventoryDetail",
+          "file": "components\\inventory\\InventoryDetail.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "InventoryList",
+          "file": "components\\inventory\\InventoryList.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect",
+            "useMemo"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "InventoryLocations",
+          "file": "components\\inventory\\InventoryLocations.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "InventoryMovements",
+          "file": "components\\inventory\\InventoryMovements.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect",
+            "useMemo"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "InventoryPage",
+          "file": "components\\inventory\\InventoryPage.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "AutomationFlows",
+          "file": "components\\marketing\\AutomationFlows.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "CampaignBuilder",
+          "file": "components\\marketing\\CampaignBuilder.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "CampaignList",
+          "file": "components\\marketing\\CampaignList.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "EmailTemplates",
+          "file": "components\\marketing\\EmailTemplates.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "MarketingDashboard",
+          "file": "components\\marketing\\MarketingDashboard.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "MarketingSocial",
+          "file": "components\\marketing\\MarketingSocial.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "PromotionsManager",
+          "file": "components\\marketing\\PromotionsManager.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "OrderActions",
+          "file": "components\\orders\\OrderActions.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "OrderDetail",
+          "file": "components\\orders\\OrderDetail.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "OrderFilters",
+          "file": "components\\orders\\OrderFilters.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "OrderFulfillment",
+          "file": "components\\orders\\OrderFulfillment.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "OrderReturns",
+          "file": "components\\orders\\OrderReturns.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "OrdersDashboard",
+          "file": "components\\orders\\OrdersDashboard.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "OrdersList",
+          "file": "components\\orders\\OrdersList.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "ProductCategories",
+          "file": "components\\products\\ProductCategories.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "ProductDetail",
+          "file": "components\\products\\ProductDetail.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "ProductForm",
+          "file": "components\\products\\ProductForm.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "ProductInventory",
+          "file": "components\\products\\ProductInventory.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "ProductPricing",
+          "file": "components\\products\\ProductPricing.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "ProductsDashboard",
+          "file": "components\\products\\ProductsDashboard.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "ProductsList",
+          "file": "components\\products\\ProductsList.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "ProductVariants",
+          "file": "components\\products\\ProductVariants.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "SettingsAdvanced",
+          "file": "components\\settings\\SettingsAdvanced.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "SettingsAI",
+          "file": "components\\settings\\SettingsAI.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "SettingsAnalytics",
+          "file": "components\\settings\\SettingsAnalytics.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "SettingsAPIs",
+          "file": "components\\settings\\SettingsAPIs.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "SettingsEmail",
+          "file": "components\\settings\\SettingsEmail.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "SettingsGeneral",
+          "file": "components\\settings\\SettingsGeneral.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "SettingsInfra",
+          "file": "components\\settings\\SettingsInfra.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "SettingsIntegrations",
+          "file": "components\\settings\\SettingsIntegrations.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "SettingsPage",
+          "file": "components\\settings\\SettingsPage.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "SettingsPayments",
+          "file": "components\\settings\\SettingsPayments.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "SettingsSecurity",
+          "file": "components\\settings\\SettingsSecurity.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "SettingsShipping",
+          "file": "components\\settings\\SettingsShipping.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "SettingsUsers",
+          "file": "components\\settings\\SettingsUsers.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "App",
+          "file": "src\\App.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": false
+        },
+        {
+          "name": "AppContext",
+          "file": "src\\context\\AppContext.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect",
+            "useContext"
+          ],
+          "hasStyles": false
+        },
+        {
+          "name": "main",
+          "file": "src\\main.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": false
+        }
+      ],
+      "dependencies": []
+    },
+    "card-components": {
+      "category": "other",
+      "name": "card-components",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\card-components",
+      "config": {},
+      "files": {
+        "components\\cards\\CardMarketplace.js": {
+          "size": 339322,
+          "modified": "2026-01-08T13:05:46.435Z",
+          "hash": "d33ba008",
+          "lines": 7726
+        },
+        "components\\cards\\CardPrice.js": {
+          "size": 12721,
+          "modified": "2026-01-08T13:05:46.432Z",
+          "hash": "dcdb79e7",
+          "lines": 374
+        },
+        "module.json": {
+          "size": 220,
+          "modified": "2026-01-08T13:05:46.435Z",
+          "hash": "73503217",
+          "lines": 10
+        }
+      },
+      "fileCount": 3,
+      "totalLines": 8110,
+      "components": [],
+      "dependencies": []
+    },
+    "checkout-flow": {
+      "category": "other",
+      "name": "checkout-flow",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\checkout-flow",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 164,
+          "modified": "2026-01-08T13:05:46.352Z",
+          "hash": "2579b0bd",
+          "lines": 9
+        },
+        "pages\\Checkout.jsx": {
+          "size": 21513,
+          "modified": "2026-01-08T13:05:46.352Z",
+          "hash": "20a0fceb",
+          "lines": 552
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 561,
+      "components": [
+        {
+          "name": "Checkout",
+          "file": "pages\\Checkout.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "collection-grid": {
+      "category": "other",
+      "name": "collection-grid",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\collection-grid",
+      "config": {},
+      "files": {
+        "components\\collection\\CollectionGrid.jsx": {
+          "size": 4031,
+          "modified": "2026-01-08T13:05:46.348Z",
+          "hash": "da0e2cf4",
+          "lines": 122
+        },
+        "module.json": {
+          "size": 222,
+          "modified": "2026-01-08T13:05:46.349Z",
+          "hash": "e18844a6",
+          "lines": 10
+        },
+        "pages\\CollectionViewer.jsx": {
+          "size": 71207,
+          "modified": "2026-01-08T13:05:46.349Z",
+          "hash": "636ed4bc",
+          "lines": 1875
+        }
+      },
+      "fileCount": 3,
+      "totalLines": 2007,
+      "components": [
+        {
+          "name": "CollectionGrid",
+          "file": "components\\collection\\CollectionGrid.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect",
+            "useRef"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "CollectionViewer",
+          "file": "pages\\CollectionViewer.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect",
+            "useContext",
+            "useMemo"
+          ],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "data-table": {
+      "category": "other",
+      "name": "data-table",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\data-table",
+      "config": {},
+      "files": {
+        "components\\data\\DataTable.jsx": {
+          "size": 4031,
+          "modified": "2026-01-08T13:05:46.347Z",
+          "hash": "da0e2cf4",
+          "lines": 122
+        },
+        "module.json": {
+          "size": 172,
+          "modified": "2026-01-08T13:05:46.348Z",
+          "hash": "8d45be9a",
+          "lines": 9
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 131,
+      "components": [
+        {
+          "name": "DataTable",
+          "file": "components\\data\\DataTable.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect",
+            "useRef"
+          ],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "device-router": {
+      "category": "other",
+      "name": "device-router",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\device-router",
+      "config": {},
+      "files": {
+        "components\\DeviceRouter.jsx": {
+          "size": 1412,
+          "modified": "2026-01-12T13:18:37.568Z",
+          "hash": "384f0afb",
+          "lines": 65
+        },
+        "components\\ResponsiveWrapper.jsx": {
+          "size": 2128,
+          "modified": "2026-01-12T13:18:44.705Z",
+          "hash": "4bf29040",
+          "lines": 86
+        },
+        "hooks\\useDeviceType.js": {
+          "size": 2357,
+          "modified": "2026-01-12T13:18:30.500Z",
+          "hash": "af6fbb56",
+          "lines": 72
+        },
+        "hooks\\useMediaQuery.js": {
+          "size": 1024,
+          "modified": "2026-01-12T13:18:23.534Z",
+          "hash": "6bda384e",
+          "lines": 41
+        },
+        "module.json": {
+          "size": 397,
+          "modified": "2026-01-12T13:18:16.893Z",
+          "hash": "5dafb8c9",
+          "lines": 15
+        }
+      },
+      "fileCount": 5,
+      "totalLines": 279,
+      "components": [
+        {
+          "name": "DeviceRouter",
+          "file": "components\\DeviceRouter.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useEffect"
+          ],
+          "hasStyles": false
+        },
+        {
+          "name": "ResponsiveWrapper",
+          "file": "components\\ResponsiveWrapper.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "file-uploader": {
+      "category": "other",
+      "name": "file-uploader",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\file-uploader",
+      "config": {},
+      "files": {
+        "components\\upload\\ImageUpload.jsx": {
+          "size": 11595,
+          "modified": "2026-01-08T13:05:46.351Z",
+          "hash": "2d2e37df",
+          "lines": 274
+        },
+        "components\\upload\\UploadModal.jsx": {
+          "size": 6543,
+          "modified": "2026-01-08T13:05:46.351Z",
+          "hash": "7cd905ff",
+          "lines": 195
+        },
+        "module.json": {
+          "size": 220,
+          "modified": "2026-01-08T13:05:46.351Z",
+          "hash": "1f3fbf2d",
+          "lines": 10
+        }
+      },
+      "fileCount": 3,
+      "totalLines": 479,
+      "components": [
+        {
+          "name": "ImageUpload",
+          "file": "components\\upload\\ImageUpload.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useRef"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "UploadModal",
+          "file": "components\\upload\\UploadModal.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "footer-section": {
+      "category": "other",
+      "name": "footer-section",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\footer-section",
+      "config": {},
+      "files": {
+        "components\\layout\\Footer.jsx": {
+          "size": 6078,
+          "modified": "2026-01-08T13:05:46.345Z",
+          "hash": "287b6621",
+          "lines": 123
+        },
+        "module.json": {
+          "size": 175,
+          "modified": "2026-01-08T13:05:46.345Z",
+          "hash": "30c8a276",
+          "lines": 9
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 132,
+      "components": [
+        {
+          "name": "Footer",
+          "file": "components\\layout\\Footer.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "header-nav": {
+      "category": "other",
+      "name": "header-nav",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\header-nav",
+      "config": {},
+      "files": {
+        "components\\layout\\Navbar.jsx": {
+          "size": 4338,
+          "modified": "2026-01-08T13:05:46.345Z",
+          "hash": "000d8ab5",
+          "lines": 89
+        },
+        "module.json": {
+          "size": 171,
+          "modified": "2026-01-08T13:05:46.345Z",
+          "hash": "3c331839",
+          "lines": 9
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 98,
+      "components": [
+        {
+          "name": "Navbar",
+          "file": "components\\layout\\Navbar.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useContext"
+          ],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "image-gallery": {
+      "category": "other",
+      "name": "image-gallery",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\image-gallery",
+      "config": {},
+      "files": {
+        "components\\media\\Gallery.jsx": {
+          "size": 11194,
+          "modified": "2026-01-08T13:05:46.355Z",
+          "hash": "ef1d670d",
+          "lines": 308
+        },
+        "module.json": {
+          "size": 174,
+          "modified": "2026-01-08T13:05:46.356Z",
+          "hash": "673c1a01",
+          "lines": 9
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 317,
+      "components": [
+        {
+          "name": "Gallery",
+          "file": "components\\media\\Gallery.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "item-detail": {
+      "category": "other",
+      "name": "item-detail",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\item-detail",
+      "config": {},
+      "files": {
+        "components\\items\\ItemDetailModal.jsx": {
+          "size": 176057,
+          "modified": "2026-01-08T13:05:46.350Z",
+          "hash": "a143456d",
+          "lines": 3422
+        },
+        "components\\items\\ItemDisplay.jsx": {
+          "size": 19374,
+          "modified": "2026-01-08T13:05:46.350Z",
+          "hash": "4d5a87b2",
+          "lines": 411
+        },
+        "module.json": {
+          "size": 220,
+          "modified": "2026-01-08T13:05:46.350Z",
+          "hash": "93dd7a7e",
+          "lines": 10
+        }
+      },
+      "fileCount": 3,
+      "totalLines": 3843,
+      "components": [
+        {
+          "name": "ItemDetailModal",
+          "file": "components\\items\\ItemDetailModal.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect",
+            "useContext",
+            "useRef"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "ItemDisplay",
+          "file": "components\\items\\ItemDisplay.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "layout-desktop": {
+      "category": "other",
+      "name": "layout-desktop",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\layout-desktop",
+      "config": {},
+      "files": {
+        "components\\DesktopGrid.jsx": {
+          "size": 625,
+          "modified": "2026-01-12T13:19:32.926Z",
+          "hash": "b1ead3c8",
+          "lines": 32
+        },
+        "components\\DesktopHeader.jsx": {
+          "size": 2725,
+          "modified": "2026-01-12T13:19:13.953Z",
+          "hash": "73f8787f",
+          "lines": 119
+        },
+        "components\\DesktopLayout.jsx": {
+          "size": 1428,
+          "modified": "2026-01-12T13:19:40.974Z",
+          "hash": "89efde68",
+          "lines": 71
+        },
+        "components\\DesktopSidebar.jsx": {
+          "size": 3780,
+          "modified": "2026-01-12T13:19:27.162Z",
+          "hash": "fe785af1",
+          "lines": 149
+        },
+        "module.json": {
+          "size": 416,
+          "modified": "2026-01-12T13:19:06.246Z",
+          "hash": "94f0c7df",
+          "lines": 15
+        }
+      },
+      "fileCount": 5,
+      "totalLines": 386,
+      "components": [
+        {
+          "name": "DesktopGrid",
+          "file": "components\\DesktopGrid.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        },
+        {
+          "name": "DesktopHeader",
+          "file": "components\\DesktopHeader.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        },
+        {
+          "name": "DesktopLayout",
+          "file": "components\\DesktopLayout.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        },
+        {
+          "name": "DesktopSidebar",
+          "file": "components\\DesktopSidebar.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "layout-mobile": {
+      "category": "other",
+      "name": "layout-mobile",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\layout-mobile",
+      "config": {},
+      "files": {
+        "components\\MobileBottomNav.jsx": {
+          "size": 2057,
+          "modified": "2026-01-12T13:20:19.880Z",
+          "hash": "ac1a5edf",
+          "lines": 86
+        },
+        "components\\MobileDrawer.jsx": {
+          "size": 1943,
+          "modified": "2026-01-12T13:20:26.507Z",
+          "hash": "209760e6",
+          "lines": 89
+        },
+        "components\\MobileHeader.jsx": {
+          "size": 1547,
+          "modified": "2026-01-12T13:20:11.614Z",
+          "hash": "44973e2c",
+          "lines": 72
+        },
+        "components\\MobileLayout.jsx": {
+          "size": 1350,
+          "modified": "2026-01-12T13:20:32.495Z",
+          "hash": "42af2112",
+          "lines": 62
+        },
+        "module.json": {
+          "size": 410,
+          "modified": "2026-01-12T13:20:07.198Z",
+          "hash": "c60df806",
+          "lines": 15
+        }
+      },
+      "fileCount": 5,
+      "totalLines": 324,
+      "components": [
+        {
+          "name": "MobileBottomNav",
+          "file": "components\\MobileBottomNav.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        },
+        {
+          "name": "MobileDrawer",
+          "file": "components\\MobileDrawer.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        },
+        {
+          "name": "MobileHeader",
+          "file": "components\\MobileHeader.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        },
+        {
+          "name": "MobileLayout",
+          "file": "components\\MobileLayout.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "level-progress": {
+      "category": "other",
+      "name": "level-progress",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\level-progress",
+      "config": {},
+      "files": {
+        "components\\gamification\\AchievementBadge.jsx": {
+          "size": 3401,
+          "modified": "2026-01-12T01:11:03.823Z",
+          "hash": "3be4b5ae",
+          "lines": 126
+        },
+        "components\\gamification\\LevelProgress.jsx": {
+          "size": 4404,
+          "modified": "2026-01-12T01:11:03.684Z",
+          "hash": "f5ee38b3",
+          "lines": 156
+        },
+        "module.json": {
+          "size": 247,
+          "modified": "2026-01-12T01:11:03.513Z",
+          "hash": "0d48b9eb",
+          "lines": 11
+        }
+      },
+      "fileCount": 3,
+      "totalLines": 293,
+      "components": [
+        {
+          "name": "AchievementBadge",
+          "file": "components\\gamification\\AchievementBadge.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        },
+        {
+          "name": "LevelProgress",
+          "file": "components\\gamification\\LevelProgress.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "login-form": {
+      "category": "other",
+      "name": "login-form",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\login-form",
+      "config": {},
+      "files": {
+        "components\\auth\\LoginForm.jsx": {
+          "size": 2032,
+          "modified": "2026-01-08T13:05:46.343Z",
+          "hash": "d36e950c",
+          "lines": 71
+        },
+        "module.json": {
+          "size": 195,
+          "modified": "2026-01-08T13:05:46.343Z",
+          "hash": "90ee9655",
+          "lines": 10
+        },
+        "pages\\Login.jsx": {
+          "size": 5352,
+          "modified": "2026-01-08T13:05:46.343Z",
+          "hash": "daac34f8",
+          "lines": 109
+        }
+      },
+      "fileCount": 3,
+      "totalLines": 190,
+      "components": [
+        {
+          "name": "LoginForm",
+          "file": "components\\auth\\LoginForm.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useContext"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "Login",
+          "file": "pages\\Login.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "marketplace-ui": {
+      "category": "other",
+      "name": "marketplace-ui",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\marketplace-ui",
+      "config": {},
+      "files": {
+        "components\\marketplace\\Filters.js": {
+          "size": 34578,
+          "modified": "2026-01-08T13:05:46.429Z",
+          "hash": "64e0e3b8",
+          "lines": 1023
+        },
+        "components\\marketplace\\Marketplace.js": {
+          "size": 13920,
+          "modified": "2026-01-08T13:05:46.428Z",
+          "hash": "8f2379cf",
+          "lines": 458
+        },
+        "components\\marketplace\\Stats.js": {
+          "size": 16192,
+          "modified": "2026-01-08T13:05:46.430Z",
+          "hash": "0ede1fe4",
+          "lines": 522
+        },
+        "module.json": {
+          "size": 264,
+          "modified": "2026-01-08T13:05:46.431Z",
+          "hash": "e141cc0b",
+          "lines": 11
+        }
+      },
+      "fileCount": 4,
+      "totalLines": 2014,
+      "components": [],
+      "dependencies": []
+    },
+    "modal-system": {
+      "category": "other",
+      "name": "modal-system",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\modal-system",
+      "config": {},
+      "files": {
+        "components\\ui\\Modal.jsx": {
+          "size": 1761,
+          "modified": "2026-01-08T13:05:46.346Z",
+          "hash": "183cc49a",
+          "lines": 47
+        },
+        "module.json": {
+          "size": 168,
+          "modified": "2026-01-08T13:05:46.346Z",
+          "hash": "f9b2933f",
+          "lines": 9
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 56,
+      "components": [
+        {
+          "name": "Modal",
+          "file": "components\\ui\\Modal.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "onboarding-wizard": {
+      "category": "other",
+      "name": "onboarding-wizard",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\onboarding-wizard",
+      "config": {},
+      "files": {
+        "components\\CompletionStep.jsx": {
+          "size": 3314,
+          "modified": "2026-01-12T13:15:43.270Z",
+          "hash": "850f65f8",
+          "lines": 134
+        },
+        "components\\PayoutSetupStep.jsx": {
+          "size": 5403,
+          "modified": "2026-01-12T13:15:34.381Z",
+          "hash": "831eb725",
+          "lines": 206
+        },
+        "components\\PhoneVerifyStep.jsx": {
+          "size": 6452,
+          "modified": "2026-01-12T13:15:19.359Z",
+          "hash": "8ff202e9",
+          "lines": 250
+        },
+        "components\\ProfileStep.jsx": {
+          "size": 6353,
+          "modified": "2026-01-12T13:14:57.933Z",
+          "hash": "a4668430",
+          "lines": 242
+        },
+        "components\\StepIndicator.jsx": {
+          "size": 2561,
+          "modified": "2026-01-12T13:14:42.812Z",
+          "hash": "867d0401",
+          "lines": 101
+        },
+        "module.json": {
+          "size": 487,
+          "modified": "2026-01-12T13:14:33.894Z",
+          "hash": "0927eaab",
+          "lines": 17
+        },
+        "pages\\OnboardingWizard.jsx": {
+          "size": 5060,
+          "modified": "2026-01-12T13:16:00.640Z",
+          "hash": "cbd44758",
+          "lines": 172
+        }
+      },
+      "fileCount": 7,
+      "totalLines": 1122,
+      "components": [
+        {
+          "name": "CompletionStep",
+          "file": "components\\CompletionStep.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        },
+        {
+          "name": "PayoutSetupStep",
+          "file": "components\\PayoutSetupStep.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "PhoneVerifyStep",
+          "file": "components\\PhoneVerifyStep.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "ProfileStep",
+          "file": "components\\ProfileStep.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "StepIndicator",
+          "file": "components\\StepIndicator.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        },
+        {
+          "name": "OnboardingWizard",
+          "file": "pages\\OnboardingWizard.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "pricing-table": {
+      "category": "other",
+      "name": "pricing-table",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\pricing-table",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 163,
+          "modified": "2026-01-08T13:05:46.353Z",
+          "hash": "07792278",
+          "lines": 9
+        },
+        "pages\\Pricing.jsx": {
+          "size": 16386,
+          "modified": "2026-01-08T13:05:46.353Z",
+          "hash": "0292dd8d",
+          "lines": 370
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 379,
+      "components": [
+        {
+          "name": "Pricing",
+          "file": "pages\\Pricing.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "register-form": {
+      "category": "other",
+      "name": "register-form",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\register-form",
+      "config": {},
+      "files": {
+        "components\\auth\\RegisterForm.jsx": {
+          "size": 1943,
+          "modified": "2026-01-08T13:05:46.344Z",
+          "hash": "7ba31e36",
+          "lines": 73
+        },
+        "module.json": {
+          "size": 204,
+          "modified": "2026-01-08T13:05:46.344Z",
+          "hash": "d742b3f1",
+          "lines": 10
+        },
+        "pages\\Register.jsx": {
+          "size": 14198,
+          "modified": "2026-01-08T13:05:46.344Z",
+          "hash": "663a4d89",
+          "lines": 351
+        }
+      },
+      "fileCount": 3,
+      "totalLines": 434,
+      "components": [
+        {
+          "name": "RegisterForm",
+          "file": "components\\auth\\RegisterForm.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useContext"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "Register",
+          "file": "pages\\Register.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "responsive-preview": {
+      "category": "other",
+      "name": "responsive-preview",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\responsive-preview",
+      "config": {},
+      "files": {
+        "components\\DeviceFrame.jsx": {
+          "size": 3001,
+          "modified": "2026-01-12T13:17:36.116Z",
+          "hash": "6a5b02a5",
+          "lines": 118
+        },
+        "components\\ResponsivePreview.jsx": {
+          "size": 3749,
+          "modified": "2026-01-12T13:17:48.205Z",
+          "hash": "c8c56abf",
+          "lines": 140
+        },
+        "components\\ViewToggle.jsx": {
+          "size": 1918,
+          "modified": "2026-01-12T13:17:28.837Z",
+          "hash": "69d6cc0e",
+          "lines": 79
+        },
+        "module.json": {
+          "size": 372,
+          "modified": "2026-01-12T13:17:21.721Z",
+          "hash": "8a57ec51",
+          "lines": 14
+        }
+      },
+      "fileCount": 4,
+      "totalLines": 351,
+      "components": [
+        {
+          "name": "DeviceFrame",
+          "file": "components\\DeviceFrame.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        },
+        {
+          "name": "ResponsivePreview",
+          "file": "components\\ResponsivePreview.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        },
+        {
+          "name": "ViewToggle",
+          "file": "components\\ViewToggle.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "search-filter": {
+      "category": "other",
+      "name": "search-filter",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\search-filter",
+      "config": {},
+      "files": {
+        "components\\search\\SearchFilter.jsx": {
+          "size": 25907,
+          "modified": "2026-01-08T13:05:46.355Z",
+          "hash": "4b44de8a",
+          "lines": 544
+        },
+        "module.json": {
+          "size": 180,
+          "modified": "2026-01-08T13:05:46.355Z",
+          "hash": "fdf9306f",
+          "lines": 9
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 553,
+      "components": [
+        {
+          "name": "SearchFilter",
+          "file": "components\\search\\SearchFilter.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState"
+          ],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "settings-panel": {
+      "category": "other",
+      "name": "settings-panel",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\settings-panel",
+      "config": {},
+      "files": {
+        "module.json": {
+          "size": 165,
+          "modified": "2026-01-08T13:05:46.354Z",
+          "hash": "9bc16f58",
+          "lines": 9
+        },
+        "pages\\Settings.jsx": {
+          "size": 103167,
+          "modified": "2026-01-08T13:05:46.354Z",
+          "hash": "ca74ec3f",
+          "lines": 2043
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 2052,
+      "components": [
+        {
+          "name": "Settings",
+          "file": "pages\\Settings.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect",
+            "useContext"
+          ],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "spin-wheel": {
+      "category": "other",
+      "name": "spin-wheel",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\spin-wheel",
+      "config": {},
+      "files": {
+        "components\\gamification\\SpinWheel.jsx": {
+          "size": 5683,
+          "modified": "2026-01-12T01:03:34.105Z",
+          "hash": "47ea5aa7",
+          "lines": 182
+        },
+        "module.json": {
+          "size": 187,
+          "modified": "2026-01-12T01:03:33.874Z",
+          "hash": "9939d256",
+          "lines": 10
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 192,
+      "components": [
+        {
+          "name": "SpinWheel",
+          "file": "components\\gamification\\SpinWheel.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useRef"
+          ],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "stat-cards": {
+      "category": "other",
+      "name": "stat-cards",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\stat-cards",
+      "config": {},
+      "files": {
+        "components\\dashboard\\StatCards.jsx": {
+          "size": 4831,
+          "modified": "2026-01-08T13:05:46.346Z",
+          "hash": "cf79550b",
+          "lines": 102
+        },
+        "components\\dashboard\\UsageWidget.jsx": {
+          "size": 5607,
+          "modified": "2026-01-08T13:05:46.346Z",
+          "hash": "3a3a4a20",
+          "lines": 132
+        },
+        "module.json": {
+          "size": 221,
+          "modified": "2026-01-08T13:05:46.347Z",
+          "hash": "cce68563",
+          "lines": 10
+        }
+      },
+      "fileCount": 3,
+      "totalLines": 244,
+      "components": [
+        {
+          "name": "StatCards",
+          "file": "components\\dashboard\\StatCards.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        },
+        {
+          "name": "UsageWidget",
+          "file": "components\\dashboard\\UsageWidget.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "streak-tracker": {
+      "category": "other",
+      "name": "streak-tracker",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\streak-tracker",
+      "config": {},
+      "files": {
+        "components\\gamification\\StreakTracker.jsx": {
+          "size": 5022,
+          "modified": "2026-01-12T01:06:20.903Z",
+          "hash": "b07a6157",
+          "lines": 185
+        },
+        "module.json": {
+          "size": 195,
+          "modified": "2026-01-12T01:06:20.708Z",
+          "hash": "f5104637",
+          "lines": 10
+        }
+      },
+      "fileCount": 2,
+      "totalLines": 195,
+      "components": [
+        {
+          "name": "StreakTracker",
+          "file": "components\\gamification\\StreakTracker.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "survey-card": {
+      "category": "other",
+      "name": "survey-card",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\survey-card",
+      "config": {},
+      "files": {
+        "components\\surveys\\SurveyCard.jsx": {
+          "size": 2696,
+          "modified": "2026-01-12T01:08:41.625Z",
+          "hash": "8bd1e639",
+          "lines": 115
+        },
+        "components\\surveys\\SurveyList.jsx": {
+          "size": 2389,
+          "modified": "2026-01-12T01:08:41.731Z",
+          "hash": "17390131",
+          "lines": 111
+        },
+        "module.json": {
+          "size": 225,
+          "modified": "2026-01-12T01:08:41.520Z",
+          "hash": "28af06d1",
+          "lines": 11
+        }
+      },
+      "fileCount": 3,
+      "totalLines": 237,
+      "components": [
+        {
+          "name": "SurveyCard",
+          "file": "components\\surveys\\SurveyCard.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        },
+        {
+          "name": "SurveyList",
+          "file": "components\\surveys\\SurveyList.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "trading-hub": {
+      "category": "other",
+      "name": "trading-hub",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\trading-hub",
+      "config": {},
+      "files": {
+        "components\\trading\\Calculator.js": {
+          "size": 40868,
+          "modified": "2026-01-08T13:05:46.426Z",
+          "hash": "c6a5648c",
+          "lines": 976
+        },
+        "components\\trading\\TradingHub.js": {
+          "size": 61360,
+          "modified": "2026-01-08T13:05:46.425Z",
+          "hash": "34f7f778",
+          "lines": 1491
+        },
+        "module.json": {
+          "size": 216,
+          "modified": "2026-01-08T13:05:46.426Z",
+          "hash": "32ee7f9d",
+          "lines": 10
+        }
+      },
+      "fileCount": 3,
+      "totalLines": 2477,
+      "components": [],
+      "dependencies": []
+    },
+    "verification-badge": {
+      "category": "other",
+      "name": "verification-badge",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\verification-badge",
+      "config": {},
+      "files": {
+        "components\\TrustScore.jsx": {
+          "size": 2224,
+          "modified": "2026-01-12T13:16:40.603Z",
+          "hash": "2bc3c9ad",
+          "lines": 93
+        },
+        "components\\VerificationBadge.jsx": {
+          "size": 2088,
+          "modified": "2026-01-12T13:16:33.207Z",
+          "hash": "e7283083",
+          "lines": 77
+        },
+        "components\\VerificationPrompt.jsx": {
+          "size": 3407,
+          "modified": "2026-01-12T13:16:51.249Z",
+          "hash": "65831a92",
+          "lines": 140
+        },
+        "module.json": {
+          "size": 360,
+          "modified": "2026-01-12T13:16:26.300Z",
+          "hash": "e751f668",
+          "lines": 14
+        }
+      },
+      "fileCount": 4,
+      "totalLines": 324,
+      "components": [
+        {
+          "name": "TrustScore",
+          "file": "components\\TrustScore.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        },
+        {
+          "name": "VerificationBadge",
+          "file": "components\\VerificationBadge.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        },
+        {
+          "name": "VerificationPrompt",
+          "file": "components\\VerificationPrompt.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    },
+    "welcome-screen": {
+      "category": "other",
+      "name": "welcome-screen",
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\module-library\\frontend\\welcome-screen",
+      "config": {},
+      "files": {
+        "components\\FeatureCard.jsx": {
+          "size": 1355,
+          "modified": "2026-01-12T13:13:51.958Z",
+          "hash": "183e3545",
+          "lines": 55
+        },
+        "components\\RewardTeaser.jsx": {
+          "size": 2149,
+          "modified": "2026-01-12T13:14:01.082Z",
+          "hash": "e7691345",
+          "lines": 84
+        },
+        "components\\WelcomeHero.jsx": {
+          "size": 2161,
+          "modified": "2026-01-12T13:13:44.702Z",
+          "hash": "71c23f31",
+          "lines": 81
+        },
+        "module.json": {
+          "size": 395,
+          "modified": "2026-01-12T13:13:37.004Z",
+          "hash": "d63d8f6f",
+          "lines": 15
+        },
+        "pages\\Welcome.jsx": {
+          "size": 4127,
+          "modified": "2026-01-12T13:14:08.947Z",
+          "hash": "278279af",
+          "lines": 149
+        }
+      },
+      "fileCount": 5,
+      "totalLines": 384,
+      "components": [
+        {
+          "name": "FeatureCard",
+          "file": "components\\FeatureCard.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        },
+        {
+          "name": "RewardTeaser",
+          "file": "components\\RewardTeaser.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        },
+        {
+          "name": "WelcomeHero",
+          "file": "components\\WelcomeHero.jsx",
+          "props": null,
+          "hooksUsed": [],
+          "hasStyles": true
+        },
+        {
+          "name": "Welcome",
+          "file": "pages\\Welcome.jsx",
+          "props": null,
+          "hooksUsed": [
+            "useState",
+            "useEffect"
+          ],
+          "hasStyles": true
+        }
+      ],
+      "dependencies": []
+    }
+  },
+  "templates": {
+    "homepage\\full-image-hospitality.jsx": {
+      "size": 14405,
+      "modified": "2026-01-09T14:11:57.560Z",
+      "hash": "600319db",
+      "lines": 423
+    },
+    "homepage\\minimal-professional.jsx": {
+      "size": 10622,
+      "modified": "2026-01-09T14:11:20.999Z",
+      "hash": "9948c323",
+      "lines": 326
+    },
+    "homepage\\split-hero-saas.jsx": {
+      "size": 16543,
+      "modified": "2026-01-09T14:11:40.284Z",
+      "hash": "395cb711",
+      "lines": 493
+    },
+    "homepage-templates.cjs": {
+      "size": 38168,
+      "modified": "2026-01-09T14:17:01.101Z",
+      "hash": "ade28c33",
+      "lines": 1202,
+      "templateNames": [
+        "Minimal Professional",
+        "Split Hero SaaS",
+        "Full Image Hospitality"
+      ],
+      "industries": [
+        "law-firm",
+        "accounting",
+        "consulting",
+        "financial",
+        "saas",
+        "tech",
+        "startup",
+        "app",
+        "restaurant",
+        "hotel",
+        "real-estate",
+        "event-venue"
+      ]
+    },
+    "setup-db.js": {
+      "size": 5727,
+      "modified": "2026-01-10T20:17:16.944Z",
+      "hash": "bfd86afa",
+      "lines": 188,
+      "templateNames": [],
+      "industries": []
+    }
+  },
+  "configs": {},
+  "scripts": {
+    "assemble-project.cjs": {
+      "size": 78302,
+      "modified": "2026-01-13T15:59:49.943Z",
+      "hash": "37235bf6",
+      "lines": 2318
+    },
+    "be1st-module-extraction-map.js": {
+      "size": 39346,
+      "modified": "2026-01-08T12:51:17.873Z",
+      "hash": "1b387107",
+      "lines": 1078
+    },
+    "extract-modules.cjs": {
+      "size": 24678,
+      "modified": "2026-01-08T13:04:56.822Z",
+      "hash": "6211ab5c",
+      "lines": 933
+    },
+    "generate-devtools.cjs": {
+      "size": 48440,
+      "modified": "2026-01-08T13:29:39.487Z",
+      "hash": "2876cc43",
+      "lines": 1434
+    },
+    "module-library-devtools.html": {
+      "size": 101886,
+      "modified": "2026-01-12T01:13:22.321Z",
+      "hash": "d5abeef7",
+      "lines": 2775
+    },
+    "test-runner.cjs": {
+      "size": 9626,
+      "modified": "2026-01-09T13:54:31.511Z",
+      "hash": "b446808c",
+      "lines": 308
+    }
+  },
+  "industries": {},
+  "stats": {
+    "totalBackendModules": 43,
+    "totalFrontendModules": 34,
+    "totalModules": 77,
+    "totalTemplates": 5,
+    "totalIndustries": 0,
+    "totalScripts": 6,
+    "backendLines": 36669,
+    "frontendLines": 110593,
+    "backendFiles": 135,
+    "frontendFiles": 205,
+    "totalEndpoints": 484,
+    "totalComponents": 137,
+    "backendCategories": [
+      "gamification",
+      "core",
+      "collectibles",
+      "sports",
+      "business",
+      "productivity",
+      "other",
+      "social",
+      "family",
+      "payments",
+      "ai"
+    ],
+    "frontendCategories": [
+      "other"
+    ]
+  }
+}

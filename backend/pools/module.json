@@ -1,0 +1,9 @@
+{
+  "name": "pools",
+  "type": "backend",
+  "source": "campuswager",
+  "extractedAt": "2026-01-08T13:05:46.383Z",
+  "files": [
+    "routes/pools.js"
+  ]
+}

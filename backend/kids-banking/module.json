@@ -1,0 +1,11 @@
+{
+  "name": "kids-banking",
+  "type": "backend",
+  "source": "family-huddle",
+  "extractedAt": "2026-01-08T13:05:46.366Z",
+  "files": [
+    "routes/kids-banking.js",
+    "routes/virtual-currency.js",
+    "services/virtual-currency-engine.js"
+  ]
+}

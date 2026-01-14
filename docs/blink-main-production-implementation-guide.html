@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BE1st Master Implementation Guide</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700;800&display=swap');
+    :root { --bg:#0a0a0f; --surface:#12121a; --surface-2:#1a1a24; --border:#2a2a3a; --text:#e4e4e4; --text-muted:#888; --accent:#22c55e; --accent-2:#3b82f6; --purple:#a855f7; --orange:#f97316; --cyan:#06b6d4; --red:#ef4444; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    .header { background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%); padding: 60px 40px; text-align: center; border-bottom: 1px solid var(--border); }
+    .header h1 { font-size: 2.5rem; background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px; }
+    .header p { color: var(--text-muted); }
+    .version { display: inline-block; background: var(--accent); color: var(--bg); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin-top: 16px; }
+    .nav { position: sticky; top: 0; z-index: 100; background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 40px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+    .nav a { padding: 8px 16px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); text-decoration: none; font-size: 0.8rem; transition: all 0.2s; }
+    .nav a:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+    .nav a.current { background: var(--orange); border-color: var(--orange); color: var(--bg); }
+    .content { max-width: 1200px; margin: 0 auto; padding: 40px; }
+    .phase { margin-bottom: 60px; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .phase-header { background: var(--surface); padding: 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+    .phase-header h2 { font-size: 1.5rem; }
+    .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+    .badge-current { background: var(--orange); color: var(--bg); }
+    .badge-next { background: var(--purple); color: white; }
+    .badge-future { background: var(--border); color: var(--text-muted); }
+    .phase-body { padding: 24px; background: var(--surface-2); }
+    .section { margin-bottom: 32px; }
+    .section h3 { color: var(--accent); font-size: 1.1rem; margin-bottom: 16px; }
+    .section h4 { color: var(--cyan); font-size: 0.95rem; margin: 20px 0 12px 0; }
+    .file-tree { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; overflow-x: auto; white-space: pre; }
+    .folder { color: var(--accent-2); }
+    .file { color: var(--text); }
+    .new { color: var(--accent); }
+    .update { color: var(--orange); }
+    .comment { color: var(--text-muted); }
+    pre { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; margin: 12px 0; }
+    code { font-family: 'JetBrains Mono', monospace; background: var(--bg); padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }
+    .inline-code { background: rgba(34, 197, 94, 0.1); color: var(--accent); padding: 2px 8px; border-radius: 4px; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.9rem; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { color: var(--text-muted); font-weight: 600; background: var(--bg); }
+    .task-list { list-style: none; }
+    .task-list li { padding: 8px 0; display: flex; align-items: flex-start; gap: 8px; }
+    .task-list li::before { content: "□"; color: var(--accent); font-size: 1.1rem; }
+    .cmd { background: var(--bg); border: 1px solid var(--accent); border-radius: 8px; padding: 12px 16px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; margin: 12px 0; }
+    .note { background: rgba(34, 197, 94, 0.1); border-left: 4px solid var(--accent); padding: 16px; border-radius: 0 8px 8px 0; margin: 16px 0; font-size: 0.9rem; }
+    .warning { background: rgba(249, 115, 22, 0.1); border-left: 4px solid var(--orange); padding: 16px; border-radius: 0 8px 8px 0; margin: 16px 0; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+    .card h4 { color: var(--accent); margin-bottom: 12px; }
+    .estimate { display: inline-block; background: var(--surface); border: 1px solid var(--border); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; color: var(--text-muted); }
+    .estimate strong { color: var(--accent); }
+    .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 40px 0; }
+    .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 40px; }
+    .toc h3 { color: var(--accent); margin-bottom: 16px; }
+    .toc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+    .toc-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--surface-2); border-radius: 6px; font-size: 0.85rem; }
+    .toc-item .num { color: var(--accent); font-weight: 600; min-width: 30px; }
+    .pk { color: var(--accent); font-weight: 600; }
+    .fk { color: var(--purple); }
+    .nullable { color: var(--text-muted); font-style: italic; }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <h1>⚡ BE1st Master Implementation Guide</h1>
+  <p>Complete technical specification with file paths, code, database schemas, and step-by-step instructions</p>
+  <span class="version">v1.0 | January 10, 2026</span>
+</header>
+
+<nav class="nav">
+  <a href="#overview">Overview</a>
+  <a href="#structure">Structure</a>
+  <a href="#database">Database</a>
+  <a href="#phase-0" class="current">Phase 0</a>
+  <a href="#phase-1">Phase 1</a>
+  <a href="#phase-2">Phase 2</a>
+  <a href="#phase-3">Phase 3</a>
+  <a href="#phase-4">Phase 4</a>
+  <a href="#phase-5">Phase 5+</a>
+</nav>
+
+<div class="content">
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h3>📑 Implementation Phases</h3>
+  <div class="toc-grid">
+    <div class="toc-item"><span class="num">0</span> Platform Foundation (3-4 days)</div>
+    <div class="toc-item"><span class="num">1</span> Brain System (1-2 days)</div>
+    <div class="toc-item"><span class="num">2</span> Health/Diagnostics (1 day)</div>
+    <div class="toc-item"><span class="num">3</span> Customer Admin Dashboard (2-3 days)</div>
+    <div class="toc-item"><span class="num">3.5</span> AI Feature Selection UI (1 day)</div>
+    <div class="toc-item"><span class="num">4</span> Backend Wiring (2-3 days)</div>
+    <div class="toc-item"><span class="num">4.5</span> Additional Generation Modes (2-3 days)</div>
+    <div class="toc-item"><span class="num">5+</span> Future Phases (Stripe, PWA, etc.)</div>
+  </div>
+  <div class="note" style="margin-top:20px"><strong>Total to MVP:</strong> 10-14 days | <strong>Result:</strong> Users can generate, pay for, and manage full-stack AI-powered sites</div>
+</div>
+
+<!-- OVERVIEW -->
+<section id="overview" class="phase">
+  <div class="phase-header"><h2>📋 Overview</h2></div>
+  <div class="phase-body">
+    <div class="section">
+      <h3>🎯 Project Goal</h3>
+      <p>Transform the existing BE1st generator into a production-ready SaaS platform where customers can generate, host, and manage AI-powered business websites in 65 seconds.</p>
+    </div>
+    <div class="section">
+      <h3>📦 What Already Exists</h3>
+      <div class="grid-2">
+        <div class="card"><h4>Backend Modules (54)</h4><p>Complete module library at <code class="inline-code">module-library/</code></p><p style="color:var(--text-muted);font-size:0.85rem;margin-top:8px">Auth, payments, admin, AI, social, marketplace, etc.</p></div>
+        <div class="card"><h4>Frontend Modules (20)</h4><p>Component library at <code class="inline-code">module-assembler-ui/src/modules/</code></p><p style="color:var(--text-muted);font-size:0.85rem;margin-top:8px">Login, register, pricing, settings, dashboard, etc.</p></div>
+        <div class="card"><h4>Generator Engine</h4><p>AI generation at <code class="inline-code">module-assembler-ui/server.cjs</code></p><p style="color:var(--text-muted);font-size:0.85rem;margin-top:8px">Multi-AI, visual archetypes, industry detection</p></div>
+        <div class="card"><h4>SlabTrack (Live Proof)</h4><p>Production app proving the tech works</p><p style="color:var(--text-muted);font-size:0.85rem;margin-top:8px">64+ subscribers, auth, payments, AI scanning</p></div>
+      </div>
+    </div>
+    <div class="section">
+      <h3>⏱️ Timeline Summary</h3>
+      <table>
+        <thead><tr><th>Phase</th><th>Name</th><th>Estimate</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>Platform Foundation</td><td>3-4 days</td><td><span class="badge badge-current">CURRENT</span></td></tr>
+          <tr><td>1</td><td>Brain System</td><td>1-2 days</td><td><span class="badge badge-next">NEXT</span></td></tr>
+          <tr><td>2</td><td>Health/Diagnostics</td><td>1 day</td><td><span class="badge badge-next">NEXT</span></td></tr>
+          <tr><td>3</td><td>Customer Admin</td><td>2-3 days</td><td><span class="badge badge-next">NEXT</span></td></tr>
+          <tr><td>3.5</td><td>AI Feature Selection</td><td>1 day</td><td><span class="badge badge-next">NEXT</span></td></tr>
+          <tr><td>4</td><td>Backend Wiring</td><td>2-3 days</td><td><span class="badge badge-next">NEXT</span></td></tr>
+          <tr style="font-weight:bold;background:rgba(34,197,94,0.1)"><td colspan="2">TOTAL TO MVP</td><td>10-14 days</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECT STRUCTURE -->
+<section id="structure" class="phase">
+  <div class="phase-header"><h2>📁 Project Structure</h2></div>
+  <div class="phase-body">
+    <div class="section">
+      <h3>🏗️ Full Project Architecture</h3>
+      <div class="file-tree"><span class="folder">be1st/</span>
+├── <span class="folder">platform/</span>                      <span class="comment"># NEW - BE1st.io platform</span>
+│   ├── <span class="folder">frontend/</span>                  <span class="comment"># React app (be1st.io)</span>
+│   │   ├── <span class="folder">src/</span>
+│   │   │   ├── <span class="folder">pages/</span>
+│   │   │   │   ├── <span class="new">Landing.jsx</span>       <span class="comment"># Marketing homepage</span>
+│   │   │   │   ├── <span class="new">Pricing.jsx</span>       <span class="comment"># Plans + calculator</span>
+│   │   │   │   ├── <span class="new">Login.jsx</span>         <span class="comment"># Customer login</span>
+│   │   │   │   ├── <span class="new">Register.jsx</span>      <span class="comment"># Customer signup</span>
+│   │   │   │   ├── <span class="new">Dashboard.jsx</span>     <span class="comment"># Customer portal</span>
+│   │   │   │   ├── <span class="new">Generator.jsx</span>     <span class="comment"># Onboarding wizard</span>
+│   │   │   │   └── <span class="folder">admin/</span>          <span class="comment"># YOUR admin (owner)</span>
+│   │   │   │       ├── <span class="new">AdminDashboard.jsx</span>
+│   │   │   │       ├── <span class="new">Customers.jsx</span>
+│   │   │   │       ├── <span class="new">Revenue.jsx</span>
+│   │   │   │       └── <span class="new">GenerationLogs.jsx</span>
+│   │   │   ├── <span class="folder">components/</span>
+│   │   │   ├── <span class="folder">hooks/</span>
+│   │   │   └── <span class="folder">services/</span>
+│   │   └── <span class="file">package.json</span>
+│   │
+│   └── <span class="folder">backend/</span>                   <span class="comment"># Express API (api.be1st.io)</span>
+│       ├── <span class="folder">routes/</span>
+│       │   ├── <span class="new">auth.js</span>             <span class="comment"># /api/auth/*</span>
+│       │   ├── <span class="new">customers.js</span>        <span class="comment"># /api/customers/*</span>
+│       │   ├── <span class="new">sites.js</span>            <span class="comment"># /api/sites/*</span>
+│       │   ├── <span class="new">generate.js</span>         <span class="comment"># /api/generate</span>
+│       │   ├── <span class="new">billing.js</span>          <span class="comment"># /api/billing/*</span>
+│       │   └── <span class="new">admin.js</span>            <span class="comment"># /api/admin/* (owner)</span>
+│       ├── <span class="folder">services/</span>
+│       │   ├── <span class="new">generator.js</span>        <span class="comment"># Wraps server.cjs</span>
+│       │   └── <span class="new">deployer.js</span>         <span class="comment"># Railway/Vercel</span>
+│       ├── <span class="folder">middleware/</span>
+│       ├── <span class="new">server.js</span>
+│       └── <span class="new">db.js</span>
+│
+├── <span class="folder">module-library/</span>                <span class="comment"># EXISTING - 54 backend modules</span>
+│
+├── <span class="folder">module-assembler-ui/</span>           <span class="comment"># EXISTING - Generator engine</span>
+│   ├── <span class="update">server.cjs</span>              <span class="comment"># UPDATE - Generate brain.json</span>
+│   └── <span class="folder">prompts/</span>
+│
+├── <span class="folder">generated/</span>                     <span class="comment"># Output directory</span>
+│   └── <span class="folder">[customer-sites]/</span>
+│       ├── <span class="folder">frontend/</span>
+│       ├── <span class="folder">backend/</span>
+│       └── <span class="new">brain.json</span>           <span class="comment"># NEW - Site brain</span>
+│
+└── <span class="folder">database/</span>
+    └── <span class="new">schema.sql</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- DATABASE -->
+<section id="database" class="phase">
+  <div class="phase-header"><h2>🗄️ Database Schema</h2></div>
+  <div class="phase-body">
+    <div class="section">
+      <h3>📊 Core Tables</h3>
+      
+      <h4>customers</h4>
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td class="pk">id</td><td>UUID</td><td>Primary key</td></tr>
+          <tr><td>email</td><td>VARCHAR(255)</td><td>Unique, indexed</td></tr>
+          <tr><td>password_hash</td><td>VARCHAR(255)</td><td>bcrypt</td></tr>
+          <tr><td>name</td><td>VARCHAR(255)</td><td></td></tr>
+          <tr><td>stripe_customer_id</td><td>VARCHAR(255)</td><td class="nullable">Nullable</td></tr>
+          <tr><td>plan</td><td>ENUM</td><td>'free', 'starter', 'pro', 'business'</td></tr>
+          <tr><td>is_admin</td><td>BOOLEAN</td><td>Default FALSE</td></tr>
+          <tr><td>created_at</td><td>TIMESTAMP</td><td></td></tr>
+        </tbody>
+      </table>
+
+      <h4>sites</h4>
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td class="pk">id</td><td>UUID</td><td>Primary key</td></tr>
+          <tr><td class="fk">customer_id</td><td>UUID</td><td>FK → customers</td></tr>
+          <tr><td>subdomain</td><td>VARCHAR(100)</td><td>Unique</td></tr>
+          <tr><td>industry</td><td>VARCHAR(100)</td><td></td></tr>
+          <tr><td>description</td><td>TEXT</td><td>Original prompt</td></tr>
+          <tr><td>brain</td><td>JSONB</td><td>Full brain.json</td></tr>
+          <tr><td>status</td><td>ENUM</td><td>'generating', 'live', 'error'</td></tr>
+          <tr><td>frontend_url</td><td>VARCHAR(255)</td><td></td></tr>
+          <tr><td>backend_url</td><td>VARCHAR(255)</td><td></td></tr>
+          <tr><td>ai_features</td><td>JSONB</td><td>Selected features</td></tr>
+        </tbody>
+      </table>
+
+      <h4>generations</h4>
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td class="pk">id</td><td>UUID</td><td>Primary key</td></tr>
+          <tr><td class="fk">customer_id</td><td>UUID</td><td></td></tr>
+          <tr><td class="fk">site_id</td><td>UUID</td><td class="nullable">Nullable if failed</td></tr>
+          <tr><td>prompt</td><td>TEXT</td><td></td></tr>
+          <tr><td>ai_provider</td><td>VARCHAR(50)</td><td></td></tr>
+          <tr><td>tokens_used</td><td>INTEGER</td><td></td></tr>
+          <tr><td>ai_cost</td><td>DECIMAL(10,4)</td><td></td></tr>
+          <tr><td>generation_time_ms</td><td>INTEGER</td><td></td></tr>
+          <tr><td>status</td><td>ENUM</td><td>'success', 'failed'</td></tr>
+        </tbody>
+      </table>
+
+      <h4>subscriptions</h4>
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td class="pk">id</td><td>UUID</td><td></td></tr>
+          <tr><td class="fk">customer_id</td><td>UUID</td><td></td></tr>
+          <tr><td class="fk">site_id</td><td>UUID</td><td></td></tr>
+          <tr><td>stripe_subscription_id</td><td>VARCHAR</td><td></td></tr>
+          <tr><td>plan</td><td>ENUM</td><td>'starter', 'pro', 'business'</td></tr>
+          <tr><td>price_monthly</td><td>DECIMAL</td><td></td></tr>
+          <tr><td>status</td><td>ENUM</td><td>'active', 'cancelled'</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <h3>📝 schema.sql</h3>
+      <pre>-- BE1st Platform Database Schema
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE customers (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  name VARCHAR(255),
+  stripe_customer_id VARCHAR(255),
+  plan VARCHAR(20) DEFAULT 'free',
+  status VARCHAR(20) DEFAULT 'active',
+  is_admin BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE sites (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  customer_id UUID REFERENCES customers(id) ON DELETE CASCADE,
+  name VARCHAR(255) NOT NULL,
+  subdomain VARCHAR(100) UNIQUE NOT NULL,
+  custom_domain VARCHAR(255),
+  industry VARCHAR(100),
+  description TEXT,
+  brain JSONB DEFAULT '{}',
+  status VARCHAR(20) DEFAULT 'generating',
+  frontend_url VARCHAR(255),
+  backend_url VARCHAR(255),
+  ai_features JSONB DEFAULT '[]',
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE generations (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  customer_id UUID REFERENCES customers(id),
+  site_id UUID REFERENCES sites(id),
+  prompt TEXT NOT NULL,
+  industry_detected VARCHAR(100),
+  modules_used JSONB DEFAULT '[]',
+  ai_provider VARCHAR(50),
+  ai_model VARCHAR(100),
+  tokens_used INTEGER DEFAULT 0,
+  ai_cost DECIMAL(10,4) DEFAULT 0,
+  generation_time_ms INTEGER,
+  status VARCHAR(20),
+  error_message TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE subscriptions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  customer_id UUID REFERENCES customers(id),
+  site_id UUID REFERENCES sites(id),
+  stripe_subscription_id VARCHAR(255),
+  plan VARCHAR(20),
+  price_monthly DECIMAL(10,2),
+  status VARCHAR(20),
+  current_period_end TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_sites_customer ON sites(customer_id);
+CREATE INDEX idx_sites_subdomain ON sites(subdomain);
+CREATE INDEX idx_generations_customer ON generations(customer_id);</pre>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PHASE 0 -->
+<section id="phase-0" class="phase">
+  <div class="phase-header">
+    <h2>⚡ Phase 0: Platform Foundation</h2>
+    <div><span class="badge badge-current">CURRENT PRIORITY</span> <span class="estimate">Est: <strong>3-4 days</strong></span></div>
+  </div>
+  <div class="phase-body">
+    <div class="section">
+      <h3>🎯 Goal</h3>
+      <p>Build be1st.io — the marketing site, customer portal, and your admin command center.</p>
+    </div>
+
+    <div class="section">
+      <h3>📁 Files to Create</h3>
+      <h4>Backend</h4>
+      <div class="file-tree"><span class="folder">platform/backend/</span>
+├── <span class="new">server.js</span>           <span class="comment"># Express entry</span>
+├── <span class="new">db.js</span>               <span class="comment"># PostgreSQL connection</span>
+├── <span class="new">package.json</span>
+├── <span class="folder">routes/</span>
+│   ├── <span class="new">auth.js</span>         <span class="comment"># POST /register, /login, GET /me</span>
+│   ├── <span class="new">sites.js</span>        <span class="comment"># CRUD for sites</span>
+│   ├── <span class="new">generate.js</span>     <span class="comment"># POST /generate</span>
+│   ├── <span class="new">billing.js</span>      <span class="comment"># Stripe webhooks</span>
+│   └── <span class="new">admin.js</span>        <span class="comment"># Owner-only routes</span>
+├── <span class="folder">middleware/</span>
+│   ├── <span class="new">auth.js</span>         <span class="comment"># JWT verification</span>
+│   └── <span class="new">adminOnly.js</span>    <span class="comment"># Check is_admin</span>
+└── <span class="folder">services/</span>
+    ├── <span class="new">generator.js</span>    <span class="comment"># Wraps server.cjs</span>
+    └── <span class="new">deployer.js</span>     <span class="comment"># Railway/Vercel API</span></div>
+
+      <h4>Frontend</h4>
+      <div class="file-tree"><span class="folder">platform/frontend/src/</span>
+├── <span class="new">App.jsx</span>
+├── <span class="folder">pages/</span>
+│   ├── <span class="new">Landing.jsx</span>         <span class="comment"># Marketing homepage</span>
+│   ├── <span class="new">Pricing.jsx</span>         <span class="comment"># Plans + calculator</span>
+│   ├── <span class="new">Login.jsx</span>
+│   ├── <span class="new">Register.jsx</span>
+│   ├── <span class="new">Dashboard.jsx</span>       <span class="comment"># Customer: my sites</span>
+│   ├── <span class="new">Generator.jsx</span>       <span class="comment"># Onboarding wizard</span>
+│   └── <span class="folder">admin/</span>              <span class="comment"># YOUR command center</span>
+│       ├── <span class="new">AdminDashboard.jsx</span>
+│       ├── <span class="new">Customers.jsx</span>
+│       ├── <span class="new">Revenue.jsx</span>
+│       └── <span class="new">GenerationLogs.jsx</span>
+├── <span class="folder">components/</span>
+│   ├── <span class="new">Navbar.jsx</span>
+│   ├── <span class="new">SiteCard.jsx</span>
+│   └── <span class="new">OnboardingWizard.jsx</span>
+└── <span class="folder">services/</span>
+    └── <span class="new">api.js</span></div>
+    </div>
+
+    <div class="section">
+      <h3>📝 Key Code: server.js</h3>
+      <pre>// platform/backend/server.js
+const express = require('express');
+const cors = require('cors');
+require('dotenv').config();
+
+const authRoutes = require('./routes/auth');
+const sitesRoutes = require('./routes/sites');
+const generateRoutes = require('./routes/generate');
+const adminRoutes = require('./routes/admin');
+const { authMiddleware } = require('./middleware/auth');
+const { adminOnly } = require('./middleware/adminOnly');
+
+const app = express();
+app.use(cors({ origin: process.env.FRONTEND_URL }));
+app.use(express.json());
+
+// Public
+app.use('/api/auth', authRoutes);
+
+// Protected
+app.use('/api/sites', authMiddleware, sitesRoutes);
+app.use('/api/generate', authMiddleware, generateRoutes);
+
+// Admin only (your command center)
+app.use('/api/admin', authMiddleware, adminOnly, adminRoutes);
+
+app.get('/health', (req, res) => res.json({ status: 'ok' }));
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => console.log(`API on port ${PORT}`));</pre>
+    </div>
+
+    <div class="section">
+      <h3>📝 Key Code: Auth Routes</h3>
+      <pre>// platform/backend/routes/auth.js
+const router = require('express').Router();
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const db = require('../db');
+
+router.post('/register', async (req, res) => {
+  const { email, password, name } = req.body;
+  const existing = await db.query('SELECT id FROM customers WHERE email = $1', [email]);
+  if (existing.rows.length) return res.status(400).json({ error: 'Email exists' });
+  
+  const hash = await bcrypt.hash(password, 12);
+  const result = await db.query(
+    'INSERT INTO customers (email, password_hash, name) VALUES ($1, $2, $3) RETURNING *',
+    [email, hash, name]
+  );
+  
+  const token = jwt.sign({ id: result.rows[0].id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+  res.json({ customer: result.rows[0], token });
+});
+
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  const result = await db.query('SELECT * FROM customers WHERE email = $1', [email]);
+  if (!result.rows.length) return res.status(401).json({ error: 'Invalid credentials' });
+  
+  const valid = await bcrypt.compare(password, result.rows[0].password_hash);
+  if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
+  
+  const token = jwt.sign({ id: result.rows[0].id, is_admin: result.rows[0].is_admin }, process.env.JWT_SECRET, { expiresIn: '7d' });
+  res.json({ customer: result.rows[0], token });
+});
+
+module.exports = router;</pre>
+    </div>
+
+    <div class="section">
+      <h3>✅ Phase 0 Checklist</h3>
+      <ul class="task-list">
+        <li>Set up platform/backend with Express</li>
+        <li>Set up platform/frontend with Vite + React</li>
+        <li>Create PostgreSQL database with schema</li>
+        <li>Implement auth routes (register, login, me)</li>
+        <li>Implement sites CRUD routes</li>
+        <li>Implement generate route (wrapper for server.cjs)</li>
+        <li>Implement admin routes (stats, customers, logs)</li>
+        <li>Create Landing page with taglines</li>
+        <li>Create Pricing page with calculator</li>
+        <li>Create Customer Dashboard (my sites)</li>
+        <li>Create Generator page (OnboardingWizard)</li>
+        <li>Create Admin Dashboard (your command center)</li>
+        <li>Deploy backend to Railway</li>
+        <li>Deploy frontend to Vercel</li>
+        <li>Configure be1st.io domain</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PHASE 1 -->
+<section id="phase-1" class="phase">
+  <div class="phase-header">
+    <h2>🧠 Phase 1: Brain System</h2>
+    <div><span class="badge badge-next">NEXT</span> <span class="estimate">Est: <strong>1-2 days</strong></span></div>
+  </div>
+  <div class="phase-body">
+    <div class="section">
+      <h3>🎯 Goal</h3>
+      <p>Every generated site gets a <code class="inline-code">brain.json</code> — single source of truth for business info, site structure, design, and config.</p>
+    </div>
+
+    <div class="section">
+      <h3>📝 Brain Schema</h3>
+      <pre>{
+  "version": "1.0",
+  "generated_at": "2026-01-10T12:00:00Z",
+  
+  "business": {
+    "name": "Bella Notte",
+    "tagline": "Authentic Italian in Brooklyn",
+    "industry": "restaurant",
+    "location": { "city": "Brooklyn", "state": "NY" },
+    "contact": { "phone": "555-123-4567", "email": "info@bellanotte.com" }
+  },
+  
+  "site": {
+    "subdomain": "bellanotte",
+    "pages": [
+      { "path": "/", "title": "Home", "component": "HomePage" },
+      { "path": "/menu", "title": "Menu", "component": "MenuPage" }
+    ],
+    "navigation": [{ "label": "Home", "path": "/" }, { "label": "Menu", "path": "/menu" }]
+  },
+  
+  "design": {
+    "archetype": "warm-hospitality",
+    "colors": { "primary": "#8B4513", "secondary": "#DAA520" },
+    "fonts": { "heading": "Playfair Display", "body": "Open Sans" }
+  },
+  
+  "config": {
+    "features": { "aiChat": true, "booking": true, "payments": false }
+  },
+  
+  "health": { "status": "healthy", "lastCheck": null },
+  
+  "modules": {
+    "backend": ["auth", "reservations", "ai-chat"],
+    "frontend": ["header-nav", "booking-widget"]
+  }
+}</pre>
+    </div>
+
+    <div class="section">
+      <h3>📁 Files to Create</h3>
+      <div class="file-tree"><span class="folder">generated/[site]/</span>
+├── <span class="new">brain.json</span>                  <span class="comment"># The brain</span>
+└── <span class="folder">backend/routes/</span>
+    └── <span class="new">brain.js</span>            <span class="comment"># GET/PATCH /api/brain</span>
+
+<span class="folder">module-assembler-ui/</span>
+└── <span class="update">server.cjs</span>                   <span class="comment"># UPDATE to generate brain</span></div>
+    </div>
+
+    <div class="section">
+      <h3>✅ Phase 1 Checklist</h3>
+      <ul class="task-list">
+        <li>Define brain.json schema</li>
+        <li>Update server.cjs to generate brain.json</li>
+        <li>Create /api/brain GET route</li>
+        <li>Create /api/brain PATCH route (partial update)</li>
+        <li>Store brain in sites.brain (JSONB)</li>
+        <li>Add brain versioning</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PHASE 2 -->
+<section id="phase-2" class="phase">
+  <div class="phase-header">
+    <h2>🏥 Phase 2: Health/Diagnostics</h2>
+    <div><span class="badge badge-next">NEXT</span> <span class="estimate">Est: <strong>1 day</strong></span></div>
+  </div>
+  <div class="phase-body">
+    <div class="section">
+      <h3>🎯 Goal</h3>
+      <p>Every site gets <code class="inline-code">/admin/health</code> — plain English status. Green/yellow/red indicators with "how to fix" suggestions.</p>
+    </div>
+
+    <div class="section">
+      <h3>📝 Health Check API</h3>
+      <pre>// generated/[site]/backend/routes/health.js
+router.get('/', async (req, res) => {
+  const checks = {};
+  
+  // API Health
+  checks.api = { status: 'ok', message: 'API running' };
+  
+  // Database
+  try {
+    await db.query('SELECT 1');
+    checks.database = { status: 'ok' };
+  } catch (e) {
+    checks.database = { status: 'error', message: 'DB connection failed' };
+  }
+  
+  // Environment vars
+  const missing = ['DATABASE_URL', 'JWT_SECRET'].filter(v => !process.env[v]);
+  checks.env = missing.length 
+    ? { status: 'error', missing }
+    : { status: 'ok' };
+  
+  // Brain file
+  try {
+    const brain = require('../../brain.json');
+    checks.brain = { status: 'ok', version: brain.version };
+  } catch {
+    checks.brain = { status: 'error', message: 'brain.json missing' };
+  }
+  
+  const hasErrors = Object.values(checks).some(c => c.status === 'error');
+  res.json({
+    status: hasErrors ? 'error' : 'healthy',
+    checks,
+    suggestions: generateSuggestions(checks)
+  });
+});</pre>
+    </div>
+
+    <div class="section">
+      <h3>✅ Phase 2 Checklist</h3>
+      <ul class="task-list">
+        <li>Create /api/health endpoint</li>
+        <li>Check: API, Database, Env vars, Brain file</li>
+        <li>Create Health.jsx dashboard component</li>
+        <li>Add to generated site's /admin routes</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PHASE 3 -->
+<section id="phase-3" class="phase">
+  <div class="phase-header">
+    <h2>🎛️ Phase 3: Customer Admin Dashboard</h2>
+    <div><span class="badge badge-next">NEXT</span> <span class="estimate">Est: <strong>2-3 days</strong></span></div>
+  </div>
+  <div class="phase-body">
+    <div class="section">
+      <h3>🎯 Goal</h3>
+      <p>Every site gets <code class="inline-code">/admin</code> — their control center. Edit content via brain, manage media, configure settings.</p>
+    </div>
+
+    <div class="section">
+      <h3>📁 Files to Create</h3>
+      <div class="file-tree"><span class="folder">generated/[site]/frontend/src/pages/admin/</span>
+├── <span class="new">AdminLayout.jsx</span>      <span class="comment"># Sidebar + header</span>
+├── <span class="new">Dashboard.jsx</span>        <span class="comment"># Overview stats</span>
+├── <span class="new">ContentEditor.jsx</span>    <span class="comment"># Edit via brain</span>
+├── <span class="new">MediaLibrary.jsx</span>     <span class="comment"># Manage images</span>
+├── <span class="new">Settings.jsx</span>         <span class="comment"># API keys, config</span>
+├── <span class="new">BrainViewer.jsx</span>      <span class="comment"># View/edit brain.json</span>
+└── <span class="new">Health.jsx</span>           <span class="comment"># From Phase 2</span></div>
+    </div>
+
+    <div class="section">
+      <h3>✅ Phase 3 Checklist</h3>
+      <ul class="task-list">
+        <li>Create AdminLayout with sidebar navigation</li>
+        <li>Create Dashboard with overview stats</li>
+        <li>Create ContentEditor (edit text via brain)</li>
+        <li>Create MediaLibrary (upload/manage images)</li>
+        <li>Create Settings (paste API keys)</li>
+        <li>Create BrainViewer (JSON editor)</li>
+        <li>Wire admin routes with auth</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PHASE 4 -->
+<section id="phase-4" class="phase">
+  <div class="phase-header">
+    <h2>🔌 Phase 4: Backend Wiring</h2>
+    <div><span class="badge badge-next">NEXT</span> <span class="estimate">Est: <strong>2-3 days</strong></span></div>
+  </div>
+  <div class="phase-body">
+    <div class="section">
+      <h3>🎯 Goal</h3>
+      <p>Generated sites actually work — functional APIs, database connection, auth, CRUD operations.</p>
+    </div>
+
+    <div class="section">
+      <h3>📝 What Gets Wired</h3>
+      <table>
+        <thead><tr><th>Feature</th><th>Module</th><th>What Works</th></tr></thead>
+        <tbody>
+          <tr><td>Authentication</td><td>auth</td><td>Register, login, JWT, sessions</td></tr>
+          <tr><td>Database</td><td>core</td><td>PostgreSQL connection, migrations</td></tr>
+          <tr><td>API Routes</td><td>varies</td><td>Full REST endpoints per industry</td></tr>
+          <tr><td>Reservations</td><td>reservations</td><td>Book, manage, notify</td></tr>
+          <tr><td>Menu/Products</td><td>menu</td><td>CRUD items, categories</td></tr>
+          <tr><td>Contact</td><td>contact-form</td><td>Form submission, email</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <h3>📝 Industry → Module Mapping</h3>
+      <pre>const INDUSTRY_MODULES = {
+  restaurant: ['auth', 'reservations', 'menu', 'contact-form', 'reviews'],
+  yoga: ['auth', 'booking', 'classes', 'instructors', 'contact-form'],
+  law: ['auth', 'appointments', 'contact-form', 'blog'],
+  dental: ['auth', 'appointments', 'services', 'contact-form'],
+  ecommerce: ['auth', 'products', 'cart', 'payments', 'orders'],
+  saas: ['auth', 'payments', 'subscriptions', 'admin-dashboard']
+};</pre>
+    </div>
+
+    <div class="section">
+      <h3>✅ Phase 4 Checklist</h3>
+      <ul class="task-list">
+        <li>Create industry → module mapping</li>
+        <li>Wire database connection in generated sites</li>
+        <li>Generate working auth (signup/login/logout)</li>
+        <li>Generate CRUD routes per industry</li>
+        <li>Create .env.example with all required vars</li>
+        <li>Test full flow: register → login → use API</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PHASE 5+ -->
+<section id="phase-5" class="phase">
+  <div class="phase-header">
+    <h2>🚀 Phase 5+: Future Development</h2>
+    <div><span class="badge badge-future">FUTURE</span></div>
+  </div>
+  <div class="phase-body">
+    <div class="section">
+      <h3>📋 Remaining Phases</h3>
+      <table>
+        <thead><tr><th>Phase</th><th>Name</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>4.5</td><td>Additional Generation Modes</td><td>Inspired (mashup), Rebuild (modernize), Expand (add features)</td></tr>
+          <tr><td>5</td><td>Stripe Integration</td><td>Full payment processing, subscriptions</td></tr>
+          <tr><td>6</td><td>Additional Integrations</td><td>Twilio, SendGrid, Google Analytics</td></tr>
+          <tr><td>7</td><td>PWA Auto-Generation</td><td>Mobile app from every site</td></tr>
+          <tr><td>8</td><td>Cognitive Brain</td><td>AI layer that learns from site data</td></tr>
+          <tr><td>8.5</td><td>Multi-AI Provider</td><td>Fallback system between AI providers</td></tr>
+          <tr><td>9</td><td>Asset Management</td><td>Image optimization, CDN</td></tr>
+          <tr><td>10</td><td>AI Auto-Fix</td><td>Detect and fix issues automatically</td></tr>
+          <tr><td>11</td><td>AI Analytics</td><td>Insights and recommendations</td></tr>
+          <tr><td>12</td><td>Blink Inject</td><td>Add AI to existing sites</td></tr>
+          <tr><td>13</td><td>One-Click Deploy</td><td>Instant deployment to any provider</td></tr>
+          <tr><td>14</td><td>White Label</td><td>Rebrand platform for agencies</td></tr>
+          <tr><td>15</td><td>Stablecoin Dashboard</td><td>Crypto payment integration</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ENVIRONMENT VARIABLES -->
+<section class="phase">
+  <div class="phase-header"><h2>🔐 Environment Variables</h2></div>
+  <div class="phase-body">
+    <pre># platform/backend/.env.example
+
+# Database
+DATABASE_URL=postgresql://user:pass@host:5432/be1st
+
+# JWT
+JWT_SECRET=your-super-secret-key
+
+# Frontend
+FRONTEND_URL=https://be1st.io
+
+# Stripe
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# AI Providers
+ANTHROPIC_API_KEY=sk-ant-...
+OPENAI_API_KEY=sk-...
+GOOGLE_AI_KEY=...
+
+# Deployment
+RAILWAY_API_TOKEN=...
+VERCEL_TOKEN=...</pre>
+  </div>
+</section>
+
+<!-- COMMANDS -->
+<section class="phase">
+  <div class="phase-header"><h2>⌨️ Quick Commands</h2></div>
+  <div class="phase-body">
+    <div class="cmd">cd platform/backend && npm install</div>
+    <div class="cmd">cd platform/frontend && npm install</div>
+    <div class="cmd">psql $DATABASE_URL -f database/schema.sql</div>
+    <div class="cmd">cd platform/backend && npm run dev</div>
+    <div class="cmd">cd platform/frontend && npm run dev</div>
+  </div>
+</section>
+
+</div>
+
+<footer style="text-align:center;padding:40px;border-top:1px solid var(--border);color:var(--text-muted)">
+  <p>BE1st Master Implementation Guide v1.0</p>
+  <p style="margin-top:8px;font-size:0.85rem">⚡ "From thought to creation, just blink."</p>
+</footer>
+
+</body>
+</html>

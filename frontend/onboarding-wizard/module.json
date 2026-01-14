@@ -1,0 +1,16 @@
+﻿{
+  "name": "onboarding-wizard",
+  "type": "frontend",
+  "source": "common-cents",
+  "extractedAt": "2026-01-12T12:00:00.000Z",
+  "description": "Multi-step onboarding wizard with progress tracking and rewards",
+  "files": [
+    "components/StepIndicator.jsx",
+    "components/ProfileStep.jsx",
+    "components/PhoneVerifyStep.jsx",
+    "components/PayoutSetupStep.jsx",
+    "components/CompletionStep.jsx",
+    "pages/OnboardingWizard.jsx"
+  ],
+  "dependencies": ["auth-context"]
+}

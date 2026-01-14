@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>👁️ Blink - Executive Summary</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+    
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --border: #2a2a3a;
+      --text: #e4e4e4;
+      --text-muted: #888;
+      --accent: #67e8f9;
+      --green: #22c55e;
+      --purple: #a855f7;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 0;
+    }
+    
+    .hero {
+      min-height: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 50px 24px;
+      background: radial-gradient(ellipse at center, rgba(103, 232, 249, 0.08) 0%, transparent 70%);
+    }
+    
+    .logo-img {
+      width: 280px;
+      max-width: 70%;
+      height: 180px;
+      object-fit: cover;
+      object-position: center;
+      margin-bottom: 20px;
+    }
+    
+    .logo {
+      font-size: 100px;
+      margin-bottom: 20px;
+    }
+    
+    h1 {
+      font-size: clamp(3rem, 8vw, 5rem);
+      font-weight: 900;
+      background: linear-gradient(90deg, var(--accent), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -2px;
+      margin-bottom: 16px;
+    }
+    
+    .tagline {
+      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      color: var(--text-muted);
+      font-style: italic;
+      margin-bottom: 40px;
+    }
+    
+    .pitch {
+      max-width: 600px;
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+      color: var(--text);
+    }
+    
+    .pitch strong {
+      color: var(--accent);
+    }
+    
+    .stats-row {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+    
+    .stat {
+      text-align: center;
+    }
+    
+    .stat .num {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+    
+    .stat .label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    
+    .section {
+      padding: 50px 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .section h2 {
+      font-size: 1.75rem;
+      margin-bottom: 24px;
+      color: var(--accent);
+      text-align: center;
+    }
+    
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+    
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    
+    .card h3 {
+      font-size: 1rem;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    
+    .card p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    
+    .quote-box {
+      background: linear-gradient(135deg, rgba(103, 232, 249, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      padding: 28px;
+      text-align: center;
+      margin: 30px 0;
+    }
+    
+    .quote-box p {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    .quote-box .attr {
+      margin-top: 16px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    
+    .timeline {
+      position: relative;
+      padding-left: 24px;
+      border-left: 2px solid var(--border);
+      margin: 20px 0;
+    }
+    
+    .timeline-item {
+      margin-bottom: 20px;
+      position: relative;
+    }
+    
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -30px;
+      top: 5px;
+      width: 10px;
+      height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+    
+    .timeline-item .date {
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    
+    .timeline-item .event {
+      color: var(--text);
+      font-size: 1rem;
+      margin-top: 2px;
+    }
+    
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 30px 0;
+    }
+    
+    .comparison .col {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    
+    .comparison .col h4 {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .comparison .col.them h4 {
+      color: var(--text-muted);
+    }
+    
+    .comparison .col.us h4 {
+      color: var(--accent);
+    }
+    
+    .comparison .col ul {
+      list-style: none;
+    }
+    
+    .comparison .col ul li {
+      padding: 8px 0;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+    
+    .comparison .col.us ul li {
+      color: var(--text);
+    }
+    
+    .cta {
+      text-align: center;
+      padding: 50px 24px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+    }
+    
+    .cta h2 {
+      font-size: 2.5rem;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+    
+    .cta p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+    }
+    
+    .cta .url {
+      display: inline-block;
+      background: linear-gradient(90deg, var(--accent), var(--purple));
+      color: var(--bg);
+      padding: 16px 40px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      text-decoration: none;
+    }
+    
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+    
+    .empire-statement {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 40px;
+      padding: 30px;
+      border-top: 1px solid var(--border);
+    }
+    
+    .empire-statement strong {
+      color: var(--green);
+    }
+
+    @media (max-width: 600px) {
+      .comparison {
+        grid-template-columns: 1fr;
+      }
+      .stats-row {
+        gap: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<section class="hero">
+  <img src="blink-logo.webp" alt="Blink Logo" class="logo-img">
+  
+  <p class="pitch">
+    Type a description. Get a <strong>complete working business</strong> in 90 seconds.<br>
+    Frontend. Backend. Database. Auth. Payments. Booking.<br><br>
+    <strong>I don't make websites. I make businesses.</strong>
+  </p>
+  
+  <div class="stats-row">
+    <div class="stat">
+      <div class="num">90s</div>
+      <div class="label">Generation Time</div>
+    </div>
+    <div class="stat">
+      <div class="num">54</div>
+      <div class="label">Production Modules</div>
+    </div>
+    <div class="stat">
+      <div class="num">449</div>
+      <div class="label">API Endpoints</div>
+    </div>
+    <div class="stat">
+      <div class="num">50+</div>
+      <div class="label">Industries (and counting)</div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <h2>What Makes This Different</h2>
+  
+  <div class="comparison">
+    <div class="col them">
+      <h4>Everyone Else</h4>
+      <ul>
+        <li>❌ Generates a website</li>
+        <li>❌ Frontend only</li>
+        <li>❌ "Now hire a developer"</li>
+        <li>❌ Templates that look the same</li>
+        <li>❌ Migrate manually, pray it works</li>
+        <li>❌ Each location is an island</li>
+      </ul>
+    </div>
+    <div class="col us">
+      <h4>Blink</h4>
+      <ul>
+        <li>✅ Generates a business</li>
+        <li>✅ Full-stack (frontend + backend + database)</li>
+        <li>✅ Auth, payments, booking work instantly</li>
+        <li>✅ AI-designed, never looks like a template</li>
+        <li>✅ Dual-sync migration, zero downtime</li>
+        <li>✅ Franchise network, locations communicate</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <h2>Core Capabilities</h2>
+  
+  <div class="card-grid">
+    <div class="card">
+      <h3>⚡ Instant Generation</h3>
+      <p>Describe your business. AI generates 11 pages, wires the backend, sets up the database. 90 seconds.</p>
+    </div>
+    <div class="card">
+      <h3>🔄 REBUILD Mode</h3>
+      <p>Point at any existing website. We extract their images, colors, content — then generate a modern full-stack replacement.</p>
+    </div>
+    <div class="card">
+      <h3>🔀 Dual-Sync Migration</h3>
+      <p>Run old site and new site simultaneously. AI monitors both. Switch when ready. Zero downtime. Zero risk.</p>
+    </div>
+    <div class="card">
+      <h3>🏢 Franchise Network</h3>
+      <p>Multiple locations talk to each other. AI manages inventory transfers, staff sharing, bulk purchasing automatically.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="quote-box">
+    <p>"So you make websites?"</p>
+    <p style="margin-top: 20px; color: var(--accent);">"No. I make businesses."</p>
+  </div>
+</section>
+
+<section class="section">
+  <h2>The Business Model</h2>
+  
+  <div class="card-grid">
+    <div class="card">
+      <h3>💵 Subscriptions</h3>
+      <p>Free tier at name.be1st.io. Pro tiers for custom domains, hosting, premium features.</p>
+    </div>
+    <div class="card">
+      <h3>🔄 Migration Fees</h3>
+      <p>Dual-sync migration is a premium feature. Businesses pay for worry-free transfers.</p>
+    </div>
+    <div class="card">
+      <h3>🏢 Franchise Network</h3>
+      <p>Enterprise pricing for multi-location businesses. Network Brain AI is the moat.</p>
+    </div>
+    <div class="card">
+      <h3>📈 Equity Model</h3>
+      <p>Alternative to cash: 1-2% equity in businesses we generate. Volume plays the lottery. Selective builds the portfolio.</p>
+    </div>
+  </div>
+  
+  <div class="quote-box" style="margin-top: 40px;">
+    <p style="font-size: 1.2rem;">"I own 1-2% of tens of thousands of businesses that I created in 90 seconds each."</p>
+    <p class="attr">— The vision</p>
+  </div>
+</section>
+
+<section class="section">
+  <h2>The Journey</h2>
+  
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="date">11 Months Ago</div>
+      <div class="event">Dentist. Zero coding experience.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="date">Month 3</div>
+      <div class="event">Built SlabTrack — now the most comprehensive trading card OS.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="date">Month 8</div>
+      <div class="event">Extracted 54 modules from production platforms.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="date">Month 11</div>
+      <div class="event">Blink generates full-stack businesses in 90 seconds.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="date">Now</div>
+      <div class="event">Building the empire.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <h2>The Portfolio</h2>
+  
+  <div class="card-grid">
+    <div class="card" style="border-color: var(--green);">
+      <h3>🃏 SlabTrack</h3>
+      <p><strong style="color: var(--green);">Category Creator</strong><br>The trading card OS. Full lifecycle from collector to card shop. Nothing else like it exists.</p>
+    </div>
+    <div class="card" style="border-color: var(--accent);">
+      <h3>👁️ Blink</h3>
+      <p><strong style="color: var(--accent);">Category Creator</strong><br>Instant full-stack business generator. 90 seconds to a working business. World first.</p>
+    </div>
+    <div class="card" style="border-color: var(--purple);">
+      <h3>🏢 Franchise Network</h3>
+      <p><strong style="color: var(--purple);">Category Creator</strong><br>Connected multi-location intelligence. Your businesses talk to each other. Nobody else does this.</p>
+    </div>
+  </div>
+  
+  <p class="empire-statement">
+    <strong>The Pattern:</strong> See fragmented space → Build the system, not features → Full-stack, not partial → Production quality, not MVP → <strong>Create the category.</strong>
+  </p>
+</section>
+
+<section class="cta">
+  <img src="blink-logo.webp" alt="Blink Logo" style="width: 120px; height: 80px; object-fit: cover; object-position: center; margin-bottom: 16px;">
+  <p style="color: var(--text-muted); font-size: 1rem; margin-bottom: 24px;">The world's first instant full-stack business generator.</p>
+  <a href="#" class="url">blink.be1st.io</a>
+</section>
+
+<footer>
+  <p>Blink is a product of BE1st · January 2026</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+﻿{
+  "name": "welcome-screen",
+  "type": "frontend",
+  "source": "common-cents",
+  "extractedAt": "2026-01-12T12:00:00.000Z",
+  "description": "First-time user welcome screen with app intro and reward teaser",
+  "files": [
+    "components/WelcomeHero.jsx",
+    "components/FeatureCard.jsx",
+    "components/RewardTeaser.jsx",
+    "pages/Welcome.jsx"
+  ],
+  "dependencies": ["auth-context"]
+}

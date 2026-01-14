@@ -1,0 +1,10 @@
+{
+  "name": "collection-grid",
+  "type": "frontend",
+  "source": "slabtrack",
+  "extractedAt": "2026-01-08T13:05:46.348Z",
+  "files": [
+    "components/collection/CollectionGrid.jsx",
+    "pages/CollectionViewer.jsx"
+  ]
+}

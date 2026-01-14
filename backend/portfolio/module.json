@@ -1,0 +1,10 @@
+{
+  "name": "portfolio",
+  "type": "backend",
+  "source": "financial",
+  "extractedAt": "2026-01-08T13:05:46.392Z",
+  "files": [
+    "routes/portfolio.js",
+    "routes/grading.js"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "schools",
+  "type": "backend",
+  "source": "campuswager",
+  "extractedAt": "2026-01-08T13:05:46.386Z",
+  "files": [
+    "routes/schools.js",
+    "routes/platforms.js"
+  ]
+}

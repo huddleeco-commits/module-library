@@ -1,0 +1,10 @@
+﻿{
+  "name": "survey-card",
+  "type": "frontend",
+  "source": "commoncents",
+  "extractedAt": "2026-01-12T00:00:00.000Z",
+  "files": [
+    "components/surveys/SurveyCard.jsx",
+    "components/surveys/SurveyList.jsx"
+  ]
+}

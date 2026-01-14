@@ -1,0 +1,13 @@
+﻿{
+  "name": "verification-badge",
+  "type": "frontend",
+  "source": "common-cents",
+  "extractedAt": "2026-01-12T12:00:00.000Z",
+  "description": "User verification status badges and trust indicators",
+  "files": [
+    "components/VerificationBadge.jsx",
+    "components/TrustScore.jsx",
+    "components/VerificationPrompt.jsx"
+  ],
+  "dependencies": []
+}

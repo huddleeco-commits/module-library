@@ -1,0 +1,10 @@
+{
+  "name": "page-generator",
+  "type": "backend",
+  "source": "ubg",
+  "extractedAt": "2026-01-08T13:05:46.381Z",
+  "files": [
+    "routes/generate.js",
+    "routes/ai-editor.js"
+  ]
+}

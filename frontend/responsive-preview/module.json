@@ -1,0 +1,13 @@
+﻿{
+  "name": "responsive-preview",
+  "type": "frontend",
+  "source": "be1st-builder",
+  "extractedAt": "2026-01-12T12:00:00.000Z",
+  "description": "Preview toggle for desktop/mobile/side-by-side views in the builder UI",
+  "files": [
+    "components/ResponsivePreview.jsx",
+    "components/DeviceFrame.jsx",
+    "components/ViewToggle.jsx"
+  ],
+  "dependencies": []
+}

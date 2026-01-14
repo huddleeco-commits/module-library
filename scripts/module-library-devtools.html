@@ -1,0 +1,2775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module Library DevTools</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-tertiary: #1a1a2e;
+      --text-primary: #e4e4e4;
+      --text-secondary: #a0a0a0;
+      --accent-orange: #f97316;
+      --accent-purple: #8b5cf6;
+      --accent-blue: #3b82f6;
+      --accent-green: #22c55e;
+      --accent-yellow: #eab308;
+      --accent-red: #ef4444;
+      --accent-cyan: #06b6d4;
+    }
+    
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #f97316 0%, #8b5cf6 50%, #3b82f6 100%);
+      padding: 50px 30px;
+      text-align: center;
+      position: relative;
+    }
+    
+    .header h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .header .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.95;
+      margin-top: 10px;
+    }
+    
+    .header .generated-at {
+      font-size: 0.85rem;
+      opacity: 0.8;
+      margin-top: 15px;
+    }
+    
+    .health-score {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      background: rgba(0,0,0,0.3);
+      padding: 15px 25px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    
+    .health-score .score {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent-green);
+    }
+    
+    .health-score .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.8;
+    }
+    
+    /* Navigation */
+    .nav {
+      background: var(--bg-secondary);
+      padding: 15px 30px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .nav-btn {
+      background: var(--bg-tertiary);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-primary);
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    .nav-btn:hover, .nav-btn.active {
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-purple));
+      border-color: transparent;
+    }
+    
+    /* Main Content */
+    .main {
+      max-width: 1800px;
+      margin: 0 auto;
+      padding: 30px;
+    }
+    
+    .section { display: none; }
+    .section.active { display: block; }
+    
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .section-subtitle {
+      color: var(--text-secondary);
+      margin-bottom: 30px;
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 25px;
+      text-align: center;
+    }
+    
+    .stat-card .value {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .stat-card .label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    /* Module Cards */
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    
+    .module-card {
+      background: var(--bg-secondary);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.2s;
+    }
+    
+    .module-card:hover {
+      border-color: var(--accent-purple);
+      transform: translateY(-2px);
+    }
+    
+    .module-card.backend { border-left: 4px solid var(--accent-orange); }
+    .module-card.frontend { border-left: 4px solid var(--accent-cyan); }
+    
+    .module-card .name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    
+    .module-card .meta {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+    
+    .module-card .files {
+      font-family: 'Consolas', monospace;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      background: var(--bg-primary);
+      padding: 10px;
+      border-radius: 6px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+    
+    .module-card .files div {
+      padding: 2px 0;
+    }
+    
+    /* Bundle Cards */
+    .bundles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+      gap: 25px;
+    }
+    
+    .bundle-card {
+      background: var(--bg-secondary);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    
+    .bundle-header {
+      padding: 20px;
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .bundle-header .name {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+    
+    .bundle-header .desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-top: 5px;
+    }
+    
+    .bundle-body {
+      padding: 20px;
+    }
+    
+    .bundle-section {
+      margin-bottom: 15px;
+    }
+    
+    .bundle-section-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    
+    .module-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .module-chip {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+    
+    .module-chip.backend {
+      background: rgba(249, 115, 22, 0.2);
+      color: var(--accent-orange);
+    }
+    
+    .module-chip.frontend {
+      background: rgba(6, 182, 212, 0.2);
+      color: var(--accent-cyan);
+    }
+    
+    /* Industry Cards */
+    .industry-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 25px;
+    }
+    
+    .industry-card {
+      background: var(--bg-secondary);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 25px;
+    }
+    
+    .industry-card .header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .industry-card .icon {
+      font-size: 2.5rem;
+    }
+    
+    .industry-card .name {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+    
+    .industry-card .desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    
+    .industry-card .bundles-used {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .industry-card .bundles-used .label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    
+    .bundle-tag {
+      display: inline-block;
+      padding: 4px 10px;
+      margin: 3px;
+      background: var(--bg-tertiary);
+      border-radius: 4px;
+      font-size: 0.8rem;
+    }
+    
+    /* Connections */
+    .connections-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 15px;
+    }
+    
+    .connection-item {
+      background: var(--bg-secondary);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .connection-item .backend {
+      background: rgba(249, 115, 22, 0.2);
+      color: var(--accent-orange);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+    
+    .connection-item .arrow {
+      color: var(--text-secondary);
+    }
+    
+    .connection-item .frontend {
+      background: rgba(6, 182, 212, 0.2);
+      color: var(--accent-cyan);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+    
+    /* Projects */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+    }
+    
+    .project-card {
+      background: var(--bg-secondary);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    
+    .project-card .name {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    
+    .project-card .meta {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+    
+    .project-card .modules-count {
+      margin-top: 15px;
+      display: flex;
+      gap: 15px;
+    }
+    
+    .project-card .count-item {
+      padding: 8px 12px;
+      background: var(--bg-tertiary);
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+    
+    /* Diagnostics */
+    .diagnostic {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 12px 20px;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    
+    .diagnostic.pass { border-left: 4px solid var(--accent-green); }
+    .diagnostic.warn { border-left: 4px solid var(--accent-yellow); }
+    .diagnostic.fail { border-left: 4px solid var(--accent-red); }
+    
+    .diagnostic-icon { font-size: 1.2rem; }
+    .diagnostic-test { font-weight: 600; flex: 1; }
+    .diagnostic-message { color: var(--text-secondary); font-size: 0.9rem; }
+    
+    /* Source Platforms */
+    .platforms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    
+    .platform-card {
+      background: var(--bg-secondary);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    
+    .platform-card .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    
+    .platform-card .icon { font-size: 2rem; }
+    .platform-card .name { font-size: 1.2rem; font-weight: 700; }
+    .platform-card .desc { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 10px; }
+    .platform-card .path { font-family: 'Consolas', monospace; font-size: 0.75rem; color: var(--text-secondary); word-break: break-all; }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .status-badge.production { background: var(--accent-green); color: #000; }
+    .status-badge.archived { background: var(--accent-yellow); color: #000; }
+    
+    /* AI Context */
+    .ai-context {
+      background: var(--bg-secondary);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 25px;
+    }
+    
+    .ai-context pre {
+      background: var(--bg-primary);
+      padding: 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      margin: 15px 0;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    
+    .copy-btn {
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-purple));
+      border: none;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    
+    .copy-btn:hover { opacity: 0.9; }
+    
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-secondary);
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin-top: 50px;
+    }
+    
+    /* Search */
+    .search-box {
+      background: var(--bg-tertiary);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-primary);
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 25px;
+    }
+    
+    .search-box:focus {
+      outline: none;
+      border-color: var(--accent-purple);
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>📦 Module Library DevTools</h1>
+    <p class="subtitle">Modular Full-Stack Application Generator</p>
+    <p class="generated-at">Generated: 1/11/2026, 7:13:22 PM | 281ms</p>
+    
+    <div class="health-score">
+      <div class="score">100%</div>
+      <div class="label">Health</div>
+    </div>
+  </header>
+  
+  <nav class="nav">
+    <button class="nav-btn active" onclick="showSection('overview')">📊 Overview</button>
+    <button class="nav-btn" onclick="showSection('backend')">🔧 Backend (39)</button>
+    <button class="nav-btn" onclick="showSection('frontend')">🎨 Frontend (26)</button>
+    <button class="nav-btn" onclick="showSection('bundles')">📦 Bundles (9)</button>
+    <button class="nav-btn" onclick="showSection('industries')">🏭 Industries (7)</button>
+    <button class="nav-btn" onclick="showSection('connections')">🔗 Connections</button>
+    <button class="nav-btn" onclick="showSection('projects')">📁 Projects (50)</button>
+    <button class="nav-btn" onclick="showSection('sources')">🗂️ Sources</button>
+    <button class="nav-btn" onclick="showSection('diagnostics')">🧪 Diagnostics</button>
+    <button class="nav-btn" onclick="showSection('ai-context')">🤖 AI Context</button>
+  </nav>
+  
+  <main class="main">
+    <!-- OVERVIEW -->
+    <section id="overview" class="section active">
+      <h2 class="section-title">Module Library Overview</h2>
+      <p class="section-subtitle">Your modular full-stack application foundation</p>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="value">65</div>
+          <div class="label">Total Modules</div>
+        </div>
+        <div class="stat-card">
+          <div class="value">39</div>
+          <div class="label">Backend</div>
+        </div>
+        <div class="stat-card">
+          <div class="value">26</div>
+          <div class="label">Frontend</div>
+        </div>
+        <div class="stat-card">
+          <div class="value">8162</div>
+          <div class="label">Total Files</div>
+        </div>
+        <div class="stat-card">
+          <div class="value">82.1 MB</div>
+          <div class="label">Total Size</div>
+        </div>
+        <div class="stat-card">
+          <div class="value">9</div>
+          <div class="label">Bundles</div>
+        </div>
+        <div class="stat-card">
+          <div class="value">7</div>
+          <div class="label">Industries</div>
+        </div>
+        <div class="stat-card">
+          <div class="value">50</div>
+          <div class="label">Projects</div>
+        </div>
+      </div>
+      
+      <h3 style="margin-bottom: 20px;">Quick Commands</h3>
+      <div style="background: var(--bg-secondary); border-radius: 12px; padding: 25px; font-family: 'Consolas', monospace;">
+        <div style="margin-bottom: 15px;">
+          <span style="color: var(--text-secondary);"># List all modules</span><br>
+          <span style="color: var(--accent-cyan);">node extract-modules.cjs --list</span>
+        </div>
+        <div style="margin-bottom: 15px;">
+          <span style="color: var(--text-secondary);"># Generate a project by industry</span><br>
+          <span style="color: var(--accent-cyan);">node assemble-project.cjs --name "MyApp" --industry collectibles</span>
+        </div>
+        <div style="margin-bottom: 15px;">
+          <span style="color: var(--text-secondary);"># Generate a project by bundles</span><br>
+          <span style="color: var(--accent-cyan);">node assemble-project.cjs --name "MyApp" --bundles core,commerce,dashboard</span>
+        </div>
+        <div>
+          <span style="color: var(--text-secondary);"># Regenerate this devtools</span><br>
+          <span style="color: var(--accent-cyan);">node generate-devtools.cjs</span>
+        </div>
+      </div>
+    </section>
+    
+    <!-- BACKEND MODULES -->
+    <section id="backend" class="section">
+      <h2 class="section-title">Backend Modules (39)</h2>
+      <p class="section-subtitle">Routes, services, middleware, and models</p>
+      
+      <input type="text" class="search-box" placeholder="Search backend modules..." onkeyup="searchModules(this.value, 'backend')">
+      
+      <div class="modules-grid">
+        
+          <div class="module-card backend" data-name="achievements">
+            <div class="name">achievements</div>
+            <div class="meta">3 files | 5.3 KB | Source: financial</div>
+            <div class="files">
+              <div>module.json</div><div>routes\achievements.js</div><div>routes\challenges.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="admin-dashboard">
+            <div class="name">admin-dashboard</div>
+            <div class="meta">2 files | 78.1 KB | Source: healthcareos</div>
+            <div class="files">
+              <div>module.json</div><div>routes\admin.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="ai-scanner">
+            <div class="name">ai-scanner</div>
+            <div class="meta">4 files | 80.8 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>module.json</div><div>routes\scanner.js</div><div>services\ai-scanner.js</div><div>services\claude-scanner.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="analytics">
+            <div class="name">analytics</div>
+            <div class="meta">2 files | 780 B | Source: healthcareos</div>
+            <div class="files">
+              <div>module.json</div><div>routes\metrics.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="auth">
+            <div class="name">auth</div>
+            <div class="meta">5 files | 15.4 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>middleware\auth.js</div><div>models\User.js</div><div>module.json</div><div>routes\auth.js</div><div>services\password-reset.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="betting">
+            <div class="name">betting</div>
+            <div class="meta">6 files | 15.0 KB | Source: huddle</div>
+            <div class="files">
+              <div>models\Bet.js</div><div>models\Pick.js</div><div>module.json</div><div>routes\betting.js</div><div>routes\picks.js</div><div>routes\sidebets.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="booking">
+            <div class="name">booking</div>
+            <div class="meta">4 files | 32.9 KB | Source: unknown</div>
+            <div class="files">
+              <div>database\db.js</div><div>module.json</div><div>routes\booking.js</div><div>routes\services.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="calendar">
+            <div class="name">calendar</div>
+            <div class="meta">2 files | 12.8 KB | Source: family-huddle</div>
+            <div class="files">
+              <div>module.json</div><div>routes\calendar.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="cashouts">
+            <div class="name">cashouts</div>
+            <div class="meta">2 files | 4.4 KB | Source: unknown</div>
+            <div class="files">
+              <div>module.json</div><div>routes\cashouts.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="chat">
+            <div class="name">chat</div>
+            <div class="meta">2 files | 4.8 KB | Source: family-huddle</div>
+            <div class="files">
+              <div>module.json</div><div>routes\chat.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="collections">
+            <div class="name">collections</div>
+            <div class="meta">2 files | 10.2 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>module.json</div><div>routes\collections.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="daily-spin">
+            <div class="name">daily-spin</div>
+            <div class="meta">2 files | 3.5 KB | Source: commoncents</div>
+            <div class="files">
+              <div>module.json</div><div>routes\spin.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="documents">
+            <div class="name">documents</div>
+            <div class="meta">3 files | 41.5 KB | Source: family-huddle</div>
+            <div class="files">
+              <div>module.json</div><div>routes\documents.js</div><div>services\documents.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="ebay-integration">
+            <div class="name">ebay-integration</div>
+            <div class="meta">5 files | 200.6 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>module.json</div><div>routes\ebay-auth.js</div><div>routes\ebay.js</div><div>services\ebay-api.js</div><div>services\ebay-oauth.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="family-groups">
+            <div class="name">family-groups</div>
+            <div class="meta">2 files | 1.3 KB | Source: family-huddle</div>
+            <div class="files">
+              <div>module.json</div><div>routes\groups.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="fantasy">
+            <div class="name">fantasy</div>
+            <div class="meta">5 files | 26.5 KB | Source: huddle</div>
+            <div class="files">
+              <div>module.json</div><div>routes\draft.js</div><div>routes\fantasy-leagues.js</div><div>services\draft-optimizer.js</div><div>services\trade-engine.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="file-upload">
+            <div class="name">file-upload</div>
+            <div class="meta">4 files | 7.2 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>middleware\upload.js</div><div>module.json</div><div>services\cloudinary.js</div><div>services\image-processor.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="inventory">
+            <div class="name">inventory</div>
+            <div class="meta">3 files | 70.7 KB | Source: ubg</div>
+            <div class="files">
+              <div>module.json</div><div>routes\inventory.js</div><div>routes\items.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="kids-banking">
+            <div class="name">kids-banking</div>
+            <div class="meta">4 files | 30.7 KB | Source: family-huddle</div>
+            <div class="files">
+              <div>module.json</div><div>routes\kids-banking.js</div><div>routes\virtual-currency.js</div><div>services\virtual-currency-engine.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="leaderboard">
+            <div class="name">leaderboard</div>
+            <div class="meta">3 files | 32.2 KB | Source: huddle</div>
+            <div class="files">
+              <div>models\Leaderboard.js</div><div>module.json</div><div>routes\leaderboard.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="marketplace">
+            <div class="name">marketplace</div>
+            <div class="meta">3 files | 66.5 KB | Source: ubg</div>
+            <div class="files">
+              <div>module.json</div><div>routes\marketplace.js</div><div>routes\trading.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="meals">
+            <div class="name">meals</div>
+            <div class="meta">2 files | 32.9 KB | Source: family-huddle</div>
+            <div class="files">
+              <div>module.json</div><div>routes\meals.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="nfc-tags">
+            <div class="name">nfc-tags</div>
+            <div class="meta">2 files | 11.3 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>module.json</div><div>routes\nfc.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="notifications">
+            <div class="name">notifications</div>
+            <div class="meta">4 files | 45.5 KB | Source: huddle</div>
+            <div class="files">
+              <div>models\Notification.js</div><div>module.json</div><div>routes\notifications.js</div><div>services\email.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="page-generator">
+            <div class="name">page-generator</div>
+            <div class="meta">3 files | 58.6 KB | Source: ubg</div>
+            <div class="files">
+              <div>module.json</div><div>routes\ai-editor.js</div><div>routes\generate.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="payments">
+            <div class="name">payments</div>
+            <div class="meta">3 files | 1.7 KB | Source: financial</div>
+            <div class="files">
+              <div>module.json</div><div>routes\payments.js</div><div>services\stripe.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="pools">
+            <div class="name">pools</div>
+            <div class="meta">2 files | 18.0 KB | Source: campuswager</div>
+            <div class="files">
+              <div>module.json</div><div>routes\pools.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="portfolio">
+            <div class="name">portfolio</div>
+            <div class="meta">3 files | 21.0 KB | Source: financial</div>
+            <div class="files">
+              <div>module.json</div><div>routes\grading.js</div><div>routes\portfolio.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="posts">
+            <div class="name">posts</div>
+            <div class="meta">2 files | 18.6 KB | Source: campuswager</div>
+            <div class="files">
+              <div>module.json</div><div>routes\posts.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="schools">
+            <div class="name">schools</div>
+            <div class="meta">3 files | 51.1 KB | Source: campuswager</div>
+            <div class="files">
+              <div>module.json</div><div>routes\platforms.js</div><div>routes\schools.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="showcase">
+            <div class="name">showcase</div>
+            <div class="meta">2 files | 33.4 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>module.json</div><div>routes\showcase.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="social-feed">
+            <div class="name">social-feed</div>
+            <div class="meta">2 files | 31.5 KB | Source: financial</div>
+            <div class="files">
+              <div>module.json</div><div>routes\feed.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="streaks">
+            <div class="name">streaks</div>
+            <div class="meta">2 files | 2.6 KB | Source: commoncents</div>
+            <div class="files">
+              <div>module.json</div><div>routes\streaks.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="stripe-payments">
+            <div class="name">stripe-payments</div>
+            <div class="meta">5 files | 24.1 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>config\plans.js</div><div>module.json</div><div>routes\stripe.js</div><div>routes\subscription.js</div><div>services\stripe.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="surveys">
+            <div class="name">surveys</div>
+            <div class="meta">2 files | 3.7 KB | Source: unknown</div>
+            <div class="files">
+              <div>module.json</div><div>routes\surveys.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="tasks">
+            <div class="name">tasks</div>
+            <div class="meta">2 files | 13.3 KB | Source: family-huddle</div>
+            <div class="files">
+              <div>module.json</div><div>routes\tasks.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="transfers">
+            <div class="name">transfers</div>
+            <div class="meta">2 files | 4.3 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>module.json</div><div>routes\transfer.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="user-balance">
+            <div class="name">user-balance</div>
+            <div class="meta">2 files | 3.7 KB | Source: unknown</div>
+            <div class="files">
+              <div>module.json</div><div>routes\balance.js</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card backend" data-name="vendor-system">
+            <div class="name">vendor-system</div>
+            <div class="meta">3 files | 52.2 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>module.json</div><div>routes\vendor-sales.js</div><div>routes\vendor.js</div>
+              
+            </div>
+          </div>
+        
+      </div>
+    </section>
+    
+    <!-- FRONTEND MODULES -->
+    <section id="frontend" class="section">
+      <h2 class="section-title">Frontend Modules (26)</h2>
+      <p class="section-subtitle">Components, pages, context, and hooks</p>
+      
+      <input type="text" class="search-box" placeholder="Search frontend modules..." onkeyup="searchModules(this.value, 'frontend')">
+      
+      <div class="modules-grid">
+        
+          <div class="module-card frontend" data-name="admin-panel">
+            <div class="name">admin-panel</div>
+            <div class="meta">3 files | 123.8 KB | Source: financial</div>
+            <div class="files">
+              <div>components\admin\Dashboard.js</div><div>components\admin\SettingsPanel.js</div><div>module.json</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="auth-context">
+            <div class="name">auth-context</div>
+            <div class="meta">4 files | 4.7 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>api\auth.js</div><div>context\AuthContext.jsx</div><div>hooks\useAuth.js</div><div>module.json</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="balance-display">
+            <div class="name">balance-display</div>
+            <div class="meta">4 files | 12.9 KB | Source: unknown</div>
+            <div class="files">
+              <div>components\wallet\BalanceDisplay.jsx</div><div>components\wallet\CashoutFlow.jsx</div><div>components\wallet\TransactionList.jsx</div><div>module.json</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="business-admin">
+            <div class="name">business-admin</div>
+            <div class="meta">7981 files | 79.8 MB | Source: blink-core</div>
+            <div class="files">
+              <div>components\AdminLayout.jsx</div><div>components\AdminSidebar.jsx</div><div>components\ai\AIChat.jsx</div><div>components\ai\AICompetitors.jsx</div><div>components\ai\AIHistory.jsx</div><div>components\ai\AIInsights.jsx</div><div>components\ai\AILocalPulse.jsx</div><div>components\ai\AIManagerPage.jsx</div><div>components\ai\AIPreview.jsx</div><div>components\ai\AITasks.jsx</div>
+              <div style="color: var(--accent-purple);">... and 7971 more</div>
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="card-components">
+            <div class="name">card-components</div>
+            <div class="meta">3 files | 344.0 KB | Source: financial</div>
+            <div class="files">
+              <div>components\cards\CardMarketplace.js</div><div>components\cards\CardPrice.js</div><div>module.json</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="checkout-flow">
+            <div class="name">checkout-flow</div>
+            <div class="meta">2 files | 21.2 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>module.json</div><div>pages\Checkout.jsx</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="collection-grid">
+            <div class="name">collection-grid</div>
+            <div class="meta">3 files | 73.7 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>components\collection\CollectionGrid.jsx</div><div>module.json</div><div>pages\CollectionViewer.jsx</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="data-table">
+            <div class="name">data-table</div>
+            <div class="meta">2 files | 4.1 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>components\data\DataTable.jsx</div><div>module.json</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="file-uploader">
+            <div class="name">file-uploader</div>
+            <div class="meta">3 files | 17.9 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>components\upload\ImageUpload.jsx</div><div>components\upload\UploadModal.jsx</div><div>module.json</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="footer-section">
+            <div class="name">footer-section</div>
+            <div class="meta">2 files | 6.1 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>components\layout\Footer.jsx</div><div>module.json</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="header-nav">
+            <div class="name">header-nav</div>
+            <div class="meta">2 files | 4.4 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>components\layout\Navbar.jsx</div><div>module.json</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="image-gallery">
+            <div class="name">image-gallery</div>
+            <div class="meta">2 files | 11.1 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>components\media\Gallery.jsx</div><div>module.json</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="item-detail">
+            <div class="name">item-detail</div>
+            <div class="meta">3 files | 191.1 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>components\items\ItemDetailModal.jsx</div><div>components\items\ItemDisplay.jsx</div><div>module.json</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="level-progress">
+            <div class="name">level-progress</div>
+            <div class="meta">3 files | 7.9 KB | Source: unknown</div>
+            <div class="files">
+              <div>components\gamification\AchievementBadge.jsx</div><div>components\gamification\LevelProgress.jsx</div><div>module.json</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="login-form">
+            <div class="name">login-form</div>
+            <div class="meta">3 files | 7.4 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>components\auth\LoginForm.jsx</div><div>module.json</div><div>pages\Login.jsx</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="marketplace-ui">
+            <div class="name">marketplace-ui</div>
+            <div class="meta">4 files | 63.4 KB | Source: financial</div>
+            <div class="files">
+              <div>components\marketplace\Filters.js</div><div>components\marketplace\Marketplace.js</div><div>components\marketplace\Stats.js</div><div>module.json</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="modal-system">
+            <div class="name">modal-system</div>
+            <div class="meta">2 files | 1.9 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>components\ui\Modal.jsx</div><div>module.json</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="pricing-table">
+            <div class="name">pricing-table</div>
+            <div class="meta">2 files | 16.2 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>module.json</div><div>pages\Pricing.jsx</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="register-form">
+            <div class="name">register-form</div>
+            <div class="meta">3 files | 16.0 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>components\auth\RegisterForm.jsx</div><div>module.json</div><div>pages\Register.jsx</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="search-filter">
+            <div class="name">search-filter</div>
+            <div class="meta">2 files | 25.5 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>components\search\SearchFilter.jsx</div><div>module.json</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="settings-panel">
+            <div class="name">settings-panel</div>
+            <div class="meta">2 files | 100.9 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>module.json</div><div>pages\Settings.jsx</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="spin-wheel">
+            <div class="name">spin-wheel</div>
+            <div class="meta">2 files | 5.7 KB | Source: unknown</div>
+            <div class="files">
+              <div>components\gamification\SpinWheel.jsx</div><div>module.json</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="stat-cards">
+            <div class="name">stat-cards</div>
+            <div class="meta">3 files | 10.4 KB | Source: slabtrack</div>
+            <div class="files">
+              <div>components\dashboard\StatCards.jsx</div><div>components\dashboard\UsageWidget.jsx</div><div>module.json</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="streak-tracker">
+            <div class="name">streak-tracker</div>
+            <div class="meta">2 files | 5.1 KB | Source: unknown</div>
+            <div class="files">
+              <div>components\gamification\StreakTracker.jsx</div><div>module.json</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="survey-card">
+            <div class="name">survey-card</div>
+            <div class="meta">3 files | 5.2 KB | Source: unknown</div>
+            <div class="files">
+              <div>components\surveys\SurveyCard.jsx</div><div>components\surveys\SurveyList.jsx</div><div>module.json</div>
+              
+            </div>
+          </div>
+        
+          <div class="module-card frontend" data-name="trading-hub">
+            <div class="name">trading-hub</div>
+            <div class="meta">3 files | 100.0 KB | Source: financial</div>
+            <div class="files">
+              <div>components\trading\Calculator.js</div><div>components\trading\TradingHub.js</div><div>module.json</div>
+              
+            </div>
+          </div>
+        
+      </div>
+    </section>
+    
+    <!-- BUNDLES -->
+    <section id="bundles" class="section">
+      <h2 class="section-title">Module Bundles (9)</h2>
+      <p class="section-subtitle">Pre-configured module combinations</p>
+      
+      <div class="bundles-grid">
+        
+          <div class="bundle-card">
+            <div class="bundle-header">
+              <div class="name">core</div>
+              <div class="desc">Essential modules every platform needs</div>
+            </div>
+            <div class="bundle-body">
+              <div class="bundle-section">
+                <div class="bundle-section-title">Backend (2)</div>
+                <div class="module-chips">
+                  <span class="module-chip backend">auth</span><span class="module-chip backend">file-upload</span>
+                  
+                </div>
+              </div>
+              <div class="bundle-section">
+                <div class="bundle-section-title">Frontend (6)</div>
+                <div class="module-chips">
+                  <span class="module-chip frontend">login-form</span><span class="module-chip frontend">register-form</span><span class="module-chip frontend">header-nav</span><span class="module-chip frontend">footer-section</span><span class="module-chip frontend">modal-system</span><span class="module-chip frontend">auth-context</span>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="bundle-card">
+            <div class="bundle-header">
+              <div class="name">dashboard</div>
+              <div class="desc">Admin dashboard with analytics</div>
+            </div>
+            <div class="bundle-body">
+              <div class="bundle-section">
+                <div class="bundle-section-title">Backend (2)</div>
+                <div class="module-chips">
+                  <span class="module-chip backend">admin-dashboard</span><span class="module-chip backend">analytics</span>
+                  
+                </div>
+              </div>
+              <div class="bundle-section">
+                <div class="bundle-section-title">Frontend (3)</div>
+                <div class="module-chips">
+                  <span class="module-chip frontend">stat-cards</span><span class="module-chip frontend">data-table</span><span class="module-chip frontend">admin-panel</span>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="bundle-card">
+            <div class="bundle-header">
+              <div class="name">commerce</div>
+              <div class="desc">E-commerce and payments</div>
+            </div>
+            <div class="bundle-body">
+              <div class="bundle-section">
+                <div class="bundle-section-title">Backend (6)</div>
+                <div class="module-chips">
+                  <span class="module-chip backend">stripe-payments</span><span class="module-chip backend">payments</span><span class="module-chip backend">inventory</span><span class="module-chip backend">marketplace</span><span class="module-chip backend">vendor-system</span><span class="module-chip backend">transfers</span>
+                  
+                </div>
+              </div>
+              <div class="bundle-section">
+                <div class="bundle-section-title">Frontend (4)</div>
+                <div class="module-chips">
+                  <span class="module-chip frontend">checkout-flow</span><span class="module-chip frontend">pricing-table</span><span class="module-chip frontend">marketplace-ui</span><span class="module-chip frontend">trading-hub</span>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="bundle-card">
+            <div class="bundle-header">
+              <div class="name">social</div>
+              <div class="desc">Social features</div>
+            </div>
+            <div class="bundle-body">
+              <div class="bundle-section">
+                <div class="bundle-section-title">Backend (4)</div>
+                <div class="module-chips">
+                  <span class="module-chip backend">notifications</span><span class="module-chip backend">chat</span><span class="module-chip backend">social-feed</span><span class="module-chip backend">posts</span>
+                  
+                </div>
+              </div>
+              <div class="bundle-section">
+                <div class="bundle-section-title">Frontend (1)</div>
+                <div class="module-chips">
+                  <span class="module-chip frontend">card-components</span>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="bundle-card">
+            <div class="bundle-header">
+              <div class="name">collectibles</div>
+              <div class="desc">Collection management + AI scanning</div>
+            </div>
+            <div class="bundle-body">
+              <div class="bundle-section">
+                <div class="bundle-section-title">Backend (5)</div>
+                <div class="module-chips">
+                  <span class="module-chip backend">ai-scanner</span><span class="module-chip backend">collections</span><span class="module-chip backend">ebay-integration</span><span class="module-chip backend">nfc-tags</span><span class="module-chip backend">showcase</span>
+                  
+                </div>
+              </div>
+              <div class="bundle-section">
+                <div class="bundle-section-title">Frontend (5)</div>
+                <div class="module-chips">
+                  <span class="module-chip frontend">collection-grid</span><span class="module-chip frontend">item-detail</span><span class="module-chip frontend">file-uploader</span><span class="module-chip frontend">image-gallery</span><span class="module-chip frontend">search-filter</span>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="bundle-card">
+            <div class="bundle-header">
+              <div class="name">sports</div>
+              <div class="desc">Sports/fantasy/betting features</div>
+            </div>
+            <div class="bundle-body">
+              <div class="bundle-section">
+                <div class="bundle-section-title">Backend (5)</div>
+                <div class="module-chips">
+                  <span class="module-chip backend">fantasy</span><span class="module-chip backend">betting</span><span class="module-chip backend">leaderboard</span><span class="module-chip backend">pools</span><span class="module-chip backend">schools</span>
+                  
+                </div>
+              </div>
+              <div class="bundle-section">
+                <div class="bundle-section-title">Frontend (0)</div>
+                <div class="module-chips">
+                  
+                  <span style="color: var(--text-secondary);">None</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="bundle-card">
+            <div class="bundle-header">
+              <div class="name">healthcare</div>
+              <div class="desc">Healthcare/booking features</div>
+            </div>
+            <div class="bundle-body">
+              <div class="bundle-section">
+                <div class="bundle-section-title">Backend (1)</div>
+                <div class="module-chips">
+                  <span class="module-chip backend">booking</span>
+                  
+                </div>
+              </div>
+              <div class="bundle-section">
+                <div class="bundle-section-title">Frontend (1)</div>
+                <div class="module-chips">
+                  <span class="module-chip frontend">settings-panel</span>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="bundle-card">
+            <div class="bundle-header">
+              <div class="name">family</div>
+              <div class="desc">Family management features</div>
+            </div>
+            <div class="bundle-body">
+              <div class="bundle-section">
+                <div class="bundle-section-title">Backend (6)</div>
+                <div class="module-chips">
+                  <span class="module-chip backend">calendar</span><span class="module-chip backend">tasks</span><span class="module-chip backend">meals</span><span class="module-chip backend">kids-banking</span><span class="module-chip backend">family-groups</span><span class="module-chip backend">documents</span>
+                  
+                </div>
+              </div>
+              <div class="bundle-section">
+                <div class="bundle-section-title">Frontend (0)</div>
+                <div class="module-chips">
+                  
+                  <span style="color: var(--text-secondary);">None</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="bundle-card">
+            <div class="bundle-header">
+              <div class="name">gamification</div>
+              <div class="desc">Achievements and challenges</div>
+            </div>
+            <div class="bundle-body">
+              <div class="bundle-section">
+                <div class="bundle-section-title">Backend (2)</div>
+                <div class="module-chips">
+                  <span class="module-chip backend">achievements</span><span class="module-chip backend">portfolio</span>
+                  
+                </div>
+              </div>
+              <div class="bundle-section">
+                <div class="bundle-section-title">Frontend (0)</div>
+                <div class="module-chips">
+                  
+                  <span style="color: var(--text-secondary);">None</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        
+      </div>
+    </section>
+    
+    <!-- INDUSTRIES -->
+    <section id="industries" class="section">
+      <h2 class="section-title">Industry Presets (7)</h2>
+      <p class="section-subtitle">One-command project generation for specific industries</p>
+      
+      <div class="industry-grid">
+        
+          <div class="industry-card">
+            <div class="header">
+              <span class="icon">🍽️</span>
+              <div>
+                <div class="name">Restaurant / Food Service</div>
+                <div class="desc">Menu management, reservations, online ordering</div>
+              </div>
+            </div>
+            <div class="bundles-used">
+              <div class="label">Bundles included:</div>
+              <span class="bundle-tag">core</span><span class="bundle-tag">commerce</span>
+            </div>
+            <div style="margin-top: 15px; font-family: 'Consolas', monospace; font-size: 0.8rem; color: var(--accent-cyan);">
+              node assemble-project.cjs --name "App" --industry restaurant
+            </div>
+          </div>
+        
+          <div class="industry-card">
+            <div class="header">
+              <span class="icon">🏥</span>
+              <div>
+                <div class="name">Healthcare / Medical</div>
+                <div class="desc">Patient management, appointments, telemedicine</div>
+              </div>
+            </div>
+            <div class="bundles-used">
+              <div class="label">Bundles included:</div>
+              <span class="bundle-tag">core</span><span class="bundle-tag">dashboard</span><span class="bundle-tag">healthcare</span>
+            </div>
+            <div style="margin-top: 15px; font-family: 'Consolas', monospace; font-size: 0.8rem; color: var(--accent-cyan);">
+              node assemble-project.cjs --name "App" --industry healthcare
+            </div>
+          </div>
+        
+          <div class="industry-card">
+            <div class="header">
+              <span class="icon">🛒</span>
+              <div>
+                <div class="name">E-Commerce / Retail</div>
+                <div class="desc">Product catalog, cart, checkout, payments</div>
+              </div>
+            </div>
+            <div class="bundles-used">
+              <div class="label">Bundles included:</div>
+              <span class="bundle-tag">core</span><span class="bundle-tag">commerce</span><span class="bundle-tag">dashboard</span>
+            </div>
+            <div style="margin-top: 15px; font-family: 'Consolas', monospace; font-size: 0.8rem; color: var(--accent-cyan);">
+              node assemble-project.cjs --name "App" --industry ecommerce
+            </div>
+          </div>
+        
+          <div class="industry-card">
+            <div class="header">
+              <span class="icon">🃏</span>
+              <div>
+                <div class="name">Collectibles / Trading Cards</div>
+                <div class="desc">AI scanning, collection management, eBay pricing</div>
+              </div>
+            </div>
+            <div class="bundles-used">
+              <div class="label">Bundles included:</div>
+              <span class="bundle-tag">core</span><span class="bundle-tag">commerce</span><span class="bundle-tag">collectibles</span><span class="bundle-tag">dashboard</span>
+            </div>
+            <div style="margin-top: 15px; font-family: 'Consolas', monospace; font-size: 0.8rem; color: var(--accent-cyan);">
+              node assemble-project.cjs --name "App" --industry collectibles
+            </div>
+          </div>
+        
+          <div class="industry-card">
+            <div class="header">
+              <span class="icon">🎮</span>
+              <div>
+                <div class="name">Sports / Fantasy / Betting</div>
+                <div class="desc">Fantasy leagues, betting pools, leaderboards</div>
+              </div>
+            </div>
+            <div class="bundles-used">
+              <div class="label">Bundles included:</div>
+              <span class="bundle-tag">core</span><span class="bundle-tag">social</span><span class="bundle-tag">sports</span><span class="bundle-tag">dashboard</span>
+            </div>
+            <div style="margin-top: 15px; font-family: 'Consolas', monospace; font-size: 0.8rem; color: var(--accent-cyan);">
+              node assemble-project.cjs --name "App" --industry sports
+            </div>
+          </div>
+        
+          <div class="industry-card">
+            <div class="header">
+              <span class="icon">🏢</span>
+              <div>
+                <div class="name">SaaS / B2B Platform</div>
+                <div class="desc">Subscriptions, analytics, admin dashboard</div>
+              </div>
+            </div>
+            <div class="bundles-used">
+              <div class="label">Bundles included:</div>
+              <span class="bundle-tag">core</span><span class="bundle-tag">commerce</span><span class="bundle-tag">dashboard</span><span class="bundle-tag">gamification</span>
+            </div>
+            <div style="margin-top: 15px; font-family: 'Consolas', monospace; font-size: 0.8rem; color: var(--accent-cyan);">
+              node assemble-project.cjs --name "App" --industry saas
+            </div>
+          </div>
+        
+          <div class="industry-card">
+            <div class="header">
+              <span class="icon">👨‍👩‍👧‍👦</span>
+              <div>
+                <div class="name">Family / Community</div>
+                <div class="desc">Calendar, tasks, kids banking, meal planning</div>
+              </div>
+            </div>
+            <div class="bundles-used">
+              <div class="label">Bundles included:</div>
+              <span class="bundle-tag">core</span><span class="bundle-tag">family</span><span class="bundle-tag">social</span>
+            </div>
+            <div style="margin-top: 15px; font-family: 'Consolas', monospace; font-size: 0.8rem; color: var(--accent-cyan);">
+              node assemble-project.cjs --name "App" --industry family
+            </div>
+          </div>
+        
+      </div>
+    </section>
+    
+    <!-- CONNECTIONS -->
+    <section id="connections" class="section">
+      <h2 class="section-title">Module Connections (19)</h2>
+      <p class="section-subtitle">How backend and frontend modules connect</p>
+      
+      <div class="connections-list">
+        
+          <div class="connection-item">
+            <span class="backend">auth</span>
+            <span class="arrow">→</span>
+            <span class="frontend">login-form</span>
+          </div>
+        
+          <div class="connection-item">
+            <span class="backend">auth</span>
+            <span class="arrow">→</span>
+            <span class="frontend">register-form</span>
+          </div>
+        
+          <div class="connection-item">
+            <span class="backend">auth</span>
+            <span class="arrow">→</span>
+            <span class="frontend">auth-context</span>
+          </div>
+        
+          <div class="connection-item">
+            <span class="backend">stripe-payments</span>
+            <span class="arrow">→</span>
+            <span class="frontend">checkout-flow</span>
+          </div>
+        
+          <div class="connection-item">
+            <span class="backend">stripe-payments</span>
+            <span class="arrow">→</span>
+            <span class="frontend">pricing-table</span>
+          </div>
+        
+          <div class="connection-item">
+            <span class="backend">payments</span>
+            <span class="arrow">→</span>
+            <span class="frontend">checkout-flow</span>
+          </div>
+        
+          <div class="connection-item">
+            <span class="backend">payments</span>
+            <span class="arrow">→</span>
+            <span class="frontend">pricing-table</span>
+          </div>
+        
+          <div class="connection-item">
+            <span class="backend">admin-dashboard</span>
+            <span class="arrow">→</span>
+            <span class="frontend">admin-panel</span>
+          </div>
+        
+          <div class="connection-item">
+            <span class="backend">admin-dashboard</span>
+            <span class="arrow">→</span>
+            <span class="frontend">stat-cards</span>
+          </div>
+        
+          <div class="connection-item">
+            <span class="backend">admin-dashboard</span>
+            <span class="arrow">→</span>
+            <span class="frontend">data-table</span>
+          </div>
+        
+          <div class="connection-item">
+            <span class="backend">analytics</span>
+            <span class="arrow">→</span>
+            <span class="frontend">stat-cards</span>
+          </div>
+        
+          <div class="connection-item">
+            <span class="backend">analytics</span>
+            <span class="arrow">→</span>
+            <span class="frontend">data-table</span>
+          </div>
+        
+          <div class="connection-item">
+            <span class="backend">collections</span>
+            <span class="arrow">→</span>
+            <span class="frontend">collection-grid</span>
+          </div>
+        
+          <div class="connection-item">
+            <span class="backend">collections</span>
+            <span class="arrow">→</span>
+            <span class="frontend">item-detail</span>
+          </div>
+        
+          <div class="connection-item">
+            <span class="backend">ai-scanner</span>
+            <span class="arrow">→</span>
+            <span class="frontend">file-uploader</span>
+          </div>
+        
+          <div class="connection-item">
+            <span class="backend">showcase</span>
+            <span class="arrow">→</span>
+            <span class="frontend">image-gallery</span>
+          </div>
+        
+          <div class="connection-item">
+            <span class="backend">marketplace</span>
+            <span class="arrow">→</span>
+            <span class="frontend">marketplace-ui</span>
+          </div>
+        
+          <div class="connection-item">
+            <span class="backend">inventory</span>
+            <span class="arrow">→</span>
+            <span class="frontend">trading-hub</span>
+          </div>
+        
+          <div class="connection-item">
+            <span class="backend">file-upload</span>
+            <span class="arrow">→</span>
+            <span class="frontend">file-uploader</span>
+          </div>
+        
+      </div>
+    </section>
+    
+    <!-- GENERATED PROJECTS -->
+    <section id="projects" class="section">
+      <h2 class="section-title">Generated Projects (50)</h2>
+      <p class="section-subtitle">Projects assembled from this library</p>
+      
+      
+      
+      <div class="projects-grid">
+        
+          <div class="project-card">
+            <div class="name">ANJ-Sports-Cards</div>
+            <div class="meta">
+              Generated: 1/10/2026, 5:25:16 PM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 13 backend</span>
+                <span class="count-item">🎨 13 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">AutoWiredTest</div>
+            <div class="meta">
+              Generated: 1/8/2026, 8:22:54 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 15 backend</span>
+                <span class="count-item">🎨 18 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">Aviv-Investments</div>
+            <div class="meta">
+              Generated: 1/9/2026, 10:33:31 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 7 backend</span>
+                <span class="count-item">🎨 9 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">AvivInvestmentGroup</div>
+            <div class="meta">
+              Generated: 1/8/2026, 6:09:14 PM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 13 backend</span>
+                <span class="count-item">🎨 13 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">AvivInvestmentGroup-BE1st</div>
+            <div class="meta">
+              Generated: 1/8/2026, 6:36:22 PM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 13 backend</span>
+                <span class="count-item">🎨 13 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">AvivInvestmentGroupBE1st</div>
+            <div class="meta">
+              Generated: 1/8/2026, 6:19:54 PM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 13 backend</span>
+                <span class="count-item">🎨 13 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">BBQ-restaurant-in-Dallas</div>
+            <div class="meta">
+              Generated: 1/9/2026, 9:09:13 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 10 backend</span>
+                <span class="count-item">🎨 12 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">CardVault</div>
+            <div class="meta">
+              Generated: 1/8/2026, 7:11:49 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 15 backend</span>
+                <span class="count-item">🎨 18 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">CardVaultPro</div>
+            <div class="meta">
+              Generated: 1/8/2026, 8:54:32 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 15 backend</span>
+                <span class="count-item">🎨 18 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">CardVaultV2</div>
+            <div class="meta">
+              Generated: 1/8/2026, 8:56:09 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 15 backend</span>
+                <span class="count-item">🎨 18 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">CC-BE1st</div>
+            <div class="meta">
+              Generated: 1/8/2026, 8:27:29 PM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 13 backend</span>
+                <span class="count-item">🎨 13 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">CC-BE1st2</div>
+            <div class="meta">
+              Generated: 1/8/2026, 8:31:03 PM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 13 backend</span>
+                <span class="count-item">🎨 13 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">cc-be1st6</div>
+            <div class="meta">
+              Generated: 1/8/2026, 8:45:14 PM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 13 backend</span>
+                <span class="count-item">🎨 13 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">cc7</div>
+            <div class="meta">
+              Generated: 1/8/2026, 8:59:07 PM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 13 backend</span>
+                <span class="count-item">🎨 13 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">cc8</div>
+            <div class="meta">
+              Generated: 1/8/2026, 9:04:05 PM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 13 backend</span>
+                <span class="count-item">🎨 13 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">cc9</div>
+            <div class="meta">
+              Generated: 1/8/2026, 9:06:59 PM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 13 backend</span>
+                <span class="count-item">🎨 13 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">CourtCrate-byBE1st</div>
+            <div class="meta">
+              Generated: 1/8/2026, 8:03:50 PM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 13 backend</span>
+                <span class="count-item">🎨 13 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">CourtCrate-Redesign-BE1st</div>
+            <div class="meta">
+              Generated: 1/8/2026, 8:13:55 PM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 13 backend</span>
+                <span class="count-item">🎨 13 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">Dallas-Card-Shop</div>
+            <div class="meta">
+              Generated: 1/11/2026, 2:22:37 PM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 13 backend</span>
+                <span class="count-item">🎨 13 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">DallasPizza</div>
+            <div class="meta">
+              Generated: 1/10/2026, 9:08:38 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 10 backend</span>
+                <span class="count-item">🎨 12 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">DentalTestAi1</div>
+            <div class="meta">
+              Generated: 1/8/2026, 5:08:56 PM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 8 backend</span>
+                <span class="count-item">🎨 10 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">Fossil-Pointe</div>
+            <div class="meta">
+              Generated: 1/10/2026, 2:23:48 PM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 13 backend</span>
+                <span class="count-item">🎨 13 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">HealthTesatAi3</div>
+            <div class="meta">
+              Generated: 1/8/2026, 4:35:34 PM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 8 backend</span>
+                <span class="count-item">🎨 10 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">HealthTest2</div>
+            <div class="meta">
+              Generated: 1/8/2026, 8:18:01 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 8 backend</span>
+                <span class="count-item">🎨 10 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">Healthtest3</div>
+            <div class="meta">
+              Generated: 1/8/2026, 8:18:23 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 8 backend</span>
+                <span class="count-item">🎨 10 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">healthtest5</div>
+            <div class="meta">
+              Generated: 1/8/2026, 8:59:35 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 8 backend</span>
+                <span class="count-item">🎨 10 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">HealthTestAi4</div>
+            <div class="meta">
+              Generated: 1/8/2026, 4:39:41 PM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 8 backend</span>
+                <span class="count-item">🎨 10 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">HealthTestAi6</div>
+            <div class="meta">
+              Generated: 1/8/2026, 4:57:21 PM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 8 backend</span>
+                <span class="count-item">🎨 10 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">Investment-firm-in-Miami</div>
+            <div class="meta">
+              Generated: 1/9/2026, 11:05:26 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 13 backend</span>
+                <span class="count-item">🎨 13 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">italianttest1</div>
+            <div class="meta">
+              Generated: 1/9/2026, 7:21:58 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 10 backend</span>
+                <span class="count-item">🎨 12 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">Miami-Investments</div>
+            <div class="meta">
+              Generated: 1/9/2026, 11:32:21 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 2 backend</span>
+                <span class="count-item">🎨 6 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">MyApp</div>
+            <div class="meta">
+              Generated: 1/8/2026, 7:11:54 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 10 backend</span>
+                <span class="count-item">🎨 13 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">MyRestaurant</div>
+            <div class="meta">
+              Generated: 1/8/2026, 7:11:45 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 10 backend</span>
+                <span class="count-item">🎨 12 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">Pizza-restaurant-in-Brooklyn</div>
+            <div class="meta">
+              Generated: 1/9/2026, 5:05:32 PM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 10 backend</span>
+                <span class="count-item">🎨 12 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">SimpleApp</div>
+            <div class="meta">
+              Generated: 1/8/2026, 7:11:59 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 2 backend</span>
+                <span class="count-item">🎨 2 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">SimpleHealth</div>
+            <div class="meta">
+              Generated: 1/8/2026, 8:48:28 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 8 backend</span>
+                <span class="count-item">🎨 10 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">Sterling---Associates-Law</div>
+            <div class="meta">
+              Generated: 1/9/2026, 9:15:49 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 7 backend</span>
+                <span class="count-item">🎨 9 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">test-admin-check</div>
+            <div class="meta">
+              Generated: 1/11/2026, 2:19:07 PM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 10 backend</span>
+                <span class="count-item">🎨 12 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">test-lawfirm</div>
+            <div class="meta">
+              Generated: 1/9/2026, 8:24:59 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 7 backend</span>
+                <span class="count-item">🎨 9 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">test-saas</div>
+            <div class="meta">
+              Generated: 1/9/2026, 7:42:29 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 13 backend</span>
+                <span class="count-item">🎨 13 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">TestV10</div>
+            <div class="meta">
+              Generated: 1/8/2026, 8:44:44 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 15 backend</span>
+                <span class="count-item">🎨 18 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">TestV11</div>
+            <div class="meta">
+              Generated: 1/8/2026, 8:53:28 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 8 backend</span>
+                <span class="count-item">🎨 10 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">TestV3</div>
+            <div class="meta">
+              Generated: 1/8/2026, 8:31:14 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 15 backend</span>
+                <span class="count-item">🎨 18 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">TestV4</div>
+            <div class="meta">
+              Generated: 1/8/2026, 8:36:07 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 15 backend</span>
+                <span class="count-item">🎨 18 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">TestV5</div>
+            <div class="meta">
+              Generated: 1/8/2026, 8:37:46 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 15 backend</span>
+                <span class="count-item">🎨 18 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">TestV6</div>
+            <div class="meta">
+              Generated: 1/8/2026, 8:39:51 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 15 backend</span>
+                <span class="count-item">🎨 18 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">TestV7</div>
+            <div class="meta">
+              Generated: 1/8/2026, 8:40:48 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 15 backend</span>
+                <span class="count-item">🎨 18 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">TestV8</div>
+            <div class="meta">
+              Generated: 1/8/2026, 8:42:34 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 15 backend</span>
+                <span class="count-item">🎨 18 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">TestV9</div>
+            <div class="meta">
+              Generated: 1/8/2026, 8:43:17 AM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 15 backend</span>
+                <span class="count-item">🎨 18 frontend</span>
+              </div>
+            
+          </div>
+        
+          <div class="project-card">
+            <div class="name">YogaAustin</div>
+            <div class="meta">
+              Generated: 1/9/2026, 5:36:49 PM
+            </div>
+            
+              <div class="modules-count">
+                <span class="count-item">🔧 2 backend</span>
+                <span class="count-item">🎨 6 frontend</span>
+              </div>
+            
+          </div>
+        
+      </div>
+    </section>
+    
+    <!-- SOURCE PLATFORMS -->
+    <section id="sources" class="section">
+      <h2 class="section-title">Source Platforms (7)</h2>
+      <p class="section-subtitle">Where modules were extracted from</p>
+      
+      <div class="platforms-grid">
+        
+          <div class="platform-card">
+            <div class="header">
+              <span class="icon">🃏</span>
+              <span class="name">SlabTrack</span>
+              <span class="status-badge production">production</span>
+            </div>
+            <div class="desc">Sports card collection management with AI scanning</div>
+            <div class="path">C:\Users\huddl\OneDrive\Desktop\GitHub\slabtrack</div>
+          </div>
+        
+          <div class="platform-card">
+            <div class="header">
+              <span class="icon">🏈</span>
+              <span class="name">Huddle</span>
+              <span class="status-badge archived">archived</span>
+            </div>
+            <div class="desc">Fantasy sports and betting platform</div>
+            <div class="path">C:\Users\huddl\OneDrive\Desktop\HOMESCREEN-PREVIOUS\PLATFORMS\Huddle</div>
+          </div>
+        
+          <div class="platform-card">
+            <div class="header">
+              <span class="icon">🏥</span>
+              <span class="name">HealthcareOS</span>
+              <span class="status-badge archived">archived</span>
+            </div>
+            <div class="desc">Healthcare management platform</div>
+            <div class="path">C:\Users\huddl\OneDrive\Desktop\HOMESCREEN-PREVIOUS\PLATFORMS\HealthcareOS</div>
+          </div>
+        
+          <div class="platform-card">
+            <div class="header">
+              <span class="icon">👨‍👩‍👧‍👦</span>
+              <span class="name">Family Huddle</span>
+              <span class="status-badge archived">archived</span>
+            </div>
+            <div class="desc">Family organization and management</div>
+            <div class="path">C:\Users\huddl\OneDrive\Desktop\HOMESCREEN-PREVIOUS\My-Family-Huddle</div>
+          </div>
+        
+          <div class="platform-card">
+            <div class="header">
+              <span class="icon">🏗️</span>
+              <span class="name">Universal Business Generator</span>
+              <span class="status-badge archived">archived</span>
+            </div>
+            <div class="desc">Multi-industry website generator</div>
+            <div class="path">C:\Users\huddl\OneDrive\Desktop\HOMESCREEN-PREVIOUS\PLATFORMS\universal-business-generator</div>
+          </div>
+        
+          <div class="platform-card">
+            <div class="header">
+              <span class="icon">🎓</span>
+              <span class="name">CampusWager</span>
+              <span class="status-badge archived">archived</span>
+            </div>
+            <div class="desc">Campus sports betting platform</div>
+            <div class="path">C:\Users\huddl\OneDrive\Desktop\HOMESCREEN-PREVIOUS\CampusWager</div>
+          </div>
+        
+          <div class="platform-card">
+            <div class="header">
+              <span class="icon">💰</span>
+              <span class="name">Financial Services</span>
+              <span class="status-badge archived">archived</span>
+            </div>
+            <div class="desc">Financial services and investment platform</div>
+            <div class="path">C:\Users\huddl\OneDrive\Desktop\HOMESCREEN-PREVIOUS\Financial-Services-Platform</div>
+          </div>
+        
+      </div>
+    </section>
+    
+    <!-- DIAGNOSTICS -->
+    <section id="diagnostics" class="section">
+      <h2 class="section-title">Diagnostics (23 tests)</h2>
+      <p class="section-subtitle">System health checks</p>
+      
+      <div class="stats-grid" style="margin-bottom: 30px;">
+        <div class="stat-card">
+          <div class="value" style="color: var(--accent-green);">23</div>
+          <div class="label">Passed</div>
+        </div>
+        <div class="stat-card">
+          <div class="value" style="color: var(--accent-yellow);">0</div>
+          <div class="label">Warnings</div>
+        </div>
+        <div class="stat-card">
+          <div class="value" style="color: var(--accent-red);">0</div>
+          <div class="label">Failed</div>
+        </div>
+      </div>
+      
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Module library exists</span>
+          <span class="diagnostic-message">Found at C:\Users\huddl\OneDrive\Desktop\module-library</span>
+        </div>
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Backend modules folder</span>
+          <span class="diagnostic-message">39 modules found</span>
+        </div>
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Frontend modules folder</span>
+          <span class="diagnostic-message">26 modules found</span>
+        </div>
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Scripts folder</span>
+          <span class="diagnostic-message">Found</span>
+        </div>
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Extract modules script</span>
+          <span class="diagnostic-message">Found</span>
+        </div>
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Assemble project script</span>
+          <span class="diagnostic-message">Found</span>
+        </div>
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Bundle "core" modules</span>
+          <span class="diagnostic-message">8/8 modules available</span>
+        </div>
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Bundle "dashboard" modules</span>
+          <span class="diagnostic-message">5/5 modules available</span>
+        </div>
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Bundle "commerce" modules</span>
+          <span class="diagnostic-message">10/10 modules available</span>
+        </div>
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Bundle "social" modules</span>
+          <span class="diagnostic-message">5/5 modules available</span>
+        </div>
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Bundle "collectibles" modules</span>
+          <span class="diagnostic-message">10/10 modules available</span>
+        </div>
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Bundle "sports" modules</span>
+          <span class="diagnostic-message">5/5 modules available</span>
+        </div>
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Bundle "healthcare" modules</span>
+          <span class="diagnostic-message">2/2 modules available</span>
+        </div>
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Bundle "family" modules</span>
+          <span class="diagnostic-message">6/6 modules available</span>
+        </div>
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Bundle "gamification" modules</span>
+          <span class="diagnostic-message">2/2 modules available</span>
+        </div>
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Source: SlabTrack</span>
+          <span class="diagnostic-message">Accessible</span>
+        </div>
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Source: Huddle</span>
+          <span class="diagnostic-message">Accessible</span>
+        </div>
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Source: HealthcareOS</span>
+          <span class="diagnostic-message">Accessible</span>
+        </div>
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Source: Family Huddle</span>
+          <span class="diagnostic-message">Accessible</span>
+        </div>
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Source: Universal Business Generator</span>
+          <span class="diagnostic-message">Accessible</span>
+        </div>
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Source: CampusWager</span>
+          <span class="diagnostic-message">Accessible</span>
+        </div>
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Source: Financial Services</span>
+          <span class="diagnostic-message">Accessible</span>
+        </div>
+      
+        <div class="diagnostic pass">
+          <span class="diagnostic-icon">✅</span>
+          <span class="diagnostic-test">Generated projects folder</span>
+          <span class="diagnostic-message">Found at C:\Users\huddl\OneDrive\Desktop\generated-projects</span>
+        </div>
+      
+    </section>
+    
+    <!-- AI CONTEXT -->
+    <section id="ai-context" class="section">
+      <h2 class="section-title">🤖 AI Context</h2>
+      <p class="section-subtitle">Copy this to give Claude full awareness of your module library</p>
+      
+      <div class="ai-context">
+        <button class="copy-btn" onclick="copyAIContext()">📋 Copy to Clipboard</button>
+        
+        <pre id="ai-context-text"># Module Library Context
+# Generated: 2026-01-12T01:13:22.258Z
+# Use this to understand the module library architecture
+
+## What is This?
+A modular full-stack application library extracted from 7 production platforms.
+Enables instant project generation by assembling pre-built, tested modules.
+
+## Location
+C:\\Users\\huddl\\OneDrive\\Desktop\\module-library
+
+## Stats
+- Backend Modules: 39
+- Frontend Modules: 26
+- Total Files: 8162
+- Bundles: 9
+- Industry Presets: 7
+
+## Backend Modules (39)
+  - achievements (3 files, source: financial)
+  - admin-dashboard (2 files, source: healthcareos)
+  - ai-scanner (4 files, source: slabtrack)
+  - analytics (2 files, source: healthcareos)
+  - auth (5 files, source: slabtrack)
+  - betting (6 files, source: huddle)
+  - booking (4 files, source: unknown)
+  - calendar (2 files, source: family-huddle)
+  - cashouts (2 files, source: unknown)
+  - chat (2 files, source: family-huddle)
+  - collections (2 files, source: slabtrack)
+  - daily-spin (2 files, source: commoncents)
+  - documents (3 files, source: family-huddle)
+  - ebay-integration (5 files, source: slabtrack)
+  - family-groups (2 files, source: family-huddle)
+  - fantasy (5 files, source: huddle)
+  - file-upload (4 files, source: slabtrack)
+  - inventory (3 files, source: ubg)
+  - kids-banking (4 files, source: family-huddle)
+  - leaderboard (3 files, source: huddle)
+  - marketplace (3 files, source: ubg)
+  - meals (2 files, source: family-huddle)
+  - nfc-tags (2 files, source: slabtrack)
+  - notifications (4 files, source: huddle)
+  - page-generator (3 files, source: ubg)
+  - payments (3 files, source: financial)
+  - pools (2 files, source: campuswager)
+  - portfolio (3 files, source: financial)
+  - posts (2 files, source: campuswager)
+  - schools (3 files, source: campuswager)
+  - showcase (2 files, source: slabtrack)
+  - social-feed (2 files, source: financial)
+  - streaks (2 files, source: commoncents)
+  - stripe-payments (5 files, source: slabtrack)
+  - surveys (2 files, source: unknown)
+  - tasks (2 files, source: family-huddle)
+  - transfers (2 files, source: slabtrack)
+  - user-balance (2 files, source: unknown)
+  - vendor-system (3 files, source: slabtrack)
+
+## Frontend Modules (26)
+  - admin-panel (3 files, source: financial)
+  - auth-context (4 files, source: slabtrack)
+  - balance-display (4 files, source: unknown)
+  - business-admin (7981 files, source: blink-core)
+  - card-components (3 files, source: financial)
+  - checkout-flow (2 files, source: slabtrack)
+  - collection-grid (3 files, source: slabtrack)
+  - data-table (2 files, source: slabtrack)
+  - file-uploader (3 files, source: slabtrack)
+  - footer-section (2 files, source: slabtrack)
+  - header-nav (2 files, source: slabtrack)
+  - image-gallery (2 files, source: slabtrack)
+  - item-detail (3 files, source: slabtrack)
+  - level-progress (3 files, source: unknown)
+  - login-form (3 files, source: slabtrack)
+  - marketplace-ui (4 files, source: financial)
+  - modal-system (2 files, source: slabtrack)
+  - pricing-table (2 files, source: slabtrack)
+  - register-form (3 files, source: slabtrack)
+  - search-filter (2 files, source: slabtrack)
+  - settings-panel (2 files, source: slabtrack)
+  - spin-wheel (2 files, source: unknown)
+  - stat-cards (3 files, source: slabtrack)
+  - streak-tracker (2 files, source: unknown)
+  - survey-card (3 files, source: unknown)
+  - trading-hub (3 files, source: financial)
+
+## Bundles
+  - core: auth, file-upload | login-form, register-form, header-nav, footer-section, modal-system, auth-context
+  - dashboard: admin-dashboard, analytics | stat-cards, data-table, admin-panel
+  - commerce: stripe-payments, payments, inventory, marketplace, vendor-system, transfers | checkout-flow, pricing-table, marketplace-ui, trading-hub
+  - social: notifications, chat, social-feed, posts | card-components
+  - collectibles: ai-scanner, collections, ebay-integration, nfc-tags, showcase | collection-grid, item-detail, file-uploader, image-gallery, search-filter
+  - sports: fantasy, betting, leaderboard, pools, schools | 
+  - healthcare: booking | settings-panel
+  - family: calendar, tasks, meals, kids-banking, family-groups, documents | 
+  - gamification: achievements, portfolio | 
+
+## Industry Presets
+  - restaurant: Restaurant / Food Service (bundles: core, commerce)
+  - healthcare: Healthcare / Medical (bundles: core, dashboard, healthcare)
+  - ecommerce: E-Commerce / Retail (bundles: core, commerce, dashboard)
+  - collectibles: Collectibles / Trading Cards (bundles: core, commerce, collectibles, dashboard)
+  - sports: Sports / Fantasy / Betting (bundles: core, social, sports, dashboard)
+  - saas: SaaS / B2B Platform (bundles: core, commerce, dashboard, gamification)
+  - family: Family / Community (bundles: core, family, social)
+
+## Key Scripts
+- extract-modules.cjs: Extract modules from source platforms
+- assemble-project.cjs: Generate new projects from modules
+- generate-devtools.cjs: Regenerate this documentation
+
+## Usage Examples
+# List all modules
+node extract-modules.cjs --list
+
+# Generate by industry
+node assemble-project.cjs --name "MyApp" --industry collectibles
+
+# Generate by bundles
+node assemble-project.cjs --name "MyApp" --bundles core,commerce,dashboard
+
+# Generate with specific modules
+node assemble-project.cjs --name "MyApp" --modules auth,stripe-payments,login-form
+
+## Output Location
+Generated projects go to: C:\Users\huddl\OneDrive\Desktop\generated-projects</pre>
+      </div>
+    </section>
+  </main>
+  
+  <footer class="footer">
+    <p><strong>Module Library DevTools</strong></p>
+    <p style="margin-top: 10px;">65 Modules | 9 Bundles | 7 Industries</p>
+    <p style="margin-top: 5px; font-size: 0.85rem;">Generated: 2026-01-12T01:13:22.319Z</p>
+  </footer>
+  
+  <script>
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      event.target.classList.add('active');
+    }
+    
+    function searchModules(query, type) {
+      query = query.toLowerCase();
+      document.querySelectorAll('#' + type + ' .module-card').forEach(card => {
+        const name = card.dataset.name.toLowerCase();
+        card.style.display = name.includes(query) ? '' : 'none';
+      });
+    }
+    
+    function copyAIContext() {
+      const text = document.getElementById('ai-context-text').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = event.target;
+        btn.textContent = '✅ Copied!';
+        setTimeout(() => btn.textContent = '📋 Copy to Clipboard', 2000);
+      });
+    }
+  </script>
+</body>
+</html>

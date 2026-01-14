@@ -1,0 +1,12 @@
+{
+  "name": "fantasy",
+  "type": "backend",
+  "source": "huddle",
+  "extractedAt": "2026-01-08T13:05:46.337Z",
+  "files": [
+    "routes/fantasy-leagues.js",
+    "routes/draft.js",
+    "services/draft-optimizer.js",
+    "services/trade-engine.js"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "meals",
+  "type": "backend",
+  "source": "family-huddle",
+  "extractedAt": "2026-01-08T13:05:46.362Z",
+  "files": [
+    "routes/meals.js"
+  ]
+}

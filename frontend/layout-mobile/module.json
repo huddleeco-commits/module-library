@@ -1,0 +1,14 @@
+﻿{
+  "name": "layout-mobile",
+  "type": "frontend",
+  "source": "be1st-builder",
+  "extractedAt": "2026-01-12T12:00:00.000Z",
+  "description": "Mobile-optimized layout components with bottom navigation and stacked content",
+  "files": [
+    "components/MobileLayout.jsx",
+    "components/MobileHeader.jsx",
+    "components/MobileBottomNav.jsx",
+    "components/MobileDrawer.jsx"
+  ],
+  "dependencies": []
+}

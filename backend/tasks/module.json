@@ -1,0 +1,9 @@
+{
+  "name": "tasks",
+  "type": "backend",
+  "source": "family-huddle",
+  "extractedAt": "2026-01-08T13:05:46.360Z",
+  "files": [
+    "routes/tasks.js"
+  ]
+}

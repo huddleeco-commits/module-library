@@ -1,0 +1,14 @@
+﻿{
+  "name": "device-router",
+  "type": "frontend",
+  "source": "be1st-builder",
+  "extractedAt": "2026-01-12T12:00:00.000Z",
+  "description": "Detects device type and routes to optimized desktop or mobile components",
+  "files": [
+    "components/DeviceRouter.jsx",
+    "components/ResponsiveWrapper.jsx",
+    "hooks/useDeviceType.js",
+    "hooks/useMediaQuery.js"
+  ],
+  "dependencies": []
+}

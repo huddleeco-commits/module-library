@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>👁️ BLINK Master Blueprint - Complete Implementation Guide</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+    
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --surface-2: #1a1a24;
+      --border: #2a2a3a;
+      --text: #e4e4e4;
+      --text-muted: #888;
+      --accent: #67e8f9;
+      --accent-2: #06b6d4;
+      --purple: #a855f7;
+      --green: #22c55e;
+      --orange: #f97316;
+      --red: #ef4444;
+      --yellow: #eab308;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #0a1628 0%, #12121a 50%, #1a0a28 100%);
+      padding: 60px 40px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(103, 232, 249, 0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    
+    .logo-container {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .logo-icon {
+      font-size: 80px;
+      margin-bottom: 16px;
+    }
+    
+    .header h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+      letter-spacing: -1px;
+    }
+    
+    .tagline {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      font-style: italic;
+    }
+    
+    .version-badge {
+      display: inline-block;
+      background: linear-gradient(90deg, var(--accent), var(--purple));
+      color: var(--bg);
+      padding: 8px 20px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 40px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .nav a {
+      padding: 10px 18px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    .nav a:hover {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: var(--accent);
+    }
+    
+    .content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+    
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .stat-card .value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    
+    .stat-card .label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    
+    .section {
+      margin-bottom: 50px;
+    }
+    
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border);
+    }
+    
+    .section-header h2 {
+      font-size: 1.75rem;
+      color: var(--accent);
+    }
+    
+    .phase-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    
+    .phase-header {
+      padding: 20px 24px;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    
+    .phase-header h3 {
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .phase-body {
+      padding: 24px;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .badge-done { background: rgba(34, 197, 94, 0.2); color: var(--green); }
+    .badge-partial { background: rgba(234, 179, 8, 0.2); color: var(--yellow); }
+    .badge-pending { background: rgba(136, 136, 136, 0.2); color: var(--text-muted); }
+    .badge-new { background: rgba(168, 85, 247, 0.2); color: var(--purple); }
+    .badge-critical { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 0.9rem;
+    }
+    
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    th {
+      background: var(--bg);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    tr:hover {
+      background: var(--surface-2);
+    }
+    
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    
+    .module-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    
+    .module-card h4 {
+      color: var(--accent);
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .module-card .meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    
+    .module-card .endpoints {
+      margin-top: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--green);
+    }
+    
+    pre {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      margin: 16px 0;
+    }
+    
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--bg);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      color: var(--accent);
+    }
+    
+    .progress-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 40px;
+    }
+    
+    .progress-item {
+      margin-bottom: 16px;
+    }
+    
+    .progress-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+    
+    .progress-bar {
+      height: 8px;
+      background: var(--bg);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+    
+    .progress-fill.green { background: var(--green); }
+    .progress-fill.yellow { background: var(--yellow); }
+    .progress-fill.red { background: var(--red); }
+    .progress-fill.accent { background: var(--accent); }
+    
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    
+    .feature-card h4 {
+      color: var(--accent);
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+    }
+    
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    
+    .checklist {
+      list-style: none;
+    }
+    
+    .checklist li {
+      padding: 8px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.9rem;
+    }
+    
+    .checklist li::before {
+      content: "☐";
+      color: var(--text-muted);
+    }
+    
+    .checklist li.done::before {
+      content: "✅";
+    }
+    
+    .checklist li.partial::before {
+      content: "🔄";
+    }
+    
+    .highlight-box {
+      background: linear-gradient(135deg, rgba(103, 232, 249, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      padding: 24px;
+      margin: 24px 0;
+    }
+    
+    .highlight-box h4 {
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    
+    .warning-box {
+      background: rgba(249, 115, 22, 0.1);
+      border-left: 4px solid var(--orange);
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
+      margin: 16px 0;
+    }
+    
+    .tier-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+    
+    .tier-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+    }
+    
+    .tier-card.featured {
+      border-color: var(--accent);
+      background: linear-gradient(135deg, var(--surface) 0%, rgba(103, 232, 249, 0.05) 100%);
+    }
+    
+    .tier-card h4 {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+    
+    .tier-card .price {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 12px 0;
+    }
+    
+    .tier-card .price span {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+    
+    .tier-card ul {
+      list-style: none;
+      text-align: left;
+      margin-top: 16px;
+      font-size: 0.85rem;
+    }
+    
+    .tier-card ul li {
+      padding: 6px 0;
+      color: var(--text-muted);
+    }
+    
+    .tier-card ul li::before {
+      content: "✓ ";
+      color: var(--green);
+    }
+    
+    .category-tag {
+      display: inline-block;
+      padding: 4px 10px;
+      background: var(--surface-2);
+      border-radius: 4px;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .flow-diagram {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      white-space: pre;
+      overflow-x: auto;
+      line-height: 1.4;
+    }
+    
+    .empire-box {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(103, 232, 249, 0.1) 100%);
+      border: 2px solid var(--green);
+      border-radius: 16px;
+      padding: 32px;
+      margin: 32px 0;
+    }
+    
+    .empire-box h3 {
+      color: var(--green);
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    footer {
+      text-align: center;
+      padding: 40px;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    
+    footer .tagline {
+      color: var(--accent);
+      font-size: 1rem;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo-container">
+    <img src="blink-logo.webp" alt="Blink Logo" style="width: 280px; height: 180px; object-fit: cover; object-position: center; margin-bottom: 16px;">
+    <span class="version-badge">Master Blueprint v2.0 | January 10, 2026</span>
+  </div>
+</header>
+
+<nav class="nav">
+  <a href="#overview">Overview</a>
+  <a href="#progress">Progress</a>
+  <a href="#modules">Module Library</a>
+  <a href="#phases">Implementation Phases</a>
+  <a href="#business">Business Model</a>
+  <a href="#migration">Dual Sync Migration</a>
+  <a href="#franchise">Franchise Network</a>
+  <a href="#roadmap">Roadmap</a>
+  <a href="#empire">The Empire</a>
+</nav>
+
+<div class="content">
+
+<!-- STATS OVERVIEW -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="value">34</div>
+    <div class="label">Backend Modules</div>
+  </div>
+  <div class="stat-card">
+    <div class="value">20</div>
+    <div class="label">Frontend Modules</div>
+  </div>
+  <div class="stat-card">
+    <div class="value">449</div>
+    <div class="label">API Endpoints</div>
+  </div>
+  <div class="stat-card">
+    <div class="value">22</div>
+    <div class="label">Components</div>
+  </div>
+  <div class="stat-card">
+    <div class="value">58</div>
+    <div class="label">Industry Presets</div>
+  </div>
+  <div class="stat-card">
+    <div class="value">61,045</div>
+    <div class="label">Total Lines of Code</div>
+  </div>
+  <div class="stat-card">
+    <div class="value">90s</div>
+    <div class="label">Generation Time</div>
+  </div>
+  <div class="stat-card">
+    <div class="value">~65%</div>
+    <div class="label">Overall Complete</div>
+  </div>
+</div>
+
+<!-- OVERVIEW SECTION -->
+<section id="overview" class="section">
+  <div class="section-header">
+    <h2>📋 Overview</h2>
+  </div>
+  
+  <div class="highlight-box">
+    <h4>🎯 What is Blink?</h4>
+    <p>Blink is the world's first <strong>instant full-stack business generator</strong>. Not a website builder. Not a template system. A complete business generator that creates working applications with frontend, backend, database, authentication, payments, and booking - all in 90 seconds.</p>
+    <br>
+    <p><strong>The Differentiator:</strong> "I don't make websites. I make businesses."</p>
+  </div>
+  
+  <div class="feature-grid">
+    <div class="feature-card">
+      <h4>⚡ Instant Generation</h4>
+      <p>Type a business description, get a complete full-stack application in 90 seconds. 11 AI-generated pages, auto-wired backend, database migrations included.</p>
+    </div>
+    <div class="feature-card">
+      <h4>🔄 REBUILD Mode</h4>
+      <p>Analyze any existing website, extract their images, colors, and content, then generate a modern full-stack replacement using their actual assets.</p>
+    </div>
+    <div class="feature-card">
+      <h4>🏭 54 Modules</h4>
+      <p>34 backend + 20 frontend production-tested modules extracted from real platforms. Auth, payments, booking, marketplace, AI scanner, and more.</p>
+    </div>
+    <div class="feature-card">
+      <h4>🎨 Visual Archetypes</h4>
+      <p>5 design systems (Bento, Split, Editorial, Magazine, Portal) that create unique, non-template-looking designs for every generated site.</p>
+    </div>
+    <div class="feature-card">
+      <h4>🔀 Dual Sync Migration</h4>
+      <p>Run old site + new site simultaneously. AI monitors parity and tells you when it's safe to switch. Zero downtime, zero risk migration.</p>
+    </div>
+    <div class="feature-card">
+      <h4>🏢 Franchise Network</h4>
+      <p>Connect multiple locations into an intelligent network. AI-powered inventory sync, staff sharing, bulk purchasing, and cross-location analytics.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRESS SECTION -->
+<section id="progress" class="section">
+  <div class="section-header">
+    <h2>📊 Current Progress</h2>
+  </div>
+  
+  <div class="progress-container">
+    <div class="progress-item">
+      <div class="progress-label">
+        <span>Generator Engine</span>
+        <span style="color: var(--green)">100%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill green" style="width: 100%"></div>
+      </div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span>Module Library</span>
+        <span style="color: var(--green)">100%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill green" style="width: 100%"></div>
+      </div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span>AI Page Generation</span>
+        <span style="color: var(--green)">100%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill green" style="width: 100%"></div>
+      </div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span>REBUILD Mode</span>
+        <span style="color: var(--green)">100%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill green" style="width: 100%"></div>
+      </div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span>Branding & Identity</span>
+        <span style="color: var(--green)">100%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill green" style="width: 100%"></div>
+      </div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span>Business Model</span>
+        <span style="color: var(--green)">100%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill green" style="width: 100%"></div>
+      </div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span>Multi-AI Provider</span>
+        <span style="color: var(--yellow)">40%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill yellow" style="width: 40%"></div>
+      </div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span>Auto-Deployment</span>
+        <span style="color: var(--yellow)">20%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill yellow" style="width: 20%"></div>
+      </div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span>BE1st.io Platform</span>
+        <span style="color: var(--red)">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill red" style="width: 0%"></div>
+      </div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span>Stripe Integration</span>
+        <span style="color: var(--red)">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill red" style="width: 0%"></div>
+      </div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-label">
+        <span>Dual Sync Migration</span>
+        <span style="color: var(--text-muted)">Planned</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: 0%; background: var(--purple)"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULES SECTION -->
+<section id="modules" class="section">
+  <div class="section-header">
+    <h2>📦 Module Library</h2>
+  </div>
+  
+  <h3 style="color: var(--accent); margin: 24px 0 16px;">Backend Modules (34)</h3>
+  
+  <h4 style="color: var(--text-muted); margin: 20px 0 12px; font-size: 0.9rem;">CORE (5 modules)</h4>
+  <div class="module-grid">
+    <div class="module-card">
+      <h4>🔐 auth</h4>
+      <div class="meta">5 files · 439 lines</div>
+      <div class="endpoints">POST /register, /login · GET /me · POST /forgot-password</div>
+    </div>
+    <div class="module-card">
+      <h4>👤 admin-dashboard</h4>
+      <div class="meta">2 files · 2,206 lines</div>
+      <div class="endpoints">GET /users, /analytics, /system · PUT /user/:id</div>
+    </div>
+    <div class="module-card">
+      <h4>📊 analytics</h4>
+      <div class="meta">2 files · 28 lines</div>
+      <div class="endpoints">GET /live</div>
+    </div>
+    <div class="module-card">
+      <h4>📁 file-upload</h4>
+      <div class="meta">4 files · 223 lines</div>
+      <div class="endpoints">Cloudinary integration, image processing</div>
+    </div>
+    <div class="module-card">
+      <h4>🔔 notifications</h4>
+      <div class="meta">4 files · 1,294 lines</div>
+      <div class="endpoints">GET / · PUT /:id/read · GET /unread-count</div>
+    </div>
+  </div>
+  
+  <h4 style="color: var(--text-muted); margin: 20px 0 12px; font-size: 0.9rem;">COLLECTIBLES (8 modules)</h4>
+  <div class="module-grid">
+    <div class="module-card">
+      <h4>🤖 ai-scanner</h4>
+      <div class="meta">4 files · 2,000 lines</div>
+      <div class="endpoints">POST /scan, /analyze, /confirm, /price</div>
+    </div>
+    <div class="module-card">
+      <h4>📚 collections</h4>
+      <div class="meta">2 files · 310 lines</div>
+      <div class="endpoints">CRUD collections · POST /export-ebay</div>
+    </div>
+    <div class="module-card">
+      <h4>🛒 ebay-integration</h4>
+      <div class="meta">5 files · 5,576 lines</div>
+      <div class="endpoints">OAuth, listings, pricing, bulk operations</div>
+    </div>
+    <div class="module-card">
+      <h4>🏪 marketplace</h4>
+      <div class="meta">4 files · 2,203 lines</div>
+      <div class="endpoints">Full trading system, offers, escrow</div>
+    </div>
+    <div class="module-card">
+      <h4>📱 nfc-tags</h4>
+      <div class="meta">2 files · 403 lines</div>
+      <div class="endpoints">POST /register-tag · GET /scan/:uid</div>
+    </div>
+    <div class="module-card">
+      <h4>🖼️ showcase</h4>
+      <div class="meta">2 files · 1,107 lines</div>
+      <div class="endpoints">Public storefronts, card displays</div>
+    </div>
+    <div class="module-card">
+      <h4>🔄 transfers</h4>
+      <div class="meta">2 files · 161 lines</div>
+      <div class="endpoints">GET /validate/:code · POST /claim/:code</div>
+    </div>
+    <div class="module-card">
+      <h4>🏷️ vendor-system</h4>
+      <div class="meta">3 files · 1,716 lines</div>
+      <div class="endpoints">Sales tracking, card shows, analytics</div>
+    </div>
+  </div>
+  
+  <h4 style="color: var(--text-muted); margin: 20px 0 12px; font-size: 0.9rem;">SPORTS (4 modules)</h4>
+  <div class="module-grid">
+    <div class="module-card">
+      <h4>🎰 betting</h4>
+      <div class="meta">6 files · 462 lines</div>
+      <div class="endpoints">Formations, props, parlays, picks</div>
+    </div>
+    <div class="module-card">
+      <h4>⚽ fantasy</h4>
+      <div class="meta">5 files · 651 lines</div>
+      <div class="endpoints">Leagues, drafts, ESPN sync</div>
+    </div>
+    <div class="module-card">
+      <h4>🏆 leaderboard</h4>
+      <div class="meta">3 files · 941 lines</div>
+      <div class="endpoints">Reputation, bets, rankings</div>
+    </div>
+    <div class="module-card">
+      <h4>🎱 pools</h4>
+      <div class="meta">2 files · 528 lines</div>
+      <div class="endpoints">Betting pools, entries, odds</div>
+    </div>
+  </div>
+  
+  <h4 style="color: var(--text-muted); margin: 20px 0 12px; font-size: 0.9rem;">PAYMENTS (3 modules)</h4>
+  <div class="module-grid">
+    <div class="module-card">
+      <h4>💳 stripe-payments</h4>
+      <div class="meta">Checkout, subscriptions, webhooks</div>
+      <div class="endpoints">POST /create-checkout-session · GET /subscription</div>
+    </div>
+    <div class="module-card">
+      <h4>💰 payments</h4>
+      <div class="meta">General payment processing</div>
+      <div class="endpoints">Billing, invoices, refunds</div>
+    </div>
+    <div class="module-card">
+      <h4>📦 inventory</h4>
+      <div class="meta">Stock management, quantities</div>
+      <div class="endpoints">CRUD inventory items</div>
+    </div>
+  </div>
+  
+  <h4 style="color: var(--text-muted); margin: 20px 0 12px; font-size: 0.9rem;">SOCIAL (3 modules)</h4>
+  <div class="module-grid">
+    <div class="module-card">
+      <h4>📝 posts</h4>
+      <div class="meta">Social posts, feed</div>
+      <div class="endpoints">CRUD posts, likes, comments</div>
+    </div>
+    <div class="module-card">
+      <h4>📰 social-feed</h4>
+      <div class="meta">Featured, trending, listings</div>
+      <div class="endpoints">GET /featured, /trending, /ending-soon</div>
+    </div>
+    <div class="module-card">
+      <h4>💬 chat</h4>
+      <div class="meta">Real-time messaging</div>
+      <div class="endpoints">WebSocket, conversations, messages</div>
+    </div>
+  </div>
+  
+  <h4 style="color: var(--text-muted); margin: 20px 0 12px; font-size: 0.9rem;">PRODUCTIVITY (4 modules)</h4>
+  <div class="module-grid">
+    <div class="module-card">
+      <h4>📋 tasks</h4>
+      <div class="meta">Family tasks, smart home, automations</div>
+      <div class="endpoints">AI commands, energy, security, health</div>
+    </div>
+    <div class="module-card">
+      <h4>📅 booking</h4>
+      <div class="meta">Universal reservation system</div>
+      <div class="endpoints">Slots, bookings, availability</div>
+    </div>
+    <div class="module-card">
+      <h4>🍽️ meals</h4>
+      <div class="meta">Meal planning</div>
+      <div class="endpoints">Recipes, schedules, shopping lists</div>
+    </div>
+    <div class="module-card">
+      <h4>🏫 schools</h4>
+      <div class="meta">Education management</div>
+      <div class="endpoints">Classes, grades, schedules</div>
+    </div>
+  </div>
+  
+  <h4 style="color: var(--text-muted); margin: 20px 0 12px; font-size: 0.9rem;">GAMIFICATION (1 module)</h4>
+  <div class="module-grid">
+    <div class="module-card">
+      <h4>🏅 achievements</h4>
+      <div class="meta">3 files · 152 lines</div>
+      <div class="endpoints">GET /all, /my-achievements, /progress · Challenges</div>
+    </div>
+  </div>
+  
+  <h4 style="color: var(--text-muted); margin: 20px 0 12px; font-size: 0.9rem;">FRANCHISE (1 module) <span class="badge badge-new" style="margin-left: 8px;">PLANNED</span></h4>
+  <div class="module-grid">
+    <div class="module-card">
+      <h4>🏢 franchise-network</h4>
+      <div class="meta">Planned · Network Brain AI</div>
+      <div class="endpoints">Inventory sync, staff sharing, bulk purchasing, analytics</div>
+    </div>
+  </div>
+  
+  <h3 style="color: var(--accent); margin: 40px 0 16px;">Frontend Modules (20)</h3>
+  <div class="module-grid">
+    <div class="module-card">
+      <h4>🔑 login-form</h4>
+      <div class="meta">LoginForm, Login components</div>
+    </div>
+    <div class="module-card">
+      <h4>📝 register-form</h4>
+      <div class="meta">RegisterForm, Register components</div>
+    </div>
+    <div class="module-card">
+      <h4>🔒 auth-context</h4>
+      <div class="meta">AuthContext provider</div>
+    </div>
+    <div class="module-card">
+      <h4>🧭 header-nav</h4>
+      <div class="meta">Navbar component</div>
+    </div>
+    <div class="module-card">
+      <h4>🦶 footer-section</h4>
+      <div class="meta">Footer component</div>
+    </div>
+    <div class="module-card">
+      <h4>💳 checkout-flow</h4>
+      <div class="meta">Checkout component</div>
+    </div>
+    <div class="module-card">
+      <h4>💵 pricing-table</h4>
+      <div class="meta">Pricing component</div>
+    </div>
+    <div class="module-card">
+      <h4>🛍️ marketplace-ui</h4>
+      <div class="meta">Marketplace components</div>
+    </div>
+    <div class="module-card">
+      <h4>📊 stat-cards</h4>
+      <div class="meta">StatCards, UsageWidget</div>
+    </div>
+    <div class="module-card">
+      <h4>📋 data-table</h4>
+      <div class="meta">DataTable component</div>
+    </div>
+    <div class="module-card">
+      <h4>👤 admin-panel</h4>
+      <div class="meta">Admin dashboard UI</div>
+    </div>
+    <div class="module-card">
+      <h4>🖼️ image-gallery</h4>
+      <div class="meta">Gallery component</div>
+    </div>
+    <div class="module-card">
+      <h4>📤 file-uploader</h4>
+      <div class="meta">ImageUpload, UploadModal</div>
+    </div>
+    <div class="module-card">
+      <h4>🔍 search-filter</h4>
+      <div class="meta">SearchFilter component</div>
+    </div>
+    <div class="module-card">
+      <h4>⚙️ settings-panel</h4>
+      <div class="meta">Settings component</div>
+    </div>
+    <div class="module-card">
+      <h4>📦 collection-grid</h4>
+      <div class="meta">CollectionGrid, CollectionViewer</div>
+    </div>
+    <div class="module-card">
+      <h4>🃏 card-components</h4>
+      <div class="meta">Card display components</div>
+    </div>
+    <div class="module-card">
+      <h4>📄 item-detail</h4>
+      <div class="meta">ItemDetailModal, ItemDisplay</div>
+    </div>
+    <div class="module-card">
+      <h4>🔲 modal-system</h4>
+      <div class="meta">Modal component</div>
+    </div>
+    <div class="module-card">
+      <h4>💱 trading-hub</h4>
+      <div class="meta">Trading interface</div>
+    </div>
+  </div>
+</section>
+
+<!-- PHASES SECTION -->
+<section id="phases" class="section">
+  <div class="section-header">
+    <h2>🚀 Implementation Phases</h2>
+  </div>
+  
+  <div class="phase-card">
+    <div class="phase-header">
+      <h3>Phase 0: Platform Foundation</h3>
+      <span class="badge badge-partial">PARTIAL - 3-4 days remaining</span>
+    </div>
+    <div class="phase-body">
+      <p>Build blink.be1st.io — the marketing site, customer portal, and admin command center.</p>
+      <ul class="checklist">
+        <li class="done">Generator engine working</li>
+        <li class="done">Module library complete</li>
+        <li class="done">Assembler UI functional</li>
+        <li>Marketing landing page</li>
+        <li>Customer registration/login</li>
+        <li>Customer dashboard (my sites)</li>
+        <li>Admin dashboard (all customers)</li>
+        <li>Deploy to blink.be1st.io</li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="phase-card">
+    <div class="phase-header">
+      <h3>Phase 3.5: AI Feature Selection UI</h3>
+      <span class="badge badge-done">COMPLETE</span>
+    </div>
+    <div class="phase-body">
+      <p>Visual archetype selection and industry detection.</p>
+      <ul class="checklist">
+        <li class="done">5 visual archetypes (Bento, Split, Editorial, Magazine, Portal)</li>
+        <li class="done">58 industry presets configured</li>
+        <li class="done">100+ industry fallback mappings</li>
+        <li class="done">Auto-detect industry from URL/description</li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="phase-card">
+    <div class="phase-header">
+      <h3>Phase 4: Backend Wiring</h3>
+      <span class="badge badge-done">COMPLETE</span>
+    </div>
+    <div class="phase-body">
+      <p>Generated sites have functional APIs, database connection, auth, CRUD operations.</p>
+      <ul class="checklist">
+        <li class="done">Auto-wire modules to server.js</li>
+        <li class="done">PostgreSQL database connection</li>
+        <li class="done">setup-db.js migration script</li>
+        <li class="done">Working auth (signup/login/logout)</li>
+        <li class="done">Industry → module mapping</li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="phase-card">
+    <div class="phase-header">
+      <h3>Phase 4.5: Additional Generation Modes</h3>
+      <span class="badge badge-done">COMPLETE</span>
+    </div>
+    <div class="phase-body">
+      <p>REBUILD and INSPIRED modes for analyzing existing sites.</p>
+      <ul class="checklist">
+        <li class="done">REBUILD mode - analyze existing site, extract assets</li>
+        <li class="done">Image categorization (Logo, Hero, Gallery, Team, Product)</li>
+        <li class="done">Color extraction from existing sites</li>
+        <li class="done">Content extraction and analysis</li>
+        <li class="done">Generate new site using client's actual images</li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="phase-card">
+    <div class="phase-header">
+      <h3>Phase 5: Stripe Integration</h3>
+      <span class="badge badge-pending">NOT STARTED - 2 days</span>
+    </div>
+    <div class="phase-body">
+      <p>Accept payments and manage subscriptions.</p>
+      <ul class="checklist">
+        <li>Stripe checkout integration</li>
+        <li>Subscription tiers (Free/Pro/Business/Enterprise)</li>
+        <li>Usage tracking and limits</li>
+        <li>Billing webhooks</li>
+        <li>Equity application flow</li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="phase-card">
+    <div class="phase-header">
+      <h3>Phase 8.5: Multi-AI Provider</h3>
+      <span class="badge badge-partial">PARTIAL - 2-3 hours</span>
+    </div>
+    <div class="phase-body">
+      <p>Fallback system between AI providers for reliability and cost optimization.</p>
+      <ul class="checklist">
+        <li class="done">Claude (Anthropic) - Primary provider</li>
+        <li class="done">Architecture supports multiple providers</li>
+        <li>OpenAI GPT-4 fallback</li>
+        <li>Google Gemini fallback</li>
+        <li>Groq (Llama) for speed optimization</li>
+      </ul>
+      <pre>const AI_PROVIDERS = [
+  { name: 'anthropic', model: 'claude-sonnet-4-20250514', costPer1k: 0.003 },
+  { name: 'openai', model: 'gpt-4o', costPer1k: 0.005 },
+  { name: 'google', model: 'gemini-pro', costPer1k: 0.001 },
+  { name: 'groq', model: 'llama-3.1-70b', costPer1k: 0.0008 }
+];</pre>
+    </div>
+  </div>
+  
+  <div class="phase-card">
+    <div class="phase-header">
+      <h3>Phase 13: One-Click Deploy</h3>
+      <span class="badge badge-partial">PARTIAL - 1 day</span>
+    </div>
+    <div class="phase-body">
+      <p>Instant deployment to any provider - zero terminal required.</p>
+      <ul class="checklist">
+        <li class="done">Architecture planned</li>
+        <li>GitHub API - create repos, push code</li>
+        <li>Vercel API - deploy frontend</li>
+        <li>Railway API - deploy backend + provision Postgres</li>
+        <li>Return live URLs at [name].be1st.io</li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="phase-card">
+    <div class="phase-header">
+      <h3>Phase 16: Dual Sync Migration</h3>
+      <span class="badge badge-new">NEW FEATURE - Planned</span>
+    </div>
+    <div class="phase-body">
+      <p>Run old site + new Blink site simultaneously. AI monitors parity and tells user when safe to switch.</p>
+      <ul class="checklist">
+        <li>Sync node connects both sites</li>
+        <li>Data flows bidirectionally</li>
+        <li>AI monitors parity percentage</li>
+        <li>"Safe to switch" notification</li>
+        <li>One-click DNS flip</li>
+        <li>Zero downtime migration</li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="phase-card">
+    <div class="phase-header">
+      <h3>Phase 17: Franchise Network</h3>
+      <span class="badge badge-new">NEW FEATURE - Planned</span>
+    </div>
+    <div class="phase-body">
+      <p>Connect multiple Blink sites into an intelligent network. Locations communicate, share resources, and optimize together via AI-powered Network Brain.</p>
+      <ul class="checklist">
+        <li>Franchise Command Center (owner sees all locations)</li>
+        <li>Network Brain AI - cross-location intelligence</li>
+        <li>Real-time inventory sync and transfer suggestions</li>
+        <li>Staff sharing and scheduling across locations</li>
+        <li>Bulk purchasing coordination (network-wide discounts)</li>
+        <li>Comparative analytics and performance insights</li>
+        <li>Menu/pricing sync across all locations</li>
+        <li>Demand prediction per location</li>
+        <li>Automated alerts and recommendations</li>
+      </ul>
+      <h4 style="color: var(--accent); margin-top: 20px;">Network Brain Alerts Example:</h4>
+      <pre style="font-size: 0.8rem;">🔴 URGENT: Location A (Dallas) 
+   - Chicken wings: 12 units remaining
+   - Projected to run out by 6PM
+   Location B (Austin) has 89 units excess.
+   [REQUEST TRANSFER] [DISMISS]
+
+📊 INSIGHT: Location C (Houston)
+   - Labor cost 8% lower than network average
+   - They cross-train all staff on 3+ stations
+   [VIEW THEIR SCHEDULE] [SHARE WITH NETWORK]
+
+💰 OPPORTUNITY: Sysco bulk deal available
+   - Combined network order: $4,200
+   - Individual orders: $5,100
+   - Savings: $900 (18%)
+   [APPROVE FOR ALL] [LOCATION BY LOCATION]</pre>
+    </div>
+  </div>
+</section>
+
+<!-- BUSINESS MODEL SECTION -->
+<section id="business" class="section">
+  <div class="section-header">
+    <h2>💰 Business Model</h2>
+  </div>
+  
+  <h3 style="margin-bottom: 20px;">Subscription Tiers</h3>
+  <div class="tier-grid">
+    <div class="tier-card">
+      <h4>Free</h4>
+      <div class="price">$0</div>
+      <ul>
+        <li>Generate unlimited sites</li>
+        <li>[name].be1st.io subdomain</li>
+        <li>Basic support</li>
+        <li>Community access</li>
+      </ul>
+    </div>
+    <div class="tier-card featured">
+      <h4>Pro</h4>
+      <div class="price">$29-49<span>/mo</span></div>
+      <ul>
+        <li>Everything in Free</li>
+        <li>Custom domain</li>
+        <li>Full backend hosting</li>
+        <li>Priority support</li>
+        <li>Analytics dashboard</li>
+      </ul>
+    </div>
+    <div class="tier-card">
+      <h4>Business</h4>
+      <div class="price">$99-199<span>/mo</span></div>
+      <ul>
+        <li>Everything in Pro</li>
+        <li>Dual Sync Migration</li>
+        <li>AI Migration Monitor</li>
+        <li>Zero-downtime switch</li>
+        <li>Premium support</li>
+      </ul>
+    </div>
+    <div class="tier-card">
+      <h4>Enterprise</h4>
+      <div class="price">$299+<span>/mo</span></div>
+      <ul>
+        <li>Everything in Business</li>
+        <li>White label option</li>
+        <li>Dedicated support</li>
+        <li>Custom integrations</li>
+        <li>SLA guarantee</li>
+      </ul>
+    </div>
+  </div>
+  
+  <h3 style="margin: 40px 0 20px;">Equity Model</h3>
+  <p style="color: var(--text-muted); margin-bottom: 20px;">Alternative to cash payment - become a Blink Portfolio Company.</p>
+  
+  <div class="tier-grid">
+    <div class="tier-card">
+      <h4>Cash Only</h4>
+      <div class="price">0%<span> equity</span></div>
+      <ul>
+        <li>Anyone can use</li>
+        <li>Pay monthly subscription</li>
+        <li>No requirements</li>
+      </ul>
+    </div>
+    <div class="tier-card">
+      <h4>Standard Equity</h4>
+      <div class="price">1%<span> equity</span></div>
+      <ul>
+        <li>Application + basic criteria</li>
+        <li>Real business idea</li>
+        <li>Incorporated or willing</li>
+        <li>Auto-approved if qualified</li>
+      </ul>
+    </div>
+    <div class="tier-card featured">
+      <h4>Premium Equity</h4>
+      <div class="price">1.5-2%<span> equity</span></div>
+      <ul>
+        <li>Selective vetting</li>
+        <li>Existing revenue/customers</li>
+        <li>Domain expertise</li>
+        <li>Scalable model</li>
+        <li>15-min call required</li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="highlight-box">
+    <h4>The Vision: Micro-VC at Scale</h4>
+    <p>Own 1-2% of tens of thousands of businesses generated through Blink. Volume equity plays the lottery. Selective equity builds the empire. Both feed the portfolio.</p>
+  </div>
+</section>
+
+<!-- DUAL SYNC MIGRATION SECTION -->
+<section id="migration" class="section">
+  <div class="section-header">
+    <h2>🔄 Dual Sync Migration</h2>
+    <span class="badge badge-new">Premium Feature</span>
+  </div>
+  
+  <div class="highlight-box">
+    <h4>The Killer Feature</h4>
+    <p>Run your old site and new Blink site simultaneously. AI monitors both and tells you when it's safe to switch. Zero downtime. Zero risk. Zero stress.</p>
+  </div>
+  
+  <div class="flow-diagram">
+┌─────────────────────────────────────────────────────────────┐
+│                    BLINK MIGRATION                          │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│   OLD SITE                        NEW SITE                  │
+│   fossilpointe.net                fossilpointe.be1st.io     │
+│        │                               │                    │
+│        │         ┌─────────┐           │                    │
+│        └────────►│  SYNC   │◄──────────┘                    │
+│                  │  NODE   │                                │
+│                  └────┬────┘                                │
+│                       │                                     │
+│                  ┌────▼────┐                                │
+│                  │   AI    │                                │
+│                  │ MONITOR │                                │
+│                  └────┬────┘                                │
+│                       │                                     │
+│            "Both sites in sync"                             │
+│            "New site ready: 99.2% parity"                   │
+│            "Safe to switch ✅"                              │
+│                                                             │
+│   [ONE-CLICK DNS FLIP] ──► fossilpointe.net = Blink        │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘</div>
+  
+  <h3 style="margin: 30px 0 16px;">The Flow</h3>
+  <table>
+    <thead>
+      <tr><th>Step</th><th>What Happens</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>REBUILD analyzes existing site (fossilpointe.net)</td></tr>
+      <tr><td>2</td><td>Blink generates new full-stack site at fossilpointe.be1st.io</td></tr>
+      <tr><td>3</td><td>Sync node connects both - data flows bidirectionally</td></tr>
+      <tr><td>4</td><td>Both sites run simultaneously (bookings, users, content sync)</td></tr>
+      <tr><td>5</td><td>AI monitors parity percentage in real-time</td></tr>
+      <tr><td>6</td><td>AI notification: "99.2% parity - Safe to switch ✅"</td></tr>
+      <tr><td>7</td><td>User clicks "Switch" - DNS flips to Blink infrastructure</td></tr>
+      <tr><td>8</td><td>Old site becomes backup. Migration complete.</td></tr>
+    </tbody>
+  </table>
+  
+  <div class="warning-box">
+    <strong>Competitive Advantage:</strong> Nobody else offers this. Wix, Webflow, Squarespace - they all require manual rebuild and hope-for-the-best migration. Blink offers worry-free, AI-monitored, zero-downtime business transfers.
+  </div>
+</section>
+
+<!-- FRANCHISE NETWORK SECTION -->
+<section id="franchise" class="section">
+  <div class="section-header">
+    <h2>🏢 Franchise Network</h2>
+    <span class="badge badge-new">Enterprise Feature</span>
+  </div>
+  
+  <div class="highlight-box">
+    <h4>Connected Business Intelligence</h4>
+    <p>Your franchise locations aren't islands anymore. They're a network. Blink connects all your sites so they can share inventory, staff, and insights - powered by an AI Network Brain that optimizes everything automatically.</p>
+  </div>
+  
+  <div class="flow-diagram">
+┌─────────────────────────────────────────────────────────────┐
+│                 FRANCHISE COMMAND CENTER                     │
+│              (Owner sees all locations)                      │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│   Location A          Location B          Location C         │
+│   Dallas              Austin              Houston            │
+│   ┌─────────┐        ┌─────────┐        ┌─────────┐        │
+│   │ Blink   │◄──────►│ Blink   │◄──────►│ Blink   │        │
+│   │ Site    │        │ Site    │        │ Site    │        │
+│   └────┬────┘        └────┬────┘        └────┬────┘        │
+│        │                  │                  │              │
+│        └──────────────────┼──────────────────┘              │
+│                           │                                  │
+│                    ┌──────▼──────┐                          │
+│                    │   NETWORK   │                          │
+│                    │    BRAIN    │                          │
+│                    └──────┬──────┘                          │
+│                           │                                  │
+│              ┌────────────┼────────────┐                    │
+│              ▼            ▼            ▼                    │
+│         Inventory    Staffing     Analytics                 │
+│         Sharing      Alerts       Insights                  │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘</div>
+  
+  <h3 style="margin: 30px 0 16px;">Network Brain Features</h3>
+  <table>
+    <thead>
+      <tr><th>Feature</th><th>What It Does</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Inventory Sync</strong></td><td>"Dallas has 200 burger patties expiring. Austin needs 150. Transfer?"</td></tr>
+      <tr><td><strong>Staff Sharing</strong></td><td>"Houston short 2 servers Saturday. Dallas has 3 available. Offer shift?"</td></tr>
+      <tr><td><strong>Demand Prediction</strong></td><td>"Austin usually spikes 40% during UT games. Pre-stock recommended."</td></tr>
+      <tr><td><strong>Bulk Purchasing</strong></td><td>"All 3 locations need napkins. Combined order = 15% discount."</td></tr>
+      <tr><td><strong>Performance Comparison</strong></td><td>"Houston lunch revenue up 23%. Here's what they changed."</td></tr>
+      <tr><td><strong>Menu Sync</strong></td><td>"New seasonal item added. Push to all locations?"</td></tr>
+      <tr><td><strong>Pricing Intelligence</strong></td><td>"Austin charging $2 less for same burger. Align pricing?"</td></tr>
+    </tbody>
+  </table>
+  
+  <h3 style="margin: 30px 0 16px;">Industries That Benefit</h3>
+  <div class="module-grid">
+    <div class="module-card">
+      <h4>🍔 Restaurants</h4>
+      <div class="meta">Inventory, staff, menu sync</div>
+    </div>
+    <div class="module-card">
+      <h4>🏋️ Gyms</h4>
+      <div class="meta">Member access, equipment sharing</div>
+    </div>
+    <div class="module-card">
+      <h4>💇 Salons</h4>
+      <div class="meta">Stylist scheduling, product inventory</div>
+    </div>
+    <div class="module-card">
+      <h4>🔧 Auto Shops</h4>
+      <div class="meta">Parts inventory, technician dispatch</div>
+    </div>
+    <div class="module-card">
+      <h4>🏥 Medical</h4>
+      <div class="meta">Patient records, specialist referrals</div>
+    </div>
+    <div class="module-card">
+      <h4>🛍️ Retail</h4>
+      <div class="meta">Stock transfers, pricing sync</div>
+    </div>
+    <div class="module-card">
+      <h4>🏨 Hotels</h4>
+      <div class="meta">Room availability, staff sharing</div>
+    </div>
+    <div class="module-card">
+      <h4>🎓 Education</h4>
+      <div class="meta">Resource sharing, enrollment balance</div>
+    </div>
+  </div>
+  
+  <h3 style="margin: 30px 0 16px;">Franchise Pricing</h3>
+  <div class="tier-grid">
+    <div class="tier-card">
+      <h4>Single</h4>
+      <div class="price">$29-49<span>/mo</span></div>
+      <ul>
+        <li>1 location</li>
+        <li>Standard Blink site</li>
+        <li>No network features</li>
+      </ul>
+    </div>
+    <div class="tier-card">
+      <h4>Multi</h4>
+      <div class="price">$99<span>/mo + $29/loc</span></div>
+      <ul>
+        <li>2-5 locations</li>
+        <li>Network Brain access</li>
+        <li>Basic inventory sync</li>
+        <li>Comparative analytics</li>
+      </ul>
+    </div>
+    <div class="tier-card featured">
+      <h4>Franchise</h4>
+      <div class="price">$199<span>/mo + $19/loc</span></div>
+      <ul>
+        <li>6-20 locations</li>
+        <li>Full Network Brain AI</li>
+        <li>Staff sharing</li>
+        <li>Bulk purchasing</li>
+        <li>Demand prediction</li>
+      </ul>
+    </div>
+    <div class="tier-card">
+      <h4>Enterprise</h4>
+      <div class="price">Custom</div>
+      <ul>
+        <li>20+ locations</li>
+        <li>Dedicated support</li>
+        <li>Custom integrations</li>
+        <li>White label option</li>
+        <li>SLA guarantee</li>
+      </ul>
+    </div>
+  </div>
+  
+  <h3 style="margin: 30px 0 16px;">The Module Structure</h3>
+  <pre>franchise-network/
+├── routes/
+│   ├── network.js          # Network-wide operations
+│   ├── inventory-sync.js   # Cross-location inventory
+│   ├── staff-sharing.js    # Employee scheduling across locations
+│   ├── bulk-purchasing.js  # Coordinated vendor orders
+│   └── analytics.js        # Comparative analytics
+├── services/
+│   ├── network-brain.js    # AI decision engine
+│   ├── transfer.js         # Logistics coordination
+│   ├── predictions.js      # Demand forecasting
+│   └── alerts.js           # Real-time notifications
+├── models/
+│   ├── Franchise.js        # Franchise entity
+│   ├── Location.js         # Individual locations
+│   └── NetworkEvent.js     # Cross-location events
+└── module.json</pre>
+  
+  <div class="warning-box">
+    <strong>Competitive Advantage:</strong> Wix can't connect your locations. Webflow can't sync your inventory. Squarespace can't share your staff. <strong>Blink can.</strong> This is an OS for franchises, not just a website builder.
+  </div>
+</section>
+
+<!-- ROADMAP SECTION -->
+<section id="roadmap" class="section">
+  <div class="section-header">
+    <h2>🗺️ Implementation Roadmap</h2>
+  </div>
+  
+  <h3 style="margin-bottom: 20px;">MVP Launch Path (5-7 days)</h3>
+  
+  <table>
+    <thead>
+      <tr><th>Day</th><th>Tasks</th><th>Outcome</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>1-2</strong></td>
+        <td>
+          • Marketing landing page with new branding<br>
+          • Customer registration/login<br>
+          • Customer dashboard (view my sites)<br>
+          • Admin dashboard (view all customers)
+        </td>
+        <td>blink.be1st.io live</td>
+      </tr>
+      <tr>
+        <td><strong>3-4</strong></td>
+        <td>
+          • Stripe checkout integration<br>
+          • Subscription tiers (Free/Pro/Business/Enterprise)<br>
+          • Equity application flow<br>
+          • Billing webhooks
+        </td>
+        <td>Can accept payments</td>
+      </tr>
+      <tr>
+        <td><strong>5</strong></td>
+        <td>
+          • GitHub API (create repos)<br>
+          • Vercel API (deploy frontend)<br>
+          • Railway API (deploy backend)<br>
+          • Multi-AI fallback (2-3 hours)
+        </td>
+        <td>Auto-deployment working</td>
+      </tr>
+      <tr>
+        <td><strong>6-7</strong></td>
+        <td>
+          • Error handling<br>
+          • Email notifications<br>
+          • Documentation<br>
+          • Production deployment
+        </td>
+        <td>🚀 LAUNCH</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <h3 style="margin: 40px 0 20px;">Future Phases</h3>
+  <table>
+    <thead>
+      <tr><th>Phase</th><th>Name</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>Brain System</td><td>Centralized brain.json config per site</td></tr>
+      <tr><td>2</td><td>Health/Diagnostics</td><td>Per-site health checks and monitoring</td></tr>
+      <tr><td>3</td><td>Customer Admin</td><td>Edit content via dashboard, not code</td></tr>
+      <tr><td>6</td><td>Additional Integrations</td><td>Twilio, SendGrid, Google Analytics</td></tr>
+      <tr><td>7</td><td>PWA Auto-Generation</td><td>Mobile app from every site</td></tr>
+      <tr><td>8</td><td>Cognitive Brain</td><td>AI layer that learns from site data</td></tr>
+      <tr><td>10</td><td>AI Auto-Fix</td><td>Detect and fix issues automatically</td></tr>
+      <tr><td>11</td><td>AI Analytics</td><td>Insights and recommendations</td></tr>
+      <tr><td>12</td><td>Blink Inject</td><td>Add AI to existing sites without rebuild</td></tr>
+      <tr><td>14</td><td>White Label</td><td>Rebrand platform for agencies</td></tr>
+      <tr><td>15</td><td>Stablecoin Dashboard</td><td>Crypto payment integration</td></tr>
+      <tr><td>16</td><td>Dual Sync Migration</td><td>Zero-downtime business transfer</td></tr>
+      <tr><td>17</td><td>Franchise Network</td><td>Connected multi-location intelligence with Network Brain AI</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- EMPIRE SECTION -->
+<section id="empire" class="section">
+  <div class="section-header">
+    <h2>👑 The Empire</h2>
+  </div>
+  
+  <div class="empire-box">
+    <h3>BE1st Holdings</h3>
+    
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h4>Products (100% Owned)</h4>
+        <ul style="list-style: none; margin-top: 12px;">
+          <li>• <strong>SlabTrack</strong> - Trading Card OS (Category Creator)</li>
+          <li>• <strong>Blink</strong> - Instant Business Generator (Category Creator)</li>
+          <li>• <strong>Franchise Network</strong> - Connected Multi-Location OS (Category Creator)</li>
+        </ul>
+      </div>
+      <div class="feature-card">
+        <h4>Revenue Streams</h4>
+        <ul style="list-style: none; margin-top: 12px;">
+          <li>• Subscriptions (recurring)</li>
+          <li>• Hosting fees (recurring)</li>
+          <li>• Migration fees (premium)</li>
+          <li>• Franchise Network fees (enterprise)</li>
+          <li>• Equity exits (long-term)</li>
+        </ul>
+      </div>
+      <div class="feature-card">
+        <h4>Portfolio</h4>
+        <ul style="list-style: none; margin-top: 12px;">
+          <li>• 1-2% equity in thousands of businesses</li>
+          <li>• Generated through Blink platform</li>
+          <li>• Mix of volume + selective plays</li>
+          <li>• Long-term wealth building</li>
+        </ul>
+      </div>
+      <div class="feature-card">
+        <h4>The Pattern</h4>
+        <ul style="list-style: none; margin-top: 12px;">
+          <li>• See fragmented space</li>
+          <li>• Build the SYSTEM, not features</li>
+          <li>• Full-stack, not partial</li>
+          <li>• Production quality, not MVP</li>
+          <li>• <strong>Create the category</strong></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <div class="highlight-box">
+    <h4>The Sentence</h4>
+    <p style="font-size: 1.25rem; text-align: center; margin: 20px 0;">"I own 1-2% of tens of thousands of businesses that I created in 90 seconds each."</p>
+    <p style="text-align: center; color: var(--text-muted);">That's not a startup. That's a new model of wealth creation.</p>
+  </div>
+  
+  <div style="text-align: center; margin-top: 40px;">
+    <p style="color: var(--text-muted); margin-bottom: 8px;">11 months ago: Dentist</p>
+    <p style="color: var(--accent); font-size: 1.25rem; font-weight: 600;">Now: Category Creator</p>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <img src="blink-logo.webp" alt="Blink Logo" style="width: 120px; height: 80px; object-fit: cover; object-position: center; margin-bottom: 12px;">
+  <p>Blink is a product of BE1st</p>
+  <p style="margin-top: 8px; font-size: 0.85rem;">Master Blueprint v2.0 | January 10, 2026</p>
+</footer>
+
+</body>
+</html>

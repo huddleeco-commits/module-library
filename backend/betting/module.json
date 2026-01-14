@@ -1,0 +1,13 @@
+{
+  "name": "betting",
+  "type": "backend",
+  "source": "huddle",
+  "extractedAt": "2026-01-08T13:05:46.339Z",
+  "files": [
+    "routes/betting.js",
+    "routes/picks.js",
+    "routes/sidebets.js",
+    "models/Bet.js",
+    "models/Pick.js"
+  ]
+}

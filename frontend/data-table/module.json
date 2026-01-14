@@ -1,0 +1,9 @@
+{
+  "name": "data-table",
+  "type": "frontend",
+  "source": "slabtrack",
+  "extractedAt": "2026-01-08T13:05:46.347Z",
+  "files": [
+    "components/data/DataTable.jsx"
+  ]
+}

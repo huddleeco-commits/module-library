@@ -1,0 +1,24 @@
+﻿{
+  "name": "auth-pages",
+  "type": "frontend",
+  "description": "Generic authentication pages with login, register, auth context, and protected routes. Works with any industry.",
+  "source": "be1st-core",
+  "createdAt": "2025-01-12",
+  "files": [
+    "components/LoginPage.jsx",
+    "components/RegisterPage.jsx",
+    "components/AuthProvider.jsx",
+    "components/ProtectedRoute.jsx",
+    "hooks/useAuth.js"
+  ],
+  "dependencies": [
+    "react",
+    "react-router-dom",
+    "lucide-react"
+  ],
+  "connectsTo": {
+    "backend": ["auth"],
+    "routes": ["/login", "/register"]
+  },
+  "autoIncludeFor": ["survey-rewards", "saas", "ecommerce", "collectibles", "healthcare", "family"]
+}

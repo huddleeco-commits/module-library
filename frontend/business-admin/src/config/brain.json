@@ -1,0 +1,83 @@
+{
+  "version": "1.0.0",
+  "industry": {
+    "type": "restaurant",
+    "subtype": "casual_dining",
+    "terminology": {
+      "product": "Menu Item",
+      "products": "Menu Items",
+      "order": "Order",
+      "orders": "Orders",
+      "customer": "Guest",
+      "customers": "Guests",
+      "inventory": "Inventory",
+      "category": "Category",
+      "categories": "Categories"
+    }
+  },
+  "business": {
+    "name": "Demo Bistro",
+    "tagline": "Fresh. Local. Delicious.",
+    "logo": null,
+    "currency": "USD",
+    "currencySymbol": "$",
+    "timezone": "America/New_York",
+    "locale": "en-US",
+    "address": {
+      "street": "123 Main Street",
+      "city": "Austin",
+      "state": "TX",
+      "zip": "78701",
+      "country": "USA"
+    },
+    "contact": {
+      "phone": "(512) 555-0123",
+      "email": "hello@demobistro.com",
+      "website": "https://demobistro.com"
+    },
+    "hours": {
+      "monday": { "open": "11:00", "close": "22:00" },
+      "tuesday": { "open": "11:00", "close": "22:00" },
+      "wednesday": { "open": "11:00", "close": "22:00" },
+      "thursday": { "open": "11:00", "close": "23:00" },
+      "friday": { "open": "11:00", "close": "23:00" },
+      "saturday": { "open": "10:00", "close": "23:00" },
+      "sunday": { "open": "10:00", "close": "21:00" }
+    },
+    "features": {
+      "dineIn": true,
+      "takeout": true,
+      "delivery": true,
+      "reservations": true,
+      "onlineOrdering": true,
+      "loyaltyProgram": true,
+      "giftCards": true
+    }
+  },
+  "modules": {
+    "dashboard": { "enabled": true },
+    "orders": { "enabled": true },
+    "products": { "enabled": true },
+    "customers": { "enabled": true },
+    "inventory": { "enabled": true },
+    "analytics": { "enabled": true },
+    "marketing": { "enabled": true },
+    "ai": { "enabled": true },
+    "settings": { "enabled": true }
+  },
+  "ai": {
+    "enabled": true,
+    "provider": "anthropic",
+    "features": {
+      "insights": true,
+      "chat": true,
+      "automation": true,
+      "forecasting": true
+    }
+  },
+  "theme": {
+    "mode": "dark",
+    "primaryColor": "#3b82f6",
+    "accentColor": "#8b5cf6"
+  }
+}

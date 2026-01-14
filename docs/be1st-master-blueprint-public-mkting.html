@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BE1st - Platform Overview</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    * { font-family: 'Inter', sans-serif; }
+    body { background: #0a0a0f; }
+    .glow-green { box-shadow: 0 0 80px rgba(34, 197, 94, 0.2); }
+    .glow-purple { box-shadow: 0 0 80px rgba(139, 92, 246, 0.2); }
+    .glow-cyan { box-shadow: 0 0 80px rgba(6, 182, 212, 0.2); }
+    .gradient-text { background: linear-gradient(135deg, #22c55e 0%, #3b82f6 50%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .card { background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%); border: 1px solid rgba(255,255,255,0.1); }
+    .card:hover { border-color: rgba(34, 197, 94, 0.3); }
+    .section-divider { height: 1px; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%); margin: 80px auto; }
+    .stat-box { background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.05) 100%); border: 1px solid rgba(34, 197, 94, 0.2); }
+    .tag-green { background: rgba(34, 197, 94, 0.2); color: #22c55e; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .tag-orange { background: rgba(249, 115, 22, 0.2); color: #f97316; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .tag-purple { background: rgba(139, 92, 246, 0.2); color: #a855f7; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .tag-cyan { background: rgba(6, 182, 212, 0.2); color: #06b6d4; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .hero-gradient { background: radial-gradient(ellipse at top, rgba(34, 197, 94, 0.15) 0%, transparent 60%); }
+    .cta-button { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); transition: all 0.3s; }
+    .cta-button:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(34, 197, 94, 0.3); }
+    .nav-tab { padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 12px; }
+    .nav-tab:hover { background: rgba(255,255,255,0.1); }
+    .nav-tab.active { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    th { color: #9ca3af; font-weight: 600; font-size: 12px; }
+  </style>
+</head>
+<body class="text-white min-h-screen">
+  
+  <!-- HERO -->
+  <header class="hero-gradient py-24 px-6 text-center">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-7xl mb-6">⚡</div>
+      <h1 class="text-6xl md:text-7xl font-black mb-6">
+        <span class="gradient-text">BE1st</span>
+      </h1>
+      <p class="text-2xl md:text-3xl text-gray-300 mb-4 font-light">
+        Generate Complete Businesses in <span class="text-green-400 font-bold">65 Seconds</span>
+      </p>
+      <p class="text-xl text-gray-500 mb-8">
+        Full-stack websites. AI-powered. Production-ready. From a single sentence.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4 mb-12">
+        <span class="tag-green">AI-Powered</span>
+        <span class="tag-green">Full Stack</span>
+        <span class="tag-green">65 Seconds</span>
+        <span class="tag-purple">15+ Industries</span>
+      </div>
+      <p class="text-4xl font-black text-white mb-2">"Just Blink"</p>
+      <p class="text-lg text-gray-400 italic">"From thought to creation, just blink."</p>
+    </div>
+  </header>
+
+  <!-- QUICK NAV -->
+  <nav class="sticky top-0 z-50 bg-gray-900/95 backdrop-blur border-b border-gray-800 py-3 px-6">
+    <div class="max-w-6xl mx-auto flex flex-wrap justify-center gap-2">
+      <a href="#problem" class="nav-tab">Problem</a>
+      <a href="#solution" class="nav-tab">Solution</a>
+      <a href="#products" class="nav-tab">Products</a>
+      <a href="#industries" class="nav-tab">Industries</a>
+      <a href="#pricing" class="nav-tab">Pricing</a>
+      <a href="#marketing" class="nav-tab active">📣 Campaign</a>
+      <a href="#proof" class="nav-tab">Proof</a>
+      <a href="#vision" class="nav-tab">Vision</a>
+    </div>
+  </nav>
+
+  <!-- THE PROBLEM -->
+  <section id="problem" class="py-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">The Problem We Solve</h2>
+      
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="card rounded-2xl p-8">
+          <h3 class="text-xl font-bold text-red-400 mb-6">😤 The Old Way</h3>
+          <ul class="space-y-4 text-gray-400">
+            <li class="flex items-start gap-3">
+              <span class="text-red-400">✗</span>
+              <span>Agencies charge <strong class="text-white">$50K - $150K</strong></span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-red-400">✗</span>
+              <span>Development takes <strong class="text-white">6-12 months</strong></span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-red-400">✗</span>
+              <span>DIY builders require <strong class="text-white">hours of work</strong></span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-red-400">✗</span>
+              <span>Results are <strong class="text-white">templates, not unique</strong></span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-red-400">✗</span>
+              <span>No backend, no database, no AI</span>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="card rounded-2xl p-8 glow-green">
+          <h3 class="text-xl font-bold text-green-400 mb-6">⚡ The BE1st Way</h3>
+          <ul class="space-y-4 text-gray-300">
+            <li class="flex items-start gap-3">
+              <span class="text-green-400">✓</span>
+              <span>Starting at <strong class="text-white">$49 generation + $99/mo</strong></span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-green-400">✓</span>
+              <span>Live in <strong class="text-white">65 seconds</strong></span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-green-400">✓</span>
+              <span>Type a sentence, <strong class="text-white">AI does everything</strong></span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-green-400">✓</span>
+              <span>Every site is <strong class="text-white">unique, not a template</strong></span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-green-400">✓</span>
+              <span><strong class="text-white">Full stack:</strong> frontend, backend, database, AI</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-5xl mx-auto"></div>
+
+  <!-- HOW IT WORKS -->
+  <section id="solution" class="py-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">How It Works</h2>
+      <p class="text-gray-500 text-center mb-16">Three steps. Sixty-five seconds. Done.</p>
+      
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="text-center">
+          <div class="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
+            <span class="text-3xl font-black text-green-400">1</span>
+          </div>
+          <h3 class="text-xl font-bold mb-3">Describe</h3>
+          <p class="text-gray-400">"Pizza restaurant in Brooklyn with online ordering and reservations"</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="w-20 h-20 rounded-full bg-purple-500/20 flex items-center justify-center mx-auto mb-6">
+            <span class="text-3xl font-black text-purple-400">2</span>
+          </div>
+          <h3 class="text-xl font-bold mb-3">Blink</h3>
+          <p class="text-gray-400">AI generates your complete site — pages, backend, database, admin panel</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="w-20 h-20 rounded-full bg-cyan-500/20 flex items-center justify-center mx-auto mb-6">
+            <span class="text-3xl font-black text-cyan-400">3</span>
+          </div>
+          <h3 class="text-xl font-bold mb-3">Launch</h3>
+          <p class="text-gray-400">Your business is live at yourname.be1st.io — start accepting customers</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-5xl mx-auto"></div>
+
+  <!-- PRODUCT SUITE -->
+  <section id="products" class="py-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">The BE1st Ecosystem</h2>
+      <p class="text-gray-500 text-center mb-16">Multiple products. One powerful platform.</p>
+      
+      <div class="grid md:grid-cols-3 gap-8">
+        <!-- Blink -->
+        <div class="card rounded-2xl p-8 glow-green">
+          <div class="text-5xl mb-4">⚡</div>
+          <h3 class="text-2xl font-bold mb-2">Blink</h3>
+          <p class="text-green-400 text-sm mb-4">by BE1st</p>
+          <p class="text-gray-400 mb-6">Generate complete business websites from a single sentence. Full stack. AI-powered. 65 seconds.</p>
+          <span class="tag-orange">Coming Soon</span>
+        </div>
+        
+        <!-- SlabTrack -->
+        <div class="card rounded-2xl p-8">
+          <div class="text-5xl mb-4">🃏</div>
+          <h3 class="text-2xl font-bold mb-2">SlabTrack</h3>
+          <p class="text-orange-400 text-sm mb-4">by BE1st</p>
+          <p class="text-gray-400 mb-6">AI-powered sports card collection management. Scan cards, track values, maximize your collection.</p>
+          <span class="tag-green">Live Now</span>
+        </div>
+        
+        <!-- Blink Inject -->
+        <div class="card rounded-2xl p-8">
+          <div class="text-5xl mb-4">💉</div>
+          <h3 class="text-2xl font-bold mb-2">Blink Inject</h3>
+          <p class="text-purple-400 text-sm mb-4">by BE1st</p>
+          <p class="text-gray-400 mb-6">Add AI superpowers to any existing website. WordPress, Shopify, anything. No rebuild required.</p>
+          <span class="tag-purple">Coming 2026</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-5xl mx-auto"></div>
+
+  <!-- MARKETING & CAMPAIGN SECTION (NEW) -->
+  <section id="marketing" class="py-20 px-6 bg-gradient-to-b from-cyan-900/10 to-transparent">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">📣 The Movement</h2>
+      <p class="text-gray-500 text-center mb-16">"Just Blink" isn't just a tagline. It's what people will be saying.</p>
+      
+      <!-- Tagline Showcase -->
+      <div class="card rounded-2xl p-8 mb-8 text-center glow-cyan">
+        <p class="text-sm text-cyan-400 mb-4">PRIMARY TAGLINE</p>
+        <h3 class="text-4xl md:text-5xl font-black mb-4">"From thought to creation, just blink."</h3>
+        <p class="text-xl text-gray-400">The world's first instant business generator.</p>
+      </div>
+
+      <!-- Tagline Categories -->
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <div class="card rounded-xl p-6">
+          <h4 class="font-bold text-green-400 mb-4">⚡ Speed</h4>
+          <ul class="space-y-2 text-gray-400 text-sm">
+            <li>"65 Seconds Ago, This Didn't Exist"</li>
+            <li>"6 Months → 60 Seconds"</li>
+            <li>"Faster Than Your Coffee Order"</li>
+            <li>"Your Competitor Just Blinked"</li>
+          </ul>
+        </div>
+        
+        <div class="card rounded-xl p-6">
+          <h4 class="font-bold text-red-400 mb-4">🔥 Disruption</h4>
+          <ul class="space-y-2 text-gray-400 text-sm">
+            <li>"Fire Your Agency"</li>
+            <li>"$100K Quote? That's Cute."</li>
+            <li>"RIP Website Quotes"</li>
+            <li>"WordPress Called. We Sent Condolences."</li>
+          </ul>
+        </div>
+        
+        <div class="card rounded-xl p-6">
+          <h4 class="font-bold text-purple-400 mb-4">💡 Empowerment</h4>
+          <ul class="space-y-2 text-gray-400 text-sm">
+            <li>"Describe It. Own It."</li>
+            <li>"Type. Blink. Launch."</li>
+            <li>"One Sentence. One Business."</li>
+            <li>"Don't Code It. Blink It."</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- What People Will Say -->
+      <div class="card rounded-2xl p-8 mb-8">
+        <h3 class="text-xl font-bold text-cyan-400 mb-6">💬 What People Will Be Saying</h3>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="bg-black/30 rounded-xl p-4">
+            <p class="text-gray-300 text-sm italic">"Just showed my agency their $85K quote. Then showed them what I built in 65 seconds. Their faces. 💀"</p>
+            <p class="text-cyan-400 text-xs mt-2">#JustBlink</p>
+          </div>
+          <div class="bg-black/30 rounded-xl p-4">
+            <p class="text-gray-300 text-sm italic">"My brother spent 6 months and $40K on his restaurant website. I described mine in one sentence. We launched the same day."</p>
+            <p class="text-cyan-400 text-xs mt-2">#JustBlink</p>
+          </div>
+          <div class="bg-black/30 rounded-xl p-4">
+            <p class="text-gray-300 text-sm italic">"Web dev friend: 'That'll take 3 months.' Me: *waits 65 seconds* 'You were saying?'"</p>
+            <p class="text-cyan-400 text-xs mt-2">#FireYourAgency</p>
+          </div>
+          <div class="bg-black/30 rounded-xl p-4">
+            <p class="text-gray-300 text-sm italic">"I didn't believe it until I tried it. Pizza restaurant in Brooklyn. 65 seconds. Full website. Working backend. I'm shook."</p>
+            <p class="text-cyan-400 text-xs mt-2">#65Seconds</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Campaign Phases -->
+      <div class="card rounded-2xl p-8">
+        <h3 class="text-xl font-bold text-cyan-400 mb-6">🚀 Campaign Phases</h3>
+        <div class="grid md:grid-cols-5 gap-4 text-center text-sm">
+          <div class="bg-gray-800/50 rounded-xl p-4">
+            <div class="text-2xl mb-2">🤫</div>
+            <div class="font-bold text-gray-300">Teaser</div>
+            <div class="text-gray-500">"Just Blink"</div>
+          </div>
+          <div class="bg-purple-500/10 rounded-xl p-4">
+            <div class="text-2xl mb-2">👁️</div>
+            <div class="font-bold text-purple-400">Reveal</div>
+            <div class="text-gray-500">"65 Seconds..."</div>
+          </div>
+          <div class="bg-red-500/10 rounded-xl p-4">
+            <div class="text-2xl mb-2">🔥</div>
+            <div class="font-bold text-red-400">Attack</div>
+            <div class="text-gray-500">"Fire Your Agency"</div>
+          </div>
+          <div class="bg-green-500/10 rounded-xl p-4">
+            <div class="text-2xl mb-2">📈</div>
+            <div class="font-bold text-green-400">Proof</div>
+            <div class="text-gray-500">"1,000 Launched"</div>
+          </div>
+          <div class="bg-cyan-500/10 rounded-xl p-4">
+            <div class="text-2xl mb-2">🌊</div>
+            <div class="font-bold text-cyan-400">Movement</div>
+            <div class="text-gray-500">"#JustBlink"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-5xl mx-auto"></div>
+
+  <!-- INDUSTRIES -->
+  <section id="industries" class="py-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Built for Every Industry</h2>
+      <p class="text-gray-500 text-center mb-16">AI automatically detects your industry and customizes everything.</p>
+      
+      <div class="flex flex-wrap justify-center gap-4">
+        <div class="card rounded-xl px-6 py-4 text-center">
+          <div class="text-2xl mb-2">🍕</div>
+          <div class="text-sm">Restaurant</div>
+        </div>
+        <div class="card rounded-xl px-6 py-4 text-center">
+          <div class="text-2xl mb-2">🧘</div>
+          <div class="text-sm">Yoga & Fitness</div>
+        </div>
+        <div class="card rounded-xl px-6 py-4 text-center">
+          <div class="text-2xl mb-2">💼</div>
+          <div class="text-sm">Finance</div>
+        </div>
+        <div class="card rounded-xl px-6 py-4 text-center">
+          <div class="text-2xl mb-2">⚖️</div>
+          <div class="text-sm">Law Firm</div>
+        </div>
+        <div class="card rounded-xl px-6 py-4 text-center">
+          <div class="text-2xl mb-2">🏥</div>
+          <div class="text-sm">Healthcare</div>
+        </div>
+        <div class="card rounded-xl px-6 py-4 text-center">
+          <div class="text-2xl mb-2">🦷</div>
+          <div class="text-sm">Dental</div>
+        </div>
+        <div class="card rounded-xl px-6 py-4 text-center">
+          <div class="text-2xl mb-2">🏠</div>
+          <div class="text-sm">Real Estate</div>
+        </div>
+        <div class="card rounded-xl px-6 py-4 text-center">
+          <div class="text-2xl mb-2">💇</div>
+          <div class="text-sm">Salon & Spa</div>
+        </div>
+        <div class="card rounded-xl px-6 py-4 text-center">
+          <div class="text-2xl mb-2">☕</div>
+          <div class="text-sm">Cafe</div>
+        </div>
+        <div class="card rounded-xl px-6 py-4 text-center">
+          <div class="text-2xl mb-2">🛒</div>
+          <div class="text-sm">E-commerce</div>
+        </div>
+        <div class="card rounded-xl px-6 py-4 text-center">
+          <div class="text-2xl mb-2">💻</div>
+          <div class="text-sm">SaaS</div>
+        </div>
+        <div class="card rounded-xl px-6 py-4 text-center">
+          <div class="text-2xl mb-2">➕</div>
+          <div class="text-sm">And More</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-5xl mx-auto"></div>
+
+  <!-- PRICING -->
+  <section id="pricing" class="py-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Simple Pricing</h2>
+      <p class="text-gray-500 text-center mb-16">Pay once to generate. Subscribe to host. That's it.</p>
+      
+      <!-- Hosting Tiers -->
+      <div class="grid md:grid-cols-3 gap-6 mb-8">
+        <div class="card rounded-2xl p-8 text-center">
+          <h3 class="text-lg font-bold text-gray-300 mb-2">Starter</h3>
+          <div class="text-4xl font-black mb-1">$29<span class="text-lg text-gray-500">/mo</span></div>
+          <p class="text-gray-500 text-sm mb-6">For simple sites</p>
+          <ul class="text-sm text-gray-400 space-y-2 text-left">
+            <li>✓ Hosting + SSL</li>
+            <li>✓ Basic support</li>
+            <li>✓ Health monitoring</li>
+            <li class="text-gray-600">✗ AI features</li>
+          </ul>
+        </div>
+        
+        <div class="card rounded-2xl p-8 text-center border-green-500/50 glow-green">
+          <div class="text-xs text-green-400 font-bold mb-2">MOST POPULAR</div>
+          <h3 class="text-lg font-bold text-green-400 mb-2">Pro</h3>
+          <div class="text-4xl font-black mb-1">$99<span class="text-lg text-gray-500">/mo</span></div>
+          <p class="text-gray-500 text-sm mb-6">For growing businesses</p>
+          <ul class="text-sm text-gray-300 space-y-2 text-left">
+            <li>✓ Everything in Starter</li>
+            <li>✓ Analytics & backups</li>
+            <li>✓ 500 AI queries/month</li>
+            <li>✓ Priority support</li>
+          </ul>
+        </div>
+        
+        <div class="card rounded-2xl p-8 text-center">
+          <h3 class="text-lg font-bold text-gray-300 mb-2">Business</h3>
+          <div class="text-4xl font-black mb-1">$199<span class="text-lg text-gray-500">/mo</span></div>
+          <p class="text-gray-500 text-sm mb-6">For serious operations</p>
+          <ul class="text-sm text-gray-400 space-y-2 text-left">
+            <li>✓ Everything in Pro</li>
+            <li>✓ 2000 AI queries/month</li>
+            <li>✓ Dedicated support</li>
+            <li>✓ Custom integrations</li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- be1st.io Discount -->
+      <div class="card rounded-2xl p-8 text-center bg-green-500/5 border-green-500/20">
+        <h3 class="text-xl font-bold text-green-400 mb-4">🎁 BE1st Network Discount</h3>
+        <p class="text-gray-300 mb-4">Use a <strong>yourname.be1st.io</strong> domain and get <span class="text-green-400 font-bold">25% off hosting forever</span>.</p>
+        <div class="flex justify-center gap-8 text-sm">
+          <div>
+            <div class="text-gray-500">Own domain</div>
+            <div class="text-gray-400">$99/mo</div>
+          </div>
+          <div>
+            <div class="text-green-400">be1st.io domain</div>
+            <div class="text-green-400 font-bold">$74/mo</div>
+          </div>
+          <div>
+            <div class="text-gray-500">You save</div>
+            <div class="text-green-400">$300/year</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-5xl mx-auto"></div>
+
+  <!-- SLABTRACK PROOF -->
+  <section id="proof" class="py-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Proof It Works</h2>
+      <p class="text-gray-500 text-center mb-16">SlabTrack — our first product built on BE1st technology.</p>
+      
+      <div class="card rounded-2xl p-8 glow-green">
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+          <div>
+            <div class="text-5xl mb-4">🃏</div>
+            <h3 class="text-2xl font-bold mb-2">SlabTrack</h3>
+            <p class="text-orange-400 mb-4">The Collector's Edge</p>
+            <p class="text-gray-400 mb-6">AI-powered sports card collection management. Scan any graded card, get instant valuations, track your entire collection.</p>
+            <div class="flex flex-wrap gap-4">
+              <span class="tag-green">Live Product</span>
+              <span class="tag-green">Paying Customers</span>
+              <span class="tag-green">95% Scan Accuracy</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="stat-box rounded-xl p-4 text-center">
+              <div class="text-3xl font-black text-green-400">64+</div>
+              <div class="text-xs text-gray-500">Subscribers</div>
+            </div>
+            <div class="stat-box rounded-xl p-4 text-center">
+              <div class="text-3xl font-black text-green-400">26K+</div>
+              <div class="text-xs text-gray-500">Video Views</div>
+            </div>
+            <div class="stat-box rounded-xl p-4 text-center">
+              <div class="text-3xl font-black text-green-400">2-3s</div>
+              <div class="text-xs text-gray-500">Scan Time</div>
+            </div>
+            <div class="stat-box rounded-xl p-4 text-center">
+              <div class="text-3xl font-black text-green-400">Live</div>
+              <div class="text-xs text-gray-500">At Card Shows</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-5xl mx-auto"></div>
+
+  <!-- VISION -->
+  <section id="vision" class="py-20 px-6">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-3xl md:text-4xl font-bold mb-8">The Vision</h2>
+      
+      <div class="space-y-8 text-xl text-gray-300">
+        <p>Every person with a business idea deserves to see it live.</p>
+        <p>Not in 6 months. Not for $100K. Not after learning to code.</p>
+        <p class="text-green-400 font-bold text-2xl">In 65 seconds. For $99/month. From a single sentence.</p>
+      </div>
+      
+      <div class="mt-16">
+        <p class="text-gray-500 mb-4">We're not building websites.</p>
+        <p class="text-2xl font-bold gradient-text">We're democratizing business creation.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-5xl mx-auto"></div>
+
+  <!-- CTA -->
+  <section class="py-24 px-6">
+    <div class="max-w-4xl mx-auto text-center">
+      <div class="text-7xl mb-6">⚡</div>
+      <h2 class="text-4xl md:text-5xl font-black mb-6">Ready to Blink?</h2>
+      <p class="text-xl text-gray-400 mb-8">Stop waiting months. Stop paying thousands. Just describe it and watch it happen.</p>
+      
+      <div class="text-5xl font-black text-green-400 mb-8">"Just Blink"</div>
+      
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="#" class="cta-button px-8 py-4 rounded-xl font-bold text-lg">Get Early Access →</a>
+        <a href="#" class="card px-8 py-4 rounded-xl font-bold text-lg hover:bg-white/5">See a Demo</a>
+      </div>
+      
+      <p class="text-gray-600 text-sm mt-8">Blink by BE1st — Launching Soon</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="py-12 px-6 border-t border-gray-800">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex flex-wrap justify-between items-center gap-8">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-2xl">⚡</span>
+            <span class="text-xl font-bold gradient-text">BE1st</span>
+          </div>
+          <p class="text-gray-500 text-sm">Generate businesses in 65 seconds.</p>
+          <p class="text-gray-600 text-xs mt-1">"From thought to creation, just blink."</p>
+        </div>
+        
+        <div class="flex flex-wrap gap-8 text-sm text-gray-400">
+          <div>
+            <div class="font-bold text-white mb-2">Products</div>
+            <div>Blink</div>
+            <div>SlabTrack</div>
+            <div>Blink Inject</div>
+          </div>
+          <div>
+            <div class="font-bold text-white mb-2">Company</div>
+            <div>About</div>
+            <div>Pricing</div>
+            <div>Contact</div>
+          </div>
+          <div>
+            <div class="font-bold text-white mb-2">Legal</div>
+            <div>Privacy</div>
+            <div>Terms</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-800 mt-8 pt-8 flex flex-wrap justify-between items-center gap-4 text-sm text-gray-600">
+        <div>© 2026 BE1st. All rights reserved.</div>
+        <div class="flex items-center gap-2">
+          <span>Built with</span>
+          <span class="text-green-400">Blink</span>
+          <span>⚡</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

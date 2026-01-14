@@ -1,0 +1,9 @@
+{
+  "name": "calendar",
+  "type": "backend",
+  "source": "family-huddle",
+  "extractedAt": "2026-01-08T13:05:46.358Z",
+  "files": [
+    "routes/calendar.js"
+  ]
+}

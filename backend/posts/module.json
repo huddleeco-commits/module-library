@@ -1,0 +1,9 @@
+{
+  "name": "posts",
+  "type": "backend",
+  "source": "campuswager",
+  "extractedAt": "2026-01-08T13:05:46.388Z",
+  "files": [
+    "routes/posts.js"
+  ]
+}
