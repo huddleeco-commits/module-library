@@ -1682,18 +1682,54 @@ function generateFrontendPackageJson(projectName) {
     scripts: {
       dev: 'vite',
       build: 'vite build',
-      preview: 'vite preview'
+      preview: 'vite preview',
+      start: 'npx serve dist -s -l $PORT'
     },
     dependencies: {
       react: '^18.2.0',
       'react-dom': '^18.2.0',
       'react-router-dom': '^6.20.0',
       'lucide-react': '^0.263.1',
-      axios: '^1.6.0'
+      axios: '^1.6.0',
+      serve: '^14.2.0'
     },
     devDependencies: {
       '@vitejs/plugin-react': '^4.2.0',
       vite: '^5.0.0'
+    }
+  }, null, 2);
+}
+
+function generateFrontendRailwayJson() {
+  return JSON.stringify({
+    "$schema": "https://railway.app/railway.schema.json",
+    "build": {
+      "builder": "NIXPACKS",
+      "buildCommand": "npm install && npm run build"
+    },
+    "deploy": {
+      "startCommand": "npm run start",
+      "healthcheckPath": "/",
+      "healthcheckTimeout": 300,
+      "restartPolicyType": "ON_FAILURE",
+      "restartPolicyMaxRetries": 3
+    }
+  }, null, 2);
+}
+
+function generateBackendRailwayJson() {
+  return JSON.stringify({
+    "$schema": "https://railway.app/railway.schema.json",
+    "build": {
+      "builder": "NIXPACKS",
+      "buildCommand": "npm install"
+    },
+    "deploy": {
+      "startCommand": "npm start",
+      "healthcheckPath": "/api/health",
+      "healthcheckTimeout": 300,
+      "restartPolicyType": "ON_FAILURE",
+      "restartPolicyMaxRetries": 3
     }
   }, null, 2);
 }
@@ -2148,6 +2184,7 @@ if (fs.existsSync(effectsSrc)) {
   // Generate backend files
   fs.writeFileSync(path.join(backendDir, 'server.js'), generateServerJs(name, backendModules));
   fs.writeFileSync(path.join(backendDir, 'package.json'), generateBackendPackageJson(name, backendModules));
+  fs.writeFileSync(path.join(backendDir, 'railway.json'), generateBackendRailwayJson());
   fs.writeFileSync(path.join(backendDir, '.env.example'), generateEnvExample(backendModules));
 
   // Generate brain.json (single source of truth)
@@ -2199,6 +2236,7 @@ if (fs.existsSync(effectsSrc)) {
   fs.writeFileSync(path.join(frontendDir, 'src', 'theme.css'), generateThemeCss(industryConfig));
   fs.writeFileSync(path.join(frontendDir, 'package.json'), generateFrontendPackageJson(name));
   fs.writeFileSync(path.join(frontendDir, 'vite.config.js'), generateViteConfig());
+  fs.writeFileSync(path.join(frontendDir, 'railway.json'), generateFrontendRailwayJson());
   
   fs.writeFileSync(path.join(frontendDir, 'index.html'), `<!DOCTYPE html>
 <html lang="en">
