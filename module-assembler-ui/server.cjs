@@ -14,6 +14,28 @@ const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
+// Database and Admin Routes
+let db = null;
+let adminRoutes = null;
+
+async function initializeServices() {
+  try {
+    // Only initialize DB if DATABASE_URL is set
+    if (process.env.DATABASE_URL) {
+      db = require('./database/db.js');
+      await db.initializeDatabase();
+      console.log('   ✅ Database initialized');
+
+      adminRoutes = require('./routes/admin-routes.cjs');
+      console.log('   ✅ Admin routes loaded');
+    } else {
+      console.log('   ⚠️ DATABASE_URL not set - admin features disabled');
+    }
+  } catch (err) {
+    console.error('   ⚠️ Service init error:', err.message);
+  }
+}
+
 // PDF text extraction helper
 async function extractPdfText(base64Data) {
   try {
@@ -191,6 +213,32 @@ const ASSEMBLE_SCRIPT = path.join(MODULE_LIBRARY, 'scripts', 'assemble-project.c
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+// Serve static files from dist (production build)
+const distPath = path.join(__dirname, 'dist');
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+}
+
+// Admin routes (mounted after initialization)
+app.use('/api/admin', (req, res, next) => {
+  if (adminRoutes) {
+    adminRoutes(req, res, next);
+  } else {
+    res.status(503).json({ success: false, error: 'Admin features not available - DATABASE_URL not configured' });
+  }
+});
+
+// Admin page route
+app.get('/admin', (req, res) => {
+  const adminHtml = path.join(__dirname, 'dist', 'admin.html');
+  if (fs.existsSync(adminHtml)) {
+    res.sendFile(adminHtml);
+  } else {
+    // Fallback for development
+    res.redirect('http://localhost:5173/admin.html');
+  }
+});
 
 // ============================================
 // CONFIGURATION
@@ -3263,20 +3311,26 @@ app.get('/api/deploy/status', (req, res) => {
 // ============================================
 // START SERVER
 // ============================================
-const server = app.listen(PORT, '0.0.0.0', () => {
-  console.log(`
+async function startServer() {
+  // Initialize database and admin services
+  await initializeServices();
+
+  const server = app.listen(PORT, '0.0.0.0', () => {
+    console.log(`
 ╔══════════════════════════════════════════════════════════╗
 ║                                                          ║
-║   📦 Module Assembler Server v2.0                        ║
+║   ⚡ BLINK Module Assembler v2.0                         ║
 ║                                                          ║
 ║   Server:    http://localhost:${PORT}                      ║
 ║   API:       http://localhost:${PORT}/api                  ║
+║   Admin:     http://localhost:${PORT}/admin                ║
 ║                                                          ║
 ║   ✅ Prompt configs loaded:                              ║
 ║      - ${Object.keys(INDUSTRIES).length} industries                                   ║
 ║      - ${Object.keys(LAYOUTS).length} layouts                                      ║
 ║      - ${Object.keys(EFFECTS).length} effects                                      ║
 ║      - ${Object.keys(SECTIONS).length} sections                                     ║
+║   ${db ? '✅ Database connected' : '⚠️  No database (admin disabled)'}                           ║
 ║                                                          ║
 ║   Endpoints:                                             ║
 ║   - GET  /api/health           Health check              ║
@@ -3298,21 +3352,28 @@ const server = app.listen(PORT, '0.0.0.0', () => {
 ║                                                          ║
 ╚══════════════════════════════════════════════════════════╝
   `);
-});
-
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`\n❌ Port ${PORT} is already in use.`);
-  } else {
-    console.error('Server error:', err);
-  }
-  process.exit(1);
-});
-
-process.on('SIGINT', () => {
-  console.log('\n\n👋 Shutting down server...');
-  server.close(() => {
-    console.log('Server closed.');
-    process.exit(0);
   });
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`\n❌ Port ${PORT} is already in use.`);
+    } else {
+      console.error('Server error:', err);
+    }
+    process.exit(1);
+  });
+
+  process.on('SIGINT', () => {
+    console.log('\n\n👋 Shutting down server...');
+    server.close(() => {
+      console.log('Server closed.');
+      process.exit(0);
+    });
+  });
+}
+
+// Start the server
+startServer().catch(err => {
+  console.error('Failed to start server:', err);
+  process.exit(1);
 });
