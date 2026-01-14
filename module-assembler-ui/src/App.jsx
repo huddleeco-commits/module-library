@@ -195,7 +195,6 @@ export default function App() {
     selectedPreset: null,
 
     // Style
-    layoutKey: null,
     effects: [],
 
     // Pages
