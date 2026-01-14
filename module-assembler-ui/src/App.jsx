@@ -168,7 +168,19 @@ export default function App() {
     tagline: '',
     industry: null,
     industryKey: null,
-    
+
+    // NEW: Business basics
+    location: '',
+
+    // NEW: Target audience (multi-select)
+    targetAudience: [],
+
+    // NEW: Primary CTA goal
+    primaryCTA: 'contact', // 'book', 'call', 'quote', 'buy', 'visit', 'contact'
+
+    // NEW: Tone (0 = professional, 100 = friendly)
+    tone: 50,
+
     // Colors
     colorMode: 'preset', // 'preset', 'custom', 'from-site'
     colors: {
@@ -179,33 +191,39 @@ export default function App() {
       background: '#ffffff'
     },
     selectedPreset: null,
-    
+
     // Style
     layoutKey: null,
     effects: [],
-    
+
     // Pages
     selectedPages: ['home', 'about', 'contact'],
-    
+
     // References (for reference path)
     referenceSites: [],
-    
+
     // Existing site (for rebuild path)
     existingSite: null,
-    
+
     // Uploaded assets (logo, photos, menu)
     uploadedAssets: {
       logo: null,
       photos: [],
       menu: null
     },
-    
+
     // Image/style description
     imageDescription: '',
-    
+
     // Extra details for AI customization
     extraDetails: ''
   });
+
+  // NEW: Generation state with real steps
+  const [generationSteps, setGenerationSteps] = useState([]);
+  const [currentGenerationStep, setCurrentGenerationStep] = useState(0);
+  const [generationStartTime, setGenerationStartTime] = useState(null);
+  const [abortController, setAbortController] = useState(null);
   
   // Server data
   const [industries, setIndustries] = useState({});
@@ -319,24 +337,52 @@ export default function App() {
     setStep('customize');
   };
 
-  // Generate the project
+  // Generate the project with real step tracking
   const handleGenerate = async () => {
     if (!projectData.businessName.trim()) {
-      setError('Please enter a business name');
+      setError({ title: 'Missing Business Name', message: 'Please enter a business name to continue.' });
       return;
     }
-    
+
+    // Initialize generation with real steps
+    const steps = [
+      { id: 'analyzing', label: 'Analyzing your business', icon: '🔍' },
+      { id: 'selecting', label: 'Selecting components', icon: '📦' },
+      ...projectData.selectedPages.map(page => ({
+        id: `page-${page}`,
+        label: `Generating ${page.charAt(0).toUpperCase() + page.slice(1)} page`,
+        icon: '📄'
+      })),
+      { id: 'wiring', label: 'Wiring up backend', icon: '⚙️' },
+      { id: 'finalizing', label: 'Finalizing project', icon: '✨' }
+    ];
+
+    setGenerationSteps(steps);
+    setCurrentGenerationStep(0);
+    setGenerationStartTime(Date.now());
     setStep('generating');
     setGenerating(true);
     setProgress(0);
-    
+    setError(null);
+
+    // Create abort controller for cancellation
+    const controller = new AbortController();
+    setAbortController(controller);
+
     try {
-      // Progress simulation
-      const progressInterval = setInterval(() => {
-        setProgress(prev => Math.min(90, prev + Math.random() * 15));
-      }, 500);
-      
-      // Build the payload for server
+      // Simulate step progress while waiting for server
+      const stepInterval = setInterval(() => {
+        setCurrentGenerationStep(prev => {
+          const next = Math.min(prev + 1, steps.length - 1);
+          setProgress((next / steps.length) * 90);
+          return next;
+        });
+      }, 2000);
+
+      // Build the payload with new fields
+      const toneLabel = projectData.tone < 33 ? 'professional and formal' :
+                        projectData.tone > 66 ? 'friendly and casual' : 'balanced';
+
       const payload = {
         name: projectData.businessName.replace(/[^a-zA-Z0-9]/g, '-'),
         industry: projectData.industryKey,
@@ -354,20 +400,33 @@ export default function App() {
           existingSite: projectData.existingSite,
           extraDetails: projectData.extraDetails,
           uploadedAssets: projectData.uploadedAssets,
-          imageDescription: projectData.imageDescription
+          imageDescription: projectData.imageDescription,
+          // NEW fields for better AI prompts
+          location: projectData.location,
+          targetAudience: projectData.targetAudience,
+          primaryCTA: projectData.primaryCTA,
+          tone: toneLabel
         }
       };
-      
+
       const response = await fetch(`${API_BASE}/api/assemble`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: controller.signal
       });
-      
+
+      clearInterval(stepInterval);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Server error: ${response.status}`);
+      }
+
       const data = await response.json();
-      clearInterval(progressInterval);
-      
+
       if (data.success) {
+        setCurrentGenerationStep(steps.length);
         setProgress(100);
         setResult(data.project);
         setStep('complete');
@@ -375,39 +434,65 @@ export default function App() {
         throw new Error(data.error || 'Generation failed');
       }
     } catch (err) {
-      setError(err.message);
-      setStep('error');
+      if (err.name === 'AbortError') {
+        // User cancelled - go back to customize
+        setStep('customize');
+      } else {
+        setError({
+          title: 'Generation Failed',
+          message: err.message,
+          hint: 'This could be a network issue or server problem. Try again in a moment.'
+        });
+        setStep('error');
+      }
     } finally {
       setGenerating(false);
+      setAbortController(null);
     }
   };
+
+  // Cancel generation
+  const handleCancelGeneration = () => {
+    if (abortController) {
+      abortController.abort();
+    }
+  };
+
+  // Deploy state with cancel support
+  const [deployAbortController, setDeployAbortController] = useState(null);
+  const [deployStartTime, setDeployStartTime] = useState(null);
 
   // Deploy the generated project
   const handleDeploy = async () => {
     if (!result?.path || !result?.name) {
-      setDeployError('No project to deploy');
+      setDeployError({ title: 'No Project', message: 'No project to deploy. Please generate a project first.' });
       setStep('deploy-error');
       return;
     }
-    
+
     setStep('deploying');
     setDeployStatus('Starting deployment...');
     setDeployError(null);
-    
+    setDeployStartTime(Date.now());
+
+    // Create abort controller for cancellation
+    const controller = new AbortController();
+    setDeployAbortController(controller);
+
     try {
       // Status updates for user feedback
       const statusUpdates = [
-        'Creating GitHub repository...',
-        'Pushing code to GitHub...',
-        'Creating Railway project...',
-        'Provisioning PostgreSQL database...',
-        'Deploying backend service...',
-        'Deploying frontend service...',
-        'Configuring custom domains...',
-        'Setting up DNS records...',
-        'Finalizing deployment...'
+        { status: 'Creating GitHub repository...', icon: '📦' },
+        { status: 'Pushing code to GitHub...', icon: '📤' },
+        { status: 'Creating Railway project...', icon: '🚂' },
+        { status: 'Provisioning PostgreSQL database...', icon: '🗄️' },
+        { status: 'Deploying backend service...', icon: '⚙️' },
+        { status: 'Deploying frontend service...', icon: '🌐' },
+        { status: 'Configuring custom domains...', icon: '🔗' },
+        { status: 'Setting up DNS records...', icon: '📡' },
+        { status: 'Finalizing deployment...', icon: '✨' }
       ];
-      
+
       let statusIndex = 0;
       const statusInterval = setInterval(() => {
         if (statusIndex < statusUpdates.length) {
@@ -415,7 +500,7 @@ export default function App() {
           statusIndex++;
         }
       }, 3000);
-      
+
       const response = await fetch(`${API_BASE}/api/deploy`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -423,13 +508,19 @@ export default function App() {
           projectPath: result.path,
           projectName: result.name || projectData.businessName.replace(/[^a-zA-Z0-9]/g, '-'),
           adminEmail: 'admin@be1st.io'
-        })
+        }),
+        signal: controller.signal
       });
-      
+
       clearInterval(statusInterval);
-      
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Server error: ${response.status}`);
+      }
+
       const data = await response.json();
-      
+
       if (data.success) {
         setDeployResult(data);
         setStep('deploy-complete');
@@ -437,8 +528,26 @@ export default function App() {
         throw new Error(data.error || 'Deployment failed');
       }
     } catch (err) {
-      setDeployError(err.message);
-      setStep('deploy-error');
+      if (err.name === 'AbortError') {
+        // User cancelled - go back to complete
+        setStep('complete');
+      } else {
+        setDeployError({
+          title: 'Deployment Failed',
+          message: err.message,
+          hint: 'Your project was generated successfully. You can try deploying again or deploy manually.'
+        });
+        setStep('deploy-error');
+      }
+    } finally {
+      setDeployAbortController(null);
+    }
+  };
+
+  // Cancel deployment
+  const handleCancelDeploy = () => {
+    if (deployAbortController) {
+      deployAbortController.abort();
     }
   };
 
@@ -451,6 +560,10 @@ export default function App() {
       tagline: '',
       industry: null,
       industryKey: null,
+      location: '',
+      targetAudience: [],
+      primaryCTA: 'contact',
+      tone: 50,
       colorMode: 'preset',
       colors: { primary: '#3b82f6', secondary: '#1e40af', accent: '#f59e0b', text: '#1a1a2e', background: '#ffffff' },
       selectedPreset: null,
@@ -458,11 +571,20 @@ export default function App() {
       effects: [],
       selectedPages: ['home', 'about', 'contact'],
       referenceSites: [],
-      existingSite: null
+      existingSite: null,
+      uploadedAssets: { logo: null, photos: [], menu: null },
+      imageDescription: '',
+      extraDetails: ''
     });
     setResult(null);
     setError(null);
     setProgress(0);
+    setGenerationSteps([]);
+    setCurrentGenerationStep(0);
+    setGenerationStartTime(null);
+    setDeployResult(null);
+    setDeployError(null);
+    setDeployStartTime(null);
   };
 
   // ============================================
@@ -550,10 +672,12 @@ export default function App() {
         )}
         
         {step === 'generating' && (
-          <GeneratingStep 
-            progress={progress} 
-            projectName={projectData.businessName} 
-            onBlinkUpdate={setFinalBlinkCount}
+          <GeneratingStep
+            steps={generationSteps}
+            currentStep={currentGenerationStep}
+            startTime={generationStartTime}
+            projectName={projectData.businessName}
+            onCancel={handleCancelGeneration}
           />
         )}
         
@@ -573,7 +697,12 @@ export default function App() {
         )}
         
         {step === 'deploying' && (
-          <DeployingStep status={deployStatus} projectName={projectData.businessName} />
+          <DeployingStep
+            status={deployStatus}
+            projectName={projectData.businessName}
+            startTime={deployStartTime}
+            onCancel={handleCancelDeploy}
+          />
         )}
         
         {step === 'deploy-complete' && (
@@ -1719,6 +1848,109 @@ function CustomizeStep({ projectData, updateProject, industries, layouts, effect
             />
           </div>
 
+          {/* Location */}
+          <div style={styles.formSection}>
+            <label style={styles.formLabel}>Business Location</label>
+            <input
+              type="text"
+              value={projectData.location || ''}
+              onChange={(e) => updateProject({ location: e.target.value })}
+              placeholder="e.g., San Francisco, CA or Online Only"
+              style={styles.formInput}
+            />
+            <p style={customizeStyles.fieldHint}>Helps AI customize content for your area</p>
+          </div>
+
+          {/* Target Audience */}
+          <div style={styles.formSection}>
+            <label style={styles.formLabel}>Who are your customers?</label>
+            <div style={customizeStyles.chipGrid}>
+              {[
+                { id: 'individuals', label: 'Individuals', icon: '👤' },
+                { id: 'families', label: 'Families', icon: '👨‍👩‍👧' },
+                { id: 'small-business', label: 'Small Businesses', icon: '🏪' },
+                { id: 'enterprise', label: 'Enterprise', icon: '🏢' },
+                { id: 'startups', label: 'Startups', icon: '🚀' },
+                { id: 'professionals', label: 'Professionals', icon: '💼' },
+              ].map(audience => (
+                <button
+                  key={audience.id}
+                  style={{
+                    ...customizeStyles.chip,
+                    ...(projectData.targetAudience?.includes(audience.id) ? customizeStyles.chipActive : {})
+                  }}
+                  onClick={() => {
+                    const current = projectData.targetAudience || [];
+                    if (current.includes(audience.id)) {
+                      updateProject({ targetAudience: current.filter(a => a !== audience.id) });
+                    } else {
+                      updateProject({ targetAudience: [...current, audience.id] });
+                    }
+                  }}
+                >
+                  <span>{audience.icon}</span>
+                  <span>{audience.label}</span>
+                </button>
+              ))}
+            </div>
+            <p style={customizeStyles.fieldHint}>Select all that apply</p>
+          </div>
+
+          {/* Primary CTA */}
+          <div style={styles.formSection}>
+            <label style={styles.formLabel}>What should visitors do?</label>
+            <div style={customizeStyles.radioGrid}>
+              {[
+                { id: 'contact', label: 'Contact Us', icon: '📧' },
+                { id: 'book', label: 'Book Appointment', icon: '📅' },
+                { id: 'call', label: 'Call Now', icon: '📞' },
+                { id: 'quote', label: 'Get a Quote', icon: '💬' },
+                { id: 'buy', label: 'Buy Now', icon: '🛒' },
+                { id: 'visit', label: 'Visit Location', icon: '📍' },
+              ].map(cta => (
+                <label
+                  key={cta.id}
+                  style={{
+                    ...customizeStyles.radioLabel,
+                    ...(projectData.primaryCTA === cta.id ? customizeStyles.radioLabelActive : {})
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="primaryCTA"
+                    value={cta.id}
+                    checked={projectData.primaryCTA === cta.id}
+                    onChange={(e) => updateProject({ primaryCTA: e.target.value })}
+                    style={customizeStyles.radioInput}
+                  />
+                  <span>{cta.icon}</span>
+                  <span>{cta.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Tone Slider */}
+          <div style={styles.formSection}>
+            <label style={styles.formLabel}>Communication Style</label>
+            <div style={customizeStyles.sliderContainer}>
+              <span style={customizeStyles.sliderLabel}>Professional</span>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={projectData.tone || 50}
+                onChange={(e) => updateProject({ tone: parseInt(e.target.value) })}
+                style={customizeStyles.slider}
+              />
+              <span style={customizeStyles.sliderLabel}>Friendly</span>
+            </div>
+            <p style={customizeStyles.toneHint}>
+              {projectData.tone < 33 ? 'Formal, corporate language' :
+               projectData.tone > 66 ? 'Casual, conversational tone' : 'Balanced professional tone'}
+            </p>
+          </div>
+
           {/* Colors */}
           <div style={styles.formSection}>
             <label style={styles.formLabel}>Colors</label>
@@ -1777,11 +2009,35 @@ function CustomizeStep({ projectData, updateProject, industries, layouts, effect
             </div>
           </div>
 
-          {/* Pages */}
+          {/* Pages - Website */}
           <div style={styles.formSection}>
-            <label style={styles.formLabel}>Pages ({projectData.selectedPages.length} selected)</label>
+            <label style={styles.formLabel}>Website Pages ({projectData.selectedPages.filter(p => !pageOptions.find(po => po.id === p)?.appPage).length} selected)</label>
             <div style={styles.pageGrid}>
-              {pageOptions.map(page => (
+              {pageOptions.filter(p => !p.appPage).map(page => (
+                <button
+                  key={page.id}
+                  style={{
+                    ...styles.pageChip,
+                    ...(projectData.selectedPages.includes(page.id) ? styles.pageChipActive : {})
+                  }}
+                  onClick={() => togglePage(page.id)}
+                >
+                  <span>{page.icon}</span>
+                  <span>{page.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Pages - App/Dashboard */}
+          <div style={styles.formSection}>
+            <label style={styles.formLabel}>
+              App Pages
+              <span style={customizeStyles.optionalBadge}>Optional</span>
+            </label>
+            <p style={customizeStyles.fieldHint}>Add interactive features like dashboards and user accounts</p>
+            <div style={styles.pageGrid}>
+              {pageOptions.filter(p => p.appPage).map(page => (
                 <button
                   key={page.id}
                   style={{
@@ -1901,56 +2157,233 @@ function CustomizeStep({ projectData, updateProject, industries, layouts, effect
   );
 }
 
+const customizeStyles = {
+  fieldHint: {
+    color: '#666',
+    fontSize: '12px',
+    marginTop: '6px',
+    marginBottom: 0
+  },
+  chipGrid: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '8px'
+  },
+  chip: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '8px 14px',
+    background: 'rgba(255,255,255,0.03)',
+    border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: '20px',
+    color: '#888',
+    fontSize: '13px',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease'
+  },
+  chipActive: {
+    background: 'rgba(34, 197, 94, 0.15)',
+    borderColor: '#22c55e',
+    color: '#22c55e'
+  },
+  radioGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    gap: '8px'
+  },
+  radioLabel: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '10px 12px',
+    background: 'rgba(255,255,255,0.03)',
+    border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: '8px',
+    color: '#888',
+    fontSize: '13px',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease'
+  },
+  radioLabelActive: {
+    background: 'rgba(34, 197, 94, 0.15)',
+    borderColor: '#22c55e',
+    color: '#22c55e'
+  },
+  radioInput: {
+    display: 'none'
+  },
+  sliderContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px'
+  },
+  slider: {
+    flex: 1,
+    height: '6px',
+    borderRadius: '3px',
+    background: 'rgba(255,255,255,0.1)',
+    appearance: 'none',
+    cursor: 'pointer'
+  },
+  sliderLabel: {
+    color: '#666',
+    fontSize: '12px',
+    minWidth: '70px'
+  },
+  toneHint: {
+    color: '#22c55e',
+    fontSize: '12px',
+    marginTop: '8px',
+    textAlign: 'center'
+  },
+  optionalBadge: {
+    marginLeft: '8px',
+    padding: '2px 8px',
+    background: 'rgba(255,255,255,0.05)',
+    borderRadius: '4px',
+    fontSize: '11px',
+    color: '#666'
+  }
+};
+
 // ============================================
 // GENERATING STEP
 // ============================================
-function GeneratingStep({ progress, projectName, onBlinkUpdate }) {
-  const [blinkCount, setBlinkCount] = useState(0);
-  
-  // Blink counter - average human blinks every 4 seconds
+function GeneratingStep({ steps, currentStep, startTime, projectName, onCancel }) {
+  const [elapsed, setElapsed] = useState(0);
+
+  // Update elapsed time every second
   useEffect(() => {
+    if (!startTime) return;
     const interval = setInterval(() => {
-      setBlinkCount(prev => {
-        const newCount = prev + 1;
-        if (onBlinkUpdate) onBlinkUpdate(newCount);
-        return newCount;
-      });
-    }, 4000);
+      setElapsed(Math.floor((Date.now() - startTime) / 1000));
+    }, 1000);
     return () => clearInterval(interval);
-  }, [onBlinkUpdate]);
-  
+  }, [startTime]);
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+  };
+
+  // Estimate: ~15 seconds per step
+  const estimatedTotal = steps.length * 15;
+  const remaining = Math.max(0, estimatedTotal - elapsed);
+  const progress = steps.length > 0 ? ((currentStep + 1) / steps.length) * 100 : 0;
+
   return (
     <div style={styles.generatingContainer}>
-      <div style={styles.blinkQuestion}>
-        👁️ How many blinks does it take to generate YOUR website?
-      </div>
-      
       <div style={styles.generatingIcon}>⚡</div>
       <h2 style={styles.generatingTitle}>Building {projectName}...</h2>
-      
+
+      {/* Step list */}
+      <div style={genStepStyles.stepList}>
+        {steps.map((step, idx) => (
+          <div
+            key={step.id}
+            style={{
+              ...genStepStyles.stepItem,
+              opacity: idx <= currentStep ? 1 : 0.4,
+              background: idx === currentStep ? 'rgba(34, 197, 94, 0.1)' : 'transparent',
+              borderLeft: idx === currentStep ? '3px solid #22c55e' : '3px solid transparent'
+            }}
+          >
+            <span style={genStepStyles.stepIcon}>
+              {idx < currentStep ? '✓' : step.icon}
+            </span>
+            <span style={{
+              ...genStepStyles.stepLabel,
+              color: idx < currentStep ? '#22c55e' : idx === currentStep ? '#fff' : '#888'
+            }}>
+              {step.label}
+            </span>
+            {idx === currentStep && (
+              <span style={genStepStyles.activeDot} />
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Progress bar */}
       <div style={styles.progressBar}>
-        <div style={{...styles.progressFill, width: `${progress}%`}} />
+        <div style={{...styles.progressFill, width: `${Math.min(progress, 100)}%`}} />
       </div>
-      
-      <div style={styles.statusRow}>
-        <span style={styles.progressText}>{Math.round(progress)}%</span>
-        <span style={styles.blinkCounter}>👁️ {blinkCount} blink{blinkCount !== 1 ? 's' : ''}</span>
+
+      {/* Time display */}
+      <div style={genStepStyles.timeRow}>
+        <span style={genStepStyles.elapsed}>Elapsed: {formatTime(elapsed)}</span>
+        <span style={genStepStyles.remaining}>~{formatTime(remaining)} remaining</span>
       </div>
-      
-      <p style={styles.generatingHint}>
-        {progress < 30 && '🎨 Designing your pages...'}
-        {progress >= 30 && progress < 60 && '⚙️ Building components...'}
-        {progress >= 60 && progress < 90 && '✨ Adding finishing touches...'}
-        {progress >= 90 && '🚀 Almost there...'}
-      </p>
-      
-      <div style={styles.activeIndicator}>
-        <span style={styles.pulsingDot} />
-        <span>Generating in progress...</span>
-      </div>
+
+      {/* Cancel button */}
+      <button onClick={onCancel} style={genStepStyles.cancelBtn}>
+        Cancel
+      </button>
     </div>
   );
 }
+
+const genStepStyles = {
+  stepList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+    marginBottom: '24px',
+    maxWidth: '400px',
+    width: '100%'
+  },
+  stepItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '10px 16px',
+    borderRadius: '8px',
+    transition: 'all 0.3s ease'
+  },
+  stepIcon: {
+    fontSize: '16px',
+    width: '24px',
+    textAlign: 'center'
+  },
+  stepLabel: {
+    fontSize: '14px',
+    flex: 1
+  },
+  activeDot: {
+    width: '8px',
+    height: '8px',
+    borderRadius: '50%',
+    background: '#22c55e',
+    animation: 'pulse 1.5s infinite'
+  },
+  timeRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    width: '100%',
+    maxWidth: '400px',
+    marginTop: '12px',
+    fontSize: '14px'
+  },
+  elapsed: {
+    color: '#888'
+  },
+  remaining: {
+    color: '#22c55e'
+  },
+  cancelBtn: {
+    marginTop: '24px',
+    padding: '12px 32px',
+    background: 'transparent',
+    border: '1px solid rgba(255,255,255,0.2)',
+    borderRadius: '8px',
+    color: '#888',
+    fontSize: '14px',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease'
+  }
+};
 
 // ============================================
 // COMPLETE STEP
@@ -2081,42 +2514,56 @@ function CompleteStep({ result, projectData, onReset, blinkCount, onDeploy, depl
 // ============================================
 // DEPLOYING STEP
 // ============================================
-function DeployingStep({ status, projectName }) {
+function DeployingStep({ status, projectName, startTime, onCancel }) {
   const [dots, setDots] = useState('');
   const [elapsedTime, setElapsedTime] = useState(0);
-  
+
   useEffect(() => {
     const dotsInterval = setInterval(() => {
       setDots(prev => prev.length >= 3 ? '' : prev + '.');
     }, 500);
-    
+
+    // Use startTime prop if available, otherwise count from 0
     const timeInterval = setInterval(() => {
-      setElapsedTime(prev => prev + 1);
+      if (startTime) {
+        setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
+      } else {
+        setElapsedTime(prev => prev + 1);
+      }
     }, 1000);
-    
+
     return () => {
       clearInterval(dotsInterval);
       clearInterval(timeInterval);
     };
-  }, []);
-  
+  }, [startTime]);
+
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
   };
 
+  // Calculate remaining time (estimated 90 seconds total)
+  const estimatedTotal = 90;
+  const remaining = Math.max(0, estimatedTotal - elapsedTime);
+
+  // Get current status display
+  const statusDisplay = typeof status === 'object'
+    ? `${status.icon} ${status.status}`
+    : (status || 'Initializing...');
+
   return (
     <div style={styles.deployingContainer}>
       <div style={styles.deployingIcon}>🚀</div>
       <h2 style={styles.deployingTitle}>Deploying {projectName}{dots}</h2>
       <p style={styles.deployingSubtitle}>Your site is going live on the internet</p>
-      
+
       <div style={styles.deployingStatusCard}>
         <div style={styles.deployingSpinner}></div>
-        <span style={styles.deployingStatus}>{status || 'Initializing...'}</span>
+        <span style={styles.deployingStatus}>{statusDisplay}</span>
       </div>
-      
+
       <div style={styles.deployingTimeline}>
         <div style={styles.timelineItem}>
           <span style={styles.timelineIcon}>⏱️</span>
@@ -2124,15 +2571,10 @@ function DeployingStep({ status, projectName }) {
         </div>
         <div style={styles.timelineItem}>
           <span style={styles.timelineIcon}>🎯</span>
-          <span>Typical: 60-90 seconds</span>
+          <span>~{formatTime(remaining)} remaining</span>
         </div>
       </div>
-      
-      <div style={styles.deployingWarning}>
-        <span style={styles.warningIcon}>⚠️</span>
-        <span>Please don't refresh or close this page</span>
-      </div>
-      
+
       <div style={styles.deployingSteps}>
         <p style={styles.stepsTitle}>What's happening:</p>
         <div style={styles.stepsList}>
@@ -2147,20 +2589,50 @@ function DeployingStep({ status, projectName }) {
           <span>✅ Live!</span>
         </div>
       </div>
+
+      {/* Cancel button */}
+      <button onClick={onCancel} style={deployStepStyles.cancelBtn}>
+        Cancel Deployment
+      </button>
+
+      <div style={styles.deployingWarning}>
+        <span style={styles.warningIcon}>⚠️</span>
+        <span>Cancelling may leave partial resources created</span>
+      </div>
     </div>
   );
 }
+
+const deployStepStyles = {
+  cancelBtn: {
+    marginTop: '24px',
+    padding: '12px 32px',
+    background: 'transparent',
+    border: '1px solid rgba(255,255,255,0.2)',
+    borderRadius: '8px',
+    color: '#888',
+    fontSize: '14px',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease'
+  }
+};
 
 // ============================================
 // DEPLOY COMPLETE STEP
 // ============================================
 function DeployCompleteStep({ result, onReset }) {
   const [copied, setCopied] = useState(null);
-  
+  const [showPassword, setShowPassword] = useState(false);
+
   const copyToClipboard = (text, label) => {
     navigator.clipboard.writeText(text);
     setCopied(label);
     setTimeout(() => setCopied(null), 2000);
+  };
+
+  const maskPassword = (pw) => {
+    if (!pw) return '';
+    return '*'.repeat(pw.length);
   };
 
   return (
@@ -2168,30 +2640,30 @@ function DeployCompleteStep({ result, onReset }) {
       <div style={styles.deployCompleteIcon}>🎉</div>
       <h1 style={styles.deployCompleteTitle}>You're Live!</h1>
       <p style={styles.deployCompleteSubtitle}>Your site is now on the internet</p>
-      
+
       {/* Main URL */}
       <div style={styles.liveUrlCard}>
         <span style={styles.liveUrlLabel}>Your Website</span>
-        <a 
-          href={result?.urls?.frontend} 
-          target="_blank" 
+        <a
+          href={result?.urls?.frontend}
+          target="_blank"
           rel="noopener noreferrer"
           style={styles.liveUrlLink}
         >
           {result?.urls?.frontend || 'https://your-site.be1st.io'}
         </a>
-        <button 
+        <button
           style={styles.visitBtn}
           onClick={() => window.open(result?.urls?.frontend, '_blank')}
         >
-          Visit Site →
+          Visit Site
         </button>
       </div>
-      
+
       {/* All URLs */}
       <div style={styles.allUrlsCard}>
         <h3 style={styles.allUrlsTitle}>All Your URLs</h3>
-        
+
         <div style={styles.urlRow}>
           <span style={styles.urlLabel}>Frontend:</span>
           <a href={result?.urls?.frontend} target="_blank" rel="noopener noreferrer" style={styles.urlValue}>
@@ -2201,7 +2673,7 @@ function DeployCompleteStep({ result, onReset }) {
             {copied === 'frontend' ? '✓' : '📋'}
           </button>
         </div>
-        
+
         <div style={styles.urlRow}>
           <span style={styles.urlLabel}>API:</span>
           <a href={result?.urls?.backend} target="_blank" rel="noopener noreferrer" style={styles.urlValue}>
@@ -2211,7 +2683,7 @@ function DeployCompleteStep({ result, onReset }) {
             {copied === 'backend' ? '✓' : '📋'}
           </button>
         </div>
-        
+
         <div style={styles.urlRow}>
           <span style={styles.urlLabel}>Admin:</span>
           <a href={result?.urls?.admin} target="_blank" rel="noopener noreferrer" style={styles.urlValue}>
@@ -2221,7 +2693,7 @@ function DeployCompleteStep({ result, onReset }) {
             {copied === 'admin' ? '✓' : '📋'}
           </button>
         </div>
-        
+
         <div style={styles.urlRow}>
           <span style={styles.urlLabel}>GitHub:</span>
           <a href={result?.urls?.github} target="_blank" rel="noopener noreferrer" style={styles.urlValue}>
@@ -2231,7 +2703,7 @@ function DeployCompleteStep({ result, onReset }) {
             {copied === 'github' ? '✓' : '📋'}
           </button>
         </div>
-        
+
         <div style={styles.urlRow}>
           <span style={styles.urlLabel}>Railway:</span>
           <a href={result?.urls?.railway} target="_blank" rel="noopener noreferrer" style={styles.urlValue}>
@@ -2242,11 +2714,11 @@ function DeployCompleteStep({ result, onReset }) {
           </button>
         </div>
       </div>
-      
+
       {/* Admin Credentials */}
       {result?.credentials && (
         <div style={styles.credentialsCard}>
-          <h3 style={styles.credentialsTitle}>🔑 Admin Login</h3>
+          <h3 style={styles.credentialsTitle}>Admin Login</h3>
           <div style={styles.credentialRow}>
             <span style={styles.credentialLabel}>Email:</span>
             <span style={styles.credentialValue}>{result.credentials.adminEmail}</span>
@@ -2256,7 +2728,16 @@ function DeployCompleteStep({ result, onReset }) {
           </div>
           <div style={styles.credentialRow}>
             <span style={styles.credentialLabel}>Password:</span>
-            <span style={styles.credentialValue}>{result.credentials.adminPassword}</span>
+            <span style={styles.credentialValue}>
+              {showPassword ? result.credentials.adminPassword : maskPassword(result.credentials.adminPassword)}
+            </span>
+            <button
+              style={deployCompleteStyles.toggleBtn}
+              onClick={() => setShowPassword(!showPassword)}
+              title={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? '🙈' : '👁️'}
+            </button>
             <button style={styles.copyBtn} onClick={() => copyToClipboard(result.credentials.adminPassword, 'password')}>
               {copied === 'password' ? '✓' : '📋'}
             </button>
@@ -2281,20 +2762,37 @@ function DeployCompleteStep({ result, onReset }) {
   );
 }
 
+const deployCompleteStyles = {
+  toggleBtn: {
+    padding: '4px 8px',
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '14px',
+    opacity: 0.7,
+    transition: 'opacity 0.2s'
+  }
+};
+
 // ============================================
 // DEPLOY ERROR STEP
 // ============================================
 function DeployErrorStep({ error, onRetry, onReset }) {
+  // Handle both string errors and structured { title, message, hint } objects
+  const errorTitle = typeof error === 'object' ? error.title : 'Deployment Failed';
+  const errorMessage = typeof error === 'object' ? error.message : error;
+  const errorHint = typeof error === 'object' ? error.hint : 'This could be a temporary issue. Your project was generated successfully - you can try deploying again.';
+
   return (
     <div style={styles.errorContainer}>
       <div style={styles.errorIcon}>❌</div>
-      <h2 style={styles.errorTitle}>Deployment Failed</h2>
-      <p style={styles.errorMessage}>{error}</p>
-      <p style={styles.errorHint}>
-        This could be a temporary issue. Your project was generated successfully - you can try deploying again.
-      </p>
+      <h2 style={styles.errorTitle}>{errorTitle}</h2>
+      <p style={styles.errorMessage}>{errorMessage}</p>
+      {errorHint && (
+        <p style={errorStepStyles.hint}>{errorHint}</p>
+      )}
       <div style={styles.errorActions}>
-        <button style={styles.primaryBtn} onClick={onRetry}>🔄 Try Again</button>
+        <button style={styles.primaryBtn} onClick={onRetry}>Try Again</button>
         <button style={styles.secondaryBtn} onClick={onReset}>Start Over</button>
       </div>
     </div>
@@ -2305,11 +2803,19 @@ function DeployErrorStep({ error, onRetry, onReset }) {
 // ERROR STEP
 // ============================================
 function ErrorStep({ error, onRetry, onReset }) {
+  // Handle both string errors and structured { title, message, hint } objects
+  const errorTitle = typeof error === 'object' ? error.title : 'Something went wrong';
+  const errorMessage = typeof error === 'object' ? error.message : error;
+  const errorHint = typeof error === 'object' ? error.hint : null;
+
   return (
     <div style={styles.errorContainer}>
       <div style={styles.errorIcon}>❌</div>
-      <h2 style={styles.errorTitle}>Something went wrong</h2>
-      <p style={styles.errorMessage}>{error}</p>
+      <h2 style={styles.errorTitle}>{errorTitle}</h2>
+      <p style={styles.errorMessage}>{errorMessage}</p>
+      {errorHint && (
+        <p style={errorStepStyles.hint}>{errorHint}</p>
+      )}
       <div style={styles.errorActions}>
         <button style={styles.primaryBtn} onClick={onRetry}>Try Again</button>
         <button style={styles.secondaryBtn} onClick={onReset}>Start Over</button>
@@ -2317,6 +2823,18 @@ function ErrorStep({ error, onRetry, onReset }) {
     </div>
   );
 }
+
+const errorStepStyles = {
+  hint: {
+    color: '#888',
+    fontSize: '14px',
+    marginTop: '8px',
+    padding: '12px 16px',
+    background: 'rgba(255,255,255,0.03)',
+    borderRadius: '8px',
+    borderLeft: '3px solid #f59e0b'
+  }
+};
 
 // ============================================
 // STYLES
