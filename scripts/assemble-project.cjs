@@ -2,27 +2,53 @@
 
 /**
  * Module Library - Project Assembler (v3 - AUTO-WIRED with correct paths)
- * 
+ *
  * Assembles full-stack projects from the module library with:
  * - Auto-wired backend routes in server.js
  * - Auto-generated App.jsx with React Router
  * - Ready to run with npm install && npm run dev
- * 
- * Save to: C:\Users\huddl\OneDrive\Desktop\module-library\scripts\assemble-project.cjs
+ *
+ * Environment Variables:
+ * - MODULE_LIBRARY_PATH: Root of the module library (default: parent of scripts/)
+ * - OUTPUT_PATH: Where to generate projects (default: ../generated-projects)
  */
 
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 
 // ============================================
-// PATHS
+// PATHS - Environment-based with sensible defaults
 // ============================================
 
-const MODULE_LIBRARY = 'C:\\Users\\huddl\\OneDrive\\Desktop\\module-library';
-const OUTPUT_BASE = 'C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects';
+const MODULE_LIBRARY = process.env.MODULE_LIBRARY_PATH || path.resolve(__dirname, '..');
+const OUTPUT_BASE = process.env.OUTPUT_PATH || path.resolve(__dirname, '..', '..', 'generated-projects');
+
+// Validate paths on startup
+if (!fs.existsSync(MODULE_LIBRARY)) {
+  console.error(`❌ MODULE_LIBRARY_PATH not found: ${MODULE_LIBRARY}`);
+  console.error('   Set MODULE_LIBRARY_PATH environment variable or ensure module-library exists');
+  process.exit(1);
+}
+
+// Create output directory if it doesn't exist
+if (!fs.existsSync(OUTPUT_BASE)) {
+  fs.mkdirSync(OUTPUT_BASE, { recursive: true });
+  console.log(`📁 Created output directory: ${OUTPUT_BASE}`);
+}
 
 const BACKEND_MODULES_PATH = path.join(MODULE_LIBRARY, 'backend');
 const FRONTEND_MODULES_PATH = path.join(MODULE_LIBRARY, 'frontend');
+
+// Validate module directories exist
+if (!fs.existsSync(BACKEND_MODULES_PATH)) {
+  console.error(`❌ Backend modules not found: ${BACKEND_MODULES_PATH}`);
+  process.exit(1);
+}
+if (!fs.existsSync(FRONTEND_MODULES_PATH)) {
+  console.error(`❌ Frontend modules not found: ${FRONTEND_MODULES_PATH}`);
+  process.exit(1);
+}
 
 // ============================================
 // ROUTE MAPPINGS - Maps module names to API routes and actual file paths
@@ -326,22 +352,27 @@ function getModulesForBundles(bundleKeys) {
 }
 
 // Find actual route file in module directory
-function findRouteFile(modulePath) {
+function findRouteFile(modulePath, moduleName) {
   const routesDir = path.join(modulePath, 'routes');
-  
+
   if (!fs.existsSync(routesDir)) {
     // Check for index.js in module root
     const indexFile = path.join(modulePath, 'index.js');
     if (fs.existsSync(indexFile)) return 'index.js';
+    console.warn(`   ⚠️ Module "${moduleName}" has no routes/ directory or index.js - skipping`);
     return null;
   }
-  
+
   // Get first .js file in routes directory
   const files = fs.readdirSync(routesDir).filter(f => f.endsWith('.js'));
   if (files.length > 0) {
+    if (files.length > 1) {
+      console.warn(`   ⚠️ Module "${moduleName}" has multiple route files, using: ${files[0]}`);
+    }
     return `routes/${files[0]}`;
   }
-  
+
+  console.warn(`   ⚠️ Module "${moduleName}" routes/ directory is empty - skipping`);
   return null;
 }
 
@@ -1277,8 +1308,8 @@ function generateServerJs(projectName, backendModules) {
   // Generate imports and route registrations based on actual files
   for (const moduleName of backendModules) {
     const modulePath = path.join(BACKEND_MODULES_PATH, moduleName);
-    const routeFile = findRouteFile(modulePath);
-    
+    const routeFile = findRouteFile(modulePath, moduleName);
+
     if (routeFile) {
       const varName = moduleName.replace(/-/g, '_') + 'Routes';
       const mapping = ROUTE_MAPPINGS[moduleName] || { route: `/api/${moduleName}` };
@@ -2077,9 +2108,10 @@ function assembleProject(config) {
   for (const moduleName of backendModules) {
     const srcPath = path.join(BACKEND_MODULES_PATH, moduleName);
     const destPath = path.join(backendDir, 'modules', moduleName);
-    
+
     if (fs.existsSync(srcPath)) {
       copyDirectorySync(srcPath, destPath);
+      console.log(`  ✅ ${moduleName}`);
       
       // Create database folder in each module for shared db access
       const dbFolder = path.join(destPath, 'database');
@@ -2152,10 +2184,8 @@ function assembleProject(config) {
           fs.writeFileSync(modelPath, generateModelStub(modelName));
         }
       }
-      
-      console.log(`  ✅ ${moduleName}`);
     } else {
-      console.log(`  ⚠️ ${moduleName} (not found)`);
+      console.log(`  ⚠️ ${moduleName} (not found in ${BACKEND_MODULES_PATH})`);
     }
   }
 

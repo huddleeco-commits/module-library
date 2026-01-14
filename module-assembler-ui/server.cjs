@@ -202,12 +202,29 @@ function buildPrompt(industryKey, layoutKey, selectedEffects) {
 }
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
-// Paths
-const MODULE_LIBRARY = 'C:\\Users\\huddl\\OneDrive\\Desktop\\module-library';
-const GENERATED_PROJECTS = 'C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects';
+// Paths - Environment-based with sensible defaults
+// MODULE_LIBRARY: parent of module-assembler-ui (this file is in module-assembler-ui/)
+// GENERATED_PROJECTS: sibling to module-library
+const MODULE_LIBRARY = process.env.MODULE_LIBRARY_PATH || path.resolve(__dirname, '..');
+const GENERATED_PROJECTS = process.env.OUTPUT_PATH || path.resolve(__dirname, '..', '..', 'generated-projects');
 const ASSEMBLE_SCRIPT = path.join(MODULE_LIBRARY, 'scripts', 'assemble-project.cjs');
+
+// Validate critical paths on startup
+if (!fs.existsSync(MODULE_LIBRARY)) {
+  console.error(`❌ MODULE_LIBRARY_PATH not found: ${MODULE_LIBRARY}`);
+  process.exit(1);
+}
+if (!fs.existsSync(ASSEMBLE_SCRIPT)) {
+  console.error(`❌ Assembler script not found: ${ASSEMBLE_SCRIPT}`);
+  process.exit(1);
+}
+// Create output directory if needed
+if (!fs.existsSync(GENERATED_PROJECTS)) {
+  fs.mkdirSync(GENERATED_PROJECTS, { recursive: true });
+  console.log(`📁 Created output directory: ${GENERATED_PROJECTS}`);
+}
 
 // Middleware
 app.use(cors());
@@ -781,14 +798,21 @@ function copyDirectorySync(src, dest) {
 app.post('/api/assemble', async (req, res) => {
   const { name, industry, references, theme, description, autoDeploy } = req.body;
 
-  // Sanitize project name - convert & to "and" for folder/URL compatibility
-const sanitizedName = name
-  .replace(/&/g, ' and ')
-  .replace(/\s+/g, ' ')
-  .trim();
-  
   if (!name) {
     return res.status(400).json({ success: false, error: 'Project name required' });
+  }
+
+  // Sanitize project name - SECURITY: Remove ALL shell-dangerous characters
+  // Only allow alphanumeric, spaces, and dashes
+  const sanitizedName = name
+    .replace(/&/g, ' and ')           // Convert & to "and"
+    .replace(/[^a-zA-Z0-9\s-]/g, '')  // Remove ALL special chars (prevents shell injection)
+    .replace(/\s+/g, ' ')             // Collapse multiple spaces
+    .trim()
+    .substring(0, 100);               // Limit length
+
+  if (!sanitizedName || sanitizedName.length < 2) {
+    return res.status(400).json({ success: false, error: 'Project name must be at least 2 characters (alphanumeric only)' });
   }
   
   // Build command arguments
@@ -1045,29 +1069,59 @@ const sanitizedName = name
   }
   
   const startTime = Date.now();
-console.log(`\n🚀 Assembling project: ${sanitizedName}`);
+  const ASSEMBLY_TIMEOUT = 5 * 60 * 1000; // 5 minute timeout
+  let responded = false;
+
+  console.log(`\n🚀 Assembling project: ${sanitizedName}`);
   console.log(`   Command: node ${ASSEMBLE_SCRIPT} ${args.join(' ')}`);
-  
-  // Execute the assembly script
-  const childProcess = spawn('node', [ASSEMBLE_SCRIPT, ...args], {
+
+  // Execute the assembly script - SECURITY: shell: false prevents injection
+  const childProcess = spawn(process.execPath, [ASSEMBLE_SCRIPT, ...args], {
     cwd: path.dirname(ASSEMBLE_SCRIPT),
-    shell: true
+    shell: false,  // CRITICAL: Never use shell: true with user input
+    env: { ...process.env, MODULE_LIBRARY_PATH: MODULE_LIBRARY, OUTPUT_PATH: GENERATED_PROJECTS }
   });
-  
+
+  // Timeout handler - kill process if it takes too long
+  const timeoutId = setTimeout(() => {
+    if (!responded) {
+      responded = true;
+      childProcess.kill('SIGTERM');
+      console.error(`❌ Assembly timeout after ${ASSEMBLY_TIMEOUT / 1000}s`);
+      res.status(504).json({
+        success: false,
+        error: 'Assembly timeout - process took too long',
+        duration: Date.now() - startTime
+      });
+    }
+  }, ASSEMBLY_TIMEOUT);
+
   let output = '';
   let errorOutput = '';
-  
+
   childProcess.stdout.on('data', (data) => {
     output += data.toString();
     console.log(data.toString());
   });
-  
+
   childProcess.stderr.on('data', (data) => {
     errorOutput += data.toString();
     console.error(data.toString());
   });
-  
+
+  // Handle spawn errors (e.g., ENOENT if node not found)
+  childProcess.on('error', (err) => {
+    clearTimeout(timeoutId);
+    if (!responded) {
+      responded = true;
+      console.error(`❌ Spawn error: ${err.message}`);
+      res.status(500).json({ success: false, error: `Failed to start assembly: ${err.message}` });
+    }
+  });
+
   childProcess.on('close', async (code) => {
+    clearTimeout(timeoutId);
+    if (responded) return; // Already responded (timeout or error)
     if (code === 0) {
       const projectPath = path.join(GENERATED_PROJECTS, sanitizedName);
       const manifestPath = path.join(projectPath, 'project-manifest.json');
@@ -1431,7 +1485,8 @@ console.log(`   ⏱️ Total generation time: ${((Date.now() - startTime) / 1000
       if (autoDeploy && deployReady) {
         deployResult = await autoDeployProject(projectPath, name, 'admin@be1st.io');
       }
-      
+
+      responded = true;
       res.json({
         success: true,
         message: 'Project assembled successfully',
@@ -1453,14 +1508,17 @@ console.log(`   ⏱️ Total generation time: ${((Date.now() - startTime) / 1000
           }
         },
         output: output,
-        deployment: deployResult
+        deployment: deployResult,
+        duration: Date.now() - startTime
       });
     } else {
+      responded = true;
       res.status(500).json({
         success: false,
         error: 'Assembly failed',
         output: output,
-        errorOutput: errorOutput
+        errorOutput: errorOutput,
+        duration: Date.now() - startTime
       });
     }
   });
@@ -2670,24 +2728,50 @@ body { margin: 0; font-family: var(--font-body); color: var(--color-text); }
 // Open folder in explorer
 app.post('/api/open-folder', (req, res) => {
   const { path: folderPath } = req.body;
-  
+
   if (!folderPath) {
     return res.status(400).json({ success: false, error: 'Path required' });
   }
-  
-  spawn('explorer', [folderPath], { shell: true, detached: true });
+
+  // SECURITY: Validate path is within allowed directories
+  const normalizedPath = path.resolve(folderPath);
+  const isAllowedPath = normalizedPath.startsWith(GENERATED_PROJECTS) ||
+                        normalizedPath.startsWith(MODULE_LIBRARY);
+  if (!isAllowedPath) {
+    return res.status(403).json({ success: false, error: 'Access denied - path outside allowed directories' });
+  }
+
+  if (!fs.existsSync(normalizedPath)) {
+    return res.status(404).json({ success: false, error: 'Path does not exist' });
+  }
+
+  // Use shell: true for Windows explorer, but path is validated above
+  spawn('explorer', [normalizedPath], { shell: true, detached: true });
   res.json({ success: true });
 });
 
 // Open in VS Code
 app.post('/api/open-vscode', (req, res) => {
   const { path: folderPath } = req.body;
-  
+
   if (!folderPath) {
     return res.status(400).json({ success: false, error: 'Path required' });
   }
-  
-  spawn('code', [folderPath], { shell: true, detached: true });
+
+  // SECURITY: Validate path is within allowed directories
+  const normalizedPath = path.resolve(folderPath);
+  const isAllowedPath = normalizedPath.startsWith(GENERATED_PROJECTS) ||
+                        normalizedPath.startsWith(MODULE_LIBRARY);
+  if (!isAllowedPath) {
+    return res.status(403).json({ success: false, error: 'Access denied - path outside allowed directories' });
+  }
+
+  if (!fs.existsSync(normalizedPath)) {
+    return res.status(404).json({ success: false, error: 'Path does not exist' });
+  }
+
+  // Use shell: true for Windows 'code' command, but path is validated above
+  spawn('code', [normalizedPath], { shell: true, detached: true });
   res.json({ success: true });
 });
 
