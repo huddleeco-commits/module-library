@@ -47,115 +47,120 @@ import {
 export function CustomerDashboard() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
   const [timeRange, setTimeRange] = useState('30d');
 
-  useEffect(() => {
-    setTimeout(() => {
+  // Fetch customer data from API
+  const fetchCustomerData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Fetch multiple endpoints in parallel
+      const [segmentsRes, topRes, atRiskRes] = await Promise.all([
+        fetch(`/api/admin/customers/segments?period=${timeRange}`),
+        fetch(`/api/admin/customers/top?limit=5`),
+        fetch(`/api/admin/customers/at-risk?limit=4`)
+      ]);
+
+      const segments = segmentsRes.ok ? await segmentsRes.json() : [];
+      const topCustomers = topRes.ok ? await topRes.json() : [];
+      const atRiskCustomers = atRiskRes.ok ? await atRiskRes.json() : [];
+
+      // Calculate totals from segments
+      const totalCustomers = segments.reduce((sum, s) => sum + (s.count || 0), 0);
+      const totalValue = segments.reduce((sum, s) => sum + (s.value || 0), 0);
+
       setData({
-        // Summary metrics
         summary: {
-          totalCustomers: 2847,
-          customersChange: 12.5,
-          newThisMonth: 156,
-          newChange: 8.3,
-          activeCustomers: 1892,
-          activePercent: 66.5,
-          churnedThisMonth: 23,
-          churnRate: 0.8
+          totalCustomers: totalCustomers,
+          customersChange: 0,
+          newThisMonth: segments.find(s => s.name === 'New')?.count || 0,
+          newChange: 0,
+          activeCustomers: segments.filter(s => s.name !== 'At-Risk').reduce((sum, s) => sum + (s.count || 0), 0),
+          activePercent: totalCustomers > 0 ? Math.round((totalCustomers - (segments.find(s => s.name === 'At-Risk')?.count || 0)) / totalCustomers * 100) : 0,
+          churnedThisMonth: 0,
+          churnRate: 0
         },
-
-        // Lifetime value
         ltv: {
-          average: 485.00,
-          change: 15.2,
-          median: 320.00,
-          top10Percent: 2450.00
+          average: totalCustomers > 0 ? Math.round(totalValue / totalCustomers) : 0,
+          change: 0,
+          median: 0,
+          top10Percent: 0
         },
-
-        // Segments
-        segments: [
-          { name: 'VIP', count: 127, percent: 4.5, value: 89500, color: '#f59e0b', icon: 'crown' },
-          { name: 'Loyal', count: 458, percent: 16.1, value: 156000, color: '#22c55e', icon: 'heart' },
-          { name: 'Regular', count: 1245, percent: 43.7, value: 245000, color: '#3b82f6', icon: 'user' },
-          { name: 'Occasional', count: 678, percent: 23.8, value: 67800, color: '#8b5cf6', icon: 'clock' },
-          { name: 'At-Risk', count: 234, percent: 8.2, value: 23400, color: '#ef4444', icon: 'alert' },
-          { name: 'New', count: 105, percent: 3.7, value: 12600, color: '#06b6d4', icon: 'sparkle' }
-        ],
-
-        // Acquisition channels
-        acquisitionChannels: [
-          { channel: 'Organic Search', customers: 845, percent: 29.7, trend: 5.2 },
-          { channel: 'Social Media', customers: 612, percent: 21.5, trend: 18.4 },
-          { channel: 'Referral', customers: 534, percent: 18.8, trend: 12.1 },
-          { channel: 'Direct', customers: 423, percent: 14.9, trend: -2.3 },
-          { channel: 'Paid Ads', customers: 312, percent: 11.0, trend: 8.7 },
-          { channel: 'Email', customers: 121, percent: 4.1, trend: -5.4 }
-        ],
-
-        // Top customers
-        topCustomers: [
-          { id: 1, name: 'Marcus Johnson', email: 'marcus@example.com', totalSpent: 12450, orders: 47, segment: 'VIP', lastOrder: '2 days ago' },
-          { id: 2, name: 'Sarah Williams', email: 'sarah@example.com', totalSpent: 8920, orders: 34, segment: 'VIP', lastOrder: '1 week ago' },
-          { id: 3, name: 'David Chen', email: 'david@example.com', totalSpent: 7650, orders: 28, segment: 'VIP', lastOrder: '3 days ago' },
-          { id: 4, name: 'Emily Rodriguez', email: 'emily@example.com', totalSpent: 6890, orders: 31, segment: 'VIP', lastOrder: '5 days ago' },
-          { id: 5, name: 'Michael Brown', email: 'michael@example.com', totalSpent: 5420, orders: 22, segment: 'Loyal', lastOrder: '1 day ago' }
-        ],
-
-        // At-risk customers
-        atRiskCustomers: [
-          { id: 101, name: 'Jennifer Lee', email: 'jennifer@example.com', lastOrder: '45 days ago', previousFreq: 'Weekly', totalSpent: 2340, riskScore: 85 },
-          { id: 102, name: 'Robert Taylor', email: 'robert@example.com', lastOrder: '38 days ago', previousFreq: 'Bi-weekly', totalSpent: 1890, riskScore: 72 },
-          { id: 103, name: 'Amanda White', email: 'amanda@example.com', lastOrder: '52 days ago', previousFreq: 'Monthly', totalSpent: 980, riskScore: 68 },
-          { id: 104, name: 'Chris Martinez', email: 'chris@example.com', lastOrder: '41 days ago', previousFreq: 'Weekly', totalSpent: 3200, riskScore: 91 }
-        ],
-
-        // Loyalty stats (future ecosystem foundation)
+        segments: segments.map(s => ({
+          name: s.name || 'Unknown',
+          count: s.count || 0,
+          percent: totalCustomers > 0 ? Math.round((s.count || 0) / totalCustomers * 100 * 10) / 10 : 0,
+          value: s.value || 0,
+          color: s.color || '#6b7280',
+          icon: s.icon || 'user'
+        })),
+        acquisitionChannels: [],
+        topCustomers: topCustomers.map(c => ({
+          id: c.id,
+          name: c.full_name || c.name || 'Unknown',
+          email: c.email || '',
+          totalSpent: c.lifetime_value || c.totalSpent || 0,
+          orders: c.total_orders || c.orders || 0,
+          segment: c.customer_type || c.segment || 'Regular',
+          lastOrder: c.last_order_date ? formatRelativeDate(new Date(c.last_order_date)) : 'Never'
+        })),
+        atRiskCustomers: atRiskCustomers.map(c => ({
+          id: c.id,
+          name: c.full_name || c.name || 'Unknown',
+          email: c.email || '',
+          lastOrder: c.last_order_date ? formatRelativeDate(new Date(c.last_order_date)) : 'Unknown',
+          previousFreq: c.previousFreq || 'Unknown',
+          totalSpent: c.lifetime_value || c.totalSpent || 0,
+          riskScore: c.risk_score || c.riskScore || 50
+        })),
         loyalty: {
-          enrolled: 1456,
-          enrolledPercent: 51.2,
-          totalPointsIssued: 2450000,
-          totalPointsRedeemed: 1890000,
-          redemptionRate: 77.1,
-          avgPointsPerCustomer: 1683
+          enrolled: 0,
+          enrolledPercent: 0,
+          totalPointsIssued: 0,
+          totalPointsRedeemed: 0,
+          redemptionRate: 0,
+          avgPointsPerCustomer: 0
         },
-
-        // Recent activity
-        recentActivity: [
-          { type: 'new', message: 'Sarah M. just signed up', time: '5 min ago' },
-          { type: 'purchase', message: 'Marcus J. made a $245 purchase', time: '12 min ago' },
-          { type: 'loyalty', message: 'Emily R. redeemed 500 points', time: '28 min ago' },
-          { type: 'milestone', message: 'David C. reached VIP status!', time: '1 hr ago' },
-          { type: 'return', message: 'John D. returned an item', time: '2 hrs ago' }
-        ],
-
-        // AI Insights
-        aiInsights: [
-          {
-            type: 'opportunity',
-            title: '23 Customers Ready for VIP',
-            message: 'These customers are close to VIP threshold. A small incentive could push them over.',
-            action: 'View List',
-            impact: '+$4,200 potential'
-          },
-          {
-            type: 'warning',
-            title: '4 High-Value At-Risk',
-            message: 'VIP customers showing churn signals. Immediate outreach recommended.',
-            action: 'Start Campaign',
-            impact: 'Save $12,400 LTV'
-          },
-          {
-            type: 'insight',
-            title: 'Social Driving Growth',
-            message: 'Social media acquisitions up 18% with 2x better retention than paid ads.',
-            action: 'See Analysis',
-            impact: null
-          }
-        ]
+        recentActivity: [],
+        aiInsights: []
       });
+    } catch (err) {
+      console.error('Error fetching customer data:', err);
+      setError(err.message);
+      // Set empty default data on error
+      setData({
+        summary: { totalCustomers: 0, customersChange: 0, newThisMonth: 0, newChange: 0, activeCustomers: 0, activePercent: 0, churnedThisMonth: 0, churnRate: 0 },
+        ltv: { average: 0, change: 0, median: 0, top10Percent: 0 },
+        segments: [],
+        acquisitionChannels: [],
+        topCustomers: [],
+        atRiskCustomers: [],
+        loyalty: { enrolled: 0, enrolledPercent: 0, totalPointsIssued: 0, totalPointsRedeemed: 0, redemptionRate: 0, avgPointsPerCustomer: 0 },
+        recentActivity: [],
+        aiInsights: []
+      });
+    } finally {
       setLoading(false);
-    }, 600);
-  }, []);
+    }
+  };
+
+  // Helper to format relative dates
+  const formatRelativeDate = (date) => {
+    const now = new Date();
+    const diffMs = now - date;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return '1 day ago';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)} week${Math.floor(diffDays / 7) > 1 ? 's' : ''} ago`;
+    return `${Math.floor(diffDays / 30)} month${Math.floor(diffDays / 30) > 1 ? 's' : ''} ago`;
+  };
+
+  useEffect(() => {
+    fetchCustomerData();
+  }, [timeRange]);
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);

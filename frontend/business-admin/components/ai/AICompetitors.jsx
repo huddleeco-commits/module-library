@@ -12,7 +12,7 @@
  * Helps business owners stay competitive with data-driven insights.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Target,
   MapPin,
@@ -29,113 +29,52 @@ import {
   Eye,
   AlertCircle,
   Check,
-  Minus
+  Minus,
+  Loader
 } from 'lucide-react';
 
 export function AICompetitors({ onAction }) {
   const [selectedCompetitor, setSelectedCompetitor] = useState(null);
   const [expandedSection, setExpandedSection] = useState('overview');
-  const [lastUpdated] = useState(new Date());
+  const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [competitors, setCompetitors] = useState([]);
+  const [yourBusiness, setYourBusiness] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Competitor data (in production, this comes from AI analysis)
-  const competitors = [
-    {
-      id: 1,
-      name: "Joe's Diner",
-      distance: 0.3,
-      type: 'Direct Competitor',
-      threat: 'medium',
-      rating: 4.2,
-      ratingChange: -0.1,
-      reviewCount: 342,
-      priceLevel: '$$',
-      avgPrice: 14.99,
-      yourAvgPrice: 12.99,
-      priceDiff: -13,
-      recentChanges: [
-        { type: 'price', message: 'Raised burger prices 12%', date: '2 days ago' },
-        { type: 'menu', message: 'Added 3 new appetizers', date: '1 week ago' }
-      ],
-      strengths: ['Large portions', 'Fast service', 'Parking'],
-      weaknesses: ['Dated decor', 'Limited vegetarian options'],
-      topItems: [
-        { name: 'Classic Burger', price: 15.99, yourPrice: 12.99 },
-        { name: 'Chicken Wings', price: 12.99, yourPrice: 10.99 },
-        { name: 'Caesar Salad', price: 9.99, yourPrice: 8.99 }
-      ],
-      sentiment: {
-        positive: 65,
-        neutral: 25,
-        negative: 10
+  // Fetch competitors from API
+  const fetchCompetitors = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch('/api/admin/competitors');
+      if (!response.ok) throw new Error('Failed to fetch competitors');
+      const data = await response.json();
+      setCompetitors(data.competitors || data || []);
+      if (data.yourBusiness) {
+        setYourBusiness(data.yourBusiness);
       }
-    },
-    {
-      id: 2,
-      name: 'Main Street Cafe',
-      distance: 0.5,
-      type: 'Direct Competitor',
-      threat: 'high',
-      rating: 4.4,
-      ratingChange: 0.2,
-      reviewCount: 521,
-      priceLevel: '$$',
-      avgPrice: 13.49,
-      yourAvgPrice: 12.99,
-      priceDiff: -4,
-      recentChanges: [
-        { type: 'promo', message: 'Running 15% off lunch special', date: 'Active now' },
-        { type: 'loyalty', message: 'Launched new loyalty program', date: '3 days ago' }
-      ],
-      strengths: ['Modern atmosphere', 'Strong social media', 'Loyalty program'],
-      weaknesses: ['Slow during rush', 'Higher prices'],
-      topItems: [
-        { name: 'Avocado Toast', price: 11.99, yourPrice: null },
-        { name: 'House Burger', price: 14.49, yourPrice: 12.99 },
-        { name: 'Acai Bowl', price: 12.99, yourPrice: null }
-      ],
-      sentiment: {
-        positive: 78,
-        neutral: 15,
-        negative: 7
-      }
-    },
-    {
-      id: 3,
-      name: 'Corner Bistro',
-      distance: 0.8,
-      type: 'Indirect Competitor',
-      threat: 'low',
-      rating: 4.6,
-      ratingChange: 0,
-      reviewCount: 189,
-      priceLevel: '$$$',
-      avgPrice: 24.99,
-      yourAvgPrice: 12.99,
-      priceDiff: -48,
-      recentChanges: [
-        { type: 'hours', message: 'Extended weekend hours', date: '1 week ago' }
-      ],
-      strengths: ['Upscale dining', 'Wine selection', 'Date night destination'],
-      weaknesses: ['High prices', 'Long wait times', 'Limited parking'],
-      topItems: [
-        { name: 'Filet Mignon', price: 38.99, yourPrice: null },
-        { name: 'Lobster Tail', price: 44.99, yourPrice: null },
-        { name: 'Truffle Pasta', price: 28.99, yourPrice: null }
-      ],
-      sentiment: {
-        positive: 82,
-        neutral: 12,
-        negative: 6
-      }
+      setLastUpdated(new Date());
+    } catch (err) {
+      console.error('Error fetching competitors:', err);
+      setError(err.message);
+      setCompetitors([]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
-  const yourBusiness = {
-    name: 'Your Restaurant',
-    rating: 4.5,
-    reviewCount: 287,
-    avgPrice: 12.99,
-    priceLevel: '$$'
+  useEffect(() => {
+    fetchCompetitors();
+  }, []);
+
+  // Default business info if not provided by API
+  const businessInfo = yourBusiness || {
+    name: 'Your Business',
+    rating: 0,
+    reviewCount: 0,
+    avgPrice: 0,
+    priceLevel: '-'
   };
 
   const getThreatColor = (threat) => {
@@ -176,6 +115,34 @@ export function AICompetitors({ onAction }) {
     }]);
   };
 
+  // Loading state
+  if (loading) {
+    return (
+      <div style={styles.container}>
+        <div style={styles.loadingState}>
+          <Loader size={32} style={{ animation: 'spin 1s linear infinite' }} />
+          <p>Loading competitor data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div style={styles.container}>
+        <div style={styles.errorState}>
+          <AlertCircle size={32} color="#ef4444" />
+          <p>Failed to load competitors: {error}</p>
+          <button style={styles.refreshButton} onClick={fetchCompetitors}>
+            <RefreshCw size={16} />
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={styles.container}>
       {/* Header */}
@@ -185,7 +152,9 @@ export function AICompetitors({ onAction }) {
           <div>
             <h2 style={styles.title}>Competitor Intelligence</h2>
             <p style={styles.subtitle}>
-              Monitoring {competitors.length} competitors within 1 mile
+              {competitors.length > 0
+                ? `Monitoring ${competitors.length} competitor${competitors.length !== 1 ? 's' : ''} in your area`
+                : 'No competitors tracked yet'}
             </p>
           </div>
         </div>
@@ -194,7 +163,7 @@ export function AICompetitors({ onAction }) {
             <RefreshCw size={14} />
             Updated {lastUpdated.toLocaleTimeString()}
           </span>
-          <button style={styles.refreshButton}>
+          <button style={styles.refreshButton} onClick={fetchCompetitors}>
             <RefreshCw size={16} />
             Refresh
           </button>
@@ -207,48 +176,59 @@ export function AICompetitors({ onAction }) {
         <div style={styles.positionGrid}>
           <div style={styles.positionStat}>
             <div style={styles.positionComparison}>
-              <span style={styles.positionValue}>{yourBusiness.rating}</span>
+              <span style={styles.positionValue}>{businessInfo.rating || '-'}</span>
               <Star size={20} fill="#eab308" color="#eab308" />
             </div>
             <span style={styles.positionLabel}>Your Rating</span>
             <span style={styles.positionContext}>
-              <TrendingUp size={12} color="#22c55e" />
-              Above 2 of 3 competitors
+              {competitors.length > 0 ? (
+                <>
+                  <TrendingUp size={12} color="#22c55e" />
+                  vs {competitors.length} competitors
+                </>
+              ) : 'Add competitors to compare'}
             </span>
           </div>
           <div style={styles.positionStat}>
             <div style={styles.positionComparison}>
-              <span style={styles.positionValue}>${yourBusiness.avgPrice}</span>
+              <span style={styles.positionValue}>{businessInfo.avgPrice ? `$${businessInfo.avgPrice}` : '-'}</span>
             </div>
             <span style={styles.positionLabel}>Avg Price</span>
             <span style={styles.positionContext}>
-              <TrendingDown size={12} color="#22c55e" />
-              13% below market avg
+              {businessInfo.priceLevel || '-'}
             </span>
           </div>
           <div style={styles.positionStat}>
             <div style={styles.positionComparison}>
-              <span style={styles.positionValue}>{yourBusiness.reviewCount}</span>
+              <span style={styles.positionValue}>{businessInfo.reviewCount || 0}</span>
             </div>
             <span style={styles.positionLabel}>Reviews</span>
             <span style={styles.positionContext}>
-              <Minus size={12} color="#eab308" />
-              Middle of pack
+              Total reviews
             </span>
           </div>
           <div style={styles.positionStat}>
             <div style={styles.positionComparison}>
-              <span style={{ ...styles.positionValue, color: '#22c55e' }}>Strong</span>
+              <span style={{ ...styles.positionValue, color: competitors.length > 0 ? '#22c55e' : 'var(--color-text-muted)' }}>
+                {competitors.length > 0 ? 'Tracking' : 'Setup'}
+              </span>
             </div>
-            <span style={styles.positionLabel}>Overall Position</span>
+            <span style={styles.positionLabel}>Status</span>
             <span style={styles.positionContext}>
-              Value leader in area
+              {competitors.length > 0 ? 'Monitoring active' : 'Add competitors'}
             </span>
           </div>
         </div>
       </div>
 
       {/* Competitor Cards */}
+      {competitors.length === 0 ? (
+        <div style={styles.emptyState}>
+          <Target size={48} color="var(--color-text-muted)" />
+          <h3>No Competitors Tracked</h3>
+          <p>Add competitors to monitor their pricing, reviews, and activities.</p>
+        </div>
+      ) : (
       <div style={styles.competitorsList}>
         {competitors.map(competitor => (
           <div 
@@ -461,6 +441,7 @@ export function AICompetitors({ onAction }) {
           </div>
         ))}
       </div>
+      )}
 
       {/* Add Competitor */}
       <button style={styles.addCompetitorButton}>
@@ -476,6 +457,36 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     gap: '24px'
+  },
+  loadingState: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '60px 20px',
+    gap: '16px',
+    color: 'var(--color-text-muted)'
+  },
+  errorState: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '60px 20px',
+    gap: '16px',
+    color: 'var(--color-text-muted)'
+  },
+  emptyState: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '60px 20px',
+    gap: '12px',
+    backgroundColor: 'var(--color-surface)',
+    borderRadius: '16px',
+    border: '1px solid var(--color-border)',
+    textAlign: 'center'
   },
   header: {
     display: 'flex',

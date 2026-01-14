@@ -53,281 +53,100 @@ export function InventoryPage() {
   const [selectedItems, setSelectedItems] = useState([]);
   const itemsPerPage = 20;
 
-  // Categories
-  const categories = [
-    { id: 'all', label: 'All Items', count: 0 },
-    { id: 'proteins', label: 'Proteins', count: 0 },
-    { id: 'produce', label: 'Produce', count: 0 },
-    { id: 'dairy', label: 'Dairy', count: 0 },
-    { id: 'beverages', label: 'Beverages', count: 0 },
-    { id: 'dry_goods', label: 'Dry Goods', count: 0 },
-    { id: 'supplies', label: 'Supplies', count: 0 }
-  ];
+  const [categories, setCategories] = useState([
+    { id: 'all', label: 'All Items', count: 0 }
+  ]);
+  const [error, setError] = useState(null);
 
-  // Mock inventory data
-  useEffect(() => {
-    const mockInventory = [
-      {
-        id: 'INV-001',
-        name: 'Ground Beef (80/20)',
-        sku: 'BEEF-8020-5LB',
-        category: 'proteins',
-        currentStock: 45,
-        unit: 'lbs',
-        minStock: 20,
-        maxStock: 100,
-        reorderPoint: 25,
-        reorderQuantity: 50,
-        costPerUnit: 4.50,
-        lastCost: 4.25,
-        supplier: { id: 'SUP-001', name: 'Sysco Foods' },
-        location: 'Walk-in Cooler A',
-        lastRestocked: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
-        expirationDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 5),
-        status: 'ok',
-        usageRate: 15, // per day
-        daysUntilEmpty: 3
-      },
-      {
-        id: 'INV-002',
-        name: 'Burger Buns (Pack of 12)',
-        sku: 'BUN-BURG-12',
-        category: 'dry_goods',
-        currentStock: 8,
-        unit: 'packs',
-        minStock: 15,
-        maxStock: 50,
-        reorderPoint: 15,
-        reorderQuantity: 30,
-        costPerUnit: 3.99,
-        lastCost: 3.99,
-        supplier: { id: 'SUP-002', name: 'Local Bakery Co' },
-        location: 'Dry Storage B',
-        lastRestocked: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
-        expirationDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
-        status: 'low',
-        usageRate: 4,
-        daysUntilEmpty: 2
-      },
-      {
-        id: 'INV-003',
-        name: 'American Cheese Slices',
-        sku: 'CHZ-AMER-160',
-        category: 'dairy',
-        currentStock: 3,
-        unit: 'packs',
-        minStock: 10,
-        maxStock: 30,
-        reorderPoint: 10,
-        reorderQuantity: 20,
-        costPerUnit: 12.99,
-        lastCost: 11.99,
-        supplier: { id: 'SUP-001', name: 'Sysco Foods' },
-        location: 'Walk-in Cooler A',
-        lastRestocked: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
-        expirationDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 14),
-        status: 'critical',
-        usageRate: 2,
-        daysUntilEmpty: 1.5
-      },
-      {
-        id: 'INV-004',
-        name: 'French Fries (Frozen)',
-        sku: 'FRY-FRNCH-30',
-        category: 'produce',
-        currentStock: 25,
-        unit: 'bags',
-        minStock: 15,
-        maxStock: 50,
-        reorderPoint: 20,
-        reorderQuantity: 25,
-        costPerUnit: 8.99,
-        lastCost: 8.99,
-        supplier: { id: 'SUP-003', name: 'US Foods' },
-        location: 'Freezer A',
-        lastRestocked: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
-        expirationDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 90),
-        status: 'ok',
-        usageRate: 5,
-        daysUntilEmpty: 5
-      },
-      {
-        id: 'INV-005',
-        name: 'Coca-Cola (2L)',
-        sku: 'BEV-COKE-2L',
-        category: 'beverages',
-        currentStock: 48,
-        unit: 'bottles',
-        minStock: 24,
-        maxStock: 72,
-        reorderPoint: 30,
-        reorderQuantity: 36,
-        costPerUnit: 2.49,
-        lastCost: 2.49,
-        supplier: { id: 'SUP-004', name: 'Coca-Cola Distributor' },
-        location: 'Beverage Storage',
-        lastRestocked: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1),
-        expirationDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 180),
-        status: 'ok',
-        usageRate: 8,
-        daysUntilEmpty: 6
-      },
-      {
-        id: 'INV-006',
-        name: 'Lettuce (Iceberg)',
-        sku: 'PRD-LETT-ICE',
-        category: 'produce',
-        currentStock: 12,
-        unit: 'heads',
-        minStock: 10,
-        maxStock: 30,
-        reorderPoint: 12,
-        reorderQuantity: 20,
-        costPerUnit: 1.99,
-        lastCost: 1.79,
-        supplier: { id: 'SUP-005', name: 'Local Farms' },
-        location: 'Walk-in Cooler B',
-        lastRestocked: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1),
-        expirationDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 5),
-        status: 'reorder',
-        usageRate: 6,
-        daysUntilEmpty: 2
-      },
-      {
-        id: 'INV-007',
-        name: 'Tomatoes (Roma)',
-        sku: 'PRD-TOM-ROMA',
-        category: 'produce',
-        currentStock: 35,
-        unit: 'lbs',
-        minStock: 15,
-        maxStock: 50,
-        reorderPoint: 20,
-        reorderQuantity: 30,
-        costPerUnit: 2.49,
-        lastCost: 2.29,
-        supplier: { id: 'SUP-005', name: 'Local Farms' },
-        location: 'Walk-in Cooler B',
-        lastRestocked: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
-        expirationDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-        status: 'ok',
-        usageRate: 8,
-        daysUntilEmpty: 4
-      },
-      {
-        id: 'INV-008',
-        name: 'To-Go Containers (Large)',
-        sku: 'SUP-CONT-LG',
-        category: 'supplies',
-        currentStock: 250,
-        unit: 'units',
-        minStock: 100,
-        maxStock: 500,
-        reorderPoint: 150,
-        reorderQuantity: 250,
-        costPerUnit: 0.35,
-        lastCost: 0.32,
-        supplier: { id: 'SUP-006', name: 'Restaurant Depot' },
-        location: 'Supply Closet',
-        lastRestocked: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10),
-        expirationDate: null,
-        status: 'ok',
-        usageRate: 30,
-        daysUntilEmpty: 8
-      },
-      {
-        id: 'INV-009',
-        name: 'Chicken Breast (Frozen)',
-        sku: 'CHKN-BRST-10',
-        category: 'proteins',
-        currentStock: 0,
-        unit: 'lbs',
-        minStock: 20,
-        maxStock: 60,
-        reorderPoint: 25,
-        reorderQuantity: 40,
-        costPerUnit: 5.99,
-        lastCost: 5.49,
-        supplier: { id: 'SUP-001', name: 'Sysco Foods' },
-        location: 'Freezer B',
-        lastRestocked: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10),
-        expirationDate: null,
-        status: 'out',
-        usageRate: 8,
-        daysUntilEmpty: 0,
-        pendingOrder: { quantity: 40, expectedDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 1) }
-      },
-      {
-        id: 'INV-010',
-        name: 'Pumpkin Spice Syrup',
-        sku: 'BEV-SYR-PUMP',
-        category: 'beverages',
-        currentStock: 6,
-        unit: 'bottles',
-        minStock: 4,
-        maxStock: 12,
-        reorderPoint: 5,
-        reorderQuantity: 8,
-        costPerUnit: 14.99,
-        lastCost: 14.99,
-        supplier: { id: 'SUP-007', name: 'Torani' },
-        location: 'Beverage Storage',
-        lastRestocked: new Date(Date.now() - 1000 * 60 * 60 * 24 * 14),
-        expirationDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
-        status: 'ok',
-        usageRate: 0.5,
-        daysUntilEmpty: 12
+  // Fetch inventory from API
+  const fetchInventory = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Fetch inventory and categories in parallel
+      const [inventoryRes, categoriesRes] = await Promise.all([
+        fetch(`/api/admin/inventory?category=${activeCategory !== 'all' ? activeCategory : ''}&search=${searchQuery}&lowStock=${stockFilter === 'low'}`),
+        fetch('/api/admin/inventory/categories')
+      ]);
+
+      let items = [];
+      let cats = [];
+
+      if (inventoryRes.ok) {
+        const data = await inventoryRes.json();
+        items = (data.items || data || []).map(item => ({
+          id: item.id || `INV-${Math.random().toString(36).substr(2, 9)}`,
+          name: item.name || 'Unknown Item',
+          sku: item.sku || '',
+          category: item.category || 'general',
+          currentStock: item.quantity || 0,
+          unit: item.unit || 'units',
+          minStock: item.low_stock_threshold || 10,
+          maxStock: item.max_stock || 100,
+          reorderPoint: item.low_stock_threshold || 10,
+          reorderQuantity: item.reorder_quantity || 20,
+          costPerUnit: parseFloat(item.cost) || 0,
+          lastCost: parseFloat(item.cost) || 0,
+          supplier: { id: item.supplier_id || '', name: item.supplier_name || 'Unknown' },
+          location: item.location || 'Storage',
+          lastRestocked: item.updated_at ? new Date(item.updated_at) : null,
+          expirationDate: item.expiration_date ? new Date(item.expiration_date) : null,
+          status: getStockStatus(item.quantity, item.low_stock_threshold),
+          usageRate: item.usage_rate || 0,
+          daysUntilEmpty: item.quantity > 0 && item.usage_rate > 0 ? Math.floor(item.quantity / item.usage_rate) : 0
+        }));
       }
-    ];
 
-    // Generate more items
-    for (let i = 11; i <= 50; i++) {
-      const cats = ['proteins', 'produce', 'dairy', 'beverages', 'dry_goods', 'supplies'];
-      const cat = cats[Math.floor(Math.random() * cats.length)];
-      const stock = Math.floor(Math.random() * 100);
-      const minStock = Math.floor(Math.random() * 20) + 10;
-      
-      let status = 'ok';
-      if (stock === 0) status = 'out';
-      else if (stock < minStock * 0.5) status = 'critical';
-      else if (stock < minStock) status = 'low';
-      else if (stock <= minStock * 1.2) status = 'reorder';
-
-      mockInventory.push({
-        id: `INV-${String(i).padStart(3, '0')}`,
-        name: `Inventory Item ${i}`,
-        sku: `SKU-${i}-${cat.toUpperCase()}`,
-        category: cat,
-        currentStock: stock,
-        unit: 'units',
-        minStock: minStock,
-        maxStock: minStock * 3,
-        reorderPoint: minStock * 1.2,
-        reorderQuantity: minStock * 2,
-        costPerUnit: Math.random() * 20 + 1,
-        lastCost: Math.random() * 20 + 1,
-        supplier: { id: 'SUP-001', name: 'Sysco Foods' },
-        location: 'Storage',
-        lastRestocked: new Date(Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 30),
-        expirationDate: Math.random() > 0.3 ? new Date(Date.now() + Math.random() * 1000 * 60 * 60 * 24 * 90) : null,
-        status,
-        usageRate: Math.floor(Math.random() * 10) + 1,
-        daysUntilEmpty: stock > 0 ? Math.floor(stock / (Math.floor(Math.random() * 10) + 1)) : 0
-      });
-    }
-
-    setInventory(mockInventory);
-    setLoading(false);
-
-    // Update category counts
-    categories.forEach(cat => {
-      if (cat.id === 'all') {
-        cat.count = mockInventory.length;
+      if (categoriesRes.ok) {
+        const catData = await categoriesRes.json();
+        cats = [
+          { id: 'all', label: 'All Items', count: items.length },
+          ...(catData || []).map(c => ({
+            id: c.category || 'unknown',
+            label: (c.category || 'Unknown').charAt(0).toUpperCase() + (c.category || 'unknown').slice(1).replace('_', ' '),
+            count: parseInt(c.count) || 0
+          }))
+        ];
       } else {
-        cat.count = mockInventory.filter(item => item.category === cat.id).length;
+        // Calculate categories from items if endpoint fails
+        const catCounts = {};
+        items.forEach(item => {
+          catCounts[item.category] = (catCounts[item.category] || 0) + 1;
+        });
+        cats = [
+          { id: 'all', label: 'All Items', count: items.length },
+          ...Object.entries(catCounts).map(([cat, count]) => ({
+            id: cat,
+            label: cat.charAt(0).toUpperCase() + cat.slice(1).replace('_', ' '),
+            count
+          }))
+        ];
       }
-    });
-  }, []);
+
+      setInventory(items);
+      setCategories(cats);
+    } catch (err) {
+      console.error('Error fetching inventory:', err);
+      setError(err.message);
+      setInventory([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Helper to determine stock status
+  const getStockStatus = (quantity, threshold) => {
+    if (quantity === 0) return 'out';
+    if (quantity < threshold * 0.5) return 'critical';
+    if (quantity < threshold) return 'low';
+    if (quantity <= threshold * 1.2) return 'reorder';
+    return 'ok';
+  };
+
+  useEffect(() => {
+    fetchInventory();
+  }, [activeCategory, stockFilter]);
 
   const getStatusConfig = (status) => {
     switch (status) {

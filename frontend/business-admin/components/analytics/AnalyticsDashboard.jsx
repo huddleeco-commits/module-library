@@ -52,111 +52,124 @@ export function AnalyticsDashboard() {
     { id: 'custom', label: 'Custom' }
   ];
 
-  // Mock analytics data
-  useEffect(() => {
-    setTimeout(() => {
+  const [error, setError] = useState(null);
+
+  // Fetch analytics data from API
+  const fetchAnalytics = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Fetch metrics and revenue data in parallel
+      const [metricsRes, revenueRes, productsRes] = await Promise.all([
+        fetch(`/api/admin/analytics/metrics?period=${dateRange}`),
+        fetch(`/api/admin/analytics/revenue?period=${dateRange}`),
+        fetch(`/api/admin/analytics/products?period=${dateRange}`)
+      ]);
+
+      let metricsData = {};
+      let revenueData = [];
+      let productsData = [];
+
+      if (metricsRes.ok) {
+        metricsData = await metricsRes.json();
+      }
+      if (revenueRes.ok) {
+        revenueData = await revenueRes.json();
+      }
+      if (productsRes.ok) {
+        productsData = await productsRes.json();
+      }
+
+      // Transform API data to component format
       setMetrics({
         revenue: {
-          current: 48750.00,
-          previous: 42300.00,
-          change: 15.2,
-          trend: 'up'
+          current: metricsData.revenue?.value || 0,
+          previous: 0,
+          change: metricsData.revenue?.change || 0,
+          trend: metricsData.revenue?.trend || 'neutral'
         },
         orders: {
-          current: 847,
-          previous: 756,
-          change: 12.0,
-          trend: 'up'
+          current: metricsData.orders?.value || 0,
+          previous: 0,
+          change: metricsData.orders?.change || 0,
+          trend: metricsData.orders?.trend || 'neutral'
         },
         customers: {
-          current: 234,
-          previous: 198,
-          change: 18.2,
-          trend: 'up',
-          newCustomers: 67,
-          returning: 167
+          current: metricsData.customers?.value || 0,
+          previous: 0,
+          change: metricsData.customers?.change || 0,
+          trend: metricsData.customers?.trend || 'neutral',
+          newCustomers: 0,
+          returning: 0
         },
         avgOrderValue: {
-          current: 57.56,
-          previous: 55.95,
-          change: 2.9,
-          trend: 'up'
+          current: metricsData.orders?.value > 0 ? (metricsData.revenue?.value || 0) / metricsData.orders.value : 0,
+          previous: 0,
+          change: 0,
+          trend: 'neutral'
         },
         conversionRate: {
-          current: 3.8,
-          previous: 3.2,
-          change: 18.8,
-          trend: 'up'
+          current: 0,
+          previous: 0,
+          change: 0,
+          trend: 'neutral'
         },
         traffic: {
-          current: 22340,
-          previous: 23625,
-          change: -5.4,
-          trend: 'down'
+          current: metricsData.views?.value || 0,
+          previous: 0,
+          change: metricsData.views?.change || 0,
+          trend: metricsData.views?.trend || 'neutral'
         },
-
-        // Revenue chart data
-        revenueChart: [
-          { date: 'Mon', revenue: 5200, orders: 98, lastWeek: 4800 },
-          { date: 'Tue', revenue: 6100, orders: 112, lastWeek: 5400 },
-          { date: 'Wed', revenue: 7800, orders: 134, lastWeek: 6200 },
-          { date: 'Thu', revenue: 6900, orders: 118, lastWeek: 5800 },
-          { date: 'Fri', revenue: 8200, orders: 145, lastWeek: 7100 },
-          { date: 'Sat', revenue: 9100, orders: 156, lastWeek: 8200 },
-          { date: 'Sun', revenue: 5450, orders: 84, lastWeek: 4800 }
+        revenueChart: revenueData.length > 0 ? revenueData.map(d => ({
+          date: new Date(d.date).toLocaleDateString('en-US', { weekday: 'short' }),
+          revenue: parseFloat(d.revenue) || 0,
+          orders: parseInt(d.orders) || 0,
+          lastWeek: 0
+        })) : [
+          { date: 'Mon', revenue: 0, orders: 0, lastWeek: 0 },
+          { date: 'Tue', revenue: 0, orders: 0, lastWeek: 0 },
+          { date: 'Wed', revenue: 0, orders: 0, lastWeek: 0 },
+          { date: 'Thu', revenue: 0, orders: 0, lastWeek: 0 },
+          { date: 'Fri', revenue: 0, orders: 0, lastWeek: 0 },
+          { date: 'Sat', revenue: 0, orders: 0, lastWeek: 0 },
+          { date: 'Sun', revenue: 0, orders: 0, lastWeek: 0 }
         ],
-
-        // Top products
-        topProducts: [
-          { id: 1, name: 'Classic Burger', orders: 234, revenue: 2808.00, trend: 12 },
-          { id: 2, name: 'Chicken Wings', orders: 198, revenue: 2970.00, trend: 8 },
-          { id: 3, name: 'Caesar Salad', orders: 167, revenue: 1837.00, trend: -3 },
-          { id: 4, name: 'Margherita Pizza', orders: 145, revenue: 2175.00, trend: 15 },
-          { id: 5, name: 'Fish & Chips', orders: 123, revenue: 1722.00, trend: 5 }
-        ],
-
-        // Customer segments performance
-        customerSegments: [
-          { name: 'VIP', customers: 45, revenue: 12400, avgOrder: 89.50 },
-          { name: 'Regular', customers: 167, revenue: 28500, avgOrder: 52.30 },
-          { name: 'New', customers: 67, revenue: 7850, avgOrder: 38.75 }
-        ],
-
-        // Peak hours
-        peakHours: [
-          { hour: '11am', orders: 45 },
-          { hour: '12pm', orders: 89 },
-          { hour: '1pm', orders: 78 },
-          { hour: '5pm', orders: 56 },
-          { hour: '6pm', orders: 92 },
-          { hour: '7pm', orders: 98 },
-          { hour: '8pm', orders: 67 }
-        ],
-
-        // AI Insights
-        aiInsights: [
-          {
-            type: 'opportunity',
-            title: 'Weekend Revenue Spike',
-            message: 'Saturday revenue is 32% higher than weekday average. Consider weekend-specific promotions.',
-            impact: '+$2,400/week potential'
-          },
-          {
-            type: 'warning',
-            title: 'Traffic Down, Conversion Up',
-            message: 'Website traffic decreased 5.4% but conversion rate improved 18.8%. Your marketing is attracting better-qualified visitors.',
-            impact: 'Positive trend'
-          },
-          {
-            type: 'insight',
-            title: 'VIP Segment Growing',
-            message: '12 customers upgraded to VIP status this week. Consider a loyalty program expansion.',
-            impact: '+$3,200 lifetime value'
-          }
-        ]
+        topProducts: productsData.slice(0, 5).map((p, i) => ({
+          id: p.id || i + 1,
+          name: p.name || 'Unknown Product',
+          orders: parseInt(p.units_sold) || 0,
+          revenue: parseFloat(p.revenue) || 0,
+          trend: 0
+        })),
+        customerSegments: [],
+        peakHours: [],
+        aiInsights: []
       });
+    } catch (err) {
+      console.error('Error fetching analytics:', err);
+      setError(err.message);
+      // Set empty default metrics
+      setMetrics({
+        revenue: { current: 0, previous: 0, change: 0, trend: 'neutral' },
+        orders: { current: 0, previous: 0, change: 0, trend: 'neutral' },
+        customers: { current: 0, previous: 0, change: 0, trend: 'neutral', newCustomers: 0, returning: 0 },
+        avgOrderValue: { current: 0, previous: 0, change: 0, trend: 'neutral' },
+        conversionRate: { current: 0, previous: 0, change: 0, trend: 'neutral' },
+        traffic: { current: 0, previous: 0, change: 0, trend: 'neutral' },
+        revenueChart: [],
+        topProducts: [],
+        customerSegments: [],
+        peakHours: [],
+        aiInsights: []
+      });
+    } finally {
       setLoading(false);
-    }, 800);
+    }
+  };
+
+  useEffect(() => {
+    fetchAnalytics();
   }, [dateRange]);
 
   const formatCurrency = (amount) => {
