@@ -124,6 +124,165 @@ const tables = {
       subscribed BOOLEAN DEFAULT true,
       created_at TIMESTAMP DEFAULT NOW()
     )
+  `,
+
+  // Customers (CRM)
+  customers: `
+    CREATE TABLE IF NOT EXISTS customers (
+      id SERIAL PRIMARY KEY,
+      email VARCHAR(255) UNIQUE NOT NULL,
+      full_name VARCHAR(255),
+      phone VARCHAR(50),
+      address TEXT,
+      city VARCHAR(100),
+      state VARCHAR(100),
+      zip_code VARCHAR(20),
+      country VARCHAR(100) DEFAULT 'US',
+      customer_type VARCHAR(50) DEFAULT 'regular',
+      lifetime_value DECIMAL(10, 2) DEFAULT 0,
+      total_orders INTEGER DEFAULT 0,
+      last_order_date TIMESTAMP,
+      notes TEXT,
+      tags TEXT[],
+      source VARCHAR(100),
+      active BOOLEAN DEFAULT true,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    )
+  `,
+
+  // Customer communications
+  customer_communications: `
+    CREATE TABLE IF NOT EXISTS customer_communications (
+      id SERIAL PRIMARY KEY,
+      customer_id INTEGER REFERENCES customers(id) ON DELETE CASCADE,
+      type VARCHAR(50) NOT NULL,
+      subject VARCHAR(255),
+      content TEXT,
+      direction VARCHAR(20) DEFAULT 'outbound',
+      status VARCHAR(50) DEFAULT 'sent',
+      metadata JSONB DEFAULT '{}',
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `,
+
+  // Products/Inventory
+  products: `
+    CREATE TABLE IF NOT EXISTS products (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      sku VARCHAR(100) UNIQUE,
+      description TEXT,
+      price DECIMAL(10, 2),
+      cost DECIMAL(10, 2),
+      quantity INTEGER DEFAULT 0,
+      low_stock_threshold INTEGER DEFAULT 10,
+      category VARCHAR(100),
+      image_url TEXT,
+      active BOOLEAN DEFAULT true,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    )
+  `,
+
+  // Inventory movements
+  inventory_movements: `
+    CREATE TABLE IF NOT EXISTS inventory_movements (
+      id SERIAL PRIMARY KEY,
+      product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
+      adjustment INTEGER NOT NULL,
+      reason VARCHAR(255),
+      reference_type VARCHAR(50),
+      reference_id INTEGER,
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `,
+
+  // Orders
+  orders: `
+    CREATE TABLE IF NOT EXISTS orders (
+      id SERIAL PRIMARY KEY,
+      order_number VARCHAR(50) UNIQUE NOT NULL,
+      customer_id INTEGER REFERENCES customers(id),
+      items JSONB NOT NULL DEFAULT '[]',
+      subtotal DECIMAL(10, 2) DEFAULT 0,
+      tax DECIMAL(10, 2) DEFAULT 0,
+      shipping DECIMAL(10, 2) DEFAULT 0,
+      total DECIMAL(10, 2) DEFAULT 0,
+      status VARCHAR(50) DEFAULT 'pending',
+      payment_status VARCHAR(50) DEFAULT 'unpaid',
+      payment_method VARCHAR(50),
+      shipping_address TEXT,
+      billing_address TEXT,
+      tracking_number VARCHAR(100),
+      notes TEXT,
+      shipped_at TIMESTAMP,
+      delivered_at TIMESTAMP,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    )
+  `,
+
+  // Order returns
+  order_returns: `
+    CREATE TABLE IF NOT EXISTS order_returns (
+      id SERIAL PRIMARY KEY,
+      order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
+      reason TEXT,
+      items JSONB DEFAULT '[]',
+      refund_amount DECIMAL(10, 2),
+      status VARCHAR(50) DEFAULT 'pending',
+      notes TEXT,
+      processed_at TIMESTAMP,
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `,
+
+  // Competitors tracking
+  competitors: `
+    CREATE TABLE IF NOT EXISTS competitors (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      website VARCHAR(255),
+      description TEXT,
+      strengths TEXT,
+      weaknesses TEXT,
+      price_range VARCHAR(100),
+      rating DECIMAL(3, 2),
+      review_count INTEGER DEFAULT 0,
+      location VARCHAR(255),
+      distance DECIMAL(5, 2),
+      last_checked TIMESTAMP,
+      notes TEXT,
+      active BOOLEAN DEFAULT true,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    )
+  `,
+
+  // Competitor analysis history
+  competitor_analysis: `
+    CREATE TABLE IF NOT EXISTS competitor_analysis (
+      id SERIAL PRIMARY KEY,
+      competitor_id INTEGER REFERENCES competitors(id) ON DELETE CASCADE,
+      analysis_type VARCHAR(50),
+      content TEXT,
+      insights JSONB DEFAULT '{}',
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `,
+
+  // Analytics events
+  analytics_events: `
+    CREATE TABLE IF NOT EXISTS analytics_events (
+      id SERIAL PRIMARY KEY,
+      event_type VARCHAR(100) NOT NULL,
+      page VARCHAR(255),
+      user_id INTEGER,
+      session_id VARCHAR(100),
+      metadata JSONB DEFAULT '{}',
+      created_at TIMESTAMP DEFAULT NOW()
+    )
   `
 };
 
@@ -149,11 +308,35 @@ async function setupDatabase() {
     console.log('\n📊 Creating indexes...');
 
     const indexes = [
+      // Core tables
       'CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)',
       'CREATE INDEX IF NOT EXISTS idx_bookings_date ON bookings(booking_date)',
       'CREATE INDEX IF NOT EXISTS idx_bookings_user ON bookings(user_id)',
       'CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status)',
-      'CREATE INDEX IF NOT EXISTS idx_contact_status ON contact_submissions(status)'
+      'CREATE INDEX IF NOT EXISTS idx_contact_status ON contact_submissions(status)',
+      // Customers
+      'CREATE INDEX IF NOT EXISTS idx_customers_email ON customers(email)',
+      'CREATE INDEX IF NOT EXISTS idx_customers_type ON customers(customer_type)',
+      'CREATE INDEX IF NOT EXISTS idx_customers_active ON customers(active)',
+      'CREATE INDEX IF NOT EXISTS idx_customer_comms_customer ON customer_communications(customer_id)',
+      // Products/Inventory
+      'CREATE INDEX IF NOT EXISTS idx_products_sku ON products(sku)',
+      'CREATE INDEX IF NOT EXISTS idx_products_category ON products(category)',
+      'CREATE INDEX IF NOT EXISTS idx_products_active ON products(active)',
+      'CREATE INDEX IF NOT EXISTS idx_inventory_movements_product ON inventory_movements(product_id)',
+      // Orders
+      'CREATE INDEX IF NOT EXISTS idx_orders_number ON orders(order_number)',
+      'CREATE INDEX IF NOT EXISTS idx_orders_customer ON orders(customer_id)',
+      'CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status)',
+      'CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at)',
+      'CREATE INDEX IF NOT EXISTS idx_order_returns_order ON order_returns(order_id)',
+      // Competitors
+      'CREATE INDEX IF NOT EXISTS idx_competitors_active ON competitors(active)',
+      'CREATE INDEX IF NOT EXISTS idx_competitor_analysis_competitor ON competitor_analysis(competitor_id)',
+      // Analytics
+      'CREATE INDEX IF NOT EXISTS idx_analytics_type ON analytics_events(event_type)',
+      'CREATE INDEX IF NOT EXISTS idx_analytics_session ON analytics_events(session_id)',
+      'CREATE INDEX IF NOT EXISTS idx_analytics_created ON analytics_events(created_at)'
     ];
 
     for (const idx of indexes) {
