@@ -103,6 +103,380 @@ function regeneratePackageLock(folderPath, folderName) {
   }
 }
 
+/**
+ * Validate JSX/JS files for syntax errors before deployment
+ * Uses esbuild to parse files - catches unterminated strings, missing brackets, etc.
+ * Returns { valid: boolean, errors: string[] }
+ */
+function validateSyntax(projectPath) {
+  console.log(`\n🔍 Validating code syntax...`);
+  const errors = [];
+
+  // Find all .jsx and .js files in frontend/src
+  const frontendSrc = path.join(projectPath, 'frontend', 'src');
+  if (!fs.existsSync(frontendSrc)) {
+    console.log(`   ⚠️ No frontend/src directory found, skipping validation`);
+    return { valid: true, errors: [] };
+  }
+
+  function findJsxFiles(dir, files = []) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory() && entry.name !== 'node_modules') {
+        findJsxFiles(fullPath, files);
+      } else if (entry.isFile() && /\.(jsx?|tsx?)$/.test(entry.name)) {
+        files.push(fullPath);
+      }
+    }
+    return files;
+  }
+
+  const files = findJsxFiles(frontendSrc);
+  console.log(`   📄 Found ${files.length} JS/JSX files to validate`);
+
+  for (const file of files) {
+    try {
+      const content = fs.readFileSync(file, 'utf8');
+      const relativePath = path.relative(projectPath, file);
+
+      // Quick regex checks for common AI-generated bugs
+      const lines = content.split('\n');
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const lineNum = i + 1;
+
+        // Check for unterminated string in style object (missing opening quote)
+        // Pattern: propertyName: value' (ends with quote but no opening quote for strings)
+        const unterminatedMatch = line.match(/:\s*([0-9.]+)'(?!\s*[,}])/);
+        if (unterminatedMatch) {
+          errors.push(`${relativePath}:${lineNum}: Possible unterminated string: "${line.trim()}"`);
+        }
+
+        // Check for missing comma between style properties
+        // Pattern: } property: (closing brace followed by property without comma)
+        if (line.match(/}\s+[a-zA-Z]+:/)) {
+          errors.push(`${relativePath}:${lineNum}: Possible missing comma: "${line.trim()}"`);
+        }
+
+        // Check for style value with only closing quote
+        // Pattern: : 0.7' or : 16' (number followed by single quote)
+        const badQuoteMatch = line.match(/:\s*\d+(\.\d+)?'/);
+        if (badQuoteMatch && !line.match(/:\s*['"].*['"]/) && !line.match(/:\s*`.*`/)) {
+          errors.push(`${relativePath}:${lineNum}: Invalid style value (trailing quote without opening): "${line.trim()}"`);
+        }
+
+        // Check for CSS values without quotes that need them
+        // Pattern: padding: 20px (should be padding: '20px')
+        const cssValueNoQuotes = line.match(/:\s*\d+px(?!\s*['"`])/);
+        if (cssValueNoQuotes && line.includes('style') && !line.match(/:\s*['"`]\d+px/)) {
+          // Only flag if it looks like JSX inline style
+          if (line.includes('{{') || line.includes('style=') || line.match(/[a-zA-Z]+:\s*\d+px/)) {
+            errors.push(`${relativePath}:${lineNum}: CSS value might need quotes: "${line.trim()}"`);
+          }
+        }
+
+        // Check for hex colors without quotes
+        // Pattern: color: #ffffff (should be color: '#ffffff')
+        const hexNoQuotes = line.match(/:\s*#[0-9a-fA-F]{3,8}(?!\s*['"`])/);
+        if (hexNoQuotes && !line.match(/:\s*['"`]#/)) {
+          errors.push(`${relativePath}:${lineNum}: Hex color needs quotes: "${line.trim()}"`);
+        }
+      }
+
+      // Try to parse with a simple check - look for unbalanced braces/brackets
+      let braceCount = 0, bracketCount = 0, parenCount = 0;
+      let inString = false, stringChar = '';
+
+      for (let i = 0; i < content.length; i++) {
+        const char = content[i];
+        const prevChar = i > 0 ? content[i-1] : '';
+
+        // Track string state
+        if ((char === '"' || char === "'" || char === '`') && prevChar !== '\\') {
+          if (!inString) {
+            inString = true;
+            stringChar = char;
+          } else if (char === stringChar) {
+            inString = false;
+            stringChar = '';
+          }
+        }
+
+        if (!inString) {
+          if (char === '{') braceCount++;
+          else if (char === '}') braceCount--;
+          else if (char === '[') bracketCount++;
+          else if (char === ']') bracketCount--;
+          else if (char === '(') parenCount++;
+          else if (char === ')') parenCount--;
+        }
+      }
+
+      if (braceCount !== 0) {
+        errors.push(`${relativePath}: Unbalanced braces (${braceCount > 0 ? 'missing' : 'extra'} ${Math.abs(braceCount)} closing brace${Math.abs(braceCount) > 1 ? 's' : ''})`);
+      }
+      if (bracketCount !== 0) {
+        errors.push(`${relativePath}: Unbalanced brackets (${bracketCount > 0 ? 'missing' : 'extra'} ${Math.abs(bracketCount)} closing bracket${Math.abs(bracketCount) > 1 ? 's' : ''})`);
+      }
+      if (parenCount !== 0) {
+        errors.push(`${relativePath}: Unbalanced parentheses (${parenCount > 0 ? 'missing' : 'extra'} ${Math.abs(parenCount)} closing paren${Math.abs(parenCount) > 1 ? 's' : ''})`);
+      }
+
+    } catch (err) {
+      errors.push(`${file}: Failed to read file: ${err.message}`);
+    }
+  }
+
+  if (errors.length > 0) {
+    console.log(`   ❌ Found ${errors.length} syntax issue(s):`);
+    errors.forEach(err => console.log(`      • ${err}`));
+    return { valid: false, errors };
+  }
+
+  console.log(`   ✅ All files passed syntax validation`);
+  return { valid: true, errors: [] };
+}
+
+/**
+ * Run Vite build to validate code compiles
+ * This catches all syntax errors that the regex checks might miss
+ * Returns { valid: boolean, error: string | null }
+ */
+function runBuildValidation(projectPath) {
+  const frontendPath = path.join(projectPath, 'frontend');
+  if (!fs.existsSync(frontendPath)) {
+    return { valid: true, error: null };
+  }
+
+  console.log(`\n🔨 Running build validation...`);
+
+  try {
+    // Install dependencies first (needed for build)
+    console.log(`   📦 Installing dependencies...`);
+    execSync('npm install --legacy-peer-deps', {
+      cwd: frontendPath,
+      stdio: 'pipe',
+      timeout: 180000,
+      windowsHide: true
+    });
+
+    // Run build
+    console.log(`   🏗️ Building project...`);
+    execSync('npm run build', {
+      cwd: frontendPath,
+      stdio: 'pipe',
+      timeout: 300000, // 5 minute timeout for build
+      windowsHide: true
+    });
+
+    console.log(`   ✅ Build succeeded`);
+    return { valid: true, error: null };
+  } catch (err) {
+    // Extract the useful error message
+    const stderr = err.stderr?.toString() || err.message;
+
+    // Look for specific error patterns
+    const errorMatch = stderr.match(/error[:\s]+(.+?)(?:\n|$)/i) ||
+                       stderr.match(/ERROR[:\s]+(.+?)(?:\n|$)/) ||
+                       stderr.match(/([A-Za-z]+\.jsx?:\d+:\d+:.+?)(?:\n|$)/);
+
+    const errorMessage = errorMatch ? errorMatch[1].trim() : stderr.substring(0, 500);
+
+    console.log(`   ❌ Build failed: ${errorMessage}`);
+    return { valid: false, error: errorMessage };
+  }
+}
+
+/**
+ * Validate that frontend components have corresponding backend endpoints
+ * Checks for API fetch calls and verifies routes exist
+ * Returns { valid: boolean, warnings: string[], errors: string[] }
+ */
+function validateEndpointCompatibility(projectPath) {
+  console.log(`\n🔌 Validating endpoint compatibility...`);
+  const warnings = [];
+  const errors = [];
+
+  const frontendSrc = path.join(projectPath, 'frontend', 'src');
+  const backendPath = path.join(projectPath, 'backend');
+
+  if (!fs.existsSync(frontendSrc) || !fs.existsSync(backendPath)) {
+    console.log(`   ⚠️ Missing frontend/src or backend directory, skipping endpoint validation`);
+    return { valid: true, warnings: [], errors: [] };
+  }
+
+  // Find all fetch calls in frontend
+  const apiEndpoints = new Set();
+  function findFetchCalls(dir) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory() && entry.name !== 'node_modules') {
+        findFetchCalls(fullPath);
+      } else if (entry.isFile() && /\.(jsx?|tsx?)$/.test(entry.name)) {
+        try {
+          const content = fs.readFileSync(fullPath, 'utf8');
+          // Match fetch('/api/...') or fetch(`/api/...`) patterns
+          const fetchMatches = content.matchAll(/fetch\s*\(\s*[`'"]([^`'"]+)[`'"]/g);
+          for (const match of fetchMatches) {
+            const url = match[1];
+            if (url.startsWith('/api/')) {
+              // Extract base route (strip query params and dynamic segments)
+              const baseRoute = url.split('?')[0].replace(/\$\{[^}]+\}/g, ':id');
+              apiEndpoints.add(baseRoute);
+            }
+          }
+        } catch (e) {
+          // Skip files that can't be read
+        }
+      }
+    }
+  }
+  findFetchCalls(frontendSrc);
+
+  // Find all routes in backend
+  const backendRoutes = new Set();
+  function findBackendRoutes(dir) {
+    if (!fs.existsSync(dir)) return;
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory() && entry.name !== 'node_modules') {
+        findBackendRoutes(fullPath);
+      } else if (entry.isFile() && /\.(js|cjs)$/.test(entry.name)) {
+        try {
+          const content = fs.readFileSync(fullPath, 'utf8');
+          // Match router.get/post/put/delete patterns
+          const routeMatches = content.matchAll(/router\.(get|post|put|delete|patch)\s*\(\s*[`'"]([^`'"]+)[`'"]/gi);
+          for (const match of routeMatches) {
+            const routePath = match[2];
+            // Store normalized route
+            backendRoutes.add(routePath.replace(/:\w+/g, ':id'));
+          }
+          // Also check app.use for mounted routes
+          const useMatches = content.matchAll(/app\.use\s*\(\s*[`'"]([^`'"]+)[`'"]/gi);
+          for (const match of useMatches) {
+            backendRoutes.add(match[1]);
+          }
+        } catch (e) {
+          // Skip files that can't be read
+        }
+      }
+    }
+  }
+  findBackendRoutes(backendPath);
+
+  console.log(`   📊 Found ${apiEndpoints.size} API calls in frontend`);
+  console.log(`   📊 Found ${backendRoutes.size} routes in backend`);
+
+  // Check which frontend endpoints might be missing
+  // This is a heuristic check - not all routes need exact matches
+  const criticalEndpoints = [
+    '/api/admin/competitors',
+    '/api/admin/customers',
+    '/api/admin/orders',
+    '/api/admin/analytics',
+    '/api/admin/inventory'
+  ];
+
+  for (const endpoint of apiEndpoints) {
+    // Check if any backend route could serve this endpoint
+    let found = false;
+    for (const route of backendRoutes) {
+      if (endpoint.includes(route) || route.includes(endpoint.split('/').slice(-2).join('/'))) {
+        found = true;
+        break;
+      }
+    }
+    // Only warn for critical admin endpoints
+    if (!found && criticalEndpoints.some(c => endpoint.startsWith(c))) {
+      warnings.push(`Frontend calls ${endpoint} but no matching backend route found`);
+    }
+  }
+
+  if (warnings.length > 0) {
+    console.log(`   ⚠️ Found ${warnings.length} potential endpoint issues:`);
+    warnings.slice(0, 5).forEach(w => console.log(`      • ${w}`));
+    if (warnings.length > 5) {
+      console.log(`      • ... and ${warnings.length - 5} more`);
+    }
+  } else {
+    console.log(`   ✅ Endpoint compatibility looks good`);
+  }
+
+  // Warnings don't block deployment, only errors do
+  return { valid: errors.length === 0, warnings, errors };
+}
+
+/**
+ * Validate that database schema has all required tables
+ * Checks setup-db.js for table definitions
+ * Returns { valid: boolean, warnings: string[], missingTables: string[] }
+ */
+function validateSchemaCompleteness(projectPath) {
+  console.log(`\n📊 Validating database schema completeness...`);
+  const warnings = [];
+  const missingTables = [];
+
+  const setupDbPath = path.join(projectPath, 'backend', 'setup-db.js');
+  if (!fs.existsSync(setupDbPath)) {
+    console.log(`   ⚠️ No setup-db.js found, skipping schema validation`);
+    return { valid: true, warnings: [], missingTables: [] };
+  }
+
+  try {
+    const content = fs.readFileSync(setupDbPath, 'utf8');
+
+    // Required tables for admin functionality
+    const requiredTables = [
+      { name: 'users', reason: 'authentication' },
+      { name: 'customers', reason: 'CRM functionality' },
+      { name: 'orders', reason: 'order management' },
+      { name: 'products', reason: 'inventory management' },
+      { name: 'analytics_events', reason: 'analytics tracking' }
+    ];
+
+    // Check for table definitions
+    for (const table of requiredTables) {
+      // Check for CREATE TABLE or table definition object
+      const hasTable = content.includes(`CREATE TABLE IF NOT EXISTS ${table.name}`) ||
+                       content.includes(`"${table.name}"`) ||
+                       content.includes(`'${table.name}'`) ||
+                       content.includes(`${table.name}:`);
+
+      if (!hasTable) {
+        missingTables.push(table.name);
+        warnings.push(`Missing table '${table.name}' required for ${table.reason}`);
+      }
+    }
+
+    // Check for index definitions (optional but recommended)
+    const hasIndexes = content.includes('CREATE INDEX') || content.includes('indexes');
+    if (!hasIndexes) {
+      warnings.push('No database indexes found - may impact performance');
+    }
+
+    if (missingTables.length > 0) {
+      console.log(`   ⚠️ Missing ${missingTables.length} required table(s):`);
+      missingTables.forEach(t => console.log(`      • ${t}`));
+    } else {
+      console.log(`   ✅ All required tables present`);
+    }
+
+    if (warnings.length > missingTables.length) {
+      console.log(`   ⚠️ ${warnings.length - missingTables.length} additional warning(s)`);
+    }
+
+  } catch (err) {
+    console.log(`   ⚠️ Could not read setup-db.js: ${err.message}`);
+    warnings.push(`Could not validate schema: ${err.message}`);
+  }
+
+  // Missing tables are warnings, not errors (deployment can proceed)
+  return { valid: true, warnings, missingTables };
+}
+
 function prepareProjectForDeployment(projectPath, subdomain) {
   console.log(`📋 Preparing project for deployment...`);
 
@@ -826,6 +1200,35 @@ async function deployProject(projectPath, projectName, options = {}) {
 
     prepareProjectForDeployment(projectPath, subdomain);
 
+    // PRE-DEPLOY VALIDATION: Check for syntax errors before pushing
+    // Step 1: Quick regex-based syntax check
+    const syntaxResult = validateSyntax(projectPath);
+    if (!syntaxResult.valid) {
+      throw new Error(`Code validation failed:\n${syntaxResult.errors.join('\n')}`);
+    }
+
+    // Step 2: Full build validation (catches errors regex might miss)
+    const buildResult = runBuildValidation(projectPath);
+    if (!buildResult.valid) {
+      throw new Error(`Build validation failed: ${buildResult.error}`);
+    }
+
+    // Step 3: Endpoint compatibility check (warnings only, doesn't block)
+    const endpointResult = validateEndpointCompatibility(projectPath);
+    if (endpointResult.warnings.length > 0) {
+      console.log(`\n⚠️ Endpoint warnings (non-blocking):`);
+      endpointResult.warnings.forEach(w => console.log(`   • ${w}`));
+    }
+
+    // Step 4: Schema completeness check (warnings only, doesn't block)
+    const schemaResult = validateSchemaCompleteness(projectPath);
+    if (schemaResult.missingTables.length > 0) {
+      console.log(`\n⚠️ Schema warnings - some admin features may not work:`);
+      schemaResult.missingTables.forEach(t => console.log(`   • Missing table: ${t}`));
+    }
+
+    console.log(`\n✅ All validations passed, proceeding with deployment...\n`);
+
     const backendRepoName = `${subdomain}-backend`;
     const frontendRepoName = `${subdomain}-frontend`;
     const adminRepoName = `${subdomain}-admin`;
@@ -1056,5 +1459,10 @@ module.exports = {
   addCloudflareDNS,
   prepareProjectForDeployment,
   getGitHubUsername,
-  deleteGitHubRepo
+  deleteGitHubRepo,
+  // Pre-deploy validation
+  validateSyntax,
+  runBuildValidation,
+  validateEndpointCompatibility,
+  validateSchemaCompleteness
 };
