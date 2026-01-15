@@ -2542,10 +2542,149 @@ const ${componentName}Page = () => {
 export default ${componentName}Page;`;
 }
 
+// ============================================
+// INDUSTRY HEADER CONFIGURATIONS
+// ============================================
+function getIndustryHeaderConfig(industry) {
+  const lowerIndustry = (industry || '').toLowerCase();
+
+  // Emergency Services (Plumber, HVAC, Electrician, Locksmith)
+  if (lowerIndustry.includes('plumb') || lowerIndustry.includes('hvac') ||
+      lowerIndustry.includes('electric') || lowerIndustry.includes('locksmith') ||
+      lowerIndustry.includes('roofing') || lowerIndustry.includes('emergency')) {
+    return {
+      type: 'emergency',
+      showEmergencyBanner: true,
+      emergencyText: '24/7 Emergency Service',
+      showPhoneProminent: true,
+      phoneNumber: '(555) 123-4567',
+      primaryCta: { text: 'Call Now', icon: 'Phone', action: 'tel' },
+      secondaryCta: { text: 'Get Quote', icon: 'FileText', action: 'link', href: '/contact' },
+      showBadge: true,
+      badgeText: '24/7',
+      headerStyle: 'emergency',
+      mobilePhoneVisible: true
+    };
+  }
+
+  // Entertainment (Bowling, Arcade, Mini Golf, Trampoline)
+  if (lowerIndustry.includes('bowl') || lowerIndustry.includes('arcade') ||
+      lowerIndustry.includes('golf') || lowerIndustry.includes('trampoline') ||
+      lowerIndustry.includes('laser') || lowerIndustry.includes('entertainment') ||
+      lowerIndustry.includes('fun') || lowerIndustry.includes('go-kart')) {
+    return {
+      type: 'entertainment',
+      showEmergencyBanner: false,
+      showSocialIcons: true,
+      primaryCta: { text: 'Book Now', icon: 'Calendar', action: 'link', href: '/book' },
+      secondaryCta: { text: 'Parties', icon: 'PartyPopper', action: 'link', href: '/parties' },
+      headerStyle: 'playful',
+      glowEffect: true,
+      mobilePhoneVisible: false
+    };
+  }
+
+  // Restaurants/Food
+  if (lowerIndustry.includes('restaurant') || lowerIndustry.includes('food') ||
+      lowerIndustry.includes('dining') || lowerIndustry.includes('cafe') ||
+      lowerIndustry.includes('bistro') || lowerIndustry.includes('bar') ||
+      lowerIndustry.includes('grill') || lowerIndustry.includes('kitchen')) {
+    return {
+      type: 'restaurant',
+      showEmergencyBanner: false,
+      showHours: true,
+      hoursText: 'Open today: 11am - 10pm',
+      showLocation: true,
+      primaryCta: { text: 'Order Online', icon: 'ShoppingBag', action: 'link', href: '/order' },
+      secondaryCta: { text: 'Reservations', icon: 'Calendar', action: 'link', href: '/reservations' },
+      headerStyle: 'warm',
+      mobilePhoneVisible: true
+    };
+  }
+
+  // Professional Services (Law, Accounting, Consulting)
+  if (lowerIndustry.includes('law') || lowerIndustry.includes('legal') ||
+      lowerIndustry.includes('attorney') || lowerIndustry.includes('account') ||
+      lowerIndustry.includes('consult') || lowerIndustry.includes('advisory') ||
+      lowerIndustry.includes('financial') || lowerIndustry.includes('cpa')) {
+    return {
+      type: 'professional',
+      showEmergencyBanner: false,
+      showCredentials: true,
+      credentialsText: 'BBB A+ Rated',
+      primaryCta: { text: 'Free Consultation', icon: 'Calendar', action: 'link', href: '/contact' },
+      headerStyle: 'minimal',
+      mobilePhoneVisible: true
+    };
+  }
+
+  // Retail/E-commerce
+  if (lowerIndustry.includes('retail') || lowerIndustry.includes('ecommerce') ||
+      lowerIndustry.includes('shop') || lowerIndustry.includes('store') ||
+      lowerIndustry.includes('boutique')) {
+    return {
+      type: 'retail',
+      showEmergencyBanner: false,
+      showSearch: true,
+      showCart: true,
+      primaryCta: { text: 'Shop Now', icon: 'ShoppingBag', action: 'link', href: '/shop' },
+      showPromoBanner: true,
+      promoText: 'Free Shipping on Orders $50+',
+      headerStyle: 'modern',
+      mobilePhoneVisible: false
+    };
+  }
+
+  // Healthcare/Medical
+  if (lowerIndustry.includes('health') || lowerIndustry.includes('medical') ||
+      lowerIndustry.includes('clinic') || lowerIndustry.includes('dental') ||
+      lowerIndustry.includes('doctor') || lowerIndustry.includes('hospital') ||
+      lowerIndustry.includes('therapy') || lowerIndustry.includes('wellness')) {
+    return {
+      type: 'healthcare',
+      showEmergencyBanner: false,
+      showPhoneProminent: true,
+      phoneNumber: '(555) 123-4567',
+      primaryCta: { text: 'Book Appointment', icon: 'Calendar', action: 'link', href: '/appointment' },
+      secondaryCta: { text: 'Patient Portal', icon: 'User', action: 'link', href: '/portal' },
+      showCredentials: true,
+      credentialsText: 'HIPAA Compliant',
+      headerStyle: 'calming',
+      mobilePhoneVisible: true
+    };
+  }
+
+  // Fitness/Gym
+  if (lowerIndustry.includes('fitness') || lowerIndustry.includes('gym') ||
+      lowerIndustry.includes('yoga') || lowerIndustry.includes('crossfit') ||
+      lowerIndustry.includes('workout') || lowerIndustry.includes('personal train')) {
+    return {
+      type: 'fitness',
+      showEmergencyBanner: false,
+      primaryCta: { text: 'Start Free Trial', icon: 'Zap', action: 'link', href: '/join' },
+      secondaryCta: { text: 'Class Schedule', icon: 'Calendar', action: 'link', href: '/schedule' },
+      headerStyle: 'bold',
+      mobilePhoneVisible: false
+    };
+  }
+
+  // Default
+  return {
+    type: 'default',
+    showEmergencyBanner: false,
+    primaryCta: { text: 'Contact Us', icon: 'Mail', action: 'link', href: '/contact' },
+    headerStyle: 'default',
+    mobilePhoneVisible: false
+  };
+}
+
 function buildAppJsx(name, pages, promptConfig, industry) {
   const colors = promptConfig?.colors || { primary: '#0a1628', text: '#1a1a2e', textMuted: '#4a5568' };
   const typography = promptConfig?.typography || { heading: "Georgia, 'Times New Roman', serif" };
-  
+
+  // Get industry-specific header configuration
+  const headerConfig = getIndustryHeaderConfig(industry);
+
   // Industries that require authentication
   const authRequiredIndustries = ['survey-rewards', 'saas', 'ecommerce', 'collectibles', 'healthcare', 'family'];
   const needsAuth = authRequiredIndustries.includes(industry);
@@ -2654,19 +2793,113 @@ function AuthButtons() {
 
   const appWrapper = needsAuth ? ['<AuthProvider>', '</AuthProvider>'] : ['', ''];
 
+  // Build industry-specific header icons
+  const headerIcons = ['Menu', 'X'];
+  if (headerConfig.primaryCta?.icon) headerIcons.push(headerConfig.primaryCta.icon);
+  if (headerConfig.secondaryCta?.icon) headerIcons.push(headerConfig.secondaryCta.icon);
+  if (headerConfig.showPhoneProminent) headerIcons.push('Phone');
+  if (headerConfig.showSearch) headerIcons.push('Search');
+  if (headerConfig.showCart) headerIcons.push('ShoppingCart');
+  if (headerConfig.showSocialIcons) headerIcons.push('Facebook', 'Instagram');
+  if (headerConfig.showHours) headerIcons.push('Clock');
+  if (headerConfig.showLocation) headerIcons.push('MapPin');
+  if (headerConfig.showCredentials) headerIcons.push('Shield');
+  const uniqueIcons = [...new Set(headerIcons)].join(', ');
+
+  // Build emergency banner if needed
+  const emergencyBanner = headerConfig.showEmergencyBanner ? `
+      {/* Emergency Banner */}
+      <div style={styles.emergencyBanner}>
+        <span style={styles.emergencyBadge}>${headerConfig.badgeText || '24/7'}</span>
+        <span style={styles.emergencyText}>${headerConfig.emergencyText || '24/7 Emergency Service'}</span>
+        <a href="tel:${(headerConfig.phoneNumber || '').replace(/[^0-9]/g, '')}" style={styles.emergencyPhone}>
+          <Phone size={16} />
+          ${headerConfig.phoneNumber || '(555) 123-4567'}
+        </a>
+      </div>` : '';
+
+  // Build promo banner for retail
+  const promoBanner = headerConfig.showPromoBanner ? `
+      {/* Promo Banner */}
+      <div style={styles.promoBanner}>
+        ${headerConfig.promoText || 'Free Shipping on Orders $50+'}
+      </div>` : '';
+
+  // Build primary CTA button
+  const primaryCtaCode = headerConfig.primaryCta ? `
+            ${headerConfig.primaryCta.action === 'tel'
+              ? `<a href="tel:${(headerConfig.phoneNumber || '').replace(/[^0-9]/g, '')}" style={styles.primaryCta}>
+              <${headerConfig.primaryCta.icon} size={16} />
+              ${headerConfig.primaryCta.text}
+            </a>`
+              : `<Link to="${headerConfig.primaryCta.href || '/contact'}" style={styles.primaryCta}>
+              <${headerConfig.primaryCta.icon} size={16} />
+              ${headerConfig.primaryCta.text}
+            </Link>`
+            }` : '';
+
+  // Build secondary CTA button
+  const secondaryCtaCode = headerConfig.secondaryCta ? `
+            <Link to="${headerConfig.secondaryCta.href || '/contact'}" style={styles.secondaryCta}>
+              <${headerConfig.secondaryCta.icon} size={16} />
+              ${headerConfig.secondaryCta.text}
+            </Link>` : '';
+
+  // Build phone button for mobile
+  const mobilePhoneBtn = headerConfig.mobilePhoneVisible && headerConfig.phoneNumber ? `
+          <a href="tel:${(headerConfig.phoneNumber || '').replace(/[^0-9]/g, '')}" style={styles.mobilePhoneBtn}>
+            <Phone size={20} />
+          </a>` : '';
+
+  // Build search for retail
+  const searchBox = headerConfig.showSearch ? `
+            <div style={styles.searchBox}>
+              <Search size={18} style={styles.searchIcon} />
+              <input type="text" placeholder="Search..." style={styles.searchInput} />
+            </div>` : '';
+
+  // Build cart for retail
+  const cartIcon = headerConfig.showCart ? `
+            <Link to="/cart" style={styles.cartLink}>
+              <ShoppingCart size={20} />
+              <span style={styles.cartBadge}>0</span>
+            </Link>` : '';
+
+  // Build hours for restaurant
+  const hoursDisplay = headerConfig.showHours ? `
+            <span style={styles.hoursDisplay}>
+              <Clock size={14} />
+              ${headerConfig.hoursText || 'Open today: 11am - 10pm'}
+            </span>` : '';
+
+  // Build credentials badge
+  const credentialsBadge = headerConfig.showCredentials ? `
+            <span style={styles.credentialsBadge}>
+              <Shield size={14} />
+              ${headerConfig.credentialsText || 'Certified'}
+            </span>` : '';
+
+  // Build social icons for entertainment
+  const socialIcons = headerConfig.showSocialIcons ? `
+            <div style={styles.socialIcons}>
+              <a href="#" style={styles.socialLink}><Facebook size={18} /></a>
+              <a href="#" style={styles.socialLink}><Instagram size={18} /></a>
+            </div>` : '';
+
   return `/**
  * ${name} - Frontend App
  * Auto-generated by Module Library Assembler with AI
+ * Header Type: ${headerConfig.type}
  */
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { ${uniqueIcons} } from 'lucide-react';
 import './theme.css';
 // Page imports
 ${routeImports}
 ${authImports}
 ${authButtonsComponent}
-// Mobile menu wrapper component
+// Mobile menu wrapper component with industry-specific header
 function NavWrapper({ children }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
@@ -2683,36 +2916,49 @@ function NavWrapper({ children }) {
   }, [location]);
 
   return (
-    <>
+    <>${emergencyBanner}${promoBanner}
       <nav style={styles.nav}>
         <Link to="/" style={styles.navBrand}>
           <span style={styles.brandText}>${name.replace(/-/g, ' ').replace(/\s+/g, ' ').trim()}</span>
         </Link>
-        
+
         {isMobile ? (
-          <button 
-            onClick={() => setMenuOpen(!menuOpen)} 
-            style={styles.hamburger}
-            aria-label="Toggle menu"
-          >
-            {menuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div style={styles.mobileActions}>${mobilePhoneBtn}
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              style={styles.hamburger}
+              aria-label="Toggle menu"
+            >
+              {menuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         ) : (
           <>
+            ${headerConfig.type === 'retail' ? searchBox : ''}
             <div style={styles.navLinks}>
 ${navLinks}
             </div>
-            <div style={styles.navAuth}>
+            <div style={styles.navActions}>
+              ${hoursDisplay}
+              ${credentialsBadge}
+              ${socialIcons}
+              ${cartIcon}
+              ${primaryCtaCode}
+              ${secondaryCtaCode}
 ${authNavButtons}
             </div>
           </>
         )}
       </nav>
-      
+
       {isMobile && menuOpen && (
         <div style={styles.mobileMenuOverlay} onClick={() => setMenuOpen(false)}>
           <div style={styles.mobileMenu} onClick={(e) => e.stopPropagation()}>
 ${navLinks.split('\n').map(link => link.replace('styles.navLink', 'styles.mobileNavLink')).join('\n')}
+            <div style={styles.mobileCtas}>
+              ${headerConfig.primaryCta ? `<Link to="${headerConfig.primaryCta.href || '/contact'}" style={styles.mobilePrimaryCta}>${headerConfig.primaryCta.text}</Link>` : ''}
+              ${headerConfig.secondaryCta ? `<Link to="${headerConfig.secondaryCta.href || '/contact'}" style={styles.mobileSecondaryCta}>${headerConfig.secondaryCta.text}</Link>` : ''}
+            </div>
             <div style={styles.mobileAuthButtons}>
 ${authNavButtons}
             </div>
@@ -2746,6 +2992,9 @@ ${routeElements}${authRoutes}
     ${appWrapper[1]}
   );
 }
+// Calculate top offset based on banners
+const topOffset = ${headerConfig.showEmergencyBanner ? '100' : headerConfig.showPromoBanner ? '92' : '60'};
+
 const styles = {
   app: {
     minHeight: '100vh',
@@ -2755,42 +3004,103 @@ const styles = {
     color: '${colors.text}',
     fontFamily: "system-ui, -apple-system, sans-serif",
   },
+  // Emergency banner (for service businesses)
+  emergencyBanner: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    background: 'linear-gradient(90deg, #dc2626 0%, #b91c1c 100%)',
+    color: '#ffffff',
+    padding: '8px 24px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '16px',
+    zIndex: 1001,
+    fontSize: '14px',
+    fontWeight: '500',
+  },
+  emergencyBadge: {
+    background: '#ffffff',
+    color: '#dc2626',
+    padding: '2px 8px',
+    borderRadius: '4px',
+    fontSize: '12px',
+    fontWeight: '700',
+  },
+  emergencyText: {
+    display: 'none',
+    '@media (min-width: 640px)': { display: 'inline' },
+  },
+  emergencyPhone: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    color: '#ffffff',
+    textDecoration: 'none',
+    fontWeight: '700',
+    background: 'rgba(255,255,255,0.2)',
+    padding: '4px 12px',
+    borderRadius: '4px',
+  },
+  // Promo banner (for retail)
+  promoBanner: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    background: '${colors.primary}',
+    color: '#ffffff',
+    padding: '8px 24px',
+    textAlign: 'center',
+    zIndex: 1001,
+    fontSize: '13px',
+    fontWeight: '500',
+  },
   nav: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '16px 24px',
-    background: '#ffffff',
-    borderBottom: '1px solid rgba(10, 22, 40, 0.1)',
+    background: '${headerConfig.headerStyle === 'playful' ? 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)' : '#ffffff'}',
+    borderBottom: '${headerConfig.headerStyle === 'playful' ? 'none' : '1px solid rgba(10, 22, 40, 0.1)'}',
     position: 'fixed',
-    top: 0,
+    top: ${headerConfig.showEmergencyBanner ? '40px' : headerConfig.showPromoBanner ? '32px' : '0'},
     left: 0,
     right: 0,
     width: '100%',
     zIndex: 1000,
     boxSizing: 'border-box',
+    ${headerConfig.glowEffect ? "boxShadow: '0 0 20px rgba(147, 51, 234, 0.3)'," : ''}
   },
   navBrand: {
     textDecoration: 'none',
   },
   brandText: {
     fontSize: '20px',
-    fontWeight: '400',
+    fontWeight: '${headerConfig.headerStyle === 'playful' ? '700' : '400'}',
     fontFamily: "${typography.heading}",
-    color: '${colors.primary}',
+    color: '${headerConfig.headerStyle === 'playful' ? '#ffffff' : colors.primary}',
     letterSpacing: '1px',
     textTransform: 'none',
+    ${headerConfig.glowEffect ? "textShadow: '0 0 10px rgba(147, 51, 234, 0.5)'," : ''}
   },
   navLinks: {
     display: 'flex',
     gap: '32px',
+  },
+  navActions: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
   },
   navAuth: {
     display: 'flex',
     alignItems: 'center',
   },
   navLink: {
-    color: '${colors.textMuted}',
+    color: '${headerConfig.headerStyle === 'playful' ? 'rgba(255,255,255,0.8)' : colors.textMuted}',
     textDecoration: 'none',
     fontSize: '14px',
     fontWeight: '500',
@@ -2798,10 +3108,131 @@ const styles = {
     textTransform: 'uppercase',
     transition: 'color 0.2s',
   },
+  // Primary CTA button
+  primaryCta: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '10px 20px',
+    background: '${headerConfig.type === 'emergency' ? '#dc2626' : headerConfig.type === 'entertainment' ? 'linear-gradient(135deg, #9333ea 0%, #ec4899 100%)' : '#22c55e'}',
+    color: '#ffffff',
+    textDecoration: 'none',
+    borderRadius: '8px',
+    fontSize: '14px',
+    fontWeight: '600',
+    transition: 'all 0.2s',
+    ${headerConfig.glowEffect ? "boxShadow: '0 0 15px rgba(147, 51, 234, 0.4)'," : ''}
+  },
+  // Secondary CTA button
+  secondaryCta: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '10px 20px',
+    background: 'transparent',
+    color: '${headerConfig.headerStyle === 'playful' ? '#ffffff' : colors.primary}',
+    border: '1px solid ${headerConfig.headerStyle === 'playful' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.2)'}',
+    textDecoration: 'none',
+    borderRadius: '8px',
+    fontSize: '14px',
+    fontWeight: '500',
+    transition: 'all 0.2s',
+  },
+  // Hours display (restaurant)
+  hoursDisplay: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    color: '${colors.textMuted}',
+    fontSize: '13px',
+    padding: '6px 12px',
+    background: 'rgba(0,0,0,0.05)',
+    borderRadius: '4px',
+  },
+  // Credentials badge (professional)
+  credentialsBadge: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    color: '#059669',
+    fontSize: '12px',
+    fontWeight: '600',
+    padding: '4px 10px',
+    background: 'rgba(5, 150, 105, 0.1)',
+    borderRadius: '4px',
+  },
+  // Social icons (entertainment)
+  socialIcons: {
+    display: 'flex',
+    gap: '8px',
+  },
+  socialLink: {
+    color: '${headerConfig.headerStyle === 'playful' ? 'rgba(255,255,255,0.7)' : colors.textMuted}',
+    transition: 'color 0.2s',
+  },
+  // Search box (retail)
+  searchBox: {
+    position: 'relative',
+    marginRight: '24px',
+  },
+  searchIcon: {
+    position: 'absolute',
+    left: '12px',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    color: '#9ca3af',
+  },
+  searchInput: {
+    padding: '10px 12px 10px 40px',
+    border: '1px solid #e5e7eb',
+    borderRadius: '8px',
+    width: '240px',
+    fontSize: '14px',
+    outline: 'none',
+  },
+  // Cart link (retail)
+  cartLink: {
+    position: 'relative',
+    color: '${colors.text}',
+    padding: '8px',
+  },
+  cartBadge: {
+    position: 'absolute',
+    top: '0',
+    right: '0',
+    background: '#dc2626',
+    color: '#ffffff',
+    fontSize: '10px',
+    fontWeight: '600',
+    width: '16px',
+    height: '16px',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  // Mobile actions container
+  mobileActions: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  },
+  // Mobile phone button (service businesses)
+  mobilePhoneBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '44px',
+    height: '44px',
+    background: '${headerConfig.type === 'emergency' ? '#dc2626' : '#22c55e'}',
+    color: '#ffffff',
+    borderRadius: '50%',
+    textDecoration: 'none',
+  },
   hamburger: {
     background: 'none',
     border: 'none',
-    color: '${colors.text}',
+    color: '${headerConfig.headerStyle === 'playful' ? '#ffffff' : colors.text}',
     cursor: 'pointer',
     padding: '12px',
     display: 'flex',
@@ -2813,7 +3244,7 @@ const styles = {
   },
   mobileMenuOverlay: {
     position: 'fixed',
-    top: '60px',
+    top: topOffset + 'px',
     left: 0,
     right: 0,
     bottom: 0,
@@ -2822,7 +3253,7 @@ const styles = {
   },
   mobileMenu: {
     position: 'fixed',
-    top: '60px',
+    top: topOffset + 'px',
     left: 0,
     right: 0,
     background: '#ffffff',
@@ -2833,7 +3264,7 @@ const styles = {
     gap: '8px',
     zIndex: 999,
     boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-    maxHeight: 'calc(100vh - 60px)',
+    maxHeight: 'calc(100vh - ' + topOffset + 'px)',
     overflowY: 'auto',
   },
   mobileNavLink: {
@@ -2847,13 +3278,42 @@ const styles = {
     minHeight: '48px',
     lineHeight: '16px',
   },
+  mobileCtas: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    paddingTop: '16px',
+  },
+  mobilePrimaryCta: {
+    display: 'block',
+    padding: '16px',
+    background: '${headerConfig.type === 'emergency' ? '#dc2626' : headerConfig.type === 'entertainment' ? 'linear-gradient(135deg, #9333ea 0%, #ec4899 100%)' : '#22c55e'}',
+    color: '#ffffff',
+    textDecoration: 'none',
+    textAlign: 'center',
+    borderRadius: '8px',
+    fontWeight: '600',
+    fontSize: '16px',
+  },
+  mobileSecondaryCta: {
+    display: 'block',
+    padding: '16px',
+    background: 'transparent',
+    border: '1px solid #e5e7eb',
+    color: '${colors.text}',
+    textDecoration: 'none',
+    textAlign: 'center',
+    borderRadius: '8px',
+    fontWeight: '500',
+    fontSize: '16px',
+  },
   mobileAuthButtons: {
     paddingTop: '16px',
     borderTop: '1px solid rgba(0,0,0,0.1)',
   },${authStyles}
   main: {
     flex: 1,
-    paddingTop: '60px',
+    paddingTop: topOffset + 'px',
   },
   footer: {
     padding: '40px 48px',
