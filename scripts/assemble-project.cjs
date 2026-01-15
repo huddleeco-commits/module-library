@@ -492,7 +492,11 @@ function validateGeneratedProject(projectDir) {
         { pattern: /import\s+{([^}]+)}\s+from\s+['"]\.\.\/modules\//g, replacement: 'import {$1} from \'../components/', desc: 'Fix module imports' },
         { pattern: />(\s*)<(\d+\.?\d*[a-zA-Z%]*)\s*</g, replacement: '>&lt;$2<', desc: '<number in JSX text' },
         { pattern: />(\s*)<(\$[\d,\.]+)/g, replacement: '>&lt;$2', desc: '<$amount in JSX text' },
-        { pattern: />\s*<(\d+)/g, replacement: '>&lt;$1', desc: 'Bare <number' }
+        { pattern: />\s*<(\d+)/g, replacement: '>&lt;$1', desc: 'Bare <number' },
+        // Fix missing opening quotes in object properties (e.g., id: alltime' → id: 'alltime')
+        { pattern: /(\w+:\s*)([a-zA-Z_][a-zA-Z0-9_-]*)'/g, replacement: "$1'$2'", desc: 'Add missing opening quote (id: word\' → id: \'word\')' },
+        // Fix missing opening quote before closing double quote
+        { pattern: /(\w+:\s*)([a-zA-Z_][a-zA-Z0-9_-]*)"/g, replacement: '$1"$2"', desc: 'Add missing opening double quote' }
       ];
       
       for (const fix of jsxFixes) {
