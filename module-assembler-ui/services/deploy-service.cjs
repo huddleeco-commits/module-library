@@ -104,196 +104,23 @@ function regeneratePackageLock(folderPath, folderName) {
 }
 
 /**
- * Validate JSX/JS files for syntax errors before deployment
- * Uses bracket counting and pattern matching for common AI-generated bugs
- * IMPORTANT: This is a quick pre-check - runBuildValidation does the real validation
- * Returns { valid: boolean, errors: string[] }
+ * DISABLED: Regex-based syntax validation
+ *
+ * Regex cannot properly parse JavaScript/JSX. It will always have false positives.
+ * Instead, we use runBuildValidation() which runs an actual Vite build.
+ * Vite/esbuild knows how to parse JS properly and gives accurate error messages.
+ *
+ * This function is kept for backwards compatibility but always returns valid.
  */
 function validateSyntax(projectPath) {
-  console.log(`\n🔍 Validating code syntax...`);
-  const errors = [];
-
-  // Find all .jsx and .js files in frontend/src
-  const frontendSrc = path.join(projectPath, 'frontend', 'src');
-  if (!fs.existsSync(frontendSrc)) {
-    console.log(`   ⚠️ No frontend/src directory found, skipping validation`);
-    return { valid: true, errors: [] };
-  }
-
-  function findJsxFiles(dir, files = []) {
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
-    for (const entry of entries) {
-      const fullPath = path.join(dir, entry.name);
-      if (entry.isDirectory() && entry.name !== 'node_modules') {
-        findJsxFiles(fullPath, files);
-      } else if (entry.isFile() && /\.(jsx?|tsx?)$/.test(entry.name)) {
-        files.push(fullPath);
-      }
-    }
-    return files;
-  }
-
-  const files = findJsxFiles(frontendSrc);
-  console.log(`   📄 Found ${files.length} JS/JSX files to validate`);
-
-  for (const file of files) {
-    try {
-      const content = fs.readFileSync(file, 'utf8');
-      const relativePath = path.relative(projectPath, file);
-
-      // IMPROVED: Only check for definite syntax errors, not patterns that could be valid
-      const lines = content.split('\n');
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        const lineNum = i + 1;
-        const trimmedLine = line.trim();
-
-        // SKIP: Lines that are ternary operator continuations (valid JS)
-        // These start with ? or : and are part of multi-line ternary expressions
-        if (trimmedLine.startsWith('?') || trimmedLine.startsWith(':')) {
-          continue;
-        }
-
-        // SKIP: Lines containing optional chaining (?.) - valid JS
-        if (line.includes('?.')) {
-          continue;
-        }
-
-        // SKIP: Lines that are clearly in template literals or imports
-        if (trimmedLine.startsWith('import ') || trimmedLine.startsWith('export ')) {
-          continue;
-        }
-
-        // Check for missing comma between style properties in object literals
-        // Pattern: } followed directly by property (no comma)
-        // Only flag if it's clearly inside a style object context
-        if (line.match(/}\s+[a-zA-Z]+:\s*[{'"0-9]/) && !line.includes('else') && !line.includes('catch')) {
-          // Extra check: make sure it's not a valid code block like } else { or } catch {
-          if (!line.match(/}\s*(else|catch|finally|while)\s*[{(]/)) {
-            errors.push(`${relativePath}:${lineNum}: Possible missing comma between properties: "${trimmedLine.substring(0, 60)}..."`);
-          }
-        }
-
-        // Check for obviously broken style values: number immediately followed by closing quote
-        // Pattern: : 16' or : 0.7' (number + single quote with no opening quote on same "word")
-        // But NOT: 'value' (proper string) or url('...') or ternary ?: expressions
-        const badQuoteMatch = line.match(/:\s*(\d+\.?\d*)'(?!\))/);
-        if (badQuoteMatch) {
-          // Make sure this isn't part of a proper string or ternary
-          const beforeColon = line.substring(0, line.indexOf(badQuoteMatch[0]));
-          if (!beforeColon.includes('?') && !line.match(/['"`]\s*:\s*\d/)) {
-            errors.push(`${relativePath}:${lineNum}: Possible broken string (number followed by lone quote): "${trimmedLine.substring(0, 60)}..."`);
-          }
-        }
-      }
-
-      // BRACKET COUNTING: More robust string/comment handling
-      let braceCount = 0, bracketCount = 0, parenCount = 0;
-      let inString = false, stringChar = '';
-      let inLineComment = false, inBlockComment = false;
-      let inTemplateExpr = 0; // Track ${} nesting in template literals
-
-      for (let i = 0; i < content.length; i++) {
-        const char = content[i];
-        const prevChar = i > 0 ? content[i - 1] : '';
-        const nextChar = i < content.length - 1 ? content[i + 1] : '';
-
-        // Handle newlines (reset line comment)
-        if (char === '\n') {
-          inLineComment = false;
-          continue;
-        }
-
-        // Skip if in line comment
-        if (inLineComment) continue;
-
-        // Handle block comments
-        if (inBlockComment) {
-          if (char === '*' && nextChar === '/') {
-            inBlockComment = false;
-            i++; // Skip the /
-          }
-          continue;
-        }
-
-        // Detect comment start (only outside strings)
-        if (!inString && char === '/') {
-          if (nextChar === '/') {
-            inLineComment = true;
-            i++;
-            continue;
-          }
-          if (nextChar === '*') {
-            inBlockComment = true;
-            i++;
-            continue;
-          }
-        }
-
-        // Handle template literal expressions ${...}
-        if (inString && stringChar === '`') {
-          if (char === '$' && nextChar === '{' && prevChar !== '\\') {
-            inTemplateExpr++;
-            i++;
-            braceCount++; // Count the opening brace
-            continue;
-          }
-        }
-
-        // Track string state (handle escaped quotes)
-        if ((char === '"' || char === "'" || char === '`') && prevChar !== '\\') {
-          if (!inString) {
-            inString = true;
-            stringChar = char;
-          } else if (char === stringChar && inTemplateExpr === 0) {
-            inString = false;
-            stringChar = '';
-          }
-        }
-
-        // Only count brackets outside of strings
-        if (!inString) {
-          if (char === '{') {
-            braceCount++;
-          } else if (char === '}') {
-            braceCount--;
-            if (inTemplateExpr > 0 && stringChar === '`') {
-              inTemplateExpr--;
-            }
-          } else if (char === '[') {
-            bracketCount++;
-          } else if (char === ']') {
-            bracketCount--;
-          } else if (char === '(') {
-            parenCount++;
-          } else if (char === ')') {
-            parenCount--;
-          }
-        }
-      }
-
-      if (braceCount !== 0) {
-        errors.push(`${relativePath}: Unbalanced braces (${braceCount > 0 ? 'missing' : 'extra'} ${Math.abs(braceCount)} closing brace${Math.abs(braceCount) > 1 ? 's' : ''})`);
-      }
-      if (bracketCount !== 0) {
-        errors.push(`${relativePath}: Unbalanced brackets (${bracketCount > 0 ? 'missing' : 'extra'} ${Math.abs(bracketCount)} closing bracket${Math.abs(bracketCount) > 1 ? 's' : ''})`);
-      }
-      if (parenCount !== 0) {
-        errors.push(`${relativePath}: Unbalanced parentheses (${parenCount > 0 ? 'missing' : 'extra'} ${Math.abs(parenCount)} closing paren${Math.abs(parenCount) > 1 ? 's' : ''})`);
-      }
-
-    } catch (err) {
-      errors.push(`${file}: Failed to read file: ${err.message}`);
-    }
-  }
-
-  if (errors.length > 0) {
-    console.log(`   ❌ Found ${errors.length} syntax issue(s):`);
-    errors.forEach(err => console.log(`      • ${err}`));
-    return { valid: false, errors };
-  }
-
-  console.log(`   ✅ All files passed syntax validation`);
+  // DISABLED - Use runBuildValidation() instead (actual Vite build)
+  // Regex-based validation cannot handle modern JavaScript properly:
+  // - Ternary operators on multiple lines
+  // - Optional chaining (?.)
+  // - Template literals with expressions
+  // - JSX syntax
+  // - And many other valid patterns
+  console.log(`\n🔍 Syntax pre-check skipped (using Vite build validation instead)`);
   return { valid: true, errors: [] };
 }
 
