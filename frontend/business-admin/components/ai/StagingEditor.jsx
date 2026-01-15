@@ -39,9 +39,46 @@ export function StagingEditor({ onAction }) {
   const [lastSaved, setLastSaved] = useState(null);
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState([]);
+  const [frontendUrl, setFrontendUrl] = useState(null);
 
-  // Get the site URL from environment or use a default
-  const siteUrl = window.location.origin;
+  // Derive the frontend URL from the admin URL or fetch from brain.json
+  useEffect(() => {
+    const deriveFrontendUrl = async () => {
+      // First, try to fetch from brain.json
+      try {
+        const response = await fetch('/brain.json');
+        if (response.ok) {
+          const brain = await response.json();
+          if (brain.siteUrl || brain.frontendUrl) {
+            setFrontendUrl(brain.siteUrl || brain.frontendUrl);
+            return;
+          }
+        }
+      } catch (e) {
+        // brain.json not available, continue to fallback
+      }
+
+      // Fallback: derive from current URL
+      // If we're on admin.example.com, the frontend is example.com
+      const currentHost = window.location.hostname;
+      const protocol = window.location.protocol;
+
+      if (currentHost.startsWith('admin.')) {
+        // Remove 'admin.' prefix to get frontend URL
+        const frontendHost = currentHost.replace(/^admin\./, '');
+        setFrontendUrl(`${protocol}//${frontendHost}`);
+      } else if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+        // Local development: use port 5173 (Vite default) for frontend
+        // Admin typically runs on 3000, frontend preview on 5173
+        setFrontendUrl(`${protocol}//${currentHost}:5173`);
+      } else {
+        // Last resort: use current origin (may not be correct)
+        setFrontendUrl(window.location.origin);
+      }
+    };
+
+    deriveFrontendUrl();
+  }, []);
 
   // Load existing drafts on mount
   useEffect(() => {
@@ -541,17 +578,24 @@ export function StagingEditor({ onAction }) {
               ...getViewportStyle()
             }}
           >
-            <iframe
-              ref={iframeRef}
-              src={siteUrl}
-              style={styles.iframe}
-              title="Site Preview"
-              onLoad={() => {
-                if (editMode) {
-                  injectEditMode();
-                }
-              }}
-            />
+            {frontendUrl ? (
+              <iframe
+                ref={iframeRef}
+                src={frontendUrl}
+                style={styles.iframe}
+                title="Site Preview"
+                onLoad={() => {
+                  if (editMode) {
+                    injectEditMode();
+                  }
+                }}
+              />
+            ) : (
+              <div style={styles.loadingPreview}>
+                <RefreshCw size={24} style={{ animation: 'spin 1s linear infinite' }} />
+                <span>Loading preview...</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -826,6 +870,16 @@ const styles = {
     width: '100%',
     height: '100%',
     border: 'none'
+  },
+  loadingPreview: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '12px',
+    height: '100%',
+    color: 'var(--color-text-muted)',
+    fontSize: '14px'
   },
   propertiesPanel: {
     width: '320px',
