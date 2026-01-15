@@ -10,10 +10,14 @@
  * - Staging/Content editing
  *
  * All routes are prefixed with /api/admin
+ * All routes require authentication (except health check)
  */
 
 const express = require('express');
 const router = express.Router();
+
+// Import auth middleware
+const { authenticateToken, isAdmin } = require('../auth/middleware/auth');
 
 // Import route modules
 const competitorsRoutes = require('./routes/competitors');
@@ -23,15 +27,7 @@ const analyticsRoutes = require('./routes/analytics');
 const inventoryRoutes = require('./routes/inventory');
 const stagingRoutes = require('./routes/staging');
 
-// Mount routes
-router.use('/competitors', competitorsRoutes);
-router.use('/customers', customersRoutes);
-router.use('/orders', ordersRoutes);
-router.use('/analytics', analyticsRoutes);
-router.use('/inventory', inventoryRoutes);
-router.use('/staging', stagingRoutes);
-
-// Health check for admin API
+// Health check for admin API (no auth required)
 router.get('/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -39,5 +35,17 @@ router.get('/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+// Apply authentication middleware to all admin routes
+router.use(authenticateToken);
+router.use(isAdmin);
+
+// Mount routes (all protected by auth middleware above)
+router.use('/competitors', competitorsRoutes);
+router.use('/customers', customersRoutes);
+router.use('/orders', ordersRoutes);
+router.use('/analytics', analyticsRoutes);
+router.use('/inventory', inventoryRoutes);
+router.use('/staging', stagingRoutes);
 
 module.exports = router;

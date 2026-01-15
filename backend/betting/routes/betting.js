@@ -8,12 +8,21 @@ const jwt = require('jsonwebtoken');
 const formationAnalyzer = new FormationAnalyzer();
 const propsAnalyzer = new PlayerPropsAnalyzer();
 
+// Validate JWT_SECRET is configured
+if (!process.env.JWT_SECRET) {
+    console.error('FATAL: JWT_SECRET environment variable is not set');
+    process.exit(1);
+}
+
 // Middleware to check coins
 const checkCoins = (requiredCoins) => {
     return async (req, res, next) => {
         try {
             const token = req.headers.authorization?.split(' ')[1];
-            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'huddle-secret-key');
+            if (!token) {
+                return res.status(401).json({ success: false, error: 'Access token required' });
+            }
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
             const user = await User.findById(decoded.userId);
             
             if (user.degenCoins < requiredCoins) {

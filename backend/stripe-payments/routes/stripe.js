@@ -30,7 +30,7 @@ router.post('/create-checkout-session', authenticateToken, async (req, res) => {
     const userId = req.user.userId;
 
     // Get user email
-    const userResult = await db.query('SELECT email FROM users WHERE id = ?', [userId]);
+    const userResult = await db.query('SELECT email FROM users WHERE id = $1', [userId]);
     const user = userResult.rows[0];
 
     if (!user) {
@@ -56,13 +56,13 @@ router.get('/subscription', authenticateToken, async (req, res) => {
     const userId = req.user.userId;
 
     const subResult = await db.query(`
-      SELECT * FROM subscriptions 
-      WHERE user_id = ? 
-      ORDER BY created_at DESC 
+      SELECT * FROM subscriptions
+      WHERE user_id = $1
+      ORDER BY created_at DESC
       LIMIT 1
     `, [userId]);
 
-    const userResult = await db.query('SELECT subscription_tier, subscription_status FROM users WHERE id = ?', [userId]);
+    const userResult = await db.query('SELECT subscription_tier, subscription_status FROM users WHERE id = $1', [userId]);
     const user = userResult.rows[0];
 
     res.json({
@@ -82,7 +82,7 @@ router.post('/create-portal-session', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId;
 
-    const userResult = await db.query('SELECT stripe_customer_id FROM users WHERE id = ?', [userId]);
+    const userResult = await db.query('SELECT stripe_customer_id FROM users WHERE id = $1', [userId]);
     const user = userResult.rows[0];
 
     if (!user?.stripe_customer_id) {
@@ -107,7 +107,7 @@ router.post('/portal-session', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId;
 
-    const userResult = await db.query('SELECT stripe_customer_id FROM users WHERE id = ?', [userId]);
+    const userResult = await db.query('SELECT stripe_customer_id FROM users WHERE id = $1', [userId]);
     const user = userResult.rows[0];
 
     if (!user?.stripe_customer_id) {
@@ -135,12 +135,12 @@ async function getMonthlyScans(userId) {
   const currentMonth = now.toISOString().slice(0, 7); // YYYY-MM
   
   const usageResult = await db.query(
-    `SELECT COUNT(*) as scan_count 
-     FROM api_usage 
-     WHERE user_id = ? 
+    `SELECT COUNT(*) as scan_count
+     FROM api_usage
+     WHERE user_id = $1
      AND api_name IN ('claude_scan', 'claude_scan_failed')
      AND scan_source = 'platform'
-     AND call_date LIKE ?`,
+     AND call_date LIKE $2`,
     [userId, `${currentMonth}%`]
   );
   
@@ -152,7 +152,7 @@ router.get('/scan-limit', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId;
 
-    const userResult = await db.query('SELECT subscription_tier, scans_used, ebay_listings_used FROM users WHERE id = ?', [userId]);
+    const userResult = await db.query('SELECT subscription_tier, scans_used, ebay_listings_used FROM users WHERE id = $1', [userId]);
     const user = userResult.rows[0];
     
     const userTier = user?.subscription_tier || 'free';
@@ -253,18 +253,18 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
         
         // Update user
         await db.query(`
-          UPDATE users 
-          SET subscription_tier = ?, 
+          UPDATE users
+          SET subscription_tier = $1,
               subscription_status = 'active',
-              stripe_customer_id = ?,
-              stripe_subscription_id = ?
-          WHERE id = ?
+              stripe_customer_id = $2,
+              stripe_subscription_id = $3
+          WHERE id = $4
         `, [planTier, customerId, subscriptionId, userId]);
-        
+
         // Insert subscription record
         await db.query(`
           INSERT INTO subscriptions (user_id, stripe_customer_id, stripe_subscription_id, stripe_price_id, plan_name, status)
-          VALUES (?, ?, ?, ?, ?, 'active')
+          VALUES ($1, $2, $3, $4, $5, 'active')
         `, [userId, customerId, subscriptionId, priceId, planTier]);
         
         console.log(`✅ User ${userId} upgraded to ${planTier}`);
@@ -273,15 +273,15 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
       
     case 'customer.subscription.deleted':
   const deletedSubscription = event.data.object;
-  
+
   // Downgrade to free
   await db.query(`
-    UPDATE users 
+    UPDATE users
     SET subscription_tier = 'free',
         subscription_status = 'cancelled',
         stripe_subscription_status = 'canceled',
         subscription_end_date = NOW()
-    WHERE stripe_customer_id = ?
+    WHERE stripe_customer_id = $1
   `, [deletedSubscription.customer]);
   
   console.log(`❌ Subscription cancelled for customer ${deletedSubscription.customer}`);
@@ -298,20 +298,20 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
   if (['past_due', 'unpaid', 'canceled'].includes(subscriptionStatus)) {
     // Downgrade to free tier
     await db.query(`
-      UPDATE users 
+      UPDATE users
       SET subscription_tier = 'free',
           subscription_status = 'cancelled',
-          stripe_subscription_status = ?,
+          stripe_subscription_status = $1,
           subscription_end_date = NOW()
-      WHERE stripe_customer_id = ?
+      WHERE stripe_customer_id = $2
     `, [subscriptionStatus, updatedSubscription.customer]);
-    
+
     console.log(`❌ User downgraded to free due to ${subscriptionStatus} status`);
-    
+
     // Send email notification
     try {
       const userResult = await db.query(
-        'SELECT email, id FROM users WHERE stripe_customer_id = ?',
+        'SELECT email, id FROM users WHERE stripe_customer_id = $1',
         [updatedSubscription.customer]
       );
       
@@ -340,11 +340,11 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
     
     // Update user's plan
     await db.query(`
-      UPDATE users 
-      SET subscription_tier = ?,
+      UPDATE users
+      SET subscription_tier = $1,
           subscription_status = 'active',
-          stripe_subscription_status = ?
-      WHERE stripe_customer_id = ?
+          stripe_subscription_status = $2
+      WHERE stripe_customer_id = $3
     `, [newPlanTier, subscriptionStatus, updatedSubscription.customer]);
     
     console.log(`✅ Subscription updated for customer ${updatedSubscription.customer} to ${newPlanTier}`);
@@ -360,25 +360,25 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
       
       // Ensure user stays active (in case status was pending)
       await db.query(`
-        UPDATE users 
+        UPDATE users
         SET subscription_status = 'active'
-        WHERE stripe_customer_id = ?
+        WHERE stripe_customer_id = $1
       `, [successCustomerId]);
       break;
-      
+
     // NEW: Handle failed monthly payments
     case 'invoice.payment_failed':
   const failedInvoice = event.data.object;
   const failedCustomerId = failedInvoice.customer;
-  
+
   console.log(`❌ Payment failed for customer ${failedCustomerId}`);
-  
+
   // Mark subscription as past_due (Stripe will retry)
   await db.query(`
-    UPDATE users 
+    UPDATE users
     SET subscription_status = 'past_due',
         stripe_subscription_status = 'past_due'
-    WHERE stripe_customer_id = ?
+    WHERE stripe_customer_id = $1
   `, [failedCustomerId]);
   break;
       

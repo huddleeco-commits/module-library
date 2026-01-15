@@ -3,19 +3,25 @@ const router = express.Router();
 const Notification = require('../models/Notification');
 const jwt = require('jsonwebtoken');
 
+// Validate JWT_SECRET is configured
+if (!process.env.JWT_SECRET) {
+    console.error('FATAL: JWT_SECRET environment variable is not set');
+    process.exit(1);
+}
+
 // Middleware to verify token
 const authenticate = async (req, res, next) => {
     try {
         const token = req.headers.authorization?.split(' ')[1];
         if (!token) {
-            return res.json({ success: false, error: 'No token provided' });
+            return res.status(401).json({ success: false, error: 'No token provided' });
         }
-        
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'huddle-secret-key');
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.userId = decoded.userId || decoded.id || decoded._id;
         next();
     } catch (error) {
-        res.json({ success: false, error: 'Invalid token' });
+        res.status(403).json({ success: false, error: 'Invalid token' });
     }
 };
 

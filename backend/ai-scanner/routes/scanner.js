@@ -42,7 +42,7 @@ router.post('/scan', authenticateToken, async (req, res) => {
 
         // CHECK SCAN LIMIT BEFORE PROCESSING
         const userResult = await db.query(
-            'SELECT subscription_tier, scans_used, usage_reset_date FROM users WHERE id = ?',
+            'SELECT subscription_tier, scans_used, usage_reset_date FROM users WHERE id = $1',
             [req.user.userId]
         );
         const user = userResult.rows[0];
@@ -68,7 +68,7 @@ router.post('/scan', authenticateToken, async (req, res) => {
         if (!resetDate || now > resetDate) {
             const nextReset = new Date(now.getFullYear(), now.getMonth() + 1, 1);
             await db.query(
-                'UPDATE users SET scans_used = 0, usage_reset_date = ? WHERE id = ?',
+                'UPDATE users SET scans_used = 0, usage_reset_date = $1 WHERE id = $2',
                 [nextReset, req.user.userId]
             );
             used = 0;
@@ -76,7 +76,7 @@ router.post('/scan', authenticateToken, async (req, res) => {
         }
         
         // Check if user is admin for unlimited scans
-const adminCheck = await db.query('SELECT is_admin FROM users WHERE id = ?', [req.user.userId]);
+const adminCheck = await db.query('SELECT is_admin FROM users WHERE id = $1', [req.user.userId]);
 const isAdmin = adminCheck.rows[0]?.is_admin;
 
 if (!isAdmin && used >= limit) {

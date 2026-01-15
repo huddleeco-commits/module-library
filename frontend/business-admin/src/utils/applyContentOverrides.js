@@ -6,6 +6,27 @@
  */
 
 /**
+ * Sanitize HTML content to prevent XSS attacks
+ * Removes dangerous tags and attributes
+ * @param {string} html - Raw HTML content
+ * @returns {string} Sanitized HTML
+ */
+function sanitizeHtml(html) {
+  if (!html || typeof html !== 'string') return '';
+
+  // Create a temporary element to parse HTML
+  const temp = document.createElement('div');
+  temp.textContent = html; // This escapes all HTML
+
+  // For true HTML sanitization, use DOMPurify library
+  // This basic version just escapes everything for safety
+  // If rich HTML is needed, install DOMPurify: npm install dompurify
+  // Then use: import DOMPurify from 'dompurify'; return DOMPurify.sanitize(html);
+
+  return temp.innerHTML;
+}
+
+/**
  * Fetch content overrides from the API
  * @param {string} mode - 'production' or 'draft'
  * @returns {Promise<{overrides: Array, theme: Object|null}>}
@@ -42,7 +63,8 @@ export function applyContentOverrides(overrides) {
         if (element_type === 'text' || element_type === 'heading') {
           element.textContent = content;
         } else if (element_type === 'html') {
-          element.innerHTML = content;
+          // Sanitize HTML to prevent XSS attacks
+          element.innerHTML = sanitizeHtml(content);
         } else if (element_type === 'image') {
           if (element.tagName === 'IMG') {
             element.src = content;
