@@ -105,7 +105,8 @@ function regeneratePackageLock(folderPath, folderName) {
 
 /**
  * Validate JSX/JS files for syntax errors before deployment
- * Uses esbuild to parse files - catches unterminated strings, missing brackets, etc.
+ * Uses bracket counting and pattern matching for common AI-generated bugs
+ * IMPORTANT: This is a quick pre-check - runBuildValidation does the real validation
  * Returns { valid: boolean, errors: string[] }
  */
 function validateSyntax(projectPath) {
@@ -140,76 +141,134 @@ function validateSyntax(projectPath) {
       const content = fs.readFileSync(file, 'utf8');
       const relativePath = path.relative(projectPath, file);
 
-      // Quick regex checks for common AI-generated bugs
+      // IMPROVED: Only check for definite syntax errors, not patterns that could be valid
       const lines = content.split('\n');
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         const lineNum = i + 1;
+        const trimmedLine = line.trim();
 
-        // Check for unterminated string in style object (missing opening quote)
-        // Pattern: propertyName: value' (ends with quote but no opening quote for strings)
-        const unterminatedMatch = line.match(/:\s*([0-9.]+)'(?!\s*[,}])/);
-        if (unterminatedMatch) {
-          errors.push(`${relativePath}:${lineNum}: Possible unterminated string: "${line.trim()}"`);
+        // SKIP: Lines that are ternary operator continuations (valid JS)
+        // These start with ? or : and are part of multi-line ternary expressions
+        if (trimmedLine.startsWith('?') || trimmedLine.startsWith(':')) {
+          continue;
         }
 
-        // Check for missing comma between style properties
-        // Pattern: } property: (closing brace followed by property without comma)
-        if (line.match(/}\s+[a-zA-Z]+:/)) {
-          errors.push(`${relativePath}:${lineNum}: Possible missing comma: "${line.trim()}"`);
+        // SKIP: Lines containing optional chaining (?.) - valid JS
+        if (line.includes('?.')) {
+          continue;
         }
 
-        // Check for style value with only closing quote
-        // Pattern: : 0.7' or : 16' (number followed by single quote)
-        const badQuoteMatch = line.match(/:\s*\d+(\.\d+)?'/);
-        if (badQuoteMatch && !line.match(/:\s*['"].*['"]/) && !line.match(/:\s*`.*`/)) {
-          errors.push(`${relativePath}:${lineNum}: Invalid style value (trailing quote without opening): "${line.trim()}"`);
+        // SKIP: Lines that are clearly in template literals or imports
+        if (trimmedLine.startsWith('import ') || trimmedLine.startsWith('export ')) {
+          continue;
         }
 
-        // Check for CSS values without quotes that need them
-        // Pattern: padding: 20px (should be padding: '20px')
-        const cssValueNoQuotes = line.match(/:\s*\d+px(?!\s*['"`])/);
-        if (cssValueNoQuotes && line.includes('style') && !line.match(/:\s*['"`]\d+px/)) {
-          // Only flag if it looks like JSX inline style
-          if (line.includes('{{') || line.includes('style=') || line.match(/[a-zA-Z]+:\s*\d+px/)) {
-            errors.push(`${relativePath}:${lineNum}: CSS value might need quotes: "${line.trim()}"`);
+        // Check for missing comma between style properties in object literals
+        // Pattern: } followed directly by property (no comma)
+        // Only flag if it's clearly inside a style object context
+        if (line.match(/}\s+[a-zA-Z]+:\s*[{'"0-9]/) && !line.includes('else') && !line.includes('catch')) {
+          // Extra check: make sure it's not a valid code block like } else { or } catch {
+          if (!line.match(/}\s*(else|catch|finally|while)\s*[{(]/)) {
+            errors.push(`${relativePath}:${lineNum}: Possible missing comma between properties: "${trimmedLine.substring(0, 60)}..."`);
           }
         }
 
-        // Check for hex colors without quotes
-        // Pattern: color: #ffffff (should be color: '#ffffff')
-        const hexNoQuotes = line.match(/:\s*#[0-9a-fA-F]{3,8}(?!\s*['"`])/);
-        if (hexNoQuotes && !line.match(/:\s*['"`]#/)) {
-          errors.push(`${relativePath}:${lineNum}: Hex color needs quotes: "${line.trim()}"`);
+        // Check for obviously broken style values: number immediately followed by closing quote
+        // Pattern: : 16' or : 0.7' (number + single quote with no opening quote on same "word")
+        // But NOT: 'value' (proper string) or url('...') or ternary ?: expressions
+        const badQuoteMatch = line.match(/:\s*(\d+\.?\d*)'(?!\))/);
+        if (badQuoteMatch) {
+          // Make sure this isn't part of a proper string or ternary
+          const beforeColon = line.substring(0, line.indexOf(badQuoteMatch[0]));
+          if (!beforeColon.includes('?') && !line.match(/['"`]\s*:\s*\d/)) {
+            errors.push(`${relativePath}:${lineNum}: Possible broken string (number followed by lone quote): "${trimmedLine.substring(0, 60)}..."`);
+          }
         }
       }
 
-      // Try to parse with a simple check - look for unbalanced braces/brackets
+      // BRACKET COUNTING: More robust string/comment handling
       let braceCount = 0, bracketCount = 0, parenCount = 0;
       let inString = false, stringChar = '';
+      let inLineComment = false, inBlockComment = false;
+      let inTemplateExpr = 0; // Track ${} nesting in template literals
 
       for (let i = 0; i < content.length; i++) {
         const char = content[i];
-        const prevChar = i > 0 ? content[i-1] : '';
+        const prevChar = i > 0 ? content[i - 1] : '';
+        const nextChar = i < content.length - 1 ? content[i + 1] : '';
 
-        // Track string state
+        // Handle newlines (reset line comment)
+        if (char === '\n') {
+          inLineComment = false;
+          continue;
+        }
+
+        // Skip if in line comment
+        if (inLineComment) continue;
+
+        // Handle block comments
+        if (inBlockComment) {
+          if (char === '*' && nextChar === '/') {
+            inBlockComment = false;
+            i++; // Skip the /
+          }
+          continue;
+        }
+
+        // Detect comment start (only outside strings)
+        if (!inString && char === '/') {
+          if (nextChar === '/') {
+            inLineComment = true;
+            i++;
+            continue;
+          }
+          if (nextChar === '*') {
+            inBlockComment = true;
+            i++;
+            continue;
+          }
+        }
+
+        // Handle template literal expressions ${...}
+        if (inString && stringChar === '`') {
+          if (char === '$' && nextChar === '{' && prevChar !== '\\') {
+            inTemplateExpr++;
+            i++;
+            braceCount++; // Count the opening brace
+            continue;
+          }
+        }
+
+        // Track string state (handle escaped quotes)
         if ((char === '"' || char === "'" || char === '`') && prevChar !== '\\') {
           if (!inString) {
             inString = true;
             stringChar = char;
-          } else if (char === stringChar) {
+          } else if (char === stringChar && inTemplateExpr === 0) {
             inString = false;
             stringChar = '';
           }
         }
 
+        // Only count brackets outside of strings
         if (!inString) {
-          if (char === '{') braceCount++;
-          else if (char === '}') braceCount--;
-          else if (char === '[') bracketCount++;
-          else if (char === ']') bracketCount--;
-          else if (char === '(') parenCount++;
-          else if (char === ')') parenCount--;
+          if (char === '{') {
+            braceCount++;
+          } else if (char === '}') {
+            braceCount--;
+            if (inTemplateExpr > 0 && stringChar === '`') {
+              inTemplateExpr--;
+            }
+          } else if (char === '[') {
+            bracketCount++;
+          } else if (char === ']') {
+            bracketCount--;
+          } else if (char === '(') {
+            parenCount++;
+          } else if (char === ')') {
+            parenCount--;
+          }
         }
       }
 
