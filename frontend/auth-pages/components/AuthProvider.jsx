@@ -1,4 +1,4 @@
-﻿/**
+/**
  * AuthProvider - Generic authentication context
  * Works with any BE1st generated backend
  */

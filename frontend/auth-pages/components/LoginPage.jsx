@@ -1,4 +1,4 @@
-﻿/**
+/**
  * LoginPage - Generic login page with inline styles
  * Works with any BE1st generated backend
  */

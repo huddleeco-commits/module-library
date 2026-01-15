@@ -1,4 +1,4 @@
-﻿import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import Footer from '../components/layout/Footer';
