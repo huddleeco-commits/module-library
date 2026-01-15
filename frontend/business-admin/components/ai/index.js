@@ -10,6 +10,7 @@ export { AICompetitors } from './AICompetitors';
 export { AILocalPulse } from './AILocalPulse';
 export { AITasks } from './AITasks';
 export { AIHistory } from './AIHistory';
+export { StagingEditor } from './StagingEditor';
 
 // Default export
 export { AIManagerPage as default } from './AIManagerPage';

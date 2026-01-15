@@ -26,7 +26,8 @@ import {
   Zap,
   TrendingUp,
   AlertCircle,
-  Sparkles
+  Sparkles,
+  Layout
 } from 'lucide-react';
 import { useBrain } from '../../hooks/useBrain';
 import AIChat from './AIChat';
@@ -36,6 +37,7 @@ import AICompetitors from './AICompetitors';
 import AILocalPulse from './AILocalPulse';
 import AITasks from './AITasks';
 import AIHistory from './AIHistory';
+import StagingEditor from './StagingEditor';
 
 export function AIManagerPage() {
   const { business } = useOutletContext();
@@ -80,6 +82,7 @@ export function AIManagerPage() {
 
   const tabs = [
     { id: 'chat', label: 'Chat', icon: MessageSquare, description: 'Talk to your AI' },
+    { id: 'preview', label: 'Site Preview', icon: Layout },
     { id: 'insights', label: 'Insights', icon: Lightbulb, badge: insights.length },
     { id: 'competitors', label: 'Competitors', icon: Target },
     { id: 'local', label: 'Local Pulse', icon: MapPin },
@@ -110,6 +113,8 @@ export function AIManagerPage() {
     switch (activeTab) {
       case 'chat':
         return <AIChat onAction={handleAIAction} status={aiStatus} setStatus={setAiStatus} />;
+      case 'preview':
+        return <StagingEditor onAction={handleAIAction} />;
       case 'insights':
         return <AIInsights insights={insights} onAction={handleAIAction} />;
       case 'competitors':
