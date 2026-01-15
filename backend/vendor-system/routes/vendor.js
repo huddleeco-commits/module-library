@@ -57,10 +57,9 @@ router.get('/showcases/card-mappings', authenticateToken, async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Get vendor showcase card mappings error:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Failed to load vendor showcase mappings' 
+    res.status(500).json({
+      success: false,
+      error: 'Failed to load vendor showcase mappings'
     });
   }
 });
@@ -94,11 +93,10 @@ router.get('/showcases', authenticateToken, async (req, res) => {
     }));
     
     res.json({ 
-      success: true, 
-      showcases 
+      success: true,
+      showcases
     });
   } catch (error) {
-    console.error('Get showcases error:', error);
     res.status(500).json({ success: false, error: 'Failed to get showcases' });
   }
 });
@@ -116,14 +114,12 @@ router.post('/showcases', authenticateToken, async (req, res) => {
     } = req.body;
     
     if (!showcase_name || !card_ids || card_ids.length === 0) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Showcase name and cards are required' 
+      return res.status(400).json({
+        success: false,
+        error: 'Showcase name and cards are required'
       });
     }
-    
-    console.log('📦 Creating showcase:', { showcase_name, card_count: card_ids.length, userId });
-    
+
     // Ensure proper JSON formatting for PostgreSQL JSONB columns
     const cardIdsJson = Array.isArray(card_ids) ? card_ids : JSON.parse(card_ids);
     const displaySettingsJson = typeof display_settings === 'object' ? display_settings : JSON.parse(display_settings || '{}');
@@ -172,23 +168,16 @@ router.post('/showcases', authenticateToken, async (req, res) => {
         INSERT INTO vendor_screen_config (user_id, screen_identifier, showcase_id, grid_size)
         VALUES ($1, $2, $3, $4)
       `, [userId, 'screen1', showcase.id, '8x4']);
-      
-      console.log(`✅ Auto-assigned showcase to screen1 for user ${userId}`);
     }
-    
-    console.log(`✅ Created showcase "${showcase_name}" with ${showcase.card_ids.length} cards`);
-    
-    res.json({ 
-      success: true, 
-      showcase 
+
+    res.json({
+      success: true,
+      showcase
     });
   } catch (error) {
-    console.error('❌ Create showcase error:', error);
-    console.error('Error details:', error.message);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Failed to create showcase',
-      details: error.message 
+    res.status(500).json({
+      success: false,
+      error: 'Failed to create showcase'
     });
   }
 });
@@ -246,15 +235,12 @@ router.put('/showcases/:id', authenticateToken, async (req, res) => {
     if (typeof showcase.card_ids === 'string') {
       showcase.card_ids = JSON.parse(showcase.card_ids);
     }
-    
-    console.log(`✅ Updated showcase ${showcaseId}`);
-    
-    res.json({ 
-      success: true, 
-      showcase 
+
+    res.json({
+      success: true,
+      showcase
     });
   } catch (error) {
-    console.error('Update showcase error:', error);
     res.status(500).json({ success: false, error: 'Failed to update showcase' });
   }
 });
@@ -282,15 +268,12 @@ router.delete('/showcases/:id', authenticateToken, async (req, res) => {
       'DELETE FROM vendor_showcases WHERE id = $1 AND user_id = $2',
       [showcaseId, userId]
     );
-    
-    console.log(`✅ Deleted showcase ${showcaseId}`);
-    
-    res.json({ 
-      success: true, 
-      message: 'Showcase deleted' 
+
+    res.json({
+      success: true,
+      message: 'Showcase deleted'
     });
   } catch (error) {
-    console.error('Delete showcase error:', error);
     res.status(500).json({ success: false, error: 'Failed to delete showcase' });
   }
 });
@@ -319,7 +302,6 @@ router.get('/screen-config', authenticateToken, async (req, res) => {
     
     res.json({ success: true, config: result.rows });
   } catch (error) {
-    console.error('Get screen config error:', error);
     res.status(500).json({ success: false, error: 'Failed to get screen config' });
   }
 });
@@ -328,11 +310,8 @@ router.get('/screen-config', authenticateToken, async (req, res) => {
 router.post('/screen-config', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId || req.user.id;
-    const { screens } = req.body; // Now screens is an array
-    
-    console.log('💾 Saving screen config for user:', userId);
-    console.log('📺 Screens:', JSON.stringify(screens, null, 2));
-    
+    const { screens } = req.body;
+
     if (!Array.isArray(screens) || screens.length === 0) {
       return res.status(400).json({ success: false, error: 'Screens array required' });
     }
@@ -355,11 +334,9 @@ router.post('/screen-config', authenticateToken, async (req, res) => {
   screen.grid_size || '6x4'
 ]);
     }
-    
-    console.log('✅ Screen config saved successfully');
+
     res.json({ success: true, message: `${screens.length} screens configured` });
   } catch (error) {
-    console.error('❌ Screen config save error:', error);
     res.status(500).json({ success: false, error: 'Failed to save screen config' });
   }
 });
@@ -374,31 +351,23 @@ router.get('/display/:screenId', async (req, res) => {
     const { screenId } = req.params;
     const { userId } = req.query;
     const requestedGrid = req.query.grid;
-    
-    console.log('🎥 Display request:', { screenId, userId, requestedGrid });
-    
+
     if (!userId) {
-      console.log('❌ No userId provided');
-      return res.status(400).json({ 
-        success: false, 
-        error: 'User ID required' 
+      return res.status(400).json({
+        success: false,
+        error: 'User ID required'
       });
     }
-    
+
     // Get showcase assigned to this screen
-    console.log('📋 Looking up screen config for user', userId, 'screen', screenId);
     const configResult = await db.query(`
       SELECT showcase_id, grid_size 
       FROM vendor_screen_config 
       WHERE user_id = $1 AND screen_identifier = $2
     `, [userId, screenId]);
-    
-    console.log('📋 Config query result:', configResult.rows);
-    
+
     // If no config exists, try to find the user's first active showcase
     if (configResult.rows.length === 0) {
-      console.log('⚠️ No screen config found, looking for user showcases...');
-      
       const showcaseResult = await db.query(`
         SELECT * FROM vendor_showcases 
         WHERE user_id = $1 AND is_active = TRUE
@@ -409,9 +378,7 @@ router.get('/display/:screenId', async (req, res) => {
       if (showcaseResult.rows.length > 0) {
         const showcase = showcaseResult.rows[0];
         const gridSize = requestedGrid || '8x4';
-        
-        console.log('✅ Using first active showcase:', showcase.id);
-        
+
         // Auto-create the screen config for future use
         await db.query(`
           INSERT INTO vendor_screen_config (user_id, screen_identifier, showcase_id, grid_size)
@@ -458,16 +425,15 @@ router.get('/display/:screenId', async (req, res) => {
             CASE WHEN is_graded THEN 0 ELSE 1 END,
             CAST(grade AS DECIMAL) DESC NULLS LAST
         `, [cardIds, userId]);
-        
-        return res.json({ 
-          success: true, 
+
+        return res.json({
+          success: true,
           showcase: { ...showcase, card_ids: cardIds },
           cards: cardsResult.rows,
           gridSize
         });
       } else {
-        console.log('⚠️ User has no showcases');
-        return res.json({ 
+        return res.json({
           success: false,
           error: 'No showcases configured for this vendor',
           cards: [],
@@ -475,62 +441,55 @@ router.get('/display/:screenId', async (req, res) => {
         });
       }
     }
-    
+
     // Config exists, use it
     const showcaseId = configResult.rows[0].showcase_id;
     const gridSize = requestedGrid || configResult.rows[0].grid_size || '8x4';
-    console.log('📦 Found showcase ID:', showcaseId, 'Grid:', gridSize);
-    
+
     if (!showcaseId) {
-      console.log('❌ showcase_id is null');
-      return res.json({ 
-        success: false, 
-        error: 'No showcase assigned to this screen' 
+      return res.json({
+        success: false,
+        error: 'No showcase assigned to this screen'
       });
     }
-    
+
     // Get showcase details
-    console.log('📦 Fetching showcase details for ID:', showcaseId);
     const showcaseResult = await db.query(`
       SELECT * FROM vendor_showcases 
       WHERE id = $1 AND user_id = $2
     `, [showcaseId, userId]);
-    
+
     if (showcaseResult.rows.length === 0) {
-      console.log('❌ Showcase not found in database');
-      return res.json({ 
-        success: false, 
-        error: 'Showcase not found' 
+      return res.json({
+        success: false,
+        error: 'Showcase not found'
       });
     }
-    
+
     const showcase = showcaseResult.rows[0];
-    
+
     let cardIds;
     try {
-      cardIds = typeof showcase.card_ids === 'string' 
-        ? JSON.parse(showcase.card_ids) 
+      cardIds = typeof showcase.card_ids === 'string'
+        ? JSON.parse(showcase.card_ids)
         : showcase.card_ids;
     } catch (parseError) {
-      console.error('❌ Error parsing card_ids:', parseError);
-      return res.status(500).json({ 
-        success: false, 
-        error: 'Invalid card data' 
+      return res.status(500).json({
+        success: false,
+        error: 'Invalid card data'
       });
     }
-    
+
     // Get cards for this showcase
     if (!cardIds || cardIds.length === 0) {
-      console.log('⚠️ No cards in showcase');
-      return res.json({ 
-        success: true, 
+      return res.json({
+        success: true,
         showcase: { ...showcase, card_ids: [] },
         cards: [],
         gridSize
       });
     }
-    
-    console.log('🃏 Fetching', cardIds.length, 'cards...');
+
     const cardsResult = await db.query(`
       SELECT 
         id, player, year, set_name, card_number, parallel, team, sport,
@@ -550,24 +509,18 @@ router.get('/display/:screenId', async (req, res) => {
         CASE WHEN is_graded THEN 0 ELSE 1 END,
         CAST(grade AS DECIMAL) DESC NULLS LAST
     `, [cardIds, userId]);
-    
-    console.log('🃏 Found', cardsResult.rows.length, 'cards');
-    console.log('✅ Returning showcase data with grid size:', gridSize);
-    
-    res.json({ 
-      success: true, 
+
+    res.json({
+      success: true,
       showcase: { ...showcase, card_ids: cardIds },
       cards: cardsResult.rows,
       gridSize
     });
-    
+
   } catch (error) {
-    console.error('❌ Get display showcase error:', error);
-    console.error('❌ Error stack:', error.stack);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Failed to load showcase',
-      details: error.message 
+    res.status(500).json({
+      success: false,
+      error: 'Failed to load showcase'
     });
   }
 });
@@ -607,7 +560,6 @@ router.get('/info/:userId', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Get vendor info error:', error);
     res.status(500).json({ success: false, error: 'Failed to get vendor info' });
   }
 });
@@ -635,12 +587,11 @@ router.get('/tablet-configs', authenticateToken, async (req, res) => {
       ORDER BY created_at DESC
     `, [userId]);
     
-    res.json({ 
-      success: true, 
-      tablets: result.rows 
+    res.json({
+      success: true,
+      tablets: result.rows
     });
   } catch (error) {
-    console.error('Get tablet configs error:', error);
     res.status(500).json({ success: false, error: 'Failed to get tablet configs' });
   }
 });
@@ -656,14 +607,12 @@ router.post('/tablet-config', authenticateToken, async (req, res) => {
     } = req.body;
     
     if (!device_identifier || !showcase_id) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Device identifier and showcase ID are required' 
+      return res.status(400).json({
+        success: false,
+        error: 'Device identifier and showcase ID are required'
       });
     }
-    
-    console.log('📱 Saving tablet config:', { device_identifier, device_name, showcase_id, userId });
-    
+
     const result = await db.query(`
       INSERT INTO vendor_tablet_configs 
       (user_id, device_identifier, device_name, showcase_id, is_active, last_seen)
@@ -676,19 +625,15 @@ router.post('/tablet-config', authenticateToken, async (req, res) => {
         last_seen = CURRENT_TIMESTAMP
       RETURNING *
     `, [userId, device_identifier, device_name, showcase_id]);
-    
-    console.log('✅ Tablet config saved');
-    
-    res.json({ 
-      success: true, 
-      tablet: result.rows[0] 
+
+    res.json({
+      success: true,
+      tablet: result.rows[0]
     });
   } catch (error) {
-    console.error('❌ Save tablet config error:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Failed to save tablet config',
-      details: error.message 
+    res.status(500).json({
+      success: false,
+      error: 'Failed to save tablet config'
     });
   }
 });
@@ -703,15 +648,12 @@ router.delete('/tablet-config/:id', authenticateToken, async (req, res) => {
       'DELETE FROM vendor_tablet_configs WHERE id = $1 AND user_id = $2',
       [tabletId, userId]
     );
-    
-    console.log(`✅ Deleted tablet config ${tabletId}`);
-    
-    res.json({ 
-      success: true, 
-      message: 'Tablet config deleted' 
+
+    res.json({
+      success: true,
+      message: 'Tablet config deleted'
     });
   } catch (error) {
-    console.error('Delete tablet config error:', error);
     res.status(500).json({ success: false, error: 'Failed to delete tablet config' });
   }
 });

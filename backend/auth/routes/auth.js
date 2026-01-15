@@ -38,7 +38,6 @@ router.post('/register', rateLimiters.registerLimiter, async (req, res) => {
             if (refResult.rows.length > 0) {
                 referralCodeId = refResult.rows[0].id;
                 referralCodeValue = refResult.rows[0].code;
-                console.log(`📊 User registering with referral code: ${referralCodeValue}`);
             }
         }
 
@@ -71,7 +70,7 @@ router.post('/register', rateLimiters.registerLimiter, async (req, res) => {
                 email: user.email 
             },
             process.env.JWT_SECRET,
-            { expiresIn: '7d' }
+            { expiresIn: '24h' }
         );
 
         // Update referral stats if user was referred
@@ -80,7 +79,6 @@ router.post('/register', rateLimiters.registerLimiter, async (req, res) => {
                 'UPDATE referral_codes SET total_signups = total_signups + 1, updated_at = NOW() WHERE id = $1',
                 [referralCodeId]
             );
-            console.log(`✅ Referral signup recorded for code: ${referralCodeValue}`);
         }
 
         // Send new user email notification (NON-BLOCKING)
@@ -89,8 +87,8 @@ router.post('/register', rateLimiters.registerLimiter, async (req, res) => {
             fullName: fullName,
             email: email,
             subscriptionTier: 'free'
-        }).catch(emailError => {
-            console.error('Failed to send welcome email:', emailError);
+        }).catch(() => {
+            // Email send failed silently - non-critical
         });
 
         // Respond
@@ -107,7 +105,6 @@ router.post('/register', rateLimiters.registerLimiter, async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Registration error:', error);
         res.status(500).json({ success: false, error: 'Registration failed' });
     }
 });
@@ -141,10 +138,8 @@ router.post('/login', rateLimiters.loginLimiter, async (req, res) => {
                 email: user.email 
             },
             process.env.JWT_SECRET,
-            { expiresIn: '7d' }
+            { expiresIn: '24h' }
         );
-
-        console.log('✅ Login successful for user:', user.id, user.email);
 
         res.json({
             success: true,
@@ -159,7 +154,6 @@ router.post('/login', rateLimiters.loginLimiter, async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Login error:', error);
         res.status(500).json({ success: false, error: 'Login failed' });
     }
 });
@@ -197,7 +191,6 @@ const getUserProfile = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Get user error:', error);
         res.status(500).json({ success: false, error: 'Server error' });
     }
 };
@@ -245,7 +238,6 @@ router.post('/forgot-password', async (req, res) => {
             message: 'Password reset link sent to your email' 
         });
     } catch (error) {
-        console.error('Forgot password error:', error);
         res.status(500).json({ success: false, error: 'Failed to process request' });
     }
 });
@@ -274,7 +266,6 @@ router.get('/reset-password/:token', async (req, res) => {
             email: userResult.rows[0].email 
         });
     } catch (error) {
-        console.error('Verify token error:', error);
         res.status(500).json({ success: false, error: 'Failed to verify token' });
     }
 });
@@ -309,14 +300,11 @@ router.post('/reset-password/:token', async (req, res) => {
             [passwordHash, user.id]
         );
 
-        console.log('✅ Password reset successful for:', user.email);
-
-        res.json({ 
-            success: true, 
-            message: 'Password reset successful! You can now login.' 
+        res.json({
+            success: true,
+            message: 'Password reset successful! You can now login.'
         });
     } catch (error) {
-        console.error('Reset password error:', error);
         res.status(500).json({ success: false, error: 'Failed to reset password' });
     }
 });

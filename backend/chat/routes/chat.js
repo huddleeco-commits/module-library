@@ -9,7 +9,6 @@ let messageIdCounter = 1;
 // GET /api/chat/messages/:familyId - Get all messages for family
 router.get('/messages/:familyId', (req, res) => {
     const familyMessages = messages.filter(m => m.familyId === req.params.familyId);
-    console.log(`💬 Fetching ${familyMessages.length} messages for family ${req.params.familyId}`);
     res.json({
         success: true,
         messages: familyMessages
@@ -31,9 +30,6 @@ router.post('/messages', (req, res) => {
     
     messages.push(newMessage);
     
-    const messageText = newMessage.text || newMessage.message || 'No message content';
-    console.log('💬 Message sent:', messageText.substring(0, 50));
-    
     const io = req.app.get('io');
     
     // 🔥 BROADCAST MESSAGE VIA WEBSOCKET
@@ -43,8 +39,7 @@ router.post('/messages', (req, res) => {
             familyId: req.body.familyId,
             timestamp: new Date().toISOString()
         });
-        console.log('📡 Broadcast: Message sent to family room');
-        
+
         // Also emit platform sync event
         io.to(`family-${req.body.familyId}`).emit('platform_sync', {
             source: 'chat',
@@ -75,9 +70,8 @@ router.post('/typing', (req, res) => {
             familyId,
             timestamp: new Date().toISOString()
         });
-        console.log(`⌨️ ${userName} is ${isTyping ? 'typing' : 'stopped typing'}`);
     }
-    
+
     res.json({ success: true });
 });
 
@@ -87,8 +81,7 @@ router.delete('/messages/:messageId', (req, res) => {
     
     if (index !== -1) {
         const deleted = messages.splice(index, 1)[0];
-        console.log('🗑️ Message deleted');
-        
+
         const io = req.app.get('io');
         
         if (io) {

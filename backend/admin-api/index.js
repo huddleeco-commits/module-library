@@ -11,10 +11,42 @@
  *
  * All routes are prefixed with /api/admin
  * All routes require authentication (except health check)
+ * CORS restricted to allowed origins
  */
 
 const express = require('express');
 const router = express.Router();
+const cors = require('cors');
+
+// CORS configuration for admin API
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (same-origin, mobile apps, curl)
+    if (!origin) return callback(null, true);
+
+    const allowedOrigins = process.env.ALLOWED_ORIGINS
+      ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+      : [process.env.FRONTEND_URL, process.env.ADMIN_URL].filter(Boolean);
+
+    // In development, allow localhost
+    if (process.env.NODE_ENV !== 'production') {
+      allowedOrigins.push('http://localhost:3000', 'http://localhost:5173', 'http://localhost:4173');
+    }
+
+    if (allowedOrigins.includes(origin) || allowedOrigins.length === 0) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  maxAge: 86400 // 24 hours
+};
+
+// Apply CORS to all admin routes
+router.use(cors(corsOptions));
 
 // Import auth middleware
 const { authenticateToken, isAdmin } = require('../auth/middleware/auth');

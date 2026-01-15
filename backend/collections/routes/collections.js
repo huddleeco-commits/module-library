@@ -6,13 +6,11 @@ const { authenticateToken } = require('../middleware/auth');
 // Middleware to extract userId from JWT token
 const extractUserId = (req, res, next) => {
   req.userId = req.user?.id || req.user?.userId || req.user?.sub;
-  
+
   if (!req.userId) {
-    console.error('❌ No userId found in token:', req.user);
     return res.status(401).json({ success: false, error: 'User ID not found in token' });
   }
-  
-  console.log('✅ Extracted userId:', req.userId);
+
   next();
 };
 
@@ -37,7 +35,6 @@ router.get('/', auth, async (req, res) => {
     
     res.json({ success: true, collections: result.rows });
   } catch (error) {
-    console.error('Get collections error:', error);
     res.status(500).json({ success: false, error: 'Failed to get collections' });
   }
 });
@@ -89,17 +86,12 @@ router.get('/:id/cards', auth, async (req, res) => {
     if (limit) {
       query += ` LIMIT $2`;
       params.push(limit);
-      console.log(`🔥 Fetching ${limit} cards for collection ${id}`);
-    } else {
-      console.log(`📦 Fetching ALL cards for collection ${id}`);
     }
-    
+
     const result = await db.query(query, params);
-    
-    console.log(`✅ Returned ${result.rows.length} cards`);
+
     res.json({ success: true, cards: result.rows, total: result.rows.length });
   } catch (error) {
-    console.error('Get collection cards error:', error);
     res.status(500).json({ success: false, error: 'Failed to get cards' });
   }
 });
@@ -122,7 +114,6 @@ router.post('/', auth, async (req, res) => {
     
     res.json({ success: true, collection: result.rows[0] });
   } catch (error) {
-    console.error('Create collection error:', error);
     res.status(500).json({ success: false, error: 'Failed to create collection' });
   }
 });
@@ -157,7 +148,6 @@ router.patch('/:id', auth, async (req, res) => {
     
     res.json({ success: true, collection: result.rows[0] });
   } catch (error) {
-    console.error('Update collection error:', error);
     res.status(500).json({ success: false, error: 'Failed to update collection' });
   }
 });
@@ -181,7 +171,6 @@ router.delete('/:id', auth, async (req, res) => {
     
     res.json({ success: true });
   } catch (error) {
-    console.error('Delete collection error:', error);
     res.status(500).json({ success: false, error: 'Failed to delete collection' });
   }
 });
@@ -229,7 +218,6 @@ router.post('/:id/cards', auth, async (req, res) => {
     
     res.json({ success: true, added: cardIds.length });
   } catch (error) {
-    console.error('Add cards to collection error:', error);
     res.status(500).json({ success: false, error: 'Failed to add cards to collection' });
   }
 });
@@ -261,7 +249,6 @@ router.delete('/:id/cards', auth, async (req, res) => {
     
     res.json({ success: true, removed: cardIds.length });
   } catch (error) {
-    console.error('Remove cards from collection error:', error);
     res.status(500).json({ success: false, error: 'Failed to remove cards from collection' });
   }
 });
@@ -291,9 +278,8 @@ router.post('/:id/export-ebay', auth, async (req, res) => {
     // TODO: Use your existing eBay CSV generation logic here
     // For now, return the cards
     res.json({ success: true, cards: cards.length, cards });
-    
+
   } catch (error) {
-    console.error('Export collection error:', error);
     res.status(500).json({ success: false, error: 'Failed to export collection' });
   }
 });
