@@ -30,25 +30,42 @@ function PasswordGate({ onUnlock }) {
   const [error, setError] = useState(false);
   const [shake, setShake] = useState(false);
   const [taglineIndex, setTaglineIndex] = useState(0);
-  
-  const CORRECT_PASSWORD = 'blink2026';
-  
+  const [isValidating, setIsValidating] = useState(false);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setTaglineIndex(prev => (prev + 1) % TAGLINES.length);
     }, 4000);
     return () => clearInterval(interval);
   }, []);
-  
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (password === CORRECT_PASSWORD) {
-      localStorage.setItem('blink_access', 'granted');
-      onUnlock();
-    } else {
+    if (isValidating) return;
+
+    setIsValidating(true);
+    try {
+      const response = await fetch('/api/auth/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+
+      if (response.ok) {
+        localStorage.setItem('blink_access', 'granted');
+        onUnlock();
+      } else {
+        setError(true);
+        setShake(true);
+        setTimeout(() => setShake(false), 500);
+      }
+    } catch (err) {
+      console.error('Auth error:', err);
       setError(true);
       setShake(true);
       setTimeout(() => setShake(false), 500);
+    } finally {
+      setIsValidating(false);
     }
   };
 
@@ -99,15 +116,31 @@ const gateStyles = {
 function DevPasswordModal({ onSuccess, onCancel }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
-  const DEV_PASSWORD = 'abc123';
-  
-  const handleSubmit = (e) => {
+  const [isValidating, setIsValidating] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (password === DEV_PASSWORD) {
-      localStorage.setItem('blink_dev_access', 'granted');
-      onSuccess();
-    } else {
+    if (isValidating) return;
+
+    setIsValidating(true);
+    try {
+      const response = await fetch('/api/auth/validate-dev', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+
+      if (response.ok) {
+        localStorage.setItem('blink_dev_access', 'granted');
+        onSuccess();
+      } else {
+        setError(true);
+      }
+    } catch (err) {
+      console.error('Dev auth error:', err);
       setError(true);
+    } finally {
+      setIsValidating(false);
     }
   };
   
@@ -707,7 +740,11 @@ export default function App() {
         )}
         
         {step === 'deploy-complete' && (
-          <DeployCompleteStep result={deployResult} onReset={handleReset} />
+          <DeployCompleteStep
+            result={deployResult}
+            onReset={handleReset}
+            generationTime={result?.duration ? result.duration / 1000 : null}
+          />
         )}
         
         {step === 'deploy-error' && (
@@ -4203,11 +4240,96 @@ const deployStepStyles = {
 };
 
 // ============================================
-// DEPLOY COMPLETE STEP
+// DEPLOY COMPLETE STEP - WITH RAILWAY POLLING
 // ============================================
-function DeployCompleteStep({ result, onReset }) {
+function DeployCompleteStep({ result, onReset, generationTime }) {
   const [copied, setCopied] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [deploymentStatus, setDeploymentStatus] = useState('polling'); // polling, success, failed
+  const [services, setServices] = useState({});
+  const [pollCount, setPollCount] = useState(0);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [blinkCount, setBlinkCount] = useState(0);
+  const [animatingBlinks, setAnimatingBlinks] = useState(false);
+
+  // Calculate blinks (humans blink every ~4.5 seconds)
+  const totalBlinks = generationTime ? Math.round(generationTime / 4.5) : 0;
+
+  // Animate blink counter on success
+  useEffect(() => {
+    if (deploymentStatus === 'success' && totalBlinks > 0 && !animatingBlinks) {
+      setAnimatingBlinks(true);
+      let current = 0;
+      const increment = Math.max(1, Math.floor(totalBlinks / 30)); // 30 steps
+      const interval = setInterval(() => {
+        current += increment;
+        if (current >= totalBlinks) {
+          setBlinkCount(totalBlinks);
+          clearInterval(interval);
+        } else {
+          setBlinkCount(current);
+        }
+      }, 50);
+      return () => clearInterval(interval);
+    }
+  }, [deploymentStatus, totalBlinks, animatingBlinks]);
+
+  // Poll Railway for actual deployment status
+  useEffect(() => {
+    if (!result?.railwayProjectId) {
+      // No project ID - assume success (legacy behavior)
+      setDeploymentStatus('success');
+      setShowConfetti(true);
+      return;
+    }
+
+    const pollStatus = async () => {
+      try {
+        const response = await fetch(`/api/deploy/railway-status/${result.railwayProjectId}`);
+        const data = await response.json();
+
+        if (data.success) {
+          setServices(data.services || {});
+
+          if (data.allDeployed) {
+            setDeploymentStatus('success');
+            setShowConfetti(true);
+          } else if (data.hasFailure) {
+            setDeploymentStatus('failed');
+          } else {
+            // Still building - continue polling
+            setPollCount(prev => prev + 1);
+          }
+        }
+      } catch (err) {
+        console.warn('Status poll failed:', err);
+        setPollCount(prev => prev + 1);
+      }
+    };
+
+    // Initial poll
+    pollStatus();
+
+    // Poll every 5 seconds while still deploying
+    const interval = setInterval(() => {
+      if (deploymentStatus === 'polling') {
+        pollStatus();
+      }
+    }, 5000);
+
+    // Timeout after 5 minutes - assume success
+    const timeout = setTimeout(() => {
+      if (deploymentStatus === 'polling') {
+        setDeploymentStatus('success');
+        setShowConfetti(true);
+      }
+    }, 300000);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, [result?.railwayProjectId, deploymentStatus]);
 
   const copyToClipboard = (text, label) => {
     navigator.clipboard.writeText(text);
@@ -4220,11 +4342,207 @@ function DeployCompleteStep({ result, onReset }) {
     return '*'.repeat(pw.length);
   };
 
+  // Service status indicator
+  const ServiceStatus = ({ name, service }) => {
+    const isDeployed = service?.isDeployed;
+    const isBuilding = service?.isBuilding;
+    const isFailed = service?.isFailed;
+
+    const icons = {
+      postgres: '🗄️',
+      backend: '⚙️',
+      frontend: '🌐',
+      admin: '👤'
+    };
+
+    const labels = {
+      postgres: 'Database',
+      backend: 'Backend API',
+      frontend: 'Frontend',
+      admin: 'Admin Panel'
+    };
+
+    return (
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        padding: '12px 16px',
+        background: isDeployed ? 'rgba(34, 197, 94, 0.1)' : isFailed ? 'rgba(239, 68, 68, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+        borderRadius: '8px',
+        border: `1px solid ${isDeployed ? 'rgba(34, 197, 94, 0.3)' : isFailed ? 'rgba(239, 68, 68, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`
+      }}>
+        <span style={{ fontSize: '20px' }}>{icons[name] || '📦'}</span>
+        <span style={{ flex: 1, color: '#e5e7eb', fontSize: '14px' }}>{labels[name] || name}</span>
+        {isDeployed && <span style={{ color: '#22c55e', fontSize: '18px' }}>✓</span>}
+        {isBuilding && <span style={{
+          width: '16px',
+          height: '16px',
+          border: '2px solid #3b82f6',
+          borderTopColor: 'transparent',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }}></span>}
+        {isFailed && <span style={{ color: '#ef4444', fontSize: '18px' }}>✗</span>}
+      </div>
+    );
+  };
+
+  // Still polling - show deployment progress
+  if (deploymentStatus === 'polling') {
+    return (
+      <div style={styles.deployCompleteContainer}>
+        <div style={styles.deployCompleteIcon}>🚀</div>
+        <h1 style={styles.deployCompleteTitle}>Deployment Started!</h1>
+        <p style={styles.deployCompleteSubtitle}>Building your services on Railway...</p>
+
+        {/* Service Status Grid */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: '12px',
+          width: '100%',
+          maxWidth: '500px',
+          margin: '24px auto'
+        }}>
+          <ServiceStatus name="postgres" service={services.postgres} />
+          <ServiceStatus name="backend" service={services.backend} />
+          <ServiceStatus name="frontend" service={services.frontend} />
+          <ServiceStatus name="admin" service={services.admin} />
+        </div>
+
+        <p style={{ color: '#9ca3af', fontSize: '14px', marginTop: '16px' }}>
+          ⏱️ Checking status... ({pollCount * 5}s elapsed)
+        </p>
+
+        <p style={{ color: '#6b7280', fontSize: '13px', marginTop: '8px' }}>
+          This usually takes 2-3 minutes. Your site will be ready soon!
+        </p>
+      </div>
+    );
+  }
+
+  // Deployment failed
+  if (deploymentStatus === 'failed') {
+    return (
+      <div style={styles.deployCompleteContainer}>
+        <div style={styles.deployCompleteIcon}>⚠️</div>
+        <h1 style={styles.deployCompleteTitle}>Deployment Issue</h1>
+        <p style={styles.deployCompleteSubtitle}>One or more services failed to deploy</p>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: '12px',
+          width: '100%',
+          maxWidth: '500px',
+          margin: '24px auto'
+        }}>
+          <ServiceStatus name="postgres" service={services.postgres} />
+          <ServiceStatus name="backend" service={services.backend} />
+          <ServiceStatus name="frontend" service={services.frontend} />
+          <ServiceStatus name="admin" service={services.admin} />
+        </div>
+
+        <p style={{ color: '#9ca3af', fontSize: '14px', marginTop: '16px' }}>
+          Check the Railway dashboard for details:
+        </p>
+        <a
+          href={result?.urls?.railway}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: '#3b82f6', marginTop: '8px', display: 'inline-block' }}
+        >
+          Open Railway Dashboard →
+        </a>
+
+        <button style={{ ...styles.secondaryBtn, marginTop: '24px' }} onClick={onReset}>
+          Start Over
+        </button>
+      </div>
+    );
+  }
+
+  // Success! Show the full success page
   return (
     <div style={styles.deployCompleteContainer}>
+      {/* Confetti effect */}
+      {showConfetti && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          pointerEvents: 'none',
+          zIndex: 1000,
+          overflow: 'hidden'
+        }}>
+          {[...Array(50)].map((_, i) => (
+            <div
+              key={i}
+              style={{
+                position: 'absolute',
+                left: `${Math.random() * 100}%`,
+                top: '-10px',
+                width: '10px',
+                height: '10px',
+                background: ['#22c55e', '#3b82f6', '#eab308', '#ef4444', '#8b5cf6'][Math.floor(Math.random() * 5)],
+                borderRadius: Math.random() > 0.5 ? '50%' : '0',
+                animation: `confetti-fall ${2 + Math.random() * 2}s linear forwards`,
+                animationDelay: `${Math.random() * 2}s`
+              }}
+            />
+          ))}
+        </div>
+      )}
+
       <div style={styles.deployCompleteIcon}>🎉</div>
       <h1 style={styles.deployCompleteTitle}>You're Live!</h1>
       <p style={styles.deployCompleteSubtitle}>Your site is now on the internet</p>
+
+      {/* Blinks Stats Card */}
+      {totalBlinks > 0 && (
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)',
+          border: '1px solid rgba(34, 197, 94, 0.3)',
+          borderRadius: '16px',
+          padding: '24px 32px',
+          margin: '24px auto',
+          maxWidth: '400px',
+          textAlign: 'center'
+        }}>
+          <div style={{ fontSize: '12px', fontWeight: '600', color: '#22c55e', marginBottom: '12px', letterSpacing: '1px' }}>
+            ⚡ GENERATION STATS
+          </div>
+          <div style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '8px' }}>
+            Total Time: {generationTime?.toFixed(1)} seconds
+          </div>
+          <div style={{
+            fontSize: '32px',
+            fontWeight: '700',
+            color: '#ffffff',
+            marginBottom: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '12px'
+          }}>
+            <span style={{ fontSize: '28px' }}>👁️</span>
+            That's only {blinkCount} blinks!
+          </div>
+          <div style={{
+            fontSize: '14px',
+            color: '#9ca3af',
+            fontStyle: 'italic',
+            marginTop: '12px',
+            lineHeight: '1.5'
+          }}>
+            "Traditional dev: 4-6 weeks"<br />
+            "Your site: <span style={{ color: '#22c55e', fontWeight: '600' }}>{totalBlinks} blinks</span>"
+          </div>
+        </div>
+      )}
 
       {/* Main URL */}
       <div style={styles.liveUrlCard}>
@@ -6072,7 +6390,18 @@ styleSheet.textContent = `
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
   }
-  
+
+  @keyframes confetti-fall {
+    0% {
+      transform: translateY(0) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100vh) rotate(720deg);
+      opacity: 0;
+    }
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
   
   body {

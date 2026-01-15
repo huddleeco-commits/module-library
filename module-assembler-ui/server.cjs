@@ -3763,6 +3763,123 @@ app.get('/api/deploy/status', (req, res) => {
   });
 });
 
+// Poll Railway deployment status
+app.get('/api/deploy/railway-status/:projectId', async (req, res) => {
+  const { projectId } = req.params;
+
+  if (!projectId) {
+    return res.status(400).json({ success: false, error: 'Project ID required' });
+  }
+
+  if (!process.env.RAILWAY_TOKEN) {
+    return res.status(500).json({ success: false, error: 'Railway token not configured' });
+  }
+
+  try {
+    // GraphQL query to get all services and their deployment status
+    const query = `
+      query($projectId: String!) {
+        project(id: $projectId) {
+          id
+          name
+          services {
+            edges {
+              node {
+                id
+                name
+                deployments(first: 1) {
+                  edges {
+                    node {
+                      id
+                      status
+                      createdAt
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `;
+
+    const response = await fetch('https://backboard.railway.app/graphql/v2', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.RAILWAY_TOKEN}`
+      },
+      body: JSON.stringify({ query, variables: { projectId } })
+    });
+
+    const data = await response.json();
+
+    if (data.errors) {
+      throw new Error(data.errors[0]?.message || 'Railway API error');
+    }
+
+    const project = data.data?.project;
+    if (!project) {
+      return res.status(404).json({ success: false, error: 'Project not found' });
+    }
+
+    // Map services to their status
+    const services = {};
+    let allDeployed = true;
+    let hasFailure = false;
+
+    for (const edge of (project.services?.edges || [])) {
+      const service = edge.node;
+      const latestDeployment = service.deployments?.edges?.[0]?.node;
+      const status = latestDeployment?.status || 'PENDING';
+
+      // Normalize service names (postgres, backend, frontend, admin)
+      let serviceName = service.name.toLowerCase();
+      if (serviceName.includes('postgres') || serviceName.includes('database')) {
+        serviceName = 'postgres';
+      } else if (serviceName.includes('backend') || serviceName.includes('api')) {
+        serviceName = 'backend';
+      } else if (serviceName.includes('admin')) {
+        serviceName = 'admin';
+      } else if (serviceName.includes('frontend')) {
+        serviceName = 'frontend';
+      }
+
+      services[serviceName] = {
+        name: service.name,
+        status: status,
+        isDeployed: status === 'SUCCESS',
+        isFailed: status === 'FAILED' || status === 'CRASHED',
+        isBuilding: status === 'BUILDING' || status === 'DEPLOYING' || status === 'INITIALIZING'
+      };
+
+      if (status !== 'SUCCESS') {
+        allDeployed = false;
+      }
+      if (status === 'FAILED' || status === 'CRASHED') {
+        hasFailure = true;
+      }
+    }
+
+    res.json({
+      success: true,
+      projectId: project.id,
+      projectName: project.name,
+      services,
+      allDeployed,
+      hasFailure,
+      serviceCount: Object.keys(services).length
+    });
+
+  } catch (error) {
+    console.error('Railway status check failed:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to check Railway status'
+    });
+  }
+});
+
 // ============================================
 // START SERVER
 // ============================================

@@ -967,6 +967,8 @@ async function deployProject(projectPath, projectName, options = {}) {
 }
 
     results.success = true;
+    results.railwayProjectId = railwayProject.id;
+    results.railwayEnvironmentId = environmentId;
     results.urls = {
       frontend: `https://${subdomain}.be1st.io`,
       backend: `https://api.${subdomain}.be1st.io`,
