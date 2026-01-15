@@ -283,6 +283,77 @@ const tables = {
       metadata JSONB DEFAULT '{}',
       created_at TIMESTAMP DEFAULT NOW()
     )
+  `,
+
+  // Staging content (draft edits)
+  staging_content: `
+    CREATE TABLE IF NOT EXISTS staging_content (
+      id SERIAL PRIMARY KEY,
+      selector VARCHAR(500) UNIQUE NOT NULL,
+      element_type VARCHAR(50) NOT NULL,
+      content TEXT,
+      styles JSONB DEFAULT '{}',
+      status VARCHAR(20) DEFAULT 'draft',
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    )
+  `,
+
+  // Production content (published overrides)
+  production_content: `
+    CREATE TABLE IF NOT EXISTS production_content (
+      id SERIAL PRIMARY KEY,
+      selector VARCHAR(500) UNIQUE NOT NULL,
+      element_type VARCHAR(50) NOT NULL,
+      content TEXT,
+      styles JSONB DEFAULT '{}',
+      published_at TIMESTAMP DEFAULT NOW()
+    )
+  `,
+
+  // Content history (version tracking)
+  content_history: `
+    CREATE TABLE IF NOT EXISTS content_history (
+      id SERIAL PRIMARY KEY,
+      selector VARCHAR(500) NOT NULL,
+      element_type VARCHAR(50) NOT NULL,
+      content TEXT,
+      styles JSONB DEFAULT '{}',
+      action VARCHAR(20) NOT NULL,
+      published_by INTEGER REFERENCES users(id),
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `,
+
+  // Site theme settings
+  site_theme: `
+    CREATE TABLE IF NOT EXISTS site_theme (
+      id SERIAL PRIMARY KEY,
+      theme_name VARCHAR(100) DEFAULT 'default',
+      primary_color VARCHAR(20) DEFAULT '#3B82F6',
+      secondary_color VARCHAR(20) DEFAULT '#10B981',
+      accent_color VARCHAR(20) DEFAULT '#F59E0B',
+      font_family VARCHAR(100) DEFAULT 'Inter',
+      is_draft BOOLEAN DEFAULT true,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    )
+  `,
+
+  // Staging assets (uploaded images)
+  staging_assets: `
+    CREATE TABLE IF NOT EXISTS staging_assets (
+      id SERIAL PRIMARY KEY,
+      filename VARCHAR(255) NOT NULL,
+      original_name VARCHAR(255),
+      mime_type VARCHAR(100),
+      file_size INTEGER,
+      url TEXT NOT NULL,
+      selector VARCHAR(500),
+      is_draft BOOLEAN DEFAULT true,
+      uploaded_by INTEGER REFERENCES users(id),
+      created_at TIMESTAMP DEFAULT NOW()
+    )
   `
 };
 
@@ -336,7 +407,15 @@ async function setupDatabase() {
       // Analytics
       'CREATE INDEX IF NOT EXISTS idx_analytics_type ON analytics_events(event_type)',
       'CREATE INDEX IF NOT EXISTS idx_analytics_session ON analytics_events(session_id)',
-      'CREATE INDEX IF NOT EXISTS idx_analytics_created ON analytics_events(created_at)'
+      'CREATE INDEX IF NOT EXISTS idx_analytics_created ON analytics_events(created_at)',
+      // Staging content
+      'CREATE INDEX IF NOT EXISTS idx_staging_content_selector ON staging_content(selector)',
+      'CREATE INDEX IF NOT EXISTS idx_staging_content_status ON staging_content(status)',
+      'CREATE INDEX IF NOT EXISTS idx_production_content_selector ON production_content(selector)',
+      'CREATE INDEX IF NOT EXISTS idx_content_history_selector ON content_history(selector)',
+      'CREATE INDEX IF NOT EXISTS idx_content_history_created ON content_history(created_at)',
+      'CREATE INDEX IF NOT EXISTS idx_staging_assets_selector ON staging_assets(selector)',
+      'CREATE INDEX IF NOT EXISTS idx_staging_assets_draft ON staging_assets(is_draft)'
     ];
 
     for (const idx of indexes) {
