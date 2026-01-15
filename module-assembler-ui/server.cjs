@@ -13,6 +13,16 @@ const cors = require('cors');
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const { body, validationResult } = require('express-validator');
+
+// Validation error handler middleware
+const handleValidationErrors = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ success: false, errors: errors.array() });
+  }
+  next();
+};
 
 // Industry Layout System
 const { INDUSTRY_LAYOUTS, buildLayoutContext, getLayoutConfig } = require('./config/industry-layouts.cjs');
@@ -406,6 +416,51 @@ const INDUSTRY_PRESETS = {
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+// ============================================
+// PASSWORD VALIDATION ENDPOINTS
+// ============================================
+// Validate main access password
+app.post('/api/auth/validate',
+  body('password').isString().notEmpty().withMessage('Password is required'),
+  handleValidationErrors,
+  (req, res) => {
+    const { password } = req.body;
+    const adminPassword = process.env.BLINK_ADMIN_PASSWORD;
+
+    if (!adminPassword) {
+      console.error('❌ BLINK_ADMIN_PASSWORD not configured');
+      return res.status(500).json({ success: false, error: 'Server configuration error' });
+    }
+
+    if (password === adminPassword) {
+      res.json({ success: true });
+    } else {
+      res.status(401).json({ success: false, error: 'Invalid password' });
+    }
+  }
+);
+
+// Validate developer access password
+app.post('/api/auth/validate-dev',
+  body('password').isString().notEmpty().withMessage('Password is required'),
+  handleValidationErrors,
+  (req, res) => {
+    const { password } = req.body;
+    const devPassword = process.env.BLINK_DEV_PASSWORD;
+
+    if (!devPassword) {
+      console.error('❌ BLINK_DEV_PASSWORD not configured');
+      return res.status(500).json({ success: false, error: 'Server configuration error' });
+    }
+
+    if (password === devPassword) {
+      res.json({ success: true });
+    } else {
+      res.status(401).json({ success: false, error: 'Invalid password' });
+    }
+  }
+);
 
 // Get bundles
 app.get('/api/bundles', (req, res) => {
@@ -1855,6 +1910,29 @@ INDUSTRY: ${industry.name || 'Business'}
 VIBE: ${industry.vibe || 'Unique and modern'}
 ${rebuildContext}${inspiredContext}${assetsContext}${extraDetailsContext}${layoutContext}
 ══════════════════════════════════════════════════════════════
+CRITICAL: INDUSTRY-SPECIFIC DESIGN - NOT A GENERIC TEMPLATE!
+══════════════════════════════════════════════════════════════
+DO NOT use the same layout structure for every industry. A bowling alley should look COMPLETELY DIFFERENT from a law firm.
+
+LAYOUT VARIATION RULES:
+1. READ the industry guidance below and FOLLOW IT - each industry has specific section orders and emphasis.
+2. VARY the section structure based on what matters most to THIS business type:
+   - Entertainment venues: Fun first! Bold colors, large booking CTAs, party packages prominent
+   - Professional services: Trust first! Credentials, testimonials, case studies prominent
+   - Restaurants: Menu first! Food imagery, reservation CTA, ambiance gallery
+   - Fitness: Motivation first! Action imagery, class schedules, membership comparisons
+   - Retail: Products first! Large product grids, shopping CTAs, featured items
+
+3. DIFFERENT industries need DIFFERENT hero treatments:
+   - Fun venues: Neon effects, bold headlines, animated elements, video backgrounds
+   - Professionals: Clean, minimal, trust-focused, subtle imagery
+   - Restaurants: Full-bleed food photography, warm overlays
+   - Fitness: Dynamic action shots, dark/dramatic, motivational text
+   - Retail: Product-focused, clean grids, shopping-oriented
+
+4. SECTION ORDER should vary by industry - don't always do Hero → About → Services → Contact
+
+══════════════════════════════════════════════════════════════
 CORE VISUAL ARCHETYPE: ${selectedArchetype}
 ══════════════════════════════════════════════════════════════
 
@@ -1912,6 +1990,21 @@ EXAMPLE:
 
 TECHNICAL RULES (MUST FOLLOW):
 1. Use inline styles ONLY: style={{ }} - NO className or Tailwind.
+
+   CRITICAL STYLE SYNTAX - FOLLOW EXACTLY:
+   ✅ CORRECT: opacity: 0.7 (number, no quotes)
+   ✅ CORRECT: fontSize: 16 (number, no quotes)
+   ✅ CORRECT: fontSize: '16px' (string WITH quotes on BOTH sides)
+   ✅ CORRECT: color: '#ffffff' (string WITH quotes on BOTH sides)
+   ✅ CORRECT: padding: '20px 40px' (string WITH quotes on BOTH sides)
+
+   ❌ WRONG: opacity: 0.7' (trailing quote with no opening quote)
+   ❌ WRONG: fontSize: 16' (trailing quote on a number)
+   ❌ WRONG: color: #ffffff (missing quotes around hex color)
+   ❌ WRONG: padding: 20px 40px (missing quotes around CSS value)
+
+   Rule: Numbers without units = no quotes. Anything with units or special chars = quotes on BOTH sides.
+
 2. Use Lucide icons: import { IconName } from 'lucide-react'.
    VALID ICONS (use ONLY these): ArrowRight, ArrowLeft, ArrowUp, ArrowDown, Check, X, Menu,
    ChevronRight, ChevronLeft, ChevronDown, ChevronUp, Plus, Minus, Search, Filter,
@@ -1978,7 +2071,8 @@ TYPOGRAPHY: Mix of serif (menu feel) and clean sans-serif. Can be more decorativ
 COLORS: Warm tones - burgundy, gold, cream, forest green. Earthy palettes.
 IMAGERY: High-quality food photos, interior shots, chef at work. Real Unsplash food images.
 LAYOUT PATTERNS: Magazine-style, image-heavy, overlapping elements.
-SECTIONS: Featured dishes, chef story, ambiance gallery, reservation CTA, location/hours.`,
+SECTIONS: Featured dishes with photos, chef story, ambiance gallery, reservation CTA prominently placed, location/hours sticky.
+UNIQUE: Menu should be THE STAR - consider tabbed menu categories, hoverable dish cards, or a visual menu grid.`,
 
     'SaaS / B2B Platform': `
 STYLE: Modern, clean, innovative, trustworthy
@@ -2005,7 +2099,132 @@ TYPOGRAPHY: Bold, attention-grabbing headlines. Clean body text.
 COLORS: Brand-dependent but high contrast CTAs. Sale/promo colors (red, orange).
 IMAGERY: Product photography, lifestyle shots, user-generated content style.
 LAYOUT PATTERNS: Grid-heavy, card-based products, sticky CTAs, urgency elements.
-SECTIONS: Featured products, categories, bestsellers, reviews, trust badges, newsletter signup.`,
+SECTIONS: Featured products grid, category tiles, bestsellers carousel, reviews with stars, trust badges, newsletter signup.
+UNIQUE: Product showcase is KING - use large image cards, hover effects, quick-view patterns.`,
+
+    // ENTERTAINMENT & FUN VENUES
+    'Entertainment': `
+STYLE: Bold, playful, energetic, FUN - this is NOT a corporate site!
+HERO: Large action imagery, neon/glow effects, animated elements, video backgrounds work great.
+TYPOGRAPHY: Bold, chunky fonts. Can be playful/quirky. Large impactful headlines.
+COLORS: Bright, bold colors - neon pink, electric blue, bright orange, lime green. Dark backgrounds with glowing accents.
+IMAGERY: People having fun, action shots, neon lights, bowling pins flying, arcade games, celebrations.
+LAYOUT PATTERNS: Asymmetric, overlapping elements, floating cards, gamified UI elements, progress bars, achievement badges.
+SECTIONS: "What's On" with large event cards, pricing/packages with visual comparisons, photo gallery mosaic, party booking CTA (BIG and bold), hours with fun icons.
+UNIQUE: Make it feel like an EXPERIENCE - use hover animations, playful icons, maybe even a mini-game element or leaderboard teaser.`,
+
+    'Bowling Alley': `
+STYLE: Retro-fun meets modern, neon glow, energetic party vibe
+HERO: Bowling action shot with neon overlay effects, lanes lit up, pins flying. Video loop of strikes.
+TYPOGRAPHY: Bold, chunky, retro-inspired fonts. Think arcade vibes. Glowing text effects.
+COLORS: Neon pink, electric blue, black backgrounds, glowing orange accents. Retro color palette.
+IMAGERY: Glowing lanes, pins exploding, people celebrating strikes, cosmic bowling atmosphere.
+LAYOUT PATTERNS: Floating neon-bordered cards, asymmetric grids, gamified elements like score displays.
+SECTIONS: "Book Your Lane" CTA front-and-center, party packages with fun illustrations, cosmic bowling showcase, league info with leaderboard style, arcade/bar area highlight, birthday party section with confetti.
+UNIQUE: Add gamification - maybe a "Strike Counter" AnimatedCounter, glow effects on buttons, retro arcade styling. Make visitors WANT to bowl!`,
+
+    'Arcade': `
+STYLE: Retro gaming, pixel art vibes, neon, 80s throwback with modern twist
+HERO: Arcade cabinet imagery, pixel art elements, neon grids, controller icons.
+TYPOGRAPHY: Pixel fonts for headers, retro gaming typography, 8-bit style numbers.
+COLORS: Neon purple, hot pink, cyan, black backgrounds, CRT scan line effects.
+IMAGERY: Arcade cabinets, joysticks, tokens, high score screens, multiplayer action.
+LAYOUT PATTERNS: Pixel-bordered cards, CRT monitor styled sections, high-score table layouts.
+SECTIONS: Game showcase grid, token/credit packages, party room booking, high scores leaderboard, birthday packages.
+UNIQUE: Add score-like AnimatedCounters, pixel art icons, maybe a fake "INSERT COIN" button.`,
+
+    // FITNESS & WELLNESS
+    'Fitness': `
+STYLE: High-energy, motivational, powerful, action-oriented
+HERO: Dynamic action shots - people mid-workout, weights in motion, intense focus. Dark/dramatic.
+TYPOGRAPHY: Bold, strong, condensed fonts. IMPACT. All-caps for key headlines.
+COLORS: Dark backgrounds (black, charcoal), bold accent (red, orange, electric blue), high contrast.
+IMAGERY: Athletes in action, gym equipment, sweat and determination, transformation photos.
+LAYOUT PATTERNS: Strong geometric shapes, diagonal lines, bold dividers, before/after layouts.
+SECTIONS: Class schedule (prominent, interactive if possible), membership tiers as bold comparison cards, trainer profiles with stats, transformation gallery, free trial CTA.
+UNIQUE: Make it MOTIVATING - use strong action verbs, progress-style layouts, maybe countdown timers for challenges.`,
+
+    'Gym': `
+STYLE: Powerful, results-focused, community-driven, no-nonsense
+HERO: Weight room action, people pushing limits, dramatic lighting on equipment.
+TYPOGRAPHY: Bold condensed sans-serif, industrial feel, strong headlines.
+COLORS: Black, dark gray, red or orange accents, metallic touches.
+IMAGERY: Free weights, cable machines, group classes in action, focused athletes.
+LAYOUT PATTERNS: Grid-based equipment/class showcase, membership comparison tables, strong geometric sections.
+SECTIONS: "Join Now" prominent CTA, membership tiers with clear pricing, class schedule table/tabs, trainer team, equipment showcase, testimonial transformations.
+UNIQUE: Show the RESULTS - before/after transformations, member stats, community achievements.`,
+
+    'Yoga Studio': `
+STYLE: Calm, serene, mindful, balanced, natural
+HERO: Peaceful poses, natural light, plants, minimalist space. Soft, dreamy.
+TYPOGRAPHY: Light, airy fonts. Thin weights. Generous letter-spacing. Lowercase feels right.
+COLORS: Soft sage green, dusty rose, cream, warm white, terracotta, natural tones.
+IMAGERY: Yoga poses in beautiful spaces, nature elements, plants, morning light, meditation.
+LAYOUT PATTERNS: Lots of whitespace, organic shapes, flowing curves, asymmetric balance.
+SECTIONS: Class schedule with easy-to-read times, instructor profiles with philosophy, workshop/retreat highlights, pricing as simple cards, new student offer.
+UNIQUE: Breathe CALM into the design - gentle animations, flowing transitions, peaceful imagery.`,
+
+    // PROFESSIONAL SERVICES
+    'Professional Services': `
+STYLE: Trustworthy, credible, sophisticated, results-oriented
+HERO: Clean, minimal, text-focused. Abstract imagery or subtle patterns. No cheesy stock photos.
+TYPOGRAPHY: Professional serif or clean sans-serif. Traditional feels trustworthy.
+COLORS: Navy, charcoal, white, gold/bronze accents. Conservative palette.
+IMAGERY: Abstract, city skylines, handshakes (tasteful), office environments, success imagery.
+LAYOUT PATTERNS: Clean grids, generous whitespace, editorial layouts, credential showcases.
+SECTIONS: Services overview, credentials/certifications, case studies or results stats, team bios, testimonials from named clients, consultation CTA.
+UNIQUE: TRUST is everything - show certifications, years in business, client logos, specific results numbers.`,
+
+    'Consulting': `
+STYLE: Strategic, intellectual, results-driven, premium
+HERO: Minimal, sophisticated. Data visualization elements, abstract strategy imagery.
+TYPOGRAPHY: Clean, modern sans-serif. Professional but not stuffy.
+COLORS: Deep blues, white, subtle gold accents, muted professional palette.
+IMAGERY: Abstract strategy visuals, charts/graphs (stylized), meeting rooms, city views.
+LAYOUT PATTERNS: Case study cards, results metrics prominently displayed, process timelines.
+SECTIONS: Expertise areas, methodology/process steps, case studies with metrics, team credentials, client logos, discovery call CTA.
+UNIQUE: Show EXPERTISE and RESULTS - use AnimatedCounters for client results, showcase methodology.`,
+
+    'Accounting': `
+STYLE: Precise, trustworthy, organized, approachable
+HERO: Clean, professional, maybe abstract financial imagery or clean office.
+TYPOGRAPHY: Clean, highly readable. Numbers should be prominent and well-designed.
+COLORS: Blues, greens (money), white, conservative accents.
+IMAGERY: Abstract financial, organized documents, calculators, professional settings.
+LAYOUT PATTERNS: Clean service grids, pricing tables, credential badges, organized information.
+SECTIONS: Services (tax, bookkeeping, advisory), credentials/certifications, about the team, client testimonials, free consultation CTA, deadline reminders.
+UNIQUE: Emphasize TRUST and ACCURACY - certifications prominent, years experience, client count.`,
+
+    // TRADES & HOME SERVICES
+    'Home Services': `
+STYLE: Reliable, local, trustworthy, urgent-friendly
+HERO: Before/after project photos, workers in action, completed work showcase.
+TYPOGRAPHY: Bold, clear, easy to read. Phone numbers LARGE.
+COLORS: Blues, oranges, greens - trustworthy trade colors. High contrast for CTAs.
+IMAGERY: Completed projects, uniformed workers, tools, happy homeowners, before/after.
+LAYOUT PATTERNS: Service cards with icons, trust badges prominent, quote forms accessible.
+SECTIONS: Services grid with icons, service areas map, trust badges (licensed, insured, bonded), reviews carousel, FREE ESTIMATE button everywhere, emergency service callout.
+UNIQUE: Make CALLING/BOOKING easy - phone number in header, quote forms prominent, urgency messaging.`,
+
+    'Plumbing': `
+STYLE: Emergency-ready, trustworthy, local, fast response
+HERO: Professional plumber at work, or clean bathroom result. Clear "CALL NOW" messaging.
+TYPOGRAPHY: Bold, urgent, phone numbers prominent. Clear service headlines.
+COLORS: Blues (water), white, orange/red for emergency CTAs.
+IMAGERY: Professional work, tools, fixtures, happy homeowners, before/after.
+LAYOUT PATTERNS: Service icons grid, emergency banner, trust badges, quick quote form.
+SECTIONS: Emergency services highlighted, service list, service areas, trust badges, reviews, call-to-action with phone number HUGE.
+UNIQUE: EMERGENCY messaging prominent - "24/7 Service", "Fast Response", "Same Day Service".`,
+
+    'Landscaping': `
+STYLE: Natural, transformative, seasonal, curb appeal focused
+HERO: Beautiful completed landscape, dramatic before/after, lush greenery.
+TYPOGRAPHY: Clean, natural feel. Can be slightly organic/earthy.
+COLORS: Greens, browns, earth tones, with clean white backgrounds.
+IMAGERY: Stunning landscaping projects, seasonal variety, before/after transformations, happy families in yards.
+LAYOUT PATTERNS: Project gallery mosaic, seasonal services, before/after sliders.
+SECTIONS: Services by season, project gallery (large images), design consultation offer, maintenance packages, testimonials with project photos.
+UNIQUE: Show TRANSFORMATIONS - before/after comparisons, gallery of best work, seasonal tips.`,
 
     'default': `
 STYLE: Professional, modern, trustworthy
@@ -2017,7 +2236,52 @@ LAYOUT PATTERNS: Standard sections with clear visual breaks
 SECTIONS: Hero, features/services, about snippet, testimonials, CTA`
   };
 
-  return guidance[industryName] || guidance['default'];
+  // Try exact match first, then partial match
+  if (guidance[industryName]) {
+    return guidance[industryName];
+  }
+
+  // Try partial matching for broader categories
+  const lowerName = (industryName || '').toLowerCase();
+
+  if (lowerName.includes('bowl') || lowerName.includes('arcade') || lowerName.includes('entertainment') || lowerName.includes('fun') || lowerName.includes('laser') || lowerName.includes('trampoline') || lowerName.includes('go-kart') || lowerName.includes('mini golf')) {
+    return guidance['Entertainment'];
+  }
+  if (lowerName.includes('gym') || lowerName.includes('fitness') || lowerName.includes('crossfit') || lowerName.includes('workout')) {
+    return guidance['Fitness'];
+  }
+  if (lowerName.includes('yoga') || lowerName.includes('pilates') || lowerName.includes('meditation')) {
+    return guidance['Yoga Studio'];
+  }
+  if (lowerName.includes('restaurant') || lowerName.includes('food') || lowerName.includes('dining') || lowerName.includes('cafe') || lowerName.includes('bistro')) {
+    return guidance['Restaurant / Food Service'];
+  }
+  if (lowerName.includes('law') || lowerName.includes('legal') || lowerName.includes('attorney')) {
+    return guidance['Law Firm'];
+  }
+  if (lowerName.includes('consult') || lowerName.includes('advisory')) {
+    return guidance['Consulting'];
+  }
+  if (lowerName.includes('account') || lowerName.includes('tax') || lowerName.includes('cpa') || lowerName.includes('bookkeep')) {
+    return guidance['Accounting'];
+  }
+  if (lowerName.includes('plumb') || lowerName.includes('hvac') || lowerName.includes('electric') || lowerName.includes('roof')) {
+    return guidance['Home Services'];
+  }
+  if (lowerName.includes('landscap') || lowerName.includes('lawn') || lowerName.includes('garden')) {
+    return guidance['Landscaping'];
+  }
+  if (lowerName.includes('health') || lowerName.includes('medical') || lowerName.includes('clinic') || lowerName.includes('dental')) {
+    return guidance['Healthcare / Medical'];
+  }
+  if (lowerName.includes('shop') || lowerName.includes('store') || lowerName.includes('retail') || lowerName.includes('ecommerce') || lowerName.includes('boutique')) {
+    return guidance['E-Commerce / Retail'];
+  }
+  if (lowerName.includes('saas') || lowerName.includes('software') || lowerName.includes('platform') || lowerName.includes('app') || lowerName.includes('tech')) {
+    return guidance['SaaS / B2B Platform'];
+  }
+
+  return guidance['default'];
 }
 
 function getPageRequirements(pageId) {
@@ -2130,10 +2394,16 @@ ${existingSiteData?.pageContent?.headlines?.slice(0, 6).join(' | ') || 'Business
 
 RULES:
 - Inline styles (style={{ }}) - NO Tailwind
-- Lucide React icons - NO emojis  
+- Lucide React icons - NO emojis
 - NO header/footer - App.jsx handles those
 - <Link> from react-router-dom
 - USE their image URLs in img tags
+
+CRITICAL STYLE SYNTAX:
+✅ opacity: 0.7 (number, no quotes)
+✅ fontSize: '16px' (string with quotes BOTH sides)
+❌ NEVER: opacity: 0.7' (trailing quote without opening)
+Rule: Numbers alone = no quotes. Values with units = quotes on BOTH sides.
 
 ${getEnhancePageInstructions(pageId, existingSiteData)}
 
@@ -2489,12 +2759,16 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '20px 48px',
+    padding: '16px 24px',
     background: '#ffffff',
     borderBottom: '1px solid rgba(10, 22, 40, 0.1)',
-    position: 'sticky',
+    position: 'fixed',
     top: 0,
-    zIndex: 100,
+    left: 0,
+    right: 0,
+    width: '100%',
+    zIndex: 1000,
+    boxSizing: 'border-box',
   },
   navBrand: {
     textDecoration: 'none',
@@ -2529,23 +2803,26 @@ const styles = {
     border: 'none',
     color: '${colors.text}',
     cursor: 'pointer',
-    padding: '8px',
+    padding: '12px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    minWidth: '48px',
+    minHeight: '48px',
+    marginRight: '-12px',
   },
   mobileMenuOverlay: {
     position: 'fixed',
-    top: 0,
+    top: '60px',
     left: 0,
     right: 0,
     bottom: 0,
     background: 'rgba(0,0,0,0.5)',
-    zIndex: 98,
+    zIndex: 999,
   },
   mobileMenu: {
     position: 'fixed',
-    top: '70px',
+    top: '60px',
     left: 0,
     right: 0,
     background: '#ffffff',
@@ -2553,17 +2830,22 @@ const styles = {
     padding: '16px 24px',
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px',
-    zIndex: 99,
-    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+    gap: '8px',
+    zIndex: 999,
+    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+    maxHeight: 'calc(100vh - 60px)',
+    overflowY: 'auto',
   },
   mobileNavLink: {
     color: '${colors.text}',
     textDecoration: 'none',
     fontSize: '16px',
     fontWeight: '500',
-    padding: '12px 0',
-    borderBottom: '1px solid rgba(0,0,0,0.05)',
+    padding: '16px 0',
+    borderBottom: '1px solid rgba(0,0,0,0.08)',
+    display: 'block',
+    minHeight: '48px',
+    lineHeight: '16px',
   },
   mobileAuthButtons: {
     paddingTop: '16px',
@@ -2571,6 +2853,7 @@ const styles = {
   },${authStyles}
   main: {
     flex: 1,
+    paddingTop: '60px',
   },
   footer: {
     padding: '40px 48px',
