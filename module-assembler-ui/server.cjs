@@ -1586,6 +1586,141 @@ console.log(`   ⏱️ Total generation time: ${((Date.now() - startTime) / 1000
 // PROMPT BUILDERS - Use JSON Config
 // ============================================
 
+/**
+ * Extract statistics from business description text
+ * Parses numbers and context to provide realistic stats for the AI
+ */
+function extractBusinessStats(businessText, industryName) {
+  if (!businessText) {
+    return generateDefaultStats(industryName);
+  }
+
+  const stats = [];
+  const text = businessText.toLowerCase();
+
+  // Pattern matchers for common stat phrases
+  const patterns = [
+    // Years of experience
+    { regex: /(\d+)\+?\s*(?:years?|yrs?)(?:\s+(?:of\s+)?(?:experience|in business|combined))?/gi, label: 'Years Experience', suffix: '+ Years' },
+    { regex: /(?:since|established|founded|opened)\s*(?:in\s+)?(\d{4})/gi, type: 'year', label: 'Years in Business', suffix: '+ Years' },
+    { regex: /(\d+)\+?\s*(?:years?|yrs?)\s*(?:combined|of combined)/gi, label: 'Combined Experience', suffix: '+ Years' },
+
+    // Reviews and ratings
+    { regex: /(\d+)\+?\s*(?:5-star|five star|★+)\s*reviews?/gi, label: 'Reviews', suffix: '+ 5-Star Reviews' },
+    { regex: /(\d+)\+?\s*reviews?/gi, label: 'Reviews', suffix: '+ Reviews' },
+    { regex: /(\d+(?:\.\d+)?)\s*(?:star|★)\s*(?:rating|average)/gi, label: 'Rating', suffix: ' Stars' },
+
+    // Customers/Clients
+    { regex: /(\d+(?:,\d{3})*)\+?\s*(?:happy\s+)?(?:customers?|clients?|families|patients?)/gi, label: 'Customers', suffix: '+ Happy Customers' },
+    { regex: /served\s+(?:over\s+)?(\d+(?:,\d{3})*)\+?/gi, label: 'Customers Served', suffix: '+ Served' },
+
+    // Projects/Jobs
+    { regex: /(\d+(?:,\d{3})*)\+?\s*(?:projects?|jobs?|homes?|cases?|installations?)/gi, label: 'Projects', suffix: '+ Projects' },
+    { regex: /completed\s+(?:over\s+)?(\d+(?:,\d{3})*)\+?/gi, label: 'Completed', suffix: '+ Completed' },
+
+    // Team
+    { regex: /(\d+)\+?\s*(?:team\s+members?|employees?|staff|professionals?|experts?|technicians?)/gi, label: 'Team', suffix: '+ Team Members' },
+
+    // Satisfaction
+    { regex: /(\d+)%\s*(?:satisfaction|success|retention|customer\s+satisfaction)/gi, label: 'Satisfaction', suffix: '% Satisfaction' },
+
+    // Awards
+    { regex: /(\d+)\+?\s*awards?/gi, label: 'Awards', suffix: '+ Awards' },
+
+    // Locations
+    { regex: /(\d+)\+?\s*locations?/gi, label: 'Locations', suffix: '+ Locations' },
+
+    // Products/Services
+    { regex: /(\d+)\+?\s*(?:products?|services?|menu items?)/gi, label: 'Products', suffix: '+ Products' }
+  ];
+
+  const foundStats = {};
+
+  for (const pattern of patterns) {
+    const matches = [...businessText.matchAll(pattern.regex)];
+    for (const match of matches) {
+      let value = match[1];
+
+      // Handle "since YEAR" pattern
+      if (pattern.type === 'year') {
+        const year = parseInt(value);
+        const currentYear = new Date().getFullYear();
+        value = currentYear - year;
+      } else {
+        // Remove commas and parse
+        value = parseInt(value.replace(/,/g, ''));
+      }
+
+      if (value > 0 && !foundStats[pattern.label]) {
+        foundStats[pattern.label] = { value, suffix: pattern.suffix };
+      }
+    }
+  }
+
+  // Build the stats context string
+  if (Object.keys(foundStats).length > 0) {
+    let result = 'EXTRACTED STATS FROM BUSINESS DESCRIPTION (USE THESE!):\n';
+    for (const [label, data] of Object.entries(foundStats)) {
+      result += `- ${label}: ${data.value}${data.suffix}\n`;
+      stats.push(`<AnimatedCounter end={${data.value}} suffix="${data.suffix}" duration={2000} />`);
+    }
+    result += '\nUSE THESE EXACT NUMBERS in AnimatedCounter components!\n';
+    return result;
+  }
+
+  // No stats found - generate industry-appropriate defaults
+  return generateDefaultStats(industryName);
+}
+
+/**
+ * Generate realistic default stats based on industry
+ */
+function generateDefaultStats(industryName) {
+  const industry = (industryName || '').toLowerCase();
+
+  let defaults = {
+    years: 15,
+    customers: 1000,
+    satisfaction: 98,
+    extra: null
+  };
+
+  // Industry-specific defaults
+  if (industry.includes('law') || industry.includes('legal')) {
+    defaults = { years: 25, customers: 500, satisfaction: 98, extra: { label: 'Cases Won', value: 250 } };
+  } else if (industry.includes('restaurant') || industry.includes('food')) {
+    defaults = { years: 10, customers: 5000, satisfaction: 97, extra: { label: 'Dishes Served', value: 50000 } };
+  } else if (industry.includes('fitness') || industry.includes('gym')) {
+    defaults = { years: 8, customers: 2000, satisfaction: 96, extra: { label: 'Transformations', value: 500 } };
+  } else if (industry.includes('medical') || industry.includes('health') || industry.includes('dental')) {
+    defaults = { years: 20, customers: 3000, satisfaction: 99, extra: { label: 'Procedures', value: 10000 } };
+  } else if (industry.includes('plumb') || industry.includes('hvac') || industry.includes('electric')) {
+    defaults = { years: 15, customers: 2500, satisfaction: 98, extra: { label: 'Jobs Completed', value: 5000 } };
+  } else if (industry.includes('bowl') || industry.includes('arcade') || industry.includes('entertainment')) {
+    defaults = { years: 12, customers: 10000, satisfaction: 95, extra: { label: 'Parties Hosted', value: 2000 } };
+  } else if (industry.includes('retail') || industry.includes('shop')) {
+    defaults = { years: 10, customers: 5000, satisfaction: 96, extra: { label: 'Products', value: 500 } };
+  } else if (industry.includes('consult') || industry.includes('professional')) {
+    defaults = { years: 20, customers: 300, satisfaction: 99, extra: { label: 'Projects', value: 150 } };
+  }
+
+  let result = `NO SPECIFIC STATS FOUND - USE THESE REALISTIC DEFAULTS FOR ${industryName || 'BUSINESS'}:
+- Years in Business: ${defaults.years}+ Years
+- Customers Served: ${defaults.customers}+ Happy Customers
+- Satisfaction Rate: ${defaults.satisfaction}%+ Satisfaction`;
+
+  if (defaults.extra) {
+    result += `\n- ${defaults.extra.label}: ${defaults.extra.value}+`;
+  }
+
+  result += `
+
+IMPORTANT: These are MINIMUM realistic values. Feel free to adjust slightly higher.
+NEVER use 0 or placeholder text like "X" - always use real numbers!`;
+
+  return result;
+}
+
 // Build context from existing site (REBUILD mode)
 function buildRebuildContext(existingSite) {
   if (!existingSite) return '';
@@ -1903,12 +2038,34 @@ Replace any standard elements with the user's specified alternatives.
   const selectedLayoutKey = description.layoutKey || null;
   const layoutContext = industryLayoutKey ? buildLayoutContext(industryLayoutKey, selectedLayoutKey) : '';
 
+  // Extract stats from business description
+  const businessText = description.text || '';
+  const extractedStats = extractBusinessStats(businessText, industry.name);
+
   return `You are a high-end UI/UX Architect. Create a stunning, unique ${pageId} page.
 
 BUSINESS: ${description.text || 'A professional business'}
 INDUSTRY: ${industry.name || 'Business'}
 VIBE: ${industry.vibe || 'Unique and modern'}
 ${rebuildContext}${inspiredContext}${assetsContext}${extraDetailsContext}${layoutContext}
+══════════════════════════════════════════════════════════════
+CRITICAL: STATISTICS & NUMBERS - NEVER USE ZEROS!
+══════════════════════════════════════════════════════════════
+${extractedStats}
+
+STAT RULES:
+1. NEVER show "0" or "0+" in any statistic - this looks broken
+2. ALWAYS use the numbers extracted above from the business description
+3. If a stat category has no extracted number, use these REALISTIC MINIMUMS:
+   - Years in business: 5+ (or 10+, 15+, 20+ based on industry maturity)
+   - Customers served: 500+ (or 1000+, 5000+ based on business size)
+   - Projects completed: 100+ (or 250+, 500+)
+   - Team members: 10+ (or 25+, 50+)
+   - Reviews/Testimonials: 100+ (or 200+, 500+)
+   - Satisfaction rate: 95%+ (or 98%+, 99%+)
+4. Match the scale to the business type (local shop vs national chain)
+5. Use AnimatedCounter for ALL stats: <AnimatedCounter end={15} suffix="+ Years" duration={2000} />
+
 ══════════════════════════════════════════════════════════════
 CRITICAL: INDUSTRY-SPECIFIC DESIGN - NOT A GENERIC TEMPLATE!
 ══════════════════════════════════════════════════════════════

@@ -3873,32 +3873,52 @@ const layoutStyles = {
 // GENERATING STEP
 // ============================================
 function GeneratingStep({ steps, currentStep, startTime, projectName, onCancel }) {
-  const [elapsed, setElapsed] = useState(0);
+  const [elapsedMs, setElapsedMs] = useState(0);
 
-  // Update elapsed time every second
+  // Update elapsed time every 100ms for smooth blink counter
   useEffect(() => {
     if (!startTime) return;
     const interval = setInterval(() => {
-      setElapsed(Math.floor((Date.now() - startTime) / 1000));
-    }, 1000);
+      setElapsedMs(Date.now() - startTime);
+    }, 100);
     return () => clearInterval(interval);
   }, [startTime]);
 
+  const elapsedSeconds = elapsedMs / 1000;
+  const blinkCount = Math.floor(elapsedSeconds / 4.5);
+
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+    const secs = (seconds % 60).toFixed(1);
+    return mins > 0 ? `${mins}m ${Math.floor(seconds % 60)}s` : `${secs}s`;
   };
 
   // Estimate: ~15 seconds per step
   const estimatedTotal = steps.length * 15;
-  const remaining = Math.max(0, estimatedTotal - elapsed);
+  const remaining = Math.max(0, estimatedTotal - elapsedSeconds);
   const progress = steps.length > 0 ? ((currentStep + 1) / steps.length) * 100 : 0;
 
   return (
     <div style={styles.generatingContainer}>
       <div style={styles.generatingIcon}>⚡</div>
-      <h2 style={styles.generatingTitle}>Building {projectName}...</h2>
+      <h2 style={styles.generatingTitle}>Generating your site...</h2>
+
+      {/* Live Blink Counter Card */}
+      <div style={genStepStyles.blinkCard}>
+        <div style={genStepStyles.blinkRow}>
+          <div style={genStepStyles.blinkStat}>
+            <span style={genStepStyles.blinkIcon}>⏱️</span>
+            <span style={genStepStyles.blinkValue}>{formatTime(elapsedSeconds)}</span>
+            <span style={genStepStyles.blinkLabel}>elapsed</span>
+          </div>
+          <div style={genStepStyles.blinkDivider} />
+          <div style={genStepStyles.blinkStat}>
+            <span style={genStepStyles.blinkIcon}>👁️</span>
+            <span style={genStepStyles.blinkValue}>{blinkCount}</span>
+            <span style={genStepStyles.blinkLabel}>{blinkCount === 1 ? 'blink' : 'blinks'}</span>
+          </div>
+        </div>
+      </div>
 
       {/* Step list */}
       <div style={genStepStyles.stepList}>
@@ -3935,7 +3955,7 @@ function GeneratingStep({ steps, currentStep, startTime, projectName, onCancel }
 
       {/* Time display */}
       <div style={genStepStyles.timeRow}>
-        <span style={genStepStyles.elapsed}>Elapsed: {formatTime(elapsed)}</span>
+        <span style={genStepStyles.elapsed}>Building {projectName}...</span>
         <span style={genStepStyles.remaining}>~{formatTime(remaining)} remaining</span>
       </div>
 
@@ -3948,6 +3968,47 @@ function GeneratingStep({ steps, currentStep, startTime, projectName, onCancel }
 }
 
 const genStepStyles = {
+  blinkCard: {
+    background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(34, 197, 94, 0.15) 100%)',
+    border: '1px solid rgba(99, 102, 241, 0.3)',
+    borderRadius: '16px',
+    padding: '20px 32px',
+    marginBottom: '24px',
+    maxWidth: '320px',
+    width: '100%'
+  },
+  blinkRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '24px'
+  },
+  blinkStat: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '4px'
+  },
+  blinkIcon: {
+    fontSize: '24px'
+  },
+  blinkValue: {
+    fontSize: '32px',
+    fontWeight: '700',
+    color: '#fff',
+    fontVariantNumeric: 'tabular-nums'
+  },
+  blinkLabel: {
+    fontSize: '12px',
+    color: '#888',
+    textTransform: 'uppercase',
+    letterSpacing: '1px'
+  },
+  blinkDivider: {
+    width: '1px',
+    height: '60px',
+    background: 'rgba(255,255,255,0.2)'
+  },
   stepList: {
     display: 'flex',
     flexDirection: 'column',
@@ -4011,10 +4072,12 @@ const genStepStyles = {
 // COMPLETE STEP
 // ============================================
 function CompleteStep({ result, projectData, onReset, blinkCount, onDeploy, deployReady }) {
-  const blinkMessage = blinkCount <= 1 
-    ? "Less than a blink! ⚡" 
-    : `Only ${blinkCount} blinks! 👁️`;
-    
+  const blinkMessage = blinkCount <= 1
+    ? "Generated in less than a blink!"
+    : `Your site generated in just ${blinkCount} blinks!`;
+
+  const elapsedSeconds = Math.round((blinkCount || 1) * 4.5);
+
   const handleOpenFolder = async () => {
     try {
       await fetch(`${API_BASE}/api/open-folder`, {
@@ -4046,8 +4109,9 @@ function CompleteStep({ result, projectData, onReset, blinkCount, onDeploy, depl
       <p style={styles.completeSubtitle}>Your website + admin dashboard have been generated</p>
       
       <div style={styles.blinkResult}>
+        <span style={styles.blinkEmoji}>👁️</span>
         {blinkMessage}
-        <span style={styles.blinkSubtext}>That's roughly {((blinkCount || 1) * 4)} seconds</span>
+        <span style={styles.blinkSubtext}>~{elapsedSeconds} seconds total</span>
       </div>
       
       <div style={styles.resultCard}>
@@ -5980,6 +6044,10 @@ const styles = {
     fontSize: '13px',
     fontWeight: '400',
     color: '#888',
+  },
+  blinkEmoji: {
+    fontSize: '32px',
+    marginBottom: '8px',
   },
   completeTitle: {
     fontSize: '32px',
