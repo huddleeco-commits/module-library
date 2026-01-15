@@ -1,5 +1,5 @@
 /**
- * Sentry Error Tracking - Backend Configuration
+ * Sentry Error Tracking - Backend Configuration (v10+ API)
  *
  * Captures and reports errors from the Express server.
  * Initialize this FIRST before any other imports in server.cjs
@@ -9,6 +9,8 @@ const Sentry = require('@sentry/node');
 
 const SENTRY_DSN = process.env.SENTRY_DSN_BACKEND || 'https://de5e55821bd5e5480eee0479be445674@o4510709184593920.ingest.us.sentry.io/4510715157872640';
 
+let isInitialized = false;
+
 /**
  * Initialize Sentry for backend error tracking
  */
@@ -16,13 +18,12 @@ function initSentry(app) {
   // Only initialize if we have a DSN and not in test mode
   if (!SENTRY_DSN || process.env.NODE_ENV === 'test') {
     console.log('   ⚠️ Sentry disabled (no DSN or test mode)');
-    return {
-      captureException: () => {},
-      captureMessage: () => {},
-      setUser: () => {},
-      setTag: () => {},
-      setContext: () => {},
-    };
+    return;
+  }
+
+  // Prevent double initialization
+  if (isInitialized) {
+    return;
   }
 
   Sentry.init({
@@ -52,38 +53,62 @@ function initSentry(app) {
     },
   });
 
+  isInitialized = true;
   console.log('   ✅ Sentry initialized (backend)');
-
-  return Sentry;
 }
 
 /**
- * Express error handler middleware for Sentry
+ * Express request handler middleware for Sentry (v10+ compatible)
+ * Add this BEFORE all routes to capture request context
+ */
+function sentryRequestHandler() {
+  return (req, res, next) => {
+    // Add request context to Sentry scope
+    Sentry.withScope((scope) => {
+      scope.setTag('url', req.url);
+      scope.setTag('method', req.method);
+      scope.setExtra('headers', {
+        'user-agent': req.headers['user-agent'],
+        'content-type': req.headers['content-type'],
+      });
+      scope.setExtra('query', req.query);
+    });
+
+    // Add breadcrumb for request
+    Sentry.addBreadcrumb({
+      category: 'http',
+      message: `${req.method} ${req.url}`,
+      level: 'info',
+    });
+
+    next();
+  };
+}
+
+/**
+ * Express error handler middleware for Sentry (v10+ compatible)
  * Add this AFTER all routes but BEFORE your custom error handler
  */
 function sentryErrorHandler() {
-  return Sentry.Handlers.errorHandler({
-    shouldHandleError(error) {
-      // Capture all 4xx and 5xx errors
-      if (error.status >= 400) {
-        return true;
-      }
-      return true;
-    },
-  });
-}
+  return (err, req, res, next) => {
+    // Capture the error with request context
+    Sentry.withScope((scope) => {
+      scope.setTag('url', req.url);
+      scope.setTag('method', req.method);
+      scope.setExtra('body', req.body);
+      scope.setExtra('query', req.query);
+      scope.setExtra('params', req.params);
 
-/**
- * Express request handler middleware for Sentry
- * Add this BEFORE all routes
- */
-function sentryRequestHandler() {
-  return Sentry.Handlers.requestHandler({
-    // Include request data in error reports
-    request: ['headers', 'method', 'url', 'query_string'],
-    // Don't include user data by default (privacy)
-    user: false,
-  });
+      // Set error status
+      if (err.status) {
+        scope.setTag('status_code', err.status);
+      }
+
+      Sentry.captureException(err);
+    });
+
+    next(err);
+  };
 }
 
 /**
@@ -141,7 +166,6 @@ function setUser(user) {
     Sentry.setUser({
       id: user.id,
       email: user.email,
-      // Don't include sensitive data
     });
   } else {
     Sentry.setUser(null);
