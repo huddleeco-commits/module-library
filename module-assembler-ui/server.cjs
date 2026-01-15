@@ -1,13 +1,23 @@
 /**
  * Module Assembler Backend Server
- * 
+ *
  * Express server that provides API endpoints for the assembler UI
  * and executes the actual assembly script.
- * 
+ *
  * Save to: C:\Users\huddl\OneDrive\Desktop\module-library\module-assembler-ui\server.cjs
  */
 
 require('dotenv').config();
+
+// Initialize Sentry FIRST - before any other code
+const {
+  initSentry,
+  sentryRequestHandler,
+  sentryErrorHandler,
+  captureException,
+  addBreadcrumb
+} = require('./lib/sentry.cjs');
+
 const express = require('express');
 const cors = require('cors');
 const { spawn } = require('child_process');
@@ -216,6 +226,12 @@ function buildPrompt(industryKey, layoutKey, selectedEffects) {
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Initialize Sentry error tracking
+initSentry(app);
+
+// Sentry request handler - MUST be first middleware
+app.use(sentryRequestHandler());
 
 // Paths - Environment-based with sensible defaults
 // MODULE_LIBRARY: parent of module-assembler-ui (this file is in module-assembler-ui/)
@@ -4495,6 +4511,49 @@ app.get('/api/deploy/railway-status/:projectId', async (req, res) => {
       error: error.message || 'Failed to check Railway status'
     });
   }
+});
+
+// ============================================
+// SENTRY TEST ENDPOINT (for verification)
+// ============================================
+app.get('/api/sentry-test', (req, res) => {
+  throw new Error('Sentry test error - this is intentional!');
+});
+
+app.post('/api/sentry-test', (req, res) => {
+  const { message } = req.body;
+  captureException(new Error(message || 'Manual test error'), {
+    tags: { type: 'manual-test' },
+    extra: { timestamp: new Date().toISOString() }
+  });
+  res.json({ success: true, message: 'Error sent to Sentry' });
+});
+
+// ============================================
+// SENTRY ERROR HANDLER - Must be AFTER all routes
+// ============================================
+app.use(sentryErrorHandler());
+
+// Global error handler (after Sentry captures the error)
+app.use((err, req, res, next) => {
+  console.error('🔴 Server error:', err.message);
+
+  // Capture to Sentry if not already captured
+  captureException(err, {
+    tags: { handler: 'global-error-handler' },
+    extra: {
+      url: req.url,
+      method: req.method,
+      body: req.body
+    }
+  });
+
+  res.status(err.status || 500).json({
+    success: false,
+    error: process.env.NODE_ENV === 'production'
+      ? 'Internal server error'
+      : err.message
+  });
 });
 
 // ============================================

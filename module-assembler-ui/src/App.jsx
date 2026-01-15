@@ -1,12 +1,13 @@
 /**
  * Module Assembler UI - WordPress-Style Simplicity
- * 
+ *
  * 3 Paths → 1 Customizer → Generate
  * So simple a 5-year-old could use it.
  */
 
 import React, { useState, useEffect } from 'react';
 import { INDUSTRY_LAYOUTS, getLayoutConfig, buildLayoutPromptContext } from '../config/industry-layouts.js';
+import { captureException, addBreadcrumb } from './lib/sentry.js';
 
 const API_BASE = 'http://localhost:3001';
 
@@ -470,8 +471,22 @@ export default function App() {
     } catch (err) {
       if (err.name === 'AbortError') {
         // User cancelled - go back to customize
+        addBreadcrumb('Generation cancelled by user', 'user-action');
         setStep('customize');
       } else {
+        // Capture generation errors to Sentry
+        captureException(err, {
+          tags: {
+            feature: 'generation',
+            industry: projectData.industryKey,
+          },
+          extra: {
+            businessName: projectData.businessName,
+            pages: projectData.selectedPages,
+            step: currentGenerationStep,
+          }
+        });
+
         setError({
           title: 'Generation Failed',
           message: err.message,
@@ -564,8 +579,21 @@ export default function App() {
     } catch (err) {
       if (err.name === 'AbortError') {
         // User cancelled - go back to complete
+        addBreadcrumb('Deployment cancelled by user', 'user-action');
         setStep('complete');
       } else {
+        // Capture deployment errors to Sentry
+        captureException(err, {
+          tags: {
+            feature: 'deployment',
+            projectName: result?.name,
+          },
+          extra: {
+            projectPath: result?.path,
+            businessName: projectData.businessName,
+          }
+        });
+
         setDeployError({
           title: 'Deployment Failed',
           message: err.message,
