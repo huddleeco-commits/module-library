@@ -740,7 +740,13 @@ const TOOL_GENERATORS = {
   'invoice-generator': (config) => generateInvoiceGenerator(config),
   'password-generator': (config) => generatePasswordGenerator(config),
   'countdown': (config) => generateCountdown(config),
-  'word-counter': (config) => generateWordCounter(config)
+  'word-counter': (config) => generateWordCounter(config),
+  'inventory-tracker': (config) => generateInventoryTracker(config),
+  'expense-tracker': (config) => generateExpenseTracker(config),
+  'menu-generator': (config) => generateMenuGenerator(config),
+  'booking-tool': (config) => generateBookingTool(config),
+  'order-tracker': (config) => generateOrderTracker(config),
+  'quote-calculator': (config) => generateQuoteCalculator(config)
 };
 
 // ============================================
@@ -1848,6 +1854,1377 @@ function generateGenericTool(config) {
       document.getElementById('result-value').textContent = output.join(' | ') || 'Calculated!';
       document.getElementById('result').classList.add('visible');
     });
+  </script>
+</body>
+</html>`;
+}
+
+// ============================================
+// INVENTORY TRACKER
+// ============================================
+
+function generateInventoryTracker(config) {
+  const { name, style, colors, branding } = config;
+  const stylePreset = STYLE_PRESETS[style] || STYLE_PRESETS.modern;
+  const css = stylePreset.getCSS(colors);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${name || 'Inventory Tracker'} | ${branding?.businessName || 'Business Tools'}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    ${css}
+
+    .inventory-list {
+      margin-bottom: 24px;
+    }
+    .inventory-item {
+      display: grid;
+      grid-template-columns: 1fr 100px 100px 80px;
+      gap: 12px;
+      margin-bottom: 12px;
+      align-items: center;
+      padding: 12px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+    }
+    .inventory-item .form-input {
+      margin: 0;
+    }
+    .add-item {
+      padding: 12px 16px;
+      background: transparent;
+      border: 1px dashed ${colors.primary}60;
+      color: ${colors.primary};
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+    .add-item:hover {
+      background: ${colors.primary}10;
+      border-style: solid;
+    }
+    .remove-btn {
+      padding: 8px 12px;
+      background: #fee2e2;
+      color: #dc2626;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .stock-low { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); }
+    .stock-ok { background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .summary-card {
+      text-align: center;
+      padding: 16px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+    }
+    .summary-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: ${colors.primary};
+    }
+    .summary-label {
+      font-size: 0.75rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="tool-container">
+    <div class="tool-header">
+      <h1 class="tool-title">${name || 'Inventory Tracker'}</h1>
+      <p class="tool-subtitle">Track your stock levels</p>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Inventory Items</label>
+      <div class="inventory-list" id="inventory-list">
+        <div class="inventory-item">
+          <input type="text" class="form-input" placeholder="Item name" value="Coffee Beans (1lb)">
+          <input type="number" class="form-input" placeholder="Qty" value="24">
+          <input type="number" class="form-input" placeholder="Min" value="10">
+          <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
+        </div>
+        <div class="inventory-item">
+          <input type="text" class="form-input" placeholder="Item name" value="Milk (gal)">
+          <input type="number" class="form-input" placeholder="Qty" value="8">
+          <input type="number" class="form-input" placeholder="Min" value="5">
+          <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
+        </div>
+        <div class="inventory-item">
+          <input type="text" class="form-input" placeholder="Item name" value="Sugar (5lb)">
+          <input type="number" class="form-input" placeholder="Qty" value="3">
+          <input type="number" class="form-input" placeholder="Min" value="4">
+          <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
+        </div>
+      </div>
+      <button type="button" class="add-item" onclick="addItem()">+ Add Item</button>
+    </div>
+
+    <button class="btn-primary" onclick="updateInventory()">Update Inventory</button>
+
+    <div class="result-card visible" id="result">
+      <div class="result-title">Inventory Summary</div>
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="summary-value" id="total-items">3</div>
+          <div class="summary-label">Total Items</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-value" id="low-stock">1</div>
+          <div class="summary-label">Low Stock</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-value" id="total-units">35</div>
+          <div class="summary-label">Total Units</div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="brand-footer">
+      ${branding?.businessName || 'Business'} • Powered by Blink
+    </footer>
+  </div>
+
+  <script>
+    function addItem() {
+      const list = document.getElementById('inventory-list');
+      const item = document.createElement('div');
+      item.className = 'inventory-item';
+      item.innerHTML = \`
+        <input type="text" class="form-input" placeholder="Item name">
+        <input type="number" class="form-input" placeholder="Qty" value="0">
+        <input type="number" class="form-input" placeholder="Min" value="5">
+        <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
+      \`;
+      list.appendChild(item);
+      updateInventory();
+    }
+
+    function removeItem(btn) {
+      const list = document.getElementById('inventory-list');
+      if (list.children.length > 1) {
+        btn.closest('.inventory-item').remove();
+        updateInventory();
+      }
+    }
+
+    function updateInventory() {
+      const items = document.querySelectorAll('.inventory-item');
+      let totalItems = 0;
+      let lowStock = 0;
+      let totalUnits = 0;
+
+      items.forEach(item => {
+        const qty = parseInt(item.querySelectorAll('input')[1].value) || 0;
+        const min = parseInt(item.querySelectorAll('input')[2].value) || 0;
+        const name = item.querySelectorAll('input')[0].value;
+
+        if (name) {
+          totalItems++;
+          totalUnits += qty;
+          if (qty <= min) {
+            lowStock++;
+            item.classList.add('stock-low');
+            item.classList.remove('stock-ok');
+          } else {
+            item.classList.remove('stock-low');
+            item.classList.add('stock-ok');
+          }
+        }
+      });
+
+      document.getElementById('total-items').textContent = totalItems;
+      document.getElementById('low-stock').textContent = lowStock;
+      document.getElementById('total-units').textContent = totalUnits;
+    }
+
+    updateInventory();
+  </script>
+</body>
+</html>`;
+}
+
+// ============================================
+// EXPENSE TRACKER
+// ============================================
+
+function generateExpenseTracker(config) {
+  const { name, style, colors, branding } = config;
+  const stylePreset = STYLE_PRESETS[style] || STYLE_PRESETS.modern;
+  const css = stylePreset.getCSS(colors);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${name || 'Expense Tracker'} | ${branding?.businessName || 'Business Tools'}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    ${css}
+
+    .expense-list {
+      margin-bottom: 24px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .expense-item {
+      display: grid;
+      grid-template-columns: 1fr 120px 100px 60px;
+      gap: 12px;
+      margin-bottom: 12px;
+      align-items: center;
+      padding: 12px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+    }
+    .expense-item .form-input {
+      margin: 0;
+    }
+    .category-select {
+      padding: 12px;
+      border: 1px solid #444;
+      border-radius: 4px;
+      background: #1a1a1a;
+      color: #fff;
+      font-size: 0.9rem;
+    }
+    .add-expense {
+      padding: 12px 16px;
+      background: transparent;
+      border: 1px dashed ${colors.primary}60;
+      color: ${colors.primary};
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+    .add-expense:hover {
+      background: ${colors.primary}10;
+      border-style: solid;
+    }
+    .remove-btn {
+      padding: 8px 12px;
+      background: #fee2e2;
+      color: #dc2626;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .summary-card {
+      text-align: center;
+      padding: 20px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+    }
+    .summary-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: ${colors.primary};
+    }
+    .summary-label {
+      font-size: 0.75rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 4px;
+    }
+    .category-breakdown {
+      margin-top: 20px;
+    }
+    .category-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .category-bar {
+      height: 8px;
+      background: ${colors.primary}30;
+      border-radius: 4px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    .category-fill {
+      height: 100%;
+      background: ${colors.primary};
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="tool-container">
+    <div class="tool-header">
+      <h1 class="tool-title">${name || 'Expense Tracker'}</h1>
+      <p class="tool-subtitle">Track your business expenses</p>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Add Expenses</label>
+      <div class="expense-list" id="expense-list">
+        <div class="expense-item">
+          <input type="text" class="form-input" placeholder="Description" value="Coffee supplies">
+          <select class="category-select">
+            <option value="supplies">Supplies</option>
+            <option value="utilities">Utilities</option>
+            <option value="rent">Rent</option>
+            <option value="payroll">Payroll</option>
+            <option value="marketing">Marketing</option>
+            <option value="other">Other</option>
+          </select>
+          <input type="number" class="form-input" placeholder="$0.00" value="150" step="0.01">
+          <button type="button" class="remove-btn" onclick="removeExpense(this)">×</button>
+        </div>
+        <div class="expense-item">
+          <input type="text" class="form-input" placeholder="Description" value="Electric bill">
+          <select class="category-select">
+            <option value="supplies">Supplies</option>
+            <option value="utilities" selected>Utilities</option>
+            <option value="rent">Rent</option>
+            <option value="payroll">Payroll</option>
+            <option value="marketing">Marketing</option>
+            <option value="other">Other</option>
+          </select>
+          <input type="number" class="form-input" placeholder="$0.00" value="280" step="0.01">
+          <button type="button" class="remove-btn" onclick="removeExpense(this)">×</button>
+        </div>
+      </div>
+      <button type="button" class="add-expense" onclick="addExpense()">+ Add Expense</button>
+    </div>
+
+    <button class="btn-primary" onclick="calculateExpenses()">Calculate Total</button>
+
+    <div class="result-card visible" id="result">
+      <div class="result-title">Expense Summary</div>
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="summary-value" id="total-expenses">$430.00</div>
+          <div class="summary-label">Total Expenses</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-value" id="expense-count">2</div>
+          <div class="summary-label">Transactions</div>
+        </div>
+      </div>
+      <div class="category-breakdown" id="category-breakdown"></div>
+    </div>
+
+    <footer class="brand-footer">
+      ${branding?.businessName || 'Business'} • Powered by Blink
+    </footer>
+  </div>
+
+  <script>
+    function addExpense() {
+      const list = document.getElementById('expense-list');
+      const item = document.createElement('div');
+      item.className = 'expense-item';
+      item.innerHTML = \`
+        <input type="text" class="form-input" placeholder="Description">
+        <select class="category-select">
+          <option value="supplies">Supplies</option>
+          <option value="utilities">Utilities</option>
+          <option value="rent">Rent</option>
+          <option value="payroll">Payroll</option>
+          <option value="marketing">Marketing</option>
+          <option value="other">Other</option>
+        </select>
+        <input type="number" class="form-input" placeholder="$0.00" step="0.01">
+        <button type="button" class="remove-btn" onclick="removeExpense(this)">×</button>
+      \`;
+      list.appendChild(item);
+    }
+
+    function removeExpense(btn) {
+      const list = document.getElementById('expense-list');
+      if (list.children.length > 1) {
+        btn.closest('.expense-item').remove();
+        calculateExpenses();
+      }
+    }
+
+    function calculateExpenses() {
+      const items = document.querySelectorAll('.expense-item');
+      let total = 0;
+      let count = 0;
+      const categories = {};
+
+      items.forEach(item => {
+        const amount = parseFloat(item.querySelector('input[type="number"]').value) || 0;
+        const category = item.querySelector('select').value;
+        const desc = item.querySelector('input[type="text"]').value;
+
+        if (desc && amount > 0) {
+          total += amount;
+          count++;
+          categories[category] = (categories[category] || 0) + amount;
+        }
+      });
+
+      document.getElementById('total-expenses').textContent = '$' + total.toFixed(2);
+      document.getElementById('expense-count').textContent = count;
+
+      // Category breakdown
+      const breakdown = document.getElementById('category-breakdown');
+      breakdown.innerHTML = '<div class="result-title" style="margin-top:20px">By Category</div>';
+
+      Object.entries(categories).sort((a,b) => b[1] - a[1]).forEach(([cat, amt]) => {
+        const pct = total > 0 ? (amt / total * 100) : 0;
+        breakdown.innerHTML += \`
+          <div class="category-row">
+            <span>\${cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
+            <span>$\${amt.toFixed(2)}</span>
+          </div>
+          <div class="category-bar"><div class="category-fill" style="width:\${pct}%"></div></div>
+        \`;
+      });
+    }
+
+    calculateExpenses();
+  </script>
+</body>
+</html>`;
+}
+
+// ============================================
+// MENU GENERATOR
+// ============================================
+
+function generateMenuGenerator(config) {
+  const { name, style, colors, branding } = config;
+  const stylePreset = STYLE_PRESETS[style] || STYLE_PRESETS.modern;
+  const css = stylePreset.getCSS(colors);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${name || 'Menu Generator'} | ${branding?.businessName || 'Restaurant Tools'}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    ${css}
+
+    .menu-section {
+      margin-bottom: 32px;
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .section-title-input {
+      font-size: 1.2rem;
+      font-weight: 600;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid ${colors.primary}40;
+      color: ${colors.primary};
+      padding: 8px 0;
+      width: 200px;
+    }
+    .section-title-input:focus {
+      outline: none;
+      border-color: ${colors.primary};
+    }
+    .menu-item {
+      display: grid;
+      grid-template-columns: 1fr 80px 60px;
+      gap: 12px;
+      margin-bottom: 12px;
+      align-items: center;
+      padding: 12px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+    }
+    .menu-item .form-input {
+      margin: 0;
+    }
+    .add-btn {
+      padding: 10px 16px;
+      background: transparent;
+      border: 1px dashed ${colors.primary}60;
+      color: ${colors.primary};
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+    .add-btn:hover {
+      background: ${colors.primary}10;
+      border-style: solid;
+    }
+    .remove-btn {
+      padding: 6px 10px;
+      background: #fee2e2;
+      color: #dc2626;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .menu-preview {
+      background: white;
+      color: #333;
+      padding: 40px;
+      border-radius: 8px;
+      margin-top: 24px;
+    }
+    .preview-header {
+      text-align: center;
+      margin-bottom: 32px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid ${colors.primary};
+    }
+    .preview-title {
+      font-size: 2rem;
+      color: ${colors.primary};
+      margin-bottom: 8px;
+    }
+    .preview-section {
+      margin-bottom: 24px;
+    }
+    .preview-section-title {
+      font-size: 1.2rem;
+      color: ${colors.primary};
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .preview-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px dotted #ddd;
+    }
+    .preview-item-name {
+      font-weight: 500;
+    }
+    .preview-item-price {
+      color: ${colors.primary};
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="tool-container" style="max-width: 600px;">
+    <div class="tool-header">
+      <h1 class="tool-title">${name || 'Menu Generator'}</h1>
+      <p class="tool-subtitle">Create your menu</p>
+    </div>
+
+    <div id="menu-sections">
+      <div class="menu-section" data-section="appetizers">
+        <div class="section-header">
+          <input type="text" class="section-title-input" value="Appetizers" placeholder="Section name">
+          <button class="remove-btn" onclick="removeSection(this)">Remove</button>
+        </div>
+        <div class="menu-items">
+          <div class="menu-item">
+            <input type="text" class="form-input" placeholder="Item name" value="House Salad">
+            <input type="number" class="form-input" placeholder="$" value="8.99" step="0.01">
+            <button class="remove-btn" onclick="removeItem(this)">×</button>
+          </div>
+          <div class="menu-item">
+            <input type="text" class="form-input" placeholder="Item name" value="Soup of the Day">
+            <input type="number" class="form-input" placeholder="$" value="6.99" step="0.01">
+            <button class="remove-btn" onclick="removeItem(this)">×</button>
+          </div>
+        </div>
+        <button class="add-btn" onclick="addItem(this)" style="width:100%;margin-top:8px">+ Add Item</button>
+      </div>
+
+      <div class="menu-section" data-section="mains">
+        <div class="section-header">
+          <input type="text" class="section-title-input" value="Main Courses" placeholder="Section name">
+          <button class="remove-btn" onclick="removeSection(this)">Remove</button>
+        </div>
+        <div class="menu-items">
+          <div class="menu-item">
+            <input type="text" class="form-input" placeholder="Item name" value="Grilled Salmon">
+            <input type="number" class="form-input" placeholder="$" value="24.99" step="0.01">
+            <button class="remove-btn" onclick="removeItem(this)">×</button>
+          </div>
+        </div>
+        <button class="add-btn" onclick="addItem(this)" style="width:100%;margin-top:8px">+ Add Item</button>
+      </div>
+    </div>
+
+    <button class="add-btn" onclick="addSection()" style="width:100%;margin:20px 0">+ Add Section</button>
+
+    <button class="btn-primary" onclick="generatePreview()">Generate Menu Preview</button>
+
+    <div class="menu-preview" id="menu-preview" style="display:none">
+      <div class="preview-header">
+        <div class="preview-title">${branding?.businessName || 'Our Menu'}</div>
+      </div>
+      <div id="preview-content"></div>
+    </div>
+
+    <footer class="brand-footer">
+      ${branding?.businessName || 'Restaurant'} • Powered by Blink
+    </footer>
+  </div>
+
+  <script>
+    function addSection() {
+      const container = document.getElementById('menu-sections');
+      const section = document.createElement('div');
+      section.className = 'menu-section';
+      section.innerHTML = \`
+        <div class="section-header">
+          <input type="text" class="section-title-input" placeholder="Section name">
+          <button class="remove-btn" onclick="removeSection(this)">Remove</button>
+        </div>
+        <div class="menu-items"></div>
+        <button class="add-btn" onclick="addItem(this)" style="width:100%;margin-top:8px">+ Add Item</button>
+      \`;
+      container.appendChild(section);
+    }
+
+    function removeSection(btn) {
+      const sections = document.querySelectorAll('.menu-section');
+      if (sections.length > 1) {
+        btn.closest('.menu-section').remove();
+      }
+    }
+
+    function addItem(btn) {
+      const section = btn.closest('.menu-section');
+      const items = section.querySelector('.menu-items');
+      const item = document.createElement('div');
+      item.className = 'menu-item';
+      item.innerHTML = \`
+        <input type="text" class="form-input" placeholder="Item name">
+        <input type="number" class="form-input" placeholder="$" step="0.01">
+        <button class="remove-btn" onclick="removeItem(this)">×</button>
+      \`;
+      items.appendChild(item);
+    }
+
+    function removeItem(btn) {
+      const items = btn.closest('.menu-items');
+      if (items.children.length > 1) {
+        btn.closest('.menu-item').remove();
+      }
+    }
+
+    function generatePreview() {
+      const preview = document.getElementById('menu-preview');
+      const content = document.getElementById('preview-content');
+      content.innerHTML = '';
+
+      document.querySelectorAll('.menu-section').forEach(section => {
+        const title = section.querySelector('.section-title-input').value;
+        if (!title) return;
+
+        let sectionHtml = '<div class="preview-section"><div class="preview-section-title">' + title + '</div>';
+
+        section.querySelectorAll('.menu-item').forEach(item => {
+          const name = item.querySelectorAll('input')[0].value;
+          const price = parseFloat(item.querySelectorAll('input')[1].value);
+          if (name && price) {
+            sectionHtml += '<div class="preview-item"><span class="preview-item-name">' + name + '</span><span class="preview-item-price">$' + price.toFixed(2) + '</span></div>';
+          }
+        });
+
+        sectionHtml += '</div>';
+        content.innerHTML += sectionHtml;
+      });
+
+      preview.style.display = 'block';
+    }
+  </script>
+</body>
+</html>`;
+}
+
+// ============================================
+// BOOKING TOOL
+// ============================================
+
+function generateBookingTool(config) {
+  const { name, style, colors, branding } = config;
+  const stylePreset = STYLE_PRESETS[style] || STYLE_PRESETS.modern;
+  const css = stylePreset.getCSS(colors);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${name || 'Booking Tool'} | ${branding?.businessName || 'Business Tools'}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    ${css}
+
+    .time-slots {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .time-slot {
+      padding: 12px;
+      text-align: center;
+      border: 1px solid ${colors.primary}30;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: rgba(255,255,255,0.05);
+    }
+    .time-slot:hover {
+      border-color: ${colors.primary};
+      background: ${colors.primary}10;
+    }
+    .time-slot.selected {
+      background: ${colors.primary};
+      color: white;
+      border-color: ${colors.primary};
+    }
+    .time-slot.unavailable {
+      opacity: 0.4;
+      cursor: not-allowed;
+      text-decoration: line-through;
+    }
+    .party-size {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .party-btn {
+      width: 50px;
+      height: 50px;
+      border: 1px solid ${colors.primary}30;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.05);
+      color: inherit;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .party-btn:hover, .party-btn.selected {
+      background: ${colors.primary};
+      color: white;
+      border-color: ${colors.primary};
+    }
+    .booking-summary {
+      padding: 20px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .summary-row:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="tool-container">
+    <div class="tool-header">
+      <h1 class="tool-title">${name || 'Book a Table'}</h1>
+      <p class="tool-subtitle">Reserve your spot</p>
+    </div>
+
+    <form id="booking-form">
+      <div class="form-group">
+        <label class="form-label">Select Date</label>
+        <input type="date" class="form-input" id="booking-date" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Party Size</label>
+        <div class="party-size" id="party-size">
+          <button type="button" class="party-btn" data-size="1">1</button>
+          <button type="button" class="party-btn selected" data-size="2">2</button>
+          <button type="button" class="party-btn" data-size="3">3</button>
+          <button type="button" class="party-btn" data-size="4">4</button>
+          <button type="button" class="party-btn" data-size="5">5</button>
+          <button type="button" class="party-btn" data-size="6">6+</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Select Time</label>
+        <div class="time-slots" id="time-slots">
+          <div class="time-slot" data-time="11:00">11:00 AM</div>
+          <div class="time-slot" data-time="11:30">11:30 AM</div>
+          <div class="time-slot" data-time="12:00">12:00 PM</div>
+          <div class="time-slot unavailable" data-time="12:30">12:30 PM</div>
+          <div class="time-slot" data-time="13:00">1:00 PM</div>
+          <div class="time-slot" data-time="13:30">1:30 PM</div>
+          <div class="time-slot unavailable" data-time="18:00">6:00 PM</div>
+          <div class="time-slot" data-time="18:30">6:30 PM</div>
+          <div class="time-slot" data-time="19:00">7:00 PM</div>
+          <div class="time-slot" data-time="19:30">7:30 PM</div>
+          <div class="time-slot" data-time="20:00">8:00 PM</div>
+          <div class="time-slot" data-time="20:30">8:30 PM</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Your Name</label>
+        <input type="text" class="form-input" id="guest-name" placeholder="Enter your name" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input type="tel" class="form-input" id="guest-phone" placeholder="(555) 123-4567" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Special Requests (Optional)</label>
+        <textarea class="form-input" id="special-requests" rows="3" placeholder="Allergies, celebrations, seating preferences..."></textarea>
+      </div>
+
+      <button type="submit" class="btn-primary">Confirm Reservation</button>
+    </form>
+
+    <div class="result-card" id="result">
+      <div class="result-title">Reservation Confirmed!</div>
+      <div class="booking-summary">
+        <div class="summary-row">
+          <span>Date</span>
+          <span id="confirm-date">-</span>
+        </div>
+        <div class="summary-row">
+          <span>Time</span>
+          <span id="confirm-time">-</span>
+        </div>
+        <div class="summary-row">
+          <span>Party Size</span>
+          <span id="confirm-party">-</span>
+        </div>
+        <div class="summary-row">
+          <span>Name</span>
+          <span id="confirm-name">-</span>
+        </div>
+      </div>
+      <p style="margin-top:16px;color:#888;font-size:0.9rem">A confirmation has been sent to your phone.</p>
+    </div>
+
+    <footer class="brand-footer">
+      ${branding?.businessName || 'Restaurant'} • Powered by Blink
+    </footer>
+  </div>
+
+  <script>
+    let selectedTime = null;
+    let selectedParty = 2;
+
+    // Set min date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('booking-date').min = today;
+    document.getElementById('booking-date').value = today;
+
+    // Time slot selection
+    document.querySelectorAll('.time-slot:not(.unavailable)').forEach(slot => {
+      slot.addEventListener('click', function() {
+        document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+        this.classList.add('selected');
+        selectedTime = this.dataset.time;
+      });
+    });
+
+    // Party size selection
+    document.querySelectorAll('.party-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.party-btn').forEach(b => b.classList.remove('selected'));
+        this.classList.add('selected');
+        selectedParty = this.dataset.size;
+      });
+    });
+
+    // Form submission
+    document.getElementById('booking-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      if (!selectedTime) {
+        alert('Please select a time slot');
+        return;
+      }
+
+      const date = document.getElementById('booking-date').value;
+      const name = document.getElementById('guest-name').value;
+
+      // Format time for display
+      const [hours, mins] = selectedTime.split(':');
+      const hour = parseInt(hours);
+      const timeStr = (hour > 12 ? hour - 12 : hour) + ':' + mins + (hour >= 12 ? ' PM' : ' AM');
+
+      document.getElementById('confirm-date').textContent = new Date(date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+      document.getElementById('confirm-time').textContent = timeStr;
+      document.getElementById('confirm-party').textContent = selectedParty + (selectedParty === '6' ? '+' : '') + ' guest' + (selectedParty !== '1' ? 's' : '');
+      document.getElementById('confirm-name').textContent = name;
+
+      document.getElementById('result').classList.add('visible');
+    });
+  </script>
+</body>
+</html>`;
+}
+
+// ============================================
+// ORDER TRACKER
+// ============================================
+
+function generateOrderTracker(config) {
+  const { name, style, colors, branding } = config;
+  const stylePreset = STYLE_PRESETS[style] || STYLE_PRESETS.modern;
+  const css = stylePreset.getCSS(colors);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${name || 'Order Tracker'} | ${branding?.businessName || 'Business Tools'}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    ${css}
+
+    .order-list {
+      margin-bottom: 24px;
+    }
+    .order-item {
+      display: grid;
+      grid-template-columns: 80px 1fr 100px 120px 60px;
+      gap: 12px;
+      margin-bottom: 12px;
+      align-items: center;
+      padding: 16px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+    }
+    .order-id {
+      font-weight: 600;
+      color: ${colors.primary};
+    }
+    .status-select {
+      padding: 10px;
+      border: 1px solid #444;
+      border-radius: 4px;
+      background: #1a1a1a;
+      color: #fff;
+      font-size: 0.85rem;
+    }
+    .status-pending { border-left: 4px solid #f59e0b; }
+    .status-preparing { border-left: 4px solid #3b82f6; }
+    .status-ready { border-left: 4px solid #22c55e; }
+    .status-delivered { border-left: 4px solid #888; opacity: 0.7; }
+    .add-order {
+      padding: 12px 16px;
+      background: transparent;
+      border: 1px dashed ${colors.primary}60;
+      color: ${colors.primary};
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+    }
+    .remove-btn {
+      padding: 8px 12px;
+      background: #fee2e2;
+      color: #dc2626;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .stat-card {
+      text-align: center;
+      padding: 16px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+    }
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: ${colors.primary};
+    }
+    .stat-label {
+      font-size: 0.7rem;
+      color: #888;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="tool-container" style="max-width:700px">
+    <div class="tool-header">
+      <h1 class="tool-title">${name || 'Order Tracker'}</h1>
+      <p class="tool-subtitle">Manage your orders</p>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Active Orders</label>
+      <div class="order-list" id="order-list">
+        <div class="order-item status-pending">
+          <span class="order-id">#001</span>
+          <input type="text" class="form-input" value="2x Latte, 1x Croissant" style="margin:0">
+          <input type="number" class="form-input" value="18.50" step="0.01" style="margin:0">
+          <select class="status-select" onchange="updateStatus(this)">
+            <option value="pending" selected>Pending</option>
+            <option value="preparing">Preparing</option>
+            <option value="ready">Ready</option>
+            <option value="delivered">Delivered</option>
+          </select>
+          <button class="remove-btn" onclick="removeOrder(this)">×</button>
+        </div>
+        <div class="order-item status-preparing">
+          <span class="order-id">#002</span>
+          <input type="text" class="form-input" value="1x Cappuccino, 2x Muffin" style="margin:0">
+          <input type="number" class="form-input" value="14.25" step="0.01" style="margin:0">
+          <select class="status-select" onchange="updateStatus(this)">
+            <option value="pending">Pending</option>
+            <option value="preparing" selected>Preparing</option>
+            <option value="ready">Ready</option>
+            <option value="delivered">Delivered</option>
+          </select>
+          <button class="remove-btn" onclick="removeOrder(this)">×</button>
+        </div>
+        <div class="order-item status-ready">
+          <span class="order-id">#003</span>
+          <input type="text" class="form-input" value="3x Espresso" style="margin:0">
+          <input type="number" class="form-input" value="10.50" step="0.01" style="margin:0">
+          <select class="status-select" onchange="updateStatus(this)">
+            <option value="pending">Pending</option>
+            <option value="preparing">Preparing</option>
+            <option value="ready" selected>Ready</option>
+            <option value="delivered">Delivered</option>
+          </select>
+          <button class="remove-btn" onclick="removeOrder(this)">×</button>
+        </div>
+      </div>
+      <button class="add-order" onclick="addOrder()">+ New Order</button>
+    </div>
+
+    <button class="btn-primary" onclick="updateStats()">Refresh Stats</button>
+
+    <div class="result-card visible" id="result">
+      <div class="result-title">Order Statistics</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-pending">1</div>
+          <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-preparing">1</div>
+          <div class="stat-label">Preparing</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-ready">1</div>
+          <div class="stat-label">Ready</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-total">$43.25</div>
+          <div class="stat-label">Total</div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="brand-footer">
+      ${branding?.businessName || 'Business'} • Powered by Blink
+    </footer>
+  </div>
+
+  <script>
+    let orderNum = 3;
+
+    function addOrder() {
+      orderNum++;
+      const list = document.getElementById('order-list');
+      const item = document.createElement('div');
+      item.className = 'order-item status-pending';
+      item.innerHTML = \`
+        <span class="order-id">#\${String(orderNum).padStart(3, '0')}</span>
+        <input type="text" class="form-input" placeholder="Order items" style="margin:0">
+        <input type="number" class="form-input" placeholder="$0.00" step="0.01" style="margin:0">
+        <select class="status-select" onchange="updateStatus(this)">
+          <option value="pending" selected>Pending</option>
+          <option value="preparing">Preparing</option>
+          <option value="ready">Ready</option>
+          <option value="delivered">Delivered</option>
+        </select>
+        <button class="remove-btn" onclick="removeOrder(this)">×</button>
+      \`;
+      list.appendChild(item);
+      updateStats();
+    }
+
+    function removeOrder(btn) {
+      btn.closest('.order-item').remove();
+      updateStats();
+    }
+
+    function updateStatus(select) {
+      const item = select.closest('.order-item');
+      item.className = 'order-item status-' + select.value;
+      updateStats();
+    }
+
+    function updateStats() {
+      const orders = document.querySelectorAll('.order-item');
+      let pending = 0, preparing = 0, ready = 0, total = 0;
+
+      orders.forEach(order => {
+        const status = order.querySelector('select').value;
+        const amount = parseFloat(order.querySelectorAll('input')[1].value) || 0;
+
+        if (status === 'pending') pending++;
+        else if (status === 'preparing') preparing++;
+        else if (status === 'ready') ready++;
+
+        if (status !== 'delivered') total += amount;
+      });
+
+      document.getElementById('stat-pending').textContent = pending;
+      document.getElementById('stat-preparing').textContent = preparing;
+      document.getElementById('stat-ready').textContent = ready;
+      document.getElementById('stat-total').textContent = '$' + total.toFixed(2);
+    }
+
+    updateStats();
+  </script>
+</body>
+</html>`;
+}
+
+// ============================================
+// QUOTE CALCULATOR
+// ============================================
+
+function generateQuoteCalculator(config) {
+  const { name, style, colors, branding } = config;
+  const stylePreset = STYLE_PRESETS[style] || STYLE_PRESETS.modern;
+  const css = stylePreset.getCSS(colors);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${name || 'Quote Calculator'} | ${branding?.businessName || 'Business Tools'}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    ${css}
+
+    .line-items {
+      margin-bottom: 24px;
+    }
+    .line-item {
+      display: grid;
+      grid-template-columns: 1fr 80px 100px 100px 60px;
+      gap: 12px;
+      margin-bottom: 12px;
+      align-items: center;
+    }
+    .line-item .form-input { margin: 0; }
+    .item-total {
+      text-align: right;
+      font-weight: 600;
+      color: ${colors.primary};
+    }
+    .add-line {
+      padding: 12px 16px;
+      background: transparent;
+      border: 1px dashed ${colors.primary}60;
+      color: ${colors.primary};
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+    }
+    .remove-btn {
+      padding: 8px 12px;
+      background: #fee2e2;
+      color: #dc2626;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .quote-totals {
+      background: rgba(255,255,255,0.05);
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .total-row:last-child {
+      border-bottom: none;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: ${colors.primary};
+    }
+  </style>
+</head>
+<body>
+  <div class="tool-container" style="max-width:650px">
+    <div class="tool-header">
+      <h1 class="tool-title">${name || 'Quote Calculator'}</h1>
+      <p class="tool-subtitle">Create professional quotes</p>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Client Information</label>
+      <input type="text" class="form-input" id="client-name" placeholder="Client name" style="margin-bottom:12px">
+      <input type="email" class="form-input" id="client-email" placeholder="Client email">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Line Items</label>
+      <div style="display:grid;grid-template-columns:1fr 80px 100px 100px 60px;gap:12px;margin-bottom:8px;font-size:0.75rem;color:#888;text-transform:uppercase;">
+        <span>Description</span>
+        <span>Qty</span>
+        <span>Unit Price</span>
+        <span>Total</span>
+        <span></span>
+      </div>
+      <div class="line-items" id="line-items">
+        <div class="line-item">
+          <input type="text" class="form-input" placeholder="Service/Product" value="Consultation">
+          <input type="number" class="form-input qty-input" value="2" min="1" onchange="calculateLine(this)">
+          <input type="number" class="form-input price-input" value="75" step="0.01" onchange="calculateLine(this)">
+          <div class="item-total">$150.00</div>
+          <button class="remove-btn" onclick="removeLine(this)">×</button>
+        </div>
+        <div class="line-item">
+          <input type="text" class="form-input" placeholder="Service/Product" value="Implementation">
+          <input type="number" class="form-input qty-input" value="1" min="1" onchange="calculateLine(this)">
+          <input type="number" class="form-input price-input" value="500" step="0.01" onchange="calculateLine(this)">
+          <div class="item-total">$500.00</div>
+          <button class="remove-btn" onclick="removeLine(this)">×</button>
+        </div>
+      </div>
+      <button class="add-line" onclick="addLine()">+ Add Line Item</button>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Discount (%)</label>
+      <input type="number" class="form-input" id="discount" value="0" min="0" max="100" onchange="calculateTotal()">
+    </div>
+
+    <button class="btn-primary" onclick="generateQuote()">Generate Quote</button>
+
+    <div class="result-card" id="result">
+      <div class="result-title">Quote Summary</div>
+      <div class="quote-totals">
+        <div class="total-row">
+          <span>Subtotal</span>
+          <span id="subtotal">$650.00</span>
+        </div>
+        <div class="total-row">
+          <span>Discount</span>
+          <span id="discount-amount">-$0.00</span>
+        </div>
+        <div class="total-row">
+          <span>Total</span>
+          <span id="grand-total">$650.00</span>
+        </div>
+      </div>
+    </div>
+
+    <footer class="brand-footer">
+      ${branding?.businessName || 'Business'} • Powered by Blink
+    </footer>
+  </div>
+
+  <script>
+    function addLine() {
+      const list = document.getElementById('line-items');
+      const item = document.createElement('div');
+      item.className = 'line-item';
+      item.innerHTML = \`
+        <input type="text" class="form-input" placeholder="Service/Product">
+        <input type="number" class="form-input qty-input" value="1" min="1" onchange="calculateLine(this)">
+        <input type="number" class="form-input price-input" value="0" step="0.01" onchange="calculateLine(this)">
+        <div class="item-total">$0.00</div>
+        <button class="remove-btn" onclick="removeLine(this)">×</button>
+      \`;
+      list.appendChild(item);
+    }
+
+    function removeLine(btn) {
+      const list = document.getElementById('line-items');
+      if (list.children.length > 1) {
+        btn.closest('.line-item').remove();
+        calculateTotal();
+      }
+    }
+
+    function calculateLine(input) {
+      const row = input.closest('.line-item');
+      const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
+      const price = parseFloat(row.querySelector('.price-input').value) || 0;
+      const total = qty * price;
+      row.querySelector('.item-total').textContent = '$' + total.toFixed(2);
+      calculateTotal();
+    }
+
+    function calculateTotal() {
+      let subtotal = 0;
+      document.querySelectorAll('.line-item').forEach(row => {
+        const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
+        const price = parseFloat(row.querySelector('.price-input').value) || 0;
+        subtotal += qty * price;
+      });
+
+      const discountPct = parseFloat(document.getElementById('discount').value) || 0;
+      const discountAmt = subtotal * (discountPct / 100);
+      const grandTotal = subtotal - discountAmt;
+
+      document.getElementById('subtotal').textContent = '$' + subtotal.toFixed(2);
+      document.getElementById('discount-amount').textContent = '-$' + discountAmt.toFixed(2);
+      document.getElementById('grand-total').textContent = '$' + grandTotal.toFixed(2);
+    }
+
+    function generateQuote() {
+      calculateTotal();
+      document.getElementById('result').classList.add('visible');
+    }
+
+    calculateTotal();
   </script>
 </body>
 </html>`;
