@@ -993,6 +993,378 @@ function generateBrainJson(projectName, industryKey, industryConfig) {
   }, null, 2);
 }
 
+// ============================================
+// TOOL HTML GENERATOR
+// ============================================
+
+function generateToolHtml(payload) {
+  const { name, toolTemplate, toolCategory, toolFeatures = [], toolFields = [], theme = {} } = payload;
+  const colors = theme.colors || { primary: '#3b82f6', accent: '#8b5cf6', background: '#f8fafc' };
+
+  // Generate form fields HTML
+  const fieldsHtml = toolFields.map(field => {
+    const fieldId = field.name.toLowerCase().replace(/\s+/g, '-');
+
+    if (field.type === 'text') {
+      return `
+        <div class="form-group">
+          <label for="${fieldId}">${field.label}</label>
+          <input type="text" id="${fieldId}" name="${field.name}" placeholder="${field.placeholder || ''}" ${field.required ? 'required' : ''}>
+        </div>`;
+    }
+
+    if (field.type === 'number') {
+      return `
+        <div class="form-group">
+          <label for="${fieldId}">${field.label}</label>
+          <input type="number" id="${fieldId}" name="${field.name}" placeholder="${field.placeholder || '0'}" step="${field.step || '1'}" ${field.required ? 'required' : ''}>
+        </div>`;
+    }
+
+    if (field.type === 'textarea') {
+      return `
+        <div class="form-group">
+          <label for="${fieldId}">${field.label}</label>
+          <textarea id="${fieldId}" name="${field.name}" rows="4" placeholder="${field.placeholder || ''}" ${field.required ? 'required' : ''}></textarea>
+        </div>`;
+    }
+
+    if (field.type === 'select' && field.options) {
+      const optionsHtml = field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
+      return `
+        <div class="form-group">
+          <label for="${fieldId}">${field.label}</label>
+          <select id="${fieldId}" name="${field.name}" ${field.required ? 'required' : ''}>
+            <option value="">Select...</option>
+            ${optionsHtml}
+          </select>
+        </div>`;
+    }
+
+    if (field.type === 'date') {
+      return `
+        <div class="form-group">
+          <label for="${fieldId}">${field.label}</label>
+          <input type="date" id="${fieldId}" name="${field.name}" ${field.required ? 'required' : ''}>
+        </div>`;
+    }
+
+    if (field.type === 'line-items') {
+      return `
+        <div class="form-group line-items">
+          <label>${field.label}</label>
+          <div id="${fieldId}-container" class="line-items-container">
+            <div class="line-item">
+              <input type="text" placeholder="Description" class="item-desc">
+              <input type="number" placeholder="Qty" class="item-qty" value="1" min="1">
+              <input type="number" placeholder="Price" class="item-price" step="0.01">
+              <button type="button" class="remove-item" onclick="removeLineItem(this)">×</button>
+            </div>
+          </div>
+          <button type="button" class="add-item-btn" onclick="addLineItem('${fieldId}-container')">+ Add Item</button>
+        </div>`;
+    }
+
+    // Default to text input
+    return `
+      <div class="form-group">
+        <label for="${fieldId}">${field.label}</label>
+        <input type="text" id="${fieldId}" name="${field.name}" ${field.required ? 'required' : ''}>
+      </div>`;
+  }).join('\n');
+
+  // Feature badges
+  const featureBadges = toolFeatures.map(f =>
+    `<span class="feature-badge">${f.replace(/-/g, ' ')}</span>`
+  ).join('');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${name}</title>
+  <style>
+    :root {
+      --primary: ${colors.primary};
+      --accent: ${colors.accent};
+      --background: ${colors.background};
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--background);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      color: var(--primary);
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .tool-category {
+      color: #64748b;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .features {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .feature-badge {
+      background: var(--accent);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      text-transform: capitalize;
+    }
+
+    .tool-card {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 0.5rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .line-items-container {
+      border: 2px solid #e5e7eb;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .line-item {
+      display: grid;
+      grid-template-columns: 2fr 80px 100px 40px;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .line-item input {
+      padding: 0.5rem;
+    }
+
+    .remove-item {
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 0.25rem;
+      cursor: pointer;
+      font-size: 1.25rem;
+    }
+
+    .add-item-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.25rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 0.5rem;
+      font-size: 1.125rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: opacity 0.2s;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    .result-section {
+      display: none;
+      background: #f0fdf4;
+      border: 2px solid #22c55e;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .result-section.visible {
+      display: block;
+    }
+
+    .result-section h3 {
+      color: #16a34a;
+      margin-bottom: 1rem;
+    }
+
+    #result-content {
+      background: white;
+      padding: 1rem;
+      border-radius: 0.25rem;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+
+    footer {
+      text-align: center;
+      color: #9ca3af;
+      font-size: 0.75rem;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 640px) {
+      .line-item {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 1.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <p class="tool-category">${toolCategory}</p>
+      <h1>${name}</h1>
+      <div class="features">
+        ${featureBadges}
+      </div>
+    </header>
+
+    <div class="tool-card">
+      <form id="tool-form">
+        ${fieldsHtml}
+
+        <button type="submit" class="btn-primary">Generate</button>
+      </form>
+
+      <div id="result" class="result-section">
+        <h3>Result</h3>
+        <div id="result-content"></div>
+      </div>
+    </div>
+
+    <footer>
+      <p>Generated by Blink | Powered by AI</p>
+    </footer>
+  </div>
+
+  <script>
+    // Line item management
+    function addLineItem(containerId) {
+      const container = document.getElementById(containerId);
+      const item = document.createElement('div');
+      item.className = 'line-item';
+      item.innerHTML = \`
+        <input type="text" placeholder="Description" class="item-desc">
+        <input type="number" placeholder="Qty" class="item-qty" value="1" min="1">
+        <input type="number" placeholder="Price" class="item-price" step="0.01">
+        <button type="button" class="remove-item" onclick="removeLineItem(this)">×</button>
+      \`;
+      container.appendChild(item);
+    }
+
+    function removeLineItem(btn) {
+      const container = btn.closest('.line-items-container');
+      if (container.querySelectorAll('.line-item').length > 1) {
+        btn.closest('.line-item').remove();
+      }
+    }
+
+    // Form submission
+    document.getElementById('tool-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+      const data = {};
+
+      // Collect form data
+      formData.forEach((value, key) => {
+        data[key] = value;
+      });
+
+      // Collect line items if present
+      const lineItems = [];
+      document.querySelectorAll('.line-item').forEach(item => {
+        const desc = item.querySelector('.item-desc')?.value;
+        const qty = item.querySelector('.item-qty')?.value;
+        const price = item.querySelector('.item-price')?.value;
+        if (desc && qty && price) {
+          lineItems.push({ description: desc, quantity: parseInt(qty), price: parseFloat(price) });
+        }
+      });
+
+      if (lineItems.length > 0) {
+        data.lineItems = lineItems;
+        data.subtotal = lineItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+        data.total = data.subtotal;
+      }
+
+      // Display result
+      const resultSection = document.getElementById('result');
+      const resultContent = document.getElementById('result-content');
+      resultContent.textContent = JSON.stringify(data, null, 2);
+      resultSection.classList.add('visible');
+    });
+  </script>
+</body>
+</html>`;
+}
+
 function generateBrainRoutes() {
   return `/**
  * Brain API Routes - Single source of truth
@@ -5076,7 +5448,7 @@ app.post('/api/orchestrate', orchestrateRateLimiter, async (req, res) => {
 
   try {
     // Load orchestrator service
-    const { orchestrate, validatePayload } = require('./services/orchestrator');
+    const { orchestrate, validatePayload } = require('./services/orchestrator.cjs');
 
     // Run orchestration - AI infers all details
     console.log('🤖 AI Analysis in progress...');
@@ -5118,6 +5490,87 @@ app.post('/api/orchestrate', orchestrateRateLimiter, async (req, res) => {
         error: `Invalid configuration: ${validation.errors.join(', ')}`
       });
     }
+
+    // ========================================
+    // HANDLE TOOL TYPE - Single page generation
+    // ========================================
+    if (orchestratorResult.type === 'tool') {
+      console.log('🔧 TOOL MODE - Generating single-page tool');
+      console.log('─'.repeat(40));
+      console.log(`   🛠️ Tool Type: ${payload.toolTemplate}`);
+      console.log(`   📦 Category: ${payload.toolCategory}`);
+      console.log(`   ✨ Features: ${payload.toolFeatures?.join(', ') || 'default'}`);
+      console.log('─'.repeat(40));
+
+      const duration = Date.now() - startTime;
+
+      // Create tool project directory
+      const toolName = payload.name
+        .replace(/&/g, ' and ')
+        .replace(/[^a-zA-Z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .toLowerCase()
+        .substring(0, 50);
+
+      const projectPath = path.join(GENERATED_PROJECTS, toolName);
+
+      // Create project directory if it doesn't exist
+      if (!fs.existsSync(projectPath)) {
+        fs.mkdirSync(projectPath, { recursive: true });
+      }
+
+      // Generate tool-specific files
+      const toolMeta = {
+        generatedAt: new Date().toISOString(),
+        originalInput: userInput,
+        type: 'tool',
+        toolTemplate: payload.toolTemplate,
+        toolCategory: payload.toolCategory,
+        toolFeatures: payload.toolFeatures,
+        toolFields: payload.toolFields,
+        theme: payload.theme,
+        processingTimeMs: duration
+      };
+
+      // Save tool metadata
+      fs.writeFileSync(
+        path.join(projectPath, 'tool-meta.json'),
+        JSON.stringify(toolMeta, null, 2)
+      );
+
+      // Generate a simple index.html for the tool
+      const toolHtml = generateToolHtml(payload);
+      fs.writeFileSync(path.join(projectPath, 'index.html'), toolHtml);
+
+      console.log('');
+      console.log('✅ TOOL GENERATION COMPLETE');
+      console.log(`   ⏱️ Total time: ${(duration / 1000).toFixed(1)}s`);
+      console.log(`   📁 Path: ${projectPath}`);
+      console.log('='.repeat(60));
+
+      return res.json({
+        success: true,
+        type: 'tool',
+        project: {
+          name: toolName,
+          path: projectPath
+        },
+        tool: {
+          originalInput: userInput,
+          template: payload.toolTemplate,
+          category: payload.toolCategory,
+          features: payload.toolFeatures,
+          fields: payload.toolFields,
+          colors: payload.theme?.colors
+        },
+        duration: duration
+      });
+    }
+
+    // ========================================
+    // HANDLE BUSINESS TYPE - Multi-page assembly
+    // ========================================
+    console.log('🏢 BUSINESS MODE - Starting multi-page assembly');
 
     // Now execute the assembly by calling the same logic as /api/assemble
     // We'll forward the orchestrated payload to the internal assembly logic
