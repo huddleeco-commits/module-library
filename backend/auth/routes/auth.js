@@ -1,8 +1,56 @@
-﻿const express = require('express');
+const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../database/db');
+
+// ===========================================
+// SECURITY CONFIGURATION
+// ===========================================
+const JWT_EXPIRES = '1h'; // Reduced from 24h for security
+const PASSWORD_MIN_LENGTH = 12;
+
+// Validate JWT_SECRET at startup
+if (!process.env.JWT_SECRET) {
+  console.error('❌ CRITICAL: JWT_SECRET environment variable is required');
+} else if (process.env.JWT_SECRET.length < 32) {
+  console.error('❌ CRITICAL: JWT_SECRET is too weak (min 32 characters required)');
+}
+
+/**
+ * Validates password strength
+ * @param {string} password - Password to validate
+ * @returns {{ valid: boolean, errors: string[] }}
+ */
+function validatePasswordStrength(password) {
+  const errors = [];
+
+  if (!password || typeof password !== 'string') {
+    return { valid: false, errors: ['Password is required'] };
+  }
+
+  if (password.length < PASSWORD_MIN_LENGTH) {
+    errors.push(`Password must be at least ${PASSWORD_MIN_LENGTH} characters`);
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    errors.push('Password must contain at least one uppercase letter');
+  }
+
+  if (!/[a-z]/.test(password)) {
+    errors.push('Password must contain at least one lowercase letter');
+  }
+
+  if (!/\d/.test(password)) {
+    errors.push('Password must contain at least one number');
+  }
+
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+    errors.push('Password must contain at least one special character');
+  }
+
+  return { valid: errors.length === 0, errors };
+}
 
 // Rate limiting (protect against brute force)
 let rateLimiters = {};
@@ -18,14 +66,24 @@ router.post('/register', rateLimiters.registerLimiter, async (req, res) => {
     try {
         const { email, password, fullName, referralCode } = req.body;
 
+        // Validate password strength FIRST
+        const passwordValidation = validatePasswordStrength(password);
+        if (!passwordValidation.valid) {
+            return res.status(400).json({
+                success: false,
+                error: 'Password does not meet requirements',
+                details: passwordValidation.errors
+            });
+        }
+
         // Check if user exists
         const existingResult = await db.query('SELECT * FROM users WHERE email = $1', [email]);
         if (existingResult.rows.length > 0) {
             return res.status(400).json({ success: false, error: 'Email already registered' });
         }
 
-        // Hash password
-        const passwordHash = await bcrypt.hash(password, 10);
+        // Hash password (using 12 rounds for extra security)
+        const passwordHash = await bcrypt.hash(password, 12);
 
         // Check referral code if provided
         let referralCodeId = null;
@@ -70,7 +128,7 @@ router.post('/register', rateLimiters.registerLimiter, async (req, res) => {
                 email: user.email 
             },
             process.env.JWT_SECRET,
-            { expiresIn: '24h' }
+            { expiresIn: JWT_EXPIRES }
         );
 
         // Update referral stats if user was referred
@@ -138,7 +196,7 @@ router.post('/login', rateLimiters.loginLimiter, async (req, res) => {
                 email: user.email 
             },
             process.env.JWT_SECRET,
-            { expiresIn: '24h' }
+            { expiresIn: JWT_EXPIRES }
         );
 
         res.json({

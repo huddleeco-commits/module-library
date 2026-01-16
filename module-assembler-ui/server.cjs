@@ -20,10 +20,66 @@ const {
 
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 const { body, validationResult } = require('express-validator');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+// ===========================================
+// SECURITY: Password Validation
+// ===========================================
+const PASSWORD_MIN_LENGTH = 12;
+const PASSWORD_REQUIREMENTS = {
+  minLength: PASSWORD_MIN_LENGTH,
+  requireUppercase: true,
+  requireLowercase: true,
+  requireNumbers: true,
+  requireSpecial: true
+};
+
+/**
+ * Validates password strength
+ * @param {string} password - Password to validate
+ * @returns {{ valid: boolean, errors: string[] }}
+ */
+function validatePasswordStrength(password) {
+  const errors = [];
+
+  if (!password || typeof password !== 'string') {
+    return { valid: false, errors: ['Password is required'] };
+  }
+
+  if (password.length < PASSWORD_REQUIREMENTS.minLength) {
+    errors.push(`Password must be at least ${PASSWORD_REQUIREMENTS.minLength} characters`);
+  }
+
+  if (PASSWORD_REQUIREMENTS.requireUppercase && !/[A-Z]/.test(password)) {
+    errors.push('Password must contain at least one uppercase letter');
+  }
+
+  if (PASSWORD_REQUIREMENTS.requireLowercase && !/[a-z]/.test(password)) {
+    errors.push('Password must contain at least one lowercase letter');
+  }
+
+  if (PASSWORD_REQUIREMENTS.requireNumbers && !/\d/.test(password)) {
+    errors.push('Password must contain at least one number');
+  }
+
+  if (PASSWORD_REQUIREMENTS.requireSpecial && !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+    errors.push('Password must contain at least one special character');
+  }
+
+  // Check for common weak passwords
+  const commonPasswords = ['password', '123456', 'qwerty', 'admin', 'letmein', 'welcome'];
+  if (commonPasswords.some(weak => password.toLowerCase().includes(weak))) {
+    errors.push('Password contains a common weak pattern');
+  }
+
+  return { valid: errors.length === 0, errors };
+}
 
 // Validation error handler middleware
 const handleValidationErrors = (req, res, next) => {
@@ -45,12 +101,13 @@ async function initializeServices() {
   try {
     // Only initialize DB if DATABASE_URL is set
     if (process.env.DATABASE_URL) {
-      db = require('./database/db.js');
+      db = require('./database/db.cjs');
       await db.initializeDatabase();
       console.log('   ✅ Database initialized');
 
-      adminRoutes = require('./routes/admin-routes.cjs');
-      console.log('   ✅ Admin routes loaded');
+      // Use the full blink-admin routes that match the frontend
+      adminRoutes = require('../backend/blink-admin/routes/admin');
+      console.log('   ✅ Admin routes loaded (blink-admin)');
     } else {
       console.log('   ⚠️ DATABASE_URL not set - admin features disabled');
     }
@@ -70,6 +127,102 @@ async function extractPdfText(base64Data) {
     console.log('   ⚠️ PDF parsing failed:', err.message);
     return null;
   }
+}
+
+// Dynamic video cache (in-memory, resets on server restart)
+const videoCache = new Map();
+
+// Fetch video from Pexels API based on search query
+async function fetchPexelsVideo(searchQuery) {
+  const apiKey = process.env.PEXELS_API_KEY;
+  if (!apiKey || apiKey === 'your_pexels_api_key_here') {
+    console.log('   ⚠️ Pexels API key not configured');
+    return null;
+  }
+
+  // Check cache first
+  const cacheKey = searchQuery.toLowerCase().trim();
+  if (videoCache.has(cacheKey)) {
+    console.log(`   📹 Using cached video for: ${searchQuery}`);
+    return videoCache.get(cacheKey);
+  }
+
+  try {
+    console.log(`   🔍 Searching Pexels for video: ${searchQuery}`);
+    const response = await fetch(
+      `https://api.pexels.com/videos/search?query=${encodeURIComponent(searchQuery)}&per_page=5&orientation=landscape`,
+      {
+        headers: {
+          'Authorization': apiKey
+        }
+      }
+    );
+
+    if (!response.ok) {
+      console.log(`   ⚠️ Pexels API error: ${response.status}`);
+      return null;
+    }
+
+    const data = await response.json();
+    if (data.videos && data.videos.length > 0) {
+      // Find HD or higher quality video file
+      const video = data.videos[0];
+      const hdFile = video.video_files.find(f => f.quality === 'hd' || f.quality === 'uhd' || f.height >= 720);
+      const videoUrl = hdFile ? hdFile.link : video.video_files[0].link;
+
+      console.log(`   ✅ Found Pexels video: ${videoUrl.substring(0, 60)}...`);
+
+      // Cache the result
+      videoCache.set(cacheKey, videoUrl);
+
+      return videoUrl;
+    }
+
+    console.log(`   ⚠️ No Pexels videos found for: ${searchQuery}`);
+    return null;
+  } catch (err) {
+    console.log(`   ⚠️ Pexels API fetch error: ${err.message}`);
+    return null;
+  }
+}
+
+// Get video URL for an industry - tries dynamic fetch first, falls back to hardcoded
+async function getIndustryVideo(industryName, businessName = '') {
+  // Build search terms based on industry and business name
+  const searchTerms = [];
+
+  // Add industry-specific terms
+  const industryLower = industryName.toLowerCase();
+  if (industryLower.includes('pizza')) searchTerms.push('pizza making', 'pizzeria');
+  else if (industryLower.includes('restaurant') || industryLower.includes('food')) searchTerms.push('restaurant cooking', 'chef cooking');
+  else if (industryLower.includes('spa') || industryLower.includes('wellness')) searchTerms.push('spa massage', 'wellness relaxation');
+  else if (industryLower.includes('fitness') || industryLower.includes('gym')) searchTerms.push('gym workout', 'fitness training');
+  else if (industryLower.includes('salon') || industryLower.includes('hair')) searchTerms.push('hair salon', 'hairstylist');
+  else if (industryLower.includes('plumb')) searchTerms.push('plumber working', 'plumbing repair');
+  else if (industryLower.includes('electric')) searchTerms.push('electrician working', 'electrical work');
+  else if (industryLower.includes('construct')) searchTerms.push('construction site', 'building construction');
+  else if (industryLower.includes('dental') || industryLower.includes('dentist')) searchTerms.push('dental office', 'dentist');
+  else if (industryLower.includes('landscap') || industryLower.includes('lawn')) searchTerms.push('landscaping garden', 'lawn care');
+  else if (industryLower.includes('clean')) searchTerms.push('cleaning service', 'house cleaning');
+  else if (industryLower.includes('auto') || industryLower.includes('mechanic')) searchTerms.push('auto repair', 'mechanic working');
+  else if (industryLower.includes('pet') || industryLower.includes('vet')) searchTerms.push('pet grooming', 'veterinary');
+  else if (industryLower.includes('hotel') || industryLower.includes('hospitality')) searchTerms.push('luxury hotel', 'hotel lobby');
+  else if (industryLower.includes('real estate')) searchTerms.push('luxury home', 'real estate');
+  else if (industryLower.includes('law') || industryLower.includes('attorney')) searchTerms.push('law office', 'lawyer');
+  else if (industryLower.includes('cafe') || industryLower.includes('coffee')) searchTerms.push('coffee shop', 'barista coffee');
+  else if (industryLower.includes('bakery') || industryLower.includes('pastry')) searchTerms.push('bakery', 'baking bread');
+  else if (industryLower.includes('tattoo')) searchTerms.push('tattoo artist', 'tattoo studio');
+  else if (industryLower.includes('barber')) searchTerms.push('barber shop', 'barber haircut');
+  else searchTerms.push(industryName); // Use industry name as search term
+
+  // Try to fetch from Pexels
+  for (const term of searchTerms) {
+    const videoUrl = await fetchPexelsVideo(term);
+    if (videoUrl) return videoUrl;
+  }
+
+  // Fallback: return null (will use hardcoded or no video)
+  return null;
 }
 
 // Load prompt configs
@@ -120,7 +273,8 @@ function detectIndustryFromDescription(description) {
     { industry: 'chiropractic', keywords: ['chiropract', 'physical therapy', 'pt clinic', 'rehab center'] },
     { industry: 'spa-salon', keywords: ['spa', 'salon', 'beauty', 'nail', 'hair stylist', 'esthetician', 'massage therapy'] },
     
-    // Food & Beverage
+    // Food & Beverage (pizza FIRST - more specific than restaurant)
+    { industry: 'pizza', keywords: ['pizza', 'pizzeria', 'pie shop', 'slice'] },
     { industry: 'restaurant', keywords: ['restaurant', 'dining', 'bistro', 'eatery', 'fine dining', 'steakhouse', 'seafood', 'bbq', 'barbecue', 'grill'] },
     { industry: 'cafe', keywords: ['coffee', 'cafe', 'espresso', 'tea house', 'roaster'] },
     { industry: 'bar', keywords: ['bar', 'nightclub', 'lounge', 'pub', 'brewery', 'cocktail', 'wine bar'] },
@@ -255,8 +409,59 @@ if (!fs.existsSync(GENERATED_PROJECTS)) {
   console.log(`📁 Created output directory: ${GENERATED_PROJECTS}`);
 }
 
-// Middleware
-app.use(cors());
+// ===========================================
+// SECURITY MIDDLEWARE
+// ===========================================
+
+// Helmet security headers - MUST be early in middleware chain
+app.use(helmet({
+  // Content Security Policy
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // React needs these
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:", "blob:"],
+      mediaSrc: ["'self'", "https://player.vimeo.com", "https://*.pexels.com"],
+      connectSrc: ["'self'", "https://api.anthropic.com", "https://api.pexels.com", "https://*.sentry.io"],
+      frameSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null,
+    },
+  },
+  // Cross-Origin settings
+  crossOriginEmbedderPolicy: false, // Needed for external images/videos
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  // Strict Transport Security (HSTS)
+  hsts: {
+    maxAge: 31536000, // 1 year
+    includeSubDomains: true,
+    preload: true
+  },
+  // Prevent clickjacking
+  frameguard: { action: 'deny' },
+  // Prevent MIME type sniffing
+  noSniff: true,
+  // XSS protection
+  xssFilter: true,
+  // Referrer Policy
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  // Don't advertise Express
+  hidePoweredBy: true
+}));
+
+// CORS configuration
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production'
+    ? [process.env.FRONTEND_URL, /\.be1st\.io$/]
+    : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
+// Body parsing
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
@@ -478,6 +683,67 @@ app.post('/api/auth/validate-dev',
   }
 );
 
+// Admin login endpoint (JWT-based)
+app.post('/api/auth/login',
+  body('email').isEmail().withMessage('Valid email is required'),
+  body('password').isString().notEmpty().withMessage('Password is required'),
+  handleValidationErrors,
+  async (req, res) => {
+    try {
+      const { email, password } = req.body;
+
+      if (!db) {
+        return res.status(500).json({ success: false, error: 'Database not available' });
+      }
+
+      // Find user by email
+      const result = await db.query(
+        'SELECT id, email, password_hash, name, subscription_tier, is_admin FROM users WHERE email = $1',
+        [email]
+      );
+
+      if (result.rows.length === 0) {
+        return res.status(401).json({ success: false, error: 'Invalid credentials' });
+      }
+
+      const user = result.rows[0];
+
+      // Verify password
+      const validPassword = await bcrypt.compare(password, user.password_hash);
+      if (!validPassword) {
+        return res.status(401).json({ success: false, error: 'Invalid credentials' });
+      }
+
+      // Check if admin
+      if (!user.is_admin) {
+        return res.status(403).json({ success: false, error: 'Admin access required' });
+      }
+
+      // Generate JWT - use is_admin (snake_case) to match auth middleware
+      const token = jwt.sign(
+        { id: user.id, email: user.email, is_admin: user.is_admin },
+        process.env.JWT_SECRET || 'blink-default-secret',
+        { expiresIn: '24h' }
+      );
+
+      res.json({
+        success: true,
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          subscription_tier: user.subscription_tier,
+          is_admin: user.is_admin
+        }
+      });
+    } catch (error) {
+      console.error('Login error:', error);
+      res.status(500).json({ success: false, error: 'Login failed' });
+    }
+  }
+);
+
 // Get bundles
 app.get('/api/bundles', (req, res) => {
   res.json({ success: true, bundles: BUNDLES });
@@ -611,7 +877,9 @@ app.get('/api/projects', (req, res) => {
         if (fs.existsSync(manifestPath)) {
           try {
             manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
-          } catch (e) {}
+          } catch (e) {
+            console.warn(`   ⚠️ Failed to parse manifest for ${d.name}:`, e.message);
+          }
         }
         
         return {
@@ -1204,7 +1472,10 @@ app.post('/api/assemble', async (req, res) => {
       if (fs.existsSync(manifestPath)) {
         try {
           manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
-        } catch (e) {}
+        } catch (e) {
+          console.warn(`   ⚠️ Failed to parse project manifest:`, e.message);
+          captureException(e, { tags: { component: 'manifest-parser' } });
+        }
       }
 
       // ============================================
@@ -1342,9 +1613,15 @@ app.post('/api/assemble', async (req, res) => {
         industryKey = detectIndustryFromDescription(description.text);
       }
       industryKey = industryKey || 'saas';
-      const layoutKey = description?.layoutKey || null;
+      // Support both layoutKey and layoutStyleId (frontend sends layoutStyleId)
+      const layoutKey = description?.layoutStyleId || description?.layoutKey || null;
       const selectedEffects = description?.effects || null;
       const promptConfig = buildPrompt(industryKey, layoutKey, selectedEffects);
+
+      // Log layout selection for debugging
+      if (layoutKey) {
+        console.log(`   🎨 Using layout style: ${layoutKey} for industry: ${industryKey}`);
+      }
       
       // Save theme if provided (or create from promptConfig)
       const themeToUse = theme || (promptConfig ? {
@@ -1464,10 +1741,16 @@ body {
           if (apiKey) {
             const Anthropic = require('@anthropic-ai/sdk');
             const client = new Anthropic({ apiKey });
-            
+
+            // Cost tracking for this generation
+            let totalInputTokens = 0;
+            let totalOutputTokens = 0;
+            let totalCost = 0;
+            const MODEL_NAME = 'claude-sonnet-4-20250514';
+
             // Generate all pages in parallel for speed
             console.log(`      ⚡ Generating ${description.pages.length} pages in parallel...`);
-            
+
             const pagePromises = description.pages.map(async (pageId) => {
               const componentName = toComponentName(pageId);
               const maxRetries = 2;
@@ -1481,16 +1764,27 @@ body {
                 const isEnhanceMode = description.enhanceMode === true;
                 const existingSiteData = description.existingSite || null;
                 
-                const pagePrompt = isEnhanceMode 
-                  ? buildEnhanceModePrompt(pageId, componentName, existingSiteData, promptConfig) 
-                  : buildFreshModePrompt(pageId, componentName, otherPages, description, promptConfig);
+                const pagePrompt = isEnhanceMode
+                  ? buildEnhanceModePrompt(pageId, componentName, existingSiteData, promptConfig)
+                  : await buildFreshModePrompt(pageId, componentName, otherPages, description, promptConfig);
 
                 const pageResponse = await client.messages.create({
-                  model: 'claude-sonnet-4-20250514',
+                  model: MODEL_NAME,
                   max_tokens: 16000,
                   messages: [{ role: 'user', content: pagePrompt }]
                 });
-                
+
+                // Track API usage from response
+                if (pageResponse.usage) {
+                  const inputTokens = pageResponse.usage.input_tokens || 0;
+                  const outputTokens = pageResponse.usage.output_tokens || 0;
+                  totalInputTokens += inputTokens;
+                  totalOutputTokens += outputTokens;
+                  // Calculate cost: Claude Sonnet = $3/M input, $15/M output
+                  const pageCost = (inputTokens / 1000000) * 3.0 + (outputTokens / 1000000) * 15.0;
+                  totalCost += pageCost;
+                }
+
                 let pageCode = pageResponse.content[0].text;
                 pageCode = pageCode.replace(/^```jsx?\n?/g, '').replace(/\n?```$/g, '').trim();
                 
@@ -1530,7 +1824,32 @@ body {
             const results = await Promise.all(pagePromises);
             const successCount = results.filter(r => r.success).length;
             console.log(`      ✅ ${successCount}/${description.pages.length} pages complete`);
-            
+
+            // Log and save API cost tracking
+            if (totalCost > 0) {
+              console.log(`      💰 API Cost: $${totalCost.toFixed(4)} (${totalInputTokens} in / ${totalOutputTokens} out tokens)`);
+
+              // Save to database if available
+              if (db && db.trackApiUsage) {
+                try {
+                  await db.trackApiUsage({
+                    projectId: null, // No project ID tracked yet
+                    endpoint: 'claude-api',
+                    operation: 'page-generation',
+                    tokensUsed: totalInputTokens + totalOutputTokens,
+                    inputTokens: totalInputTokens,
+                    outputTokens: totalOutputTokens,
+                    cost: totalCost,
+                    durationMs: Date.now() - startTime,
+                    responseStatus: 200
+                  });
+                  console.log(`      ✅ Cost tracked in database`);
+                } catch (dbErr) {
+                  console.error(`      ⚠️ Failed to track cost: ${dbErr.message}`);
+                }
+              }
+            }
+
             // Generate updated App.jsx with routes to new pages
             const appJsx = buildAppJsx(name, description.pages, promptConfig, sanitizedIndustry);
             fs.writeFileSync(path.join(frontendSrcPath, 'App.jsx'), appJsx);
@@ -1601,6 +1920,255 @@ console.log(`   ⏱️ Total generation time: ${((Date.now() - startTime) / 1000
 // ============================================
 // PROMPT BUILDERS - Use JSON Config
 // ============================================
+
+/**
+ * Build smart context guide for AI to infer realistic content from minimal input
+ * This helps Claude generate specific, realistic content even when user provides minimal details
+ */
+function buildSmartContextGuide(businessInput, industryName) {
+  const input = (businessInput || '').toLowerCase();
+  const industry = (industryName || '').toLowerCase();
+
+  // Detect business type from input keywords
+  const contextHints = [];
+
+  // Restaurant/Food detection
+  if (input.includes('pizza') || input.includes('pizzeria') || industry.includes('restaurant')) {
+    contextHints.push(`
+DETECTED: PIZZA/ITALIAN RESTAURANT
+Generate these specific elements:
+- MENU: Create 15-20 actual menu items with names like "Margherita", "Meat Lovers Supreme", "Brooklyn Special"
+- PRICES: Pizzas $14-24, Appetizers $8-14, Salads $10-15, Drinks $3-5, Desserts $6-9
+- SECTIONS: Pizzas, Specialty Pizzas, Calzones, Salads, Appetizers, Drinks, Desserts
+- HOURS: Mon-Thu 11am-10pm, Fri-Sat 11am-11pm, Sun 12pm-9pm
+- FEATURES: Dine-in, Takeout, Delivery, Catering available
+- ATMOSPHERE: Family-friendly, casual Italian dining
+`);
+  }
+
+  if (input.includes('dental') || input.includes('dentist') || industry.includes('dental')) {
+    contextHints.push(`
+DETECTED: DENTAL PRACTICE
+Generate these specific elements:
+- SERVICES: General Dentistry, Cosmetic Dentistry, Teeth Whitening, Dental Implants, Invisalign, Emergency Care
+- TEAM: Create 3-4 dentist/hygienist profiles with realistic names and specialties
+- INSURANCE: "We accept most major insurance plans including Delta, Cigna, Aetna, MetLife"
+- HOURS: Mon-Fri 8am-5pm, Sat 9am-2pm (by appointment)
+- FEATURES: New patient specials, Same-day appointments, Sedation dentistry available
+- ATMOSPHERE: Modern, comfortable, family-friendly practice
+`);
+  }
+
+  if (input.includes('law') || input.includes('attorney') || input.includes('legal') || industry.includes('legal') || industry.includes('law')) {
+    contextHints.push(`
+DETECTED: LAW FIRM
+Generate these specific elements:
+- PRACTICE AREAS: Personal Injury, Family Law, Criminal Defense, Estate Planning, Business Law
+- TEAM: Create 3-5 attorney profiles with JD credentials, bar admissions, years of experience
+- STATS: "Over $50M recovered for clients", "500+ cases won", "35+ years combined experience"
+- CONSULTATION: Free initial consultation, No fee unless we win (for PI cases)
+- HOURS: Mon-Fri 9am-6pm, 24/7 for emergencies
+- ATMOSPHERE: Professional, trustworthy, client-focused
+`);
+  }
+
+  if (input.includes('gym') || input.includes('fitness') || input.includes('crossfit') || industry.includes('fitness')) {
+    contextHints.push(`
+DETECTED: FITNESS/GYM
+Generate these specific elements:
+- CLASSES: CrossFit, HIIT, Spin, Yoga, Strength Training, Boxing, Personal Training
+- MEMBERSHIP: Basic $29/mo, Premium $49/mo, VIP $79/mo with specific features for each
+- AMENITIES: Free weights, Cardio machines, Locker rooms, Showers, Sauna, Smoothie bar
+- HOURS: Mon-Fri 5am-10pm, Sat-Sun 7am-8pm
+- FEATURES: Free trial class, No contract options, Personal training available
+- ATMOSPHERE: Motivating, high-energy, supportive community
+`);
+  }
+
+  if (input.includes('salon') || input.includes('spa') || input.includes('beauty') || industry.includes('spa') || industry.includes('salon')) {
+    contextHints.push(`
+DETECTED: SALON/SPA
+Generate these specific elements:
+- SERVICES: Haircuts $35-75, Color $85-150, Highlights $120-200, Facials $75-150, Massage $80-150, Nails $25-65
+- TEAM: Create 4-6 stylist profiles with specialties and experience
+- PACKAGES: Bridal packages, Spa day packages, Monthly memberships
+- HOURS: Tue-Sat 9am-7pm, Sun-Mon closed
+- FEATURES: Online booking, Gift cards, Loyalty program
+- ATMOSPHERE: Relaxing, upscale, luxurious pampering experience
+`);
+  }
+
+  if (input.includes('plumb') || input.includes('hvac') || input.includes('electric') || industry.includes('plumber') || industry.includes('home-services')) {
+    contextHints.push(`
+DETECTED: HOME SERVICES (Plumbing/HVAC/Electrical)
+Generate these specific elements:
+- SERVICES: Emergency repairs, Installation, Maintenance, Inspections
+- PRICING: Service call $89, specific job estimates on common repairs
+- AVAILABILITY: 24/7 emergency service, Same-day appointments
+- COVERAGE: List 5-10 cities/neighborhoods served
+- TRUST: Licensed, bonded, insured, background-checked technicians
+- GUARANTEES: Satisfaction guaranteed, Upfront pricing, No overtime charges
+`);
+  }
+
+  if (input.includes('auto') || input.includes('car') || input.includes('mechanic') || industry.includes('auto')) {
+    contextHints.push(`
+DETECTED: AUTO REPAIR/DEALERSHIP
+Generate these specific elements:
+- SERVICES: Oil changes $39.99, Brake service, Tire rotation, Engine diagnostics, A/C repair
+- BRANDS: All makes and models, or specific brand specialization
+- WARRANTIES: 12-month/12,000-mile warranty on repairs
+- HOURS: Mon-Fri 7:30am-6pm, Sat 8am-4pm
+- FEATURES: Free estimates, Loaner cars available, Shuttle service
+- TRUST: ASE certified technicians, BBB A+ rating
+`);
+  }
+
+  if (input.includes('tattoo') || input.includes('ink') || input.includes('body art') || industry.includes('tattoo')) {
+    contextHints.push(`
+DETECTED: TATTOO STUDIO
+Generate these specific elements:
+- ARTISTS: Create 3-5 tattoo artist profiles with UNIQUE names (like "Marcus 'Blackout' Rodriguez"), each with a specialty:
+  * Traditional & Neo-Traditional
+  * Photorealistic Portraits
+  * Blackwork & Geometric
+  * Japanese/Irezumi
+  * Watercolor & Abstract
+- PRICING: Custom quotes start at $150/hour, minimum $80-100, large pieces by consultation
+- SERVICES: Custom tattoos, Cover-ups, Touch-ups, Consultations (free)
+- HOURS: Tue-Sat 12pm-10pm, Sun-Mon by appointment only
+- POLICIES: 18+ with valid ID, Deposit required, 48-hour cancellation policy
+- AFTERCARE: Detailed aftercare instructions provided, Free touch-ups within 6 months
+- ATMOSPHERE: Professional, clean, sterile environment, Walk-ins welcome (when available)
+`);
+  }
+
+  if (input.includes('barber') || input.includes('grooming') || industry.includes('barber')) {
+    contextHints.push(`
+DETECTED: BARBERSHOP
+Generate these specific elements:
+- BARBERS: Create 3-5 barber profiles with names and specialties (fades, classic cuts, beard work)
+- SERVICES: Haircut $25-35, Beard trim $15, Hot towel shave $30, Kids cut $20, Full service $50
+- HOURS: Tue-Fri 9am-7pm, Sat 8am-5pm, Sun-Mon closed
+- FEATURES: Walk-ins welcome, Appointments available, Cash and card accepted
+- PRODUCTS: Premium pomades, beard oils, grooming kits for sale
+- ATMOSPHERE: Classic barbershop vibe, sports on TV, friendly conversation
+`);
+  }
+
+  if (input.includes('preschool') || input.includes('montessori') || input.includes('daycare') ||
+      input.includes('childcare') || input.includes('nursery') || input.includes('kindergarten') ||
+      industry.includes('preschool') || industry.includes('montessori') || industry.includes('daycare')) {
+    contextHints.push(`
+DETECTED: PRESCHOOL/MONTESSORI/DAYCARE
+Generate these specific elements:
+- PROGRAMS: Infant (6wks-12mo), Toddler (1-2yrs), Preschool (3-4yrs), Pre-K (4-5yrs), Before/After School
+- CURRICULUM: Play-based learning, Montessori method, STEM activities, Art & Music, Outdoor play
+- TEACHERS: Create 4-6 warm, friendly teacher profiles with education credentials (ECE certified, CPR trained)
+- HOURS: Mon-Fri 6:30am-6:30pm, Year-round or School-year options
+- TUITION: Full-time $1,200-1,800/mo, Part-time options available, Sibling discounts
+- FEATURES: Low student-teacher ratios (1:4 for infants, 1:8 for preschool), Organic snacks, Daily reports via app
+- SAFETY: Licensed, Background-checked staff, Secure entry, Video monitoring
+- GALLERY: Show children learning, art projects, playground activities, circle time, reading corners
+- ATMOSPHERE: Nurturing, educational, safe, fun learning environment
+`);
+  }
+
+  if (input.includes('education') || input.includes('school') || input.includes('academy') ||
+      input.includes('tutoring') || input.includes('learning center') ||
+      industry.includes('education') || industry.includes('tutoring')) {
+    contextHints.push(`
+DETECTED: EDUCATION/TUTORING CENTER
+Generate these specific elements:
+- PROGRAMS: Math tutoring, Reading/Writing, Test prep (SAT/ACT), STEM enrichment, Language classes
+- GRADE LEVELS: Elementary, Middle School, High School, College prep
+- INSTRUCTORS: Create 4-6 teacher profiles with degrees and teaching experience
+- FORMATS: 1-on-1 tutoring, Small groups (3-5 students), Online sessions, In-home tutoring
+- PRICING: $50-100/hour for individual, $30-50/hour for group sessions, Package discounts
+- HOURS: Mon-Fri 3pm-8pm, Sat 9am-5pm (peak after-school hours)
+- RESULTS: "Students improve 2+ grade levels", "95% see improvement within 3 months"
+- FEATURES: Free assessment, Progress tracking, Homework help, Flexible scheduling
+- GALLERY: Show students studying, classroom activities, graduation celebrations
+- ATMOSPHERE: Supportive, encouraging, academic excellence focus
+`);
+  }
+
+  // Default guidance if no specific type detected
+  if (contextHints.length === 0) {
+    contextHints.push(`
+GENERAL BUSINESS - Infer from the name and industry:
+- Create 6-10 specific services/products with realistic prices
+- Generate 3-4 team member profiles with realistic names and roles
+- Include specific business hours appropriate for the industry
+- Add realistic stats: years in business (10-25), customers served (1000+), rating (4.8+ stars)
+- Create 3-4 testimonials with first names and specific praise
+- Include specific location/service area details
+`);
+  }
+
+  return contextHints.join('\n');
+}
+
+/**
+ * Build layout context from frontend preview configuration
+ * This converts the frontend's layoutStylePreview into AI prompt instructions
+ */
+function buildLayoutContextFromPreview(layoutId, previewConfig, industryKey) {
+  const heroStyleMap = {
+    'full': 'Full-bleed hero image with overlay text',
+    'split': 'Split layout with text on left, image on right',
+    'minimal': 'Minimal hero with clean typography focus',
+    'corporate': 'Professional corporate hero with subtle imagery',
+    'warm': 'Warm, welcoming hero with friendly imagery',
+    'clean': 'Clean, modern hero with plenty of whitespace',
+    'team': 'Team-focused hero showcasing professionals',
+    'overlay': 'Image with gradient overlay and centered text'
+  };
+
+  const contentStyleMap = {
+    'formal': 'Formal, professional content presentation',
+    'results': 'Results-driven with case studies and testimonials',
+    'services': 'Services-focused with clear offerings grid',
+    'caring': 'Warm, compassionate content for patient/client trust',
+    'personal': 'Personal, human-centered content approach'
+  };
+
+  const ctaStyleMap = {
+    'overlay': 'CTA button overlaid on hero image',
+    'button': 'Prominent CTA buttons below hero',
+    'prominent': 'Large, eye-catching CTA section',
+    'subtle': 'Subtle, professional CTA placement',
+    'consultation': 'Free consultation CTA emphasis',
+    'booking': 'Easy booking/appointment CTA'
+  };
+
+  const heroDesc = heroStyleMap[previewConfig.heroStyle] || 'Modern hero section';
+  const contentDesc = contentStyleMap[previewConfig.contentStyle] || '';
+  const ctaDesc = ctaStyleMap[previewConfig.ctaStyle] || 'Clear call-to-action';
+  const menuPosition = previewConfig.menuPosition ? `Menu position: ${previewConfig.menuPosition}` : '';
+
+  return `
+═══════════════════════════════════════════════════════════════
+SELECTED LAYOUT STYLE: ${layoutId.replace(/-/g, ' ').toUpperCase()}
+═══════════════════════════════════════════════════════════════
+
+HERO SECTION STYLE:
+${heroDesc}
+${previewConfig.heroStyle === 'full' ? '- Use a dramatic full-width background image\n- Text should be white with text-shadow for readability\n- Include gradient overlay for text contrast' : ''}
+${previewConfig.heroStyle === 'split' ? '- Two-column layout: compelling headline on left, visual on right\n- Clean separation between text and image areas' : ''}
+${previewConfig.heroStyle === 'minimal' ? '- Focus on typography, minimal imagery\n- Lots of whitespace, clean and elegant\n- Let the copy speak for itself' : ''}
+
+${contentDesc ? `CONTENT STYLE:\n${contentDesc}` : ''}
+
+CTA APPROACH:
+${ctaDesc}
+${menuPosition}
+
+IMPORTANT: The user specifically chose the "${layoutId.replace(/-/g, ' ')}" layout.
+Follow these style guidelines closely when generating the hero and page structure.
+═══════════════════════════════════════════════════════════════
+`;
+}
 
 /**
  * Extract statistics from business description text
@@ -1678,7 +2246,7 @@ function extractBusinessStats(businessText, industryName) {
     let result = 'EXTRACTED STATS FROM BUSINESS DESCRIPTION (USE THESE!):\n';
     for (const [label, data] of Object.entries(foundStats)) {
       result += `- ${label}: ${data.value}${data.suffix}\n`;
-      stats.push(`<AnimatedCounter end={${data.value}} suffix="${data.suffix}" duration={2000} />`);
+      stats.push(`<AnimatedCounter end={${data.value}} suffix="${data.suffix}" duration={2} />`);
     }
     result += '\nUSE THESE EXACT NUMBERS in AnimatedCounter components!\n';
     return result;
@@ -1702,9 +2270,13 @@ function generateDefaultStats(industryName) {
   };
 
   // Industry-specific defaults
-  if (industry.includes('law') || industry.includes('legal')) {
+  if (industry.includes('tattoo') || industry.includes('ink') || industry.includes('body art')) {
+    defaults = { years: 8, customers: 5000, satisfaction: 99, extra: { label: 'Custom Designs', value: 10000 } };
+  } else if (industry.includes('barber') || industry.includes('hair') || industry.includes('salon') || industry.includes('grooming')) {
+    defaults = { years: 12, customers: 2700, satisfaction: 98, extra: { label: 'Master Barbers', value: 4 } };
+  } else if (industry.includes('law') || industry.includes('legal')) {
     defaults = { years: 25, customers: 500, satisfaction: 98, extra: { label: 'Cases Won', value: 250 } };
-  } else if (industry.includes('restaurant') || industry.includes('food')) {
+  } else if (industry.includes('restaurant') || industry.includes('food') || industry.includes('pizza')) {
     defaults = { years: 10, customers: 5000, satisfaction: 97, extra: { label: 'Dishes Served', value: 50000 } };
   } else if (industry.includes('fitness') || industry.includes('gym')) {
     defaults = { years: 8, customers: 2000, satisfaction: 96, extra: { label: 'Transformations', value: 500 } };
@@ -1718,6 +2290,18 @@ function generateDefaultStats(industryName) {
     defaults = { years: 10, customers: 5000, satisfaction: 96, extra: { label: 'Products', value: 500 } };
   } else if (industry.includes('consult') || industry.includes('professional')) {
     defaults = { years: 20, customers: 300, satisfaction: 99, extra: { label: 'Projects', value: 150 } };
+  } else if (industry.includes('auto') || industry.includes('car') || industry.includes('mechanic')) {
+    defaults = { years: 18, customers: 4000, satisfaction: 97, extra: { label: 'Vehicles Serviced', value: 8000 } };
+  } else if (industry.includes('spa') || industry.includes('beauty') || industry.includes('wellness')) {
+    defaults = { years: 10, customers: 3500, satisfaction: 98, extra: { label: 'Treatments', value: 15000 } };
+  } else if (industry.includes('pet') || industry.includes('vet') || industry.includes('grooming')) {
+    defaults = { years: 8, customers: 2000, satisfaction: 99, extra: { label: 'Happy Pets', value: 5000 } };
+  } else if (industry.includes('preschool') || industry.includes('montessori') || industry.includes('daycare') ||
+             industry.includes('childcare') || industry.includes('nursery') || industry.includes('kindergarten')) {
+    defaults = { years: 12, customers: 500, satisfaction: 99, extra: { label: 'Graduates', value: 1500 } };
+  } else if (industry.includes('education') || industry.includes('school') || industry.includes('academy') ||
+             industry.includes('tutoring') || industry.includes('learning')) {
+    defaults = { years: 15, customers: 1000, satisfaction: 97, extra: { label: 'Students Taught', value: 5000 } };
   }
 
   let result = `NO SPECIFIC STATS FOUND - USE THESE REALISTIC DEFAULTS FOR ${industryName || 'BUSINESS'}:
@@ -1735,6 +2319,297 @@ IMPORTANT: These are MINIMUM realistic values. Feel free to adjust slightly high
 NEVER use 0 or placeholder text like "X" - always use real numbers!`;
 
   return result;
+}
+
+/**
+ * Generate CONTEXT-AWARE industry-specific image URLs
+ * Returns different images for hero, team, gallery, services based on context
+ */
+function getIndustryImageUrls(industryName) {
+  const industry = (industryName || '').toLowerCase();
+
+  // Context-aware image configurations - different images for different page sections
+  const imageConfig = {
+    tattoo: {
+      hero: 'https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?w=1920', // Tattoo studio interior
+      heroVideo: 'https://videos.pexels.com/video-files/5319884/5319884-hd_1920_1080_30fps.mp4', // Tattoo artist working
+      team: [
+        'https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?w=800', // Tattoo artist working
+        'https://images.unsplash.com/photo-1590246814883-57764f7f17c9?w=800', // Tattooed person portrait
+        'https://images.unsplash.com/photo-1542727365-19732a80dcfd?w=800', // Artist with tattoo machine
+        'https://images.unsplash.com/photo-1565058379802-bbe93b2f703a?w=800'  // Tattooed professional
+      ],
+      gallery: [
+        'https://images.unsplash.com/photo-1562962230-16e4623d36e6?w=800', // Tattoo closeup
+        'https://images.unsplash.com/photo-1560707303-4e980ce876ad?w=800', // Arm tattoo
+        'https://images.unsplash.com/photo-1475403614135-5f1aa0eb5015?w=800', // Back tattoo
+        'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=800'  // Detailed tattoo work
+      ],
+      services: [
+        'https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?w=800', // Tattooing in progress
+        'https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?w=800'  // Studio setup
+      ],
+      searchTerms: ['tattoo artist', 'tattoo studio', 'tattooing', 'tattoo art', 'inked']
+    },
+    barbershop: {
+      hero: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1920',
+      heroVideo: 'https://videos.pexels.com/video-files/3993451/3993451-uhd_2560_1440_25fps.mp4', // Barber cutting hair
+      team: [
+        'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800', // Barber at work
+        'https://images.unsplash.com/photo-1567894340315-735d7c361db0?w=800', // Barber portrait
+        'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=800', // Barber styling
+        'https://images.unsplash.com/photo-1493256338651-d82f7acb2b38?w=800'  // Barber with client
+      ],
+      gallery: [
+        'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=800', // Barber tools
+        'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=800', // Shop interior
+        'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=800'  // Styling
+      ],
+      services: [
+        'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800',
+        'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=800'
+      ],
+      searchTerms: ['barbershop', 'barber cutting hair', 'mens grooming', 'barber portrait']
+    },
+    salon: {
+      hero: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920',
+      team: [
+        'https://images.unsplash.com/photo-1562322140-8baeececf3df?w=800', // Stylist working
+        'https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?w=800', // Hairstylist portrait
+        'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800'  // Salon professional
+      ],
+      gallery: [
+        'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800',
+        'https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?w=800'
+      ],
+      services: [
+        'https://images.unsplash.com/photo-1562322140-8baeececf3df?w=800',
+        'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800'
+      ],
+      searchTerms: ['hair salon', 'hairstylist', 'hair cutting', 'salon professional']
+    },
+    restaurant: {
+      hero: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920',
+      heroVideo: 'https://videos.pexels.com/video-files/3195394/3195394-uhd_2560_1440_25fps.mp4', // Chef plating food
+      team: [
+        'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=800', // Chef portrait
+        'https://images.unsplash.com/photo-1581299894007-aaa50297cf16?w=800', // Chef cooking
+        'https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?w=800'  // Kitchen staff
+      ],
+      gallery: [
+        'https://images.unsplash.com/photo-1544025162-d76694265947?w=800', // Food plating
+        'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=800', // Dish
+        'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800'  // Food
+      ],
+      services: [
+        'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800',
+        'https://images.unsplash.com/photo-1544025162-d76694265947?w=800'
+      ],
+      searchTerms: ['restaurant interior', 'chef cooking', 'fine dining', 'chef portrait']
+    },
+    pizza: {
+      hero: 'https://images.unsplash.com/photo-1579751626657-72bc17010498?w=1920',
+      heroVideo: 'https://videos.pexels.com/video-files/4253291/4253291-uhd_2560_1440_25fps.mp4', // Pizza being made
+      team: [
+        'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800', // Pizza chef
+        'https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=800'  // Pizza making
+      ],
+      gallery: [
+        'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800',
+        'https://images.unsplash.com/photo-1604382355076-af4b0eb60143?w=800'
+      ],
+      services: [
+        'https://images.unsplash.com/photo-1579751626657-72bc17010498?w=800'
+      ],
+      searchTerms: ['pizza chef', 'pizzeria', 'pizza making', 'italian restaurant']
+    },
+    dental: {
+      hero: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1920',
+      team: [
+        'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800', // Dentist portrait
+        'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800', // Dental team
+        'https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=800'  // Dentist working
+      ],
+      gallery: [
+        'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800',
+        'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800'
+      ],
+      services: [
+        'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800'
+      ],
+      searchTerms: ['dentist', 'dental office', 'dental team', 'dental professional']
+    },
+    fitness: {
+      hero: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920',
+      heroVideo: 'https://videos.pexels.com/video-files/4761434/4761434-uhd_2560_1440_25fps.mp4', // Gym workout
+      team: [
+        'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800', // Personal trainer
+        'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800', // Trainer portrait
+        'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=800'  // Fitness coach
+      ],
+      gallery: [
+        'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800',
+        'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=800'
+      ],
+      services: [
+        'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800'
+      ],
+      searchTerms: ['personal trainer', 'fitness coach', 'gym trainer', 'workout instructor']
+    },
+    auto: {
+      hero: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1920',
+      team: [
+        'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800', // Mechanic
+        'https://images.unsplash.com/photo-1625047509168-a7026f36de04?w=800'  // Auto tech
+      ],
+      gallery: [
+        'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=800',
+        'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800'
+      ],
+      services: [
+        'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800'
+      ],
+      searchTerms: ['auto mechanic', 'car repair', 'mechanic portrait', 'auto technician']
+    },
+    law: {
+      hero: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1920',
+      team: [
+        'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=800', // Attorney portrait
+        'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800', // Lawyer
+        'https://images.unsplash.com/photo-1521791055366-0d553872125f?w=800'  // Legal professional
+      ],
+      gallery: [
+        'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=800',
+        'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800'
+      ],
+      services: [
+        'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=800'
+      ],
+      searchTerms: ['attorney', 'law firm', 'lawyer portrait', 'legal professional']
+    },
+    spa: {
+      hero: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=1920',
+      heroVideo: 'https://videos.pexels.com/video-files/3188167/3188167-uhd_2560_1440_25fps.mp4', // Spa massage treatment
+      team: [
+        'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=800', // Spa therapist
+        'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800'  // Wellness professional
+      ],
+      gallery: [
+        'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800',
+        'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800'
+      ],
+      services: [
+        'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800'
+      ],
+      searchTerms: ['spa therapist', 'massage therapist', 'wellness professional', 'spa treatment']
+    },
+    // Education - Preschool, Montessori, Daycare, Learning Centers
+    education: {
+      hero: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1920', // Children learning
+      team: [
+        'https://images.unsplash.com/photo-1544717305-2782549b5136?w=800', // Teacher with students
+        'https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=800', // Teacher smiling
+        'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800', // Educator portrait
+        'https://images.unsplash.com/photo-1577896851231-70ef18881754?w=800'  // Teacher helping student
+      ],
+      gallery: [
+        'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800', // Children learning
+        'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=800', // Art project
+        'https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=800', // Classroom activities
+        'https://images.unsplash.com/photo-1564429238607-4a7e00ead26a?w=800', // Children playing
+        'https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=800', // Reading time
+        'https://images.unsplash.com/photo-1602052793312-b99c2a9ee797?w=800'  // Group activity
+      ],
+      services: [
+        'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800',
+        'https://images.unsplash.com/photo-1544717305-2782549b5136?w=800'
+      ],
+      searchTerms: ['preschool classroom', 'children learning', 'montessori', 'daycare activities', 'kids art project']
+    },
+    // Preschool/Montessori specific (alias with child-specific images)
+    preschool: {
+      hero: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=1920', // Kids in classroom
+      team: [
+        'https://images.unsplash.com/photo-1544717305-2782549b5136?w=800', // Teacher with children
+        'https://images.unsplash.com/photo-1577896851231-70ef18881754?w=800', // Teacher reading
+        'https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=800', // Friendly teacher
+        'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800'  // Educator
+      ],
+      gallery: [
+        'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=800', // Art activity
+        'https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=800', // Circle time
+        'https://images.unsplash.com/photo-1564429238607-4a7e00ead26a?w=800', // Playground
+        'https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=800', // Story time
+        'https://images.unsplash.com/photo-1602052793312-b99c2a9ee797?w=800', // Music class
+        'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800', // Learning center
+        'https://images.unsplash.com/photo-1567057419565-4349c49d8a04?w=800', // Sensory play
+        'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800'  // Happy children
+      ],
+      services: [
+        'https://images.unsplash.com/photo-1544717305-2782549b5136?w=800',
+        'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=800'
+      ],
+      searchTerms: ['preschool', 'montessori classroom', 'toddler activities', 'early childhood', 'daycare']
+    },
+    default: {
+      hero: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920',
+      team: [
+        'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800', // Business team
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800', // Professional portrait
+        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800'  // Team member
+      ],
+      gallery: [
+        'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800',
+        'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800'
+      ],
+      services: [
+        'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800'
+      ],
+      searchTerms: ['business professional', 'team portrait', 'office', 'professional headshot']
+    }
+  };
+
+  // Match industry to config with expanded matching
+  let config = imageConfig.default;
+  if (industry.includes('tattoo') || industry.includes('ink') || industry.includes('body art')) {
+    config = imageConfig.tattoo;
+  } else if (industry.includes('barber') || industry.includes('grooming')) {
+    config = imageConfig.barbershop;
+  } else if (industry.includes('salon') || industry.includes('hair') || industry.includes('beauty')) {
+    config = imageConfig.salon;
+  } else if (industry.includes('pizza') || industry.includes('pizzeria')) {
+    config = imageConfig.pizza;
+  } else if (industry.includes('restaurant') || industry.includes('food') || industry.includes('dining') || industry.includes('cafe')) {
+    config = imageConfig.restaurant;
+  } else if (industry.includes('dental') || industry.includes('dentist')) {
+    config = imageConfig.dental;
+  } else if (industry.includes('fitness') || industry.includes('gym') || industry.includes('yoga')) {
+    config = imageConfig.fitness;
+  } else if (industry.includes('auto') || industry.includes('car') || industry.includes('mechanic')) {
+    config = imageConfig.auto;
+  } else if (industry.includes('law') || industry.includes('legal') || industry.includes('attorney')) {
+    config = imageConfig.law;
+  } else if (industry.includes('spa') || industry.includes('wellness') || industry.includes('massage')) {
+    config = imageConfig.spa;
+  } else if (industry.includes('preschool') || industry.includes('montessori') || industry.includes('daycare') ||
+             industry.includes('childcare') || industry.includes('nursery') || industry.includes('early childhood') ||
+             industry.includes('kindergarten') || industry.includes('toddler')) {
+    config = imageConfig.preschool;
+  } else if (industry.includes('education') || industry.includes('school') || industry.includes('academy') ||
+             industry.includes('tutoring') || industry.includes('learning center')) {
+    config = imageConfig.education;
+  }
+
+  // Return with backward compatibility (hero and secondary) PLUS new context-specific fields
+  return {
+    hero: config.hero,
+    heroVideo: config.heroVideo || null, // Video background for supported industries
+    secondary: config.gallery || config.team, // Backward compat
+    team: config.team,
+    gallery: config.gallery,
+    services: config.services,
+    searchTerms: config.searchTerms
+  };
 }
 
 // Build context from existing site (REBUILD mode)
@@ -2009,7 +2884,7 @@ Apply this visual style throughout all pages - backgrounds, image treatments, ov
   return context;
 }
 
-function buildFreshModePrompt(pageId, pageName, otherPages, description, promptConfig) {
+async function buildFreshModePrompt(pageId, pageName, otherPages, description, promptConfig) {
   const cfg = promptConfig || {};
   const industry = cfg.industry || {};
   const colors = cfg.colors || { primary: '#6366f1', accent: '#06b6d4', text: '#1a1a2e', textMuted: '#64748b', background: '#ffffff' };
@@ -2049,38 +2924,284 @@ Replace any standard elements with the user's specified alternatives.
 ══════════════════════════════════════════════════════════════
 ` : '';
 
-  // EXTRACT INDUSTRY LAYOUT CONFIG
+  // EXTRACT INDUSTRY LAYOUT CONFIG (support both layoutKey and layoutStyleId from frontend)
   const industryLayoutKey = description.industryKey || null;
-  const selectedLayoutKey = description.layoutKey || null;
-  const layoutContext = industryLayoutKey ? buildLayoutContext(industryLayoutKey, selectedLayoutKey) : '';
+  const selectedLayoutKey = description.layoutStyleId || description.layoutKey || null;
+  const layoutStylePreview = description.layoutStylePreview || null;
+
+  // Build layout context - prefer frontend preview config, fallback to industry-layouts.cjs
+  let layoutContext = '';
+  if (layoutStylePreview && selectedLayoutKey) {
+    // Use the frontend's preview configuration directly
+    layoutContext = buildLayoutContextFromPreview(selectedLayoutKey, layoutStylePreview, industryLayoutKey);
+  } else if (industryLayoutKey) {
+    // Fallback to industry-layouts.cjs
+    layoutContext = buildLayoutContext(industryLayoutKey, selectedLayoutKey);
+  }
 
   // Extract stats from business description
   const businessText = description.text || '';
   const extractedStats = extractBusinessStats(businessText, industry.name);
 
+  // Build smart context inference for minimal input
+  const businessInput = description.text || 'A professional business';
+  const smartContextGuide = buildSmartContextGuide(businessInput, industry.name);
+
+  // Get industry-specific CONTEXT-AWARE image URLs
+  const industryImages = getIndustryImageUrls(industry.name || businessInput);
+
+  // Check if user enabled video hero (from UI toggle)
+  const enableVideoHero = description.enableVideoHero === true;
+
+  // If no hardcoded video available but video is enabled, try dynamic Pexels fetch
+  if (enableVideoHero && !industryImages.heroVideo) {
+    console.log('   🎬 No hardcoded video - trying dynamic Pexels fetch...');
+    const dynamicVideoUrl = await getIndustryVideo(industry.name || '', businessInput);
+    if (dynamicVideoUrl) {
+      industryImages.heroVideo = dynamicVideoUrl;
+      console.log('   ✅ Using dynamic Pexels video');
+    }
+  }
+
+  const hasVideoAvailable = !!industryImages.heroVideo;
+
+  // Build video context ONLY if video is enabled AND available
+  let videoContext = '';
+  if (enableVideoHero && hasVideoAvailable) {
+    videoContext = `
+══════════════════════════════════════════════════════════════
+🎬 VIDEO BACKGROUND ENABLED - USE THIS FOR HOME PAGE HERO!
+══════════════════════════════════════════════════════════════
+The user has ENABLED video background for the home page hero!
+
+VIDEO URL: ${industryImages.heroVideo}
+POSTER IMAGE (fallback): ${industryImages.hero}
+
+HOW TO USE VideoBackground COMPONENT:
+import { VideoBackground } from '../effects';
+
+<VideoBackground
+  videoSrc="${industryImages.heroVideo}"
+  posterImage="${industryImages.hero}"
+  overlay="linear-gradient(rgba(10, 22, 40, 0.7), rgba(10, 22, 40, 0.85))"
+  height="100vh"
+>
+  {/* Hero content goes here */}
+  <h1>Your Headline</h1>
+  <p>Your tagline</p>
+  <button>CTA Button</button>
+</VideoBackground>
+
+IMPORTANT VIDEO RULES:
+1. USE VideoBackground on the HOME PAGE hero section (user requested this!)
+2. Other pages should use static images (ParallaxSection or regular backgrounds)
+3. The video autoplays muted and loops - perfect for ambiance
+4. On mobile, it automatically falls back to the poster image
+5. Always include a dark overlay for text readability
+══════════════════════════════════════════════════════════════
+`;
+  } else if (hasVideoAvailable && !enableVideoHero) {
+    // Video available but user disabled it
+    videoContext = `
+NOTE: Video background is available for this industry but user has DISABLED it.
+Use static image backgrounds instead (ParallaxSection or backgroundImage).
+`;
+  }
+
+  const imageContext = `
+══════════════════════════════════════════════════════════════
+CONTEXT-AWARE IMAGES - USE THE RIGHT IMAGE FOR EACH SECTION
+══════════════════════════════════════════════════════════════
+${videoContext}
+🎯 HERO/HEADER SECTION - Use atmospheric, wide shots:
+${industryImages.hero}
+
+👥 TEAM/ARTIST/STAFF SECTION - Use portraits of ACTUAL professionals in this industry:
+${(industryImages.team || []).map((url, i) => `Team Member ${i + 1}: ${url}`).join('\n')}
+CRITICAL: For tattoo studios, use tattoo artist photos. For barbershops, use barber photos.
+NEVER use random stock photos of people stretching or unrelated activities!
+
+🖼️ GALLERY/PORTFOLIO SECTION - Use work examples:
+${(industryImages.gallery || []).map((url, i) => `Gallery ${i + 1}: ${url}`).join('\n')}
+
+🛠️ SERVICES SECTION - Use action shots of the work being done:
+${(industryImages.services || []).map((url, i) => `Service ${i + 1}: ${url}`).join('\n')}
+
+🔍 SEARCH TERMS for additional images: ${industryImages.searchTerms.join(', ')}
+
+══════════════════════════════════════════════════════════════
+CRITICAL IMAGE MATCHING RULES:
+══════════════════════════════════════════════════════════════
+1. TEAM PAGES: Use ONLY the team images above - they show actual professionals in this industry
+2. HERO: Use the hero image for big background sections
+3. GALLERY: Use gallery images for portfolio/work showcases
+4. SERVICES: Use service images to illustrate what you offer
+5. NEVER mix contexts - don't put a yoga stretch photo on a tattoo artist page!
+6. NEVER use generic Unsplash URLs - always use the industry-specific ones above
+7. Format: url("IMAGE_URL") for CSS backgrounds or src="IMAGE_URL" for img tags
+
+For TATTOO STUDIOS specifically:
+- Team section: Use photos of tattoo artists working or portraits of tattooed professionals
+- Gallery: Use closeup shots of completed tattoos
+- Hero: Use studio interior with tattoo equipment visible
+
+For PRESCHOOLS/MONTESSORI/DAYCARE specifically:
+- Team section: Use photos of teachers with children, warm educator portraits
+- Gallery: Use photos of children learning, art projects, classroom activities, playground
+- Hero: Use bright, colorful classroom or children engaged in activities
+- NEVER use generic stock business photos - always show children and educators
+
+For EDUCATION/SCHOOLS specifically:
+- Team section: Use photos of teachers, educators, tutors in teaching environments
+- Gallery: Use photos of students learning, classroom settings, study groups
+- Hero: Use academic settings with students engaged in learning
+══════════════════════════════════════════════════════════════
+`;
+
+  // ==========================================
+  // NEW: High-impact question context
+  // ==========================================
+  const teamSize = description.teamSize || null;
+  const priceRange = description.priceRange || null;
+  const yearsEstablished = description.yearsEstablished || null;
+  const inferredDetails = description.inferredDetails || null;
+  const location = description.location || null;
+  const targetAudience = description.targetAudience || [];
+  const primaryCTA = description.primaryCTA || 'contact';
+  const tone = description.tone || 'balanced';
+
+  // Build business context from high-impact questions
+  let businessContext = '';
+
+  if (teamSize || priceRange || yearsEstablished || location) {
+    businessContext = `
+══════════════════════════════════════════════════════════════
+BUSINESS DETAILS - USE THESE FOR ACCURATE CONTENT
+══════════════════════════════════════════════════════════════
+`;
+    if (location) {
+      businessContext += `📍 LOCATION: ${location} - Customize content for this area\n`;
+    }
+    if (teamSize) {
+      const teamSizeMap = {
+        'solo': '1 person (solo operator) - use "I" language, personal touch',
+        'small': '2-4 people - use "our small team" language, close-knit feel',
+        'medium': '5-10 people - use "our team" language, established feel',
+        'large': '10+ people - use "our professionals" language, corporate feel'
+      };
+      businessContext += `👥 TEAM SIZE: ${teamSizeMap[teamSize] || teamSize}\n`;
+    }
+    if (priceRange) {
+      const priceMap = {
+        'budget': 'Budget-friendly ($) - emphasize value, affordability, competitive pricing',
+        'mid': 'Mid-range ($$) - balance quality and value, mainstream pricing',
+        'premium': 'Premium ($$$) - emphasize quality, expertise, worth the investment',
+        'luxury': 'Luxury ($$$$) - exclusive, high-end, bespoke, elite experience'
+      };
+      businessContext += `💰 PRICE RANGE: ${priceMap[priceRange] || priceRange}\n`;
+    }
+    if (yearsEstablished) {
+      const yearsMap = {
+        'new': 'Just starting - emphasize fresh perspective, modern approach, passion',
+        'growing': '1-5 years - emphasize momentum, proven results, growing reputation',
+        'established': '5-15 years - emphasize experience, track record, trusted expertise',
+        'veteran': '15+ years - emphasize legacy, unmatched experience, industry leader'
+      };
+      businessContext += `⏱️ EXPERIENCE: ${yearsMap[yearsEstablished] || yearsEstablished}\n`;
+    }
+    if (targetAudience.length > 0) {
+      businessContext += `🎯 TARGET AUDIENCE: ${targetAudience.join(', ')}\n`;
+    }
+    if (primaryCTA && primaryCTA !== 'contact') {
+      const ctaMap = {
+        'book': 'Book Appointment - make booking CTA prominent',
+        'call': 'Call Now - show phone number prominently',
+        'quote': 'Get a Quote - emphasize free quotes/estimates',
+        'buy': 'Buy/Order Now - shopping/ordering focus',
+        'visit': 'Visit Location - directions and map prominent'
+      };
+      businessContext += `👆 PRIMARY CTA: ${ctaMap[primaryCTA] || primaryCTA}\n`;
+    }
+    businessContext += `🎭 TONE: ${tone}\n`;
+    businessContext += `══════════════════════════════════════════════════════════════\n`;
+  }
+
   return `You are a high-end UI/UX Architect. Create a stunning, unique ${pageId} page.
 
-BUSINESS: ${description.text || 'A professional business'}
+BUSINESS INPUT: ${businessInput}
 INDUSTRY: ${industry.name || 'Business'}
 VIBE: ${industry.vibe || 'Unique and modern'}
-${rebuildContext}${inspiredContext}${assetsContext}${extraDetailsContext}${layoutContext}
+${businessContext}
+
+══════════════════════════════════════════════════════════════
+CRITICAL: SMART CONTENT INFERENCE - USE COMMON SENSE!
+══════════════════════════════════════════════════════════════
+${smartContextGuide}
+
+INFERENCE RULES:
+1. If the user only gave a name like "Mario's Pizza" - YOU must infer:
+   - It's a pizzeria/Italian restaurant
+   - Create a realistic menu with actual pizza names, prices ($14-22), toppings
+   - Include appetizers, salads, drinks, desserts with realistic prices
+   - Add realistic hours (11am-10pm), delivery info, location feel
+
+2. If minimal input like "Brooklyn Dental" - YOU must infer:
+   - It's a dental practice
+   - List services: cleanings, fillings, crowns, whitening, implants
+   - Add insurance info, new patient specials, emergency care
+   - Professional but welcoming atmosphere
+
+3. KEYWORD EXPANSION - If user provides keywords or short phrases, EXPAND them into full content:
+   - "fast, reliable, 24/7" → "Your emergency is our priority. Available 24/7, our team arrives fast and fixes it right the first time."
+   - "family owned, 30 years" → "Family-owned and operated since 1994, we've built our reputation on honest work and lasting relationships."
+   - "organic, locally sourced" → "We source our ingredients from local organic farms, ensuring every dish is fresh, sustainable, and bursting with natural flavor."
+   - Take any keywords the user provides and weave them into compelling, professional copy.
+
+4. NEVER generate generic placeholder content like:
+   - "Lorem ipsum" or "[Business Name]"
+   - "Service 1, Service 2, Service 3"
+   - "$XX.XX" or "Call for pricing"
+   - "123 Main Street" (use realistic addresses)
+
+4. ALWAYS generate specific, realistic, industry-appropriate content:
+   - Real menu items with creative names and accurate prices
+   - Specific service descriptions with typical pricing
+   - Realistic business hours for the industry
+   - Genuine-sounding testimonials with first names
+
+${rebuildContext}${inspiredContext}${assetsContext}${extraDetailsContext}${layoutContext}${imageContext}
 ══════════════════════════════════════════════════════════════
 CRITICAL: STATISTICS & NUMBERS - NEVER USE ZEROS!
 ══════════════════════════════════════════════════════════════
 ${extractedStats}
 
-STAT RULES:
-1. NEVER show "0" or "0+" in any statistic - this looks broken
-2. ALWAYS use the numbers extracted above from the business description
-3. If a stat category has no extracted number, use these REALISTIC MINIMUMS:
-   - Years in business: 5+ (or 10+, 15+, 20+ based on industry maturity)
-   - Customers served: 500+ (or 1000+, 5000+ based on business size)
-   - Projects completed: 100+ (or 250+, 500+)
-   - Team members: 10+ (or 25+, 50+)
-   - Reviews/Testimonials: 100+ (or 200+, 500+)
-   - Satisfaction rate: 95%+ (or 98%+, 99%+)
-4. Match the scale to the business type (local shop vs national chain)
-5. Use AnimatedCounter for ALL stats: <AnimatedCounter end={15} suffix="+ Years" duration={2000} />
+STAT RULES - FOLLOW EXACTLY:
+1. NEVER show "0", "0+", "1%", or single-digit numbers (except for team size)
+2. ALWAYS use numbers from above OR these industry-appropriate minimums:
+   - Years in business: 10+ to 25+ (never below 5)
+   - Customers served: 2,000+ to 10,000+ (never below 500)
+   - Satisfaction rate: 95% to 99% (never below 90%)
+   - Team members: 4 to 25 (realistic for business size)
+
+CORRECT AnimatedCounter EXAMPLES - COPY THIS EXACT PATTERN:
+<AnimatedCounter end={12} suffix="+ Years" duration={2} />
+<AnimatedCounter end={2700} suffix="+ Happy Clients" duration={2.5} />
+<AnimatedCounter end={98} suffix="%" duration={2} />  {/* For percentages */}
+<AnimatedCounter end={4} suffix=" Master Barbers" duration={1.5} />
+
+NOTE: duration is in SECONDS (not milliseconds). Use 2 for 2 seconds.
+
+WRONG EXAMPLES - NEVER DO THIS:
+<AnimatedCounter end={0} suffix="+ Years" />  ❌ Zero is broken
+<AnimatedCounter end={27} suffix="+ Clients" />  ❌ Too small, use 2700
+<AnimatedCounter end={1} suffix="%" />  ❌ 1% satisfaction is insulting
+<AnimatedCounter end={12} duration={2000} />  ❌ 2000 seconds is way too long!
+
+FOR A BARBERSHOP, USE THESE EXACT STATS:
+- Years: 12+ Years Experience
+- Clients: 2,700+ Satisfied Clients
+- Team: 4 Master Barbers
+- Rating: 98% Client Satisfaction
 
 ══════════════════════════════════════════════════════════════
 CRITICAL: INDUSTRY-SPECIFIC DESIGN - NOT A GENERIC TEMPLATE!
@@ -2137,29 +3258,45 @@ EFFECTS LIBRARY - ADD POLISH WITH THESE COMPONENTS
 ══════════════════════════════════════════════════════════════
 Import from '../effects' and use these to make pages feel premium:
 
-import { ScrollReveal, AnimatedCounter, StaggeredList, ParallaxSection, TiltCard, GlowEffect } from '../effects';
+import { ScrollReveal, AnimatedCounter, StaggeredList, ParallaxSection, TiltCard, GlowEffect, VideoBackground } from '../effects';
 
 AVAILABLE EFFECTS:
 - <ScrollReveal> - Wrap sections to fade-in on scroll
-- <AnimatedCounter end={500} suffix="+" duration={2000} /> - Animate numbers counting up
+- <AnimatedCounter end={500} suffix="+" duration={2} /> - Animate numbers counting up (duration in SECONDS)
 - <StaggeredList items={array} renderItem={(item) => <Card />} /> - Stagger children animations
 - <ParallaxSection imageSrc="url" height="60vh"> - Parallax background sections
 - <TiltCard> - 3D tilt effect on hover for cards
 - <GlowEffect color="#22c55e"> - Glowing border on hover
+- <VideoBackground videoSrc="url" posterImage="url" overlay="rgba()" height="100vh"> - Video hero backgrounds (HOME PAGE ONLY)
 
 REQUIRED USAGE:
 - Home pages: Use AnimatedCounter for ALL statistics (years, customers, etc.)
 - Home pages: Wrap at least 2 sections with <ScrollReveal>
+- Home pages: If VIDEO URL is provided above, use VideoBackground for the hero!
 - Service/Menu pages: Use ScrollReveal on the cards grid
 - About pages: AnimatedCounter for company stats
 
-EXAMPLE:
+EXAMPLE (Static Hero):
 <ScrollReveal>
   <section style={styles.stats}>
-    <AnimatedCounter end={14} suffix=" Years" duration={2000} />
-    <AnimatedCounter end={5000} suffix="+ Customers" duration={2500} />
+    <AnimatedCounter end={14} suffix=" Years" duration={2} />
+    <AnimatedCounter end={5000} suffix="+ Customers" duration={2.5} />
   </section>
 </ScrollReveal>
+
+EXAMPLE (Video Hero - for HOME PAGE when video URL available):
+<VideoBackground
+  videoSrc="VIDEO_URL_FROM_ABOVE"
+  posterImage="HERO_IMAGE_URL"
+  overlay="linear-gradient(rgba(10, 22, 40, 0.7), rgba(10, 22, 40, 0.85))"
+  height="100vh"
+>
+  <div style={{ textAlign: 'center', color: 'white', maxWidth: '800px', padding: '0 20px' }}>
+    <h1 style={{ fontSize: '48px', marginBottom: '20px' }}>Headline</h1>
+    <p style={{ fontSize: '20px', opacity: 0.9, marginBottom: '30px' }}>Tagline</p>
+    <button style={{ padding: '15px 40px', fontSize: '18px' }}>CTA</button>
+  </div>
+</VideoBackground>
 
 TECHNICAL RULES (MUST FOLLOW):
 1. Use inline styles ONLY: style={{ }} - NO className or Tailwind.
@@ -2337,6 +3474,30 @@ LAYOUT PATTERNS: Lots of whitespace, organic shapes, flowing curves, asymmetric 
 SECTIONS: Class schedule with easy-to-read times, instructor profiles with philosophy, workshop/retreat highlights, pricing as simple cards, new student offer.
 UNIQUE: Breathe CALM into the design - gentle animations, flowing transitions, peaceful imagery.`,
 
+    // CREATIVE & EDGY INDUSTRIES
+    'Tattoo Studio': `
+STYLE: Bold, edgy, artistic, dark, authentic - NOT corporate or clean
+HERO: Dark, atmospheric studio shot OR dramatic tattoo closeup with moody lighting. Video of tattooing works great.
+TYPOGRAPHY: Bold, often condensed or distressed fonts. Can be slightly grungy. Uppercase for impact.
+COLORS: BLACK is dominant. Accent with crimson red, deep gold, or muted metallics. High contrast.
+IMAGERY: CRITICAL - Use ONLY tattoo-specific images:
+  - Team photos: Tattoo artists AT WORK or portrait shots of tattooed professionals
+  - Gallery: Closeup shots of completed tattoos on skin
+  - NOT yoga people, NOT hairstylists, NOT generic stock photos
+LAYOUT PATTERNS: Dark backgrounds, bold dividers, asymmetric galleries, hoverable portfolio items.
+SECTIONS: Artist profiles (with their specialty styles), portfolio gallery (organized by style - traditional, realism, geometric, etc.), booking/consultation CTA, aftercare info, FAQs, shop policies.
+UNIQUE: The PORTFOLIO is everything - make it visually striking. Show the artists' individual styles. Dark theme with dramatic lighting effects. Instagram integration for latest work.`,
+
+    'Barbershop': `
+STYLE: Masculine, vintage-meets-modern, confident, classic
+HERO: Classic barbershop interior OR barber at work with dramatic lighting. Leather, wood, chrome vibes.
+TYPOGRAPHY: Bold serif or strong sans-serif. Vintage touches work well. All-caps for headings.
+COLORS: Dark backgrounds (charcoal, navy), warm accents (gold, cream, burgundy), masculine palette.
+IMAGERY: Barbers cutting hair, vintage tools, leather chairs, pomade, grooming products.
+LAYOUT PATTERNS: Clean but bold grids, service cards, team profiles with specialties.
+SECTIONS: Services with prices, the barbers (with their chair/specialty), booking CTA prominent, gallery of cuts/styles, shop story.
+UNIQUE: Classic masculinity - think vintage signs, straight razors, leather textures. Make booking EASY.`,
+
     // PROFESSIONAL SERVICES
     'Professional Services': `
 STYLE: Trustworthy, credible, sophisticated, results-oriented
@@ -2452,6 +3613,12 @@ SECTIONS: Hero, features/services, about snippet, testimonials, CTA`
   }
   if (lowerName.includes('saas') || lowerName.includes('software') || lowerName.includes('platform') || lowerName.includes('app') || lowerName.includes('tech')) {
     return guidance['SaaS / B2B Platform'];
+  }
+  if (lowerName.includes('tattoo') || lowerName.includes('ink') || lowerName.includes('body art') || lowerName.includes('piercing')) {
+    return guidance['Tattoo Studio'];
+  }
+  if (lowerName.includes('barber') || lowerName.includes('grooming')) {
+    return guidance['Barbershop'];
   }
 
   return guidance['default'];
@@ -2589,7 +3756,98 @@ function getPageSpecificInstructions(pageId, colors, layout) {
   const heroHeight = layout.heroHeight || '70vh';
   const primary = colors.primary || '#0a1628';
   const accent = colors.accent || '#c9a962';
-  
+
+  // Page-specific animation styles - IMPORTANT: Each page should have DIFFERENT animations
+  const pageAnimations = {
+    home: `
+ANIMATION STYLE FOR HOME - "DRAMATIC ENTRANCE":
+- Wrap hero content in <ScrollReveal animation="fade-up" delay={0.2}>
+- Use <ParallaxSection> for the hero background image
+- Stats: Use <AnimatedCounter> with staggered delays (0, 0.2, 0.4)
+- Feature cards: Wrap in <StaggeredList> for sequential reveal
+- Add subtle <GlowEffect> to primary CTA button`,
+
+    about: `
+ANIMATION STYLE FOR ABOUT - "STORYTELLING FLOW":
+- Hero: <ScrollReveal animation="fade-in" delay={0.1}> - simple, elegant
+- Story section: Use <ScrollReveal animation="slide-right"> for text, <ScrollReveal animation="slide-left"> for images
+- Values cards: <StaggeredList delay={0.15}> - gentle stagger
+- Timeline elements: Alternate <ScrollReveal animation="slide-left"> and "slide-right"
+- Team photos: <TiltCard> for subtle 3D hover effect`,
+
+    services: `
+ANIMATION STYLE FOR SERVICES - "CARD CASCADE":
+- Hero: Minimal animation - just <ScrollReveal animation="fade-in">
+- Service cards: Use <StaggeredList delay={0.1}> with <TiltCard> wrappers
+- Process steps: <ScrollReveal animation="zoom-in"> for each step icon
+- Pricing tiers: Stagger with delays 0.1, 0.2, 0.3
+- NO parallax on this page - keep it professional and scannable`,
+
+    gallery: `
+ANIMATION STYLE FOR GALLERY - "MASONRY REVEAL":
+- Hero: Short, simple <ScrollReveal animation="fade-in">
+- Gallery images: <StaggeredList delay={0.05}> for rapid cascade effect
+- Each image: Add subtle hover zoom (transform: scale(1.03))
+- Lightbox overlay: CSS transition for smooth open
+- Categories: Horizontal scroll or filter pills with fade transitions`,
+
+    contact: `
+ANIMATION STYLE FOR CONTACT - "CLEAN & DIRECT":
+- Hero: Simple <ScrollReveal animation="fade-in">
+- Contact form: <ScrollReveal animation="slide-up"> - single reveal for whole form
+- Info cards: <ScrollReveal animation="fade-in" delay={0.2}> - subtle
+- Map (if present): Fade in after form loads
+- MINIMAL animations - users want to contact you, not watch effects`,
+
+    pricing: `
+ANIMATION STYLE FOR PRICING - "SPOTLIGHT TIERS":
+- Hero: <ScrollReveal animation="fade-in">
+- Pricing cards: <StaggeredList> with center card having <GlowEffect>
+- Featured tier: Add subtle pulsing border animation (CSS @keyframes)
+- Feature checkmarks: Stagger within each card
+- Comparison table rows: <ScrollReveal animation="fade-up"> per row`,
+
+    testimonials: `
+ANIMATION STYLE FOR TESTIMONIALS - "QUOTE THEATER":
+- Hero: <ScrollReveal animation="fade-in">
+- Quote cards: <StaggeredList delay={0.15}> with <TiltCard> wrappers
+- Large quote icons: <ScrollReveal animation="zoom-in">
+- Star ratings: Animate in sequence (CSS @keyframes)
+- Client photos: Subtle border glow on hover`,
+
+    team: `
+ANIMATION STYLE FOR TEAM - "PROFESSIONAL INTRODUCTION":
+- Hero: <ScrollReveal animation="fade-in">
+- Team cards: <StaggeredList delay={0.12}>
+- Photos: <TiltCard> with subtle 3D effect on hover
+- Social icons: Fade in on card hover (CSS transition)
+- Bio text: <ScrollReveal animation="fade-up"> per section`,
+
+    menu: `
+ANIMATION STYLE FOR MENU - "APPETIZING DISPLAY":
+- Hero: <ParallaxSection> with food imagery background
+- Menu categories: <ScrollReveal animation="slide-up"> for headers
+- Menu items: <StaggeredList delay={0.08}> for rapid display
+- Prices: <AnimatedCounter> for any featured prices
+- Food images: Scale-up hover effect (transform: scale(1.05))`,
+
+    booking: `
+ANIMATION STYLE FOR BOOKING - "GUIDED EXPERIENCE":
+- Hero: Simple <ScrollReveal animation="fade-in">
+- Booking form: <ScrollReveal animation="slide-up">
+- Available slots: Subtle pulse animation on available times
+- Calendar: CSS transition for date selection
+- Confirmation: <ScrollReveal animation="zoom-in"> for success state`,
+
+    faq: `
+ANIMATION STYLE FOR FAQ - "ACCORDION FLOW":
+- Hero: <ScrollReveal animation="fade-in">
+- FAQ items: <StaggeredList delay={0.08}>
+- Accordion expand: CSS max-height transition (0.3s ease)
+- Plus/minus icons: Rotate transform on toggle
+- Related questions: Fade in at bottom`
+  };
+
   const instructions = {
     home: `
 HOME PAGE REQUIREMENTS:
@@ -2603,8 +3861,9 @@ HOME PAGE REQUIREMENTS:
 - INTRO SECTION: White/light background, value proposition, max-width 800px
 - FEATURES: 3-4 cards with accent-colored Lucide icons
 - TESTIMONIAL: Single quote with large Quote icon, italic text
-- CTA SECTION: Dark background, compelling headline, accent button`,
-    
+- CTA SECTION: Dark background, compelling headline, accent button
+${pageAnimations.home}`,
+
     about: `
 ABOUT PAGE REQUIREMENTS:
 - HERO (50vh): Solid dark background (${primary}), centered content
@@ -2614,8 +3873,9 @@ ABOUT PAGE REQUIREMENTS:
 - STORY SECTION: Light bg, two columns - text left, pull quote right
 - VALUES: 4 cards with icons (Shield, Target, Users, Award)
 - CREDENTIALS: Subtle section with certifications
-- CTA at bottom`,
-    
+- CTA at bottom
+${pageAnimations.about}`,
+
     services: `
 SERVICES PAGE REQUIREMENTS:
 - HERO (40vh): Gradient background, centered text
@@ -2623,8 +3883,9 @@ SERVICES PAGE REQUIREMENTS:
 - SERVICE CARDS: Numbered (01, 02, 03, 04), accent-colored numbers
 - Each card: title, description, bullet points with Check icons
 - PROCESS SECTION: 4-step visual flow
-- CTA: Accent button to contact`,
-    
+- CTA: Accent button to contact
+${pageAnimations.services}`,
+
     contact: `
 CONTACT PAGE REQUIREMENTS:
 - HERO (30vh): Dark background, "GET IN TOUCH" label, simple headline
@@ -2632,16 +3893,18 @@ CONTACT PAGE REQUIREMENTS:
 - Form: First name, Last name, Email, Phone, Company, Message
 - Clean inputs: subtle borders, accent focus state, accent submit button
 - Info card: MapPin, Phone, Mail, Clock icons with details
-- Business hours displayed`,
-    
+- Business hours displayed
+${pageAnimations.contact}`,
+
     pricing: `
 PRICING PAGE REQUIREMENTS:
 - HERO (35vh): Dark background, "PRICING" label
 - Pricing cards: featured tier with accent border
 - Check icons for features in accent color
 - Clear pricing, CTA buttons
-- FAQ section below if space`,
-    
+- FAQ section below if space
+${pageAnimations.pricing}`,
+
     faq: `
 FAQ PAGE REQUIREMENTS:
 - HERO (25vh): Light gray background, dark text
@@ -2649,30 +3912,52 @@ FAQ PAGE REQUIREMENTS:
 - Accordion items with Plus/Minus icons (useState for expand/collapse)
 - 8-10 relevant questions with detailed answers
 - Accent color on expanded item border
-- CTA at bottom for additional questions`,
-    
+- CTA at bottom for additional questions
+${pageAnimations.faq}`,
+
     testimonials: `
 TESTIMONIALS PAGE REQUIREMENTS:
 - HERO (30vh): Dark background, "CLIENT SUCCESS" label
 - Large testimonial cards with Quote icon
 - Client initials in accent circle, name, title
 - 4-6 testimonials in grid
-- Stats section with success metrics`,
-    
+- Stats section with success metrics
+${pageAnimations.testimonials}`,
+
     team: `
 TEAM PAGE REQUIREMENTS:
 - HERO (40vh): Dark background, "OUR TEAM" label
 - Team cards: initials in circle, name, title in accent
 - 3-4 team members with short bios
-- Credentials below each`,
-    
+- Credentials below each
+${pageAnimations.team}`,
+
     booking: `
 BOOKING PAGE REQUIREMENTS:
 - HERO (30vh): Dark background, "SCHEDULE" label
 - Booking form with service selection, date preference
 - Contact fields
 - Right side: what to expect, benefits
-- Accent submit button`
+- Accent submit button
+${pageAnimations.booking}`,
+
+    gallery: `
+GALLERY PAGE REQUIREMENTS:
+- HERO (30vh): Dark background, "OUR WORK" or "GALLERY" label
+- Gallery grid: masonry or uniform grid layout
+- Lightbox on click for full-size images
+- Categories/filters if multiple types of work
+- High-quality images showcasing best work
+${pageAnimations.gallery}`,
+
+    menu: `
+MENU PAGE REQUIREMENTS:
+- HERO (35vh): Food imagery background with overlay
+- Menu categories clearly labeled
+- Items with descriptions and prices
+- Dietary icons (vegetarian, gluten-free, etc.)
+- Featured/popular items highlighted
+${pageAnimations.menu}`
   };
   
   return instructions[pageId] || `
@@ -2720,6 +4005,33 @@ export default ${componentName}Page;`;
 // ============================================
 function getIndustryHeaderConfig(industry) {
   const lowerIndustry = (industry || '').toLowerCase();
+
+  // Tattoo/Creative/Edgy Industries (Tattoo, Piercing, Motorcycle, Custom)
+  if (lowerIndustry.includes('tattoo') || lowerIndustry.includes('ink') ||
+      lowerIndustry.includes('piercing') || lowerIndustry.includes('motorcycle') ||
+      lowerIndustry.includes('custom') || lowerIndustry.includes('body art')) {
+    return {
+      type: 'creative',
+      showEmergencyBanner: false,
+      primaryCta: { text: 'Book Consultation', icon: 'Calendar', action: 'link', href: '/booking' },
+      secondaryCta: { text: 'View Portfolio', icon: 'Image', action: 'link', href: '/gallery' },
+      headerStyle: 'edgy',
+      glowEffect: true,
+      mobilePhoneVisible: false
+    };
+  }
+
+  // Barbershop/Grooming - masculine, bold
+  if (lowerIndustry.includes('barber') || lowerIndustry.includes('grooming')) {
+    return {
+      type: 'barbershop',
+      showEmergencyBanner: false,
+      primaryCta: { text: 'Book Now', icon: 'Calendar', action: 'link', href: '/booking' },
+      secondaryCta: { text: 'Our Services', icon: 'Scissors', action: 'link', href: '/services' },
+      headerStyle: 'bold',
+      mobilePhoneVisible: true
+    };
+  }
 
   // Emergency Services (Plumber, HVAC, Electrician, Locksmith)
   if (lowerIndustry.includes('plumb') || lowerIndustry.includes('hvac') ||
@@ -3236,8 +4548,8 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '16px 24px',
-    background: '${headerConfig.headerStyle === 'playful' ? 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)' : '#ffffff'}',
-    borderBottom: '${headerConfig.headerStyle === 'playful' ? 'none' : '1px solid rgba(10, 22, 40, 0.1)'}',
+    background: '${['playful', 'edgy', 'bold'].includes(headerConfig.headerStyle) ? (headerConfig.headerStyle === 'edgy' ? 'linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%)' : headerConfig.headerStyle === 'bold' ? '#1a1a2e' : 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)') : '#ffffff'}',
+    borderBottom: '${['playful', 'edgy', 'bold'].includes(headerConfig.headerStyle) ? 'none' : '1px solid rgba(10, 22, 40, 0.1)'}',
     position: 'fixed',
     top: ${headerConfig.showEmergencyBanner ? '40px' : headerConfig.showPromoBanner ? '32px' : '0'},
     left: 0,
@@ -3245,19 +4557,19 @@ const styles = {
     width: '100%',
     zIndex: 1000,
     boxSizing: 'border-box',
-    ${headerConfig.glowEffect ? "boxShadow: '0 0 20px rgba(147, 51, 234, 0.3)'," : ''}
+    ${headerConfig.glowEffect ? "boxShadow: '0 0 20px rgba(147, 51, 234, 0.3)'," : headerConfig.headerStyle === 'edgy' ? "boxShadow: '0 2px 20px rgba(220, 38, 38, 0.2)'," : ''}
   },
   navBrand: {
     textDecoration: 'none',
   },
   brandText: {
     fontSize: '20px',
-    fontWeight: '${headerConfig.headerStyle === 'playful' ? '700' : '400'}',
+    fontWeight: '${['playful', 'edgy', 'bold'].includes(headerConfig.headerStyle) ? '700' : '400'}',
     fontFamily: "${typography.heading}",
-    color: '${headerConfig.headerStyle === 'playful' ? '#ffffff' : colors.primary}',
-    letterSpacing: '1px',
-    textTransform: 'none',
-    ${headerConfig.glowEffect ? "textShadow: '0 0 10px rgba(147, 51, 234, 0.5)'," : ''}
+    color: '${['playful', 'edgy', 'bold'].includes(headerConfig.headerStyle) ? '#ffffff' : colors.primary}',
+    letterSpacing: '${headerConfig.headerStyle === 'edgy' ? '2px' : '1px'}',
+    textTransform: '${headerConfig.headerStyle === 'edgy' ? 'uppercase' : 'none'}',
+    ${headerConfig.glowEffect ? "textShadow: '0 0 10px rgba(147, 51, 234, 0.5)'," : headerConfig.headerStyle === 'edgy' ? "textShadow: '0 0 10px rgba(220, 38, 38, 0.3)'," : ''}
   },
   navLinks: {
     display: 'flex',
@@ -3273,11 +4585,11 @@ const styles = {
     alignItems: 'center',
   },
   navLink: {
-    color: '${headerConfig.headerStyle === 'playful' ? 'rgba(255,255,255,0.8)' : colors.textMuted}',
+    color: '${['playful', 'edgy', 'bold'].includes(headerConfig.headerStyle) ? 'rgba(255,255,255,0.8)' : colors.textMuted}',
     textDecoration: 'none',
     fontSize: '14px',
-    fontWeight: '500',
-    letterSpacing: '1px',
+    fontWeight: '${headerConfig.headerStyle === 'edgy' ? '600' : '500'}',
+    letterSpacing: '${headerConfig.headerStyle === 'edgy' ? '2px' : '1px'}',
     textTransform: 'uppercase',
     transition: 'color 0.2s',
   },
@@ -3287,14 +4599,14 @@ const styles = {
     alignItems: 'center',
     gap: '8px',
     padding: '10px 20px',
-    background: '${headerConfig.type === 'emergency' ? '#dc2626' : headerConfig.type === 'entertainment' ? 'linear-gradient(135deg, #9333ea 0%, #ec4899 100%)' : '#22c55e'}',
+    background: '${headerConfig.type === 'emergency' ? '#dc2626' : headerConfig.type === 'entertainment' ? 'linear-gradient(135deg, #9333ea 0%, #ec4899 100%)' : headerConfig.type === 'creative' ? 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)' : headerConfig.type === 'barbershop' ? '#1a1a2e' : '#22c55e'}',
     color: '#ffffff',
     textDecoration: 'none',
-    borderRadius: '8px',
+    borderRadius: '${headerConfig.headerStyle === 'edgy' ? '4px' : '8px'}',
     fontSize: '14px',
     fontWeight: '600',
     transition: 'all 0.2s',
-    ${headerConfig.glowEffect ? "boxShadow: '0 0 15px rgba(147, 51, 234, 0.4)'," : ''}
+    ${headerConfig.glowEffect ? "boxShadow: '0 0 15px rgba(147, 51, 234, 0.4)'," : headerConfig.type === 'creative' ? "boxShadow: '0 0 15px rgba(220, 38, 38, 0.4)'," : ''}
   },
   // Secondary CTA button
   secondaryCta: {
@@ -3303,10 +4615,10 @@ const styles = {
     gap: '8px',
     padding: '10px 20px',
     background: 'transparent',
-    color: '${headerConfig.headerStyle === 'playful' ? '#ffffff' : colors.primary}',
-    border: '1px solid ${headerConfig.headerStyle === 'playful' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.2)'}',
+    color: '${['playful', 'edgy', 'bold'].includes(headerConfig.headerStyle) ? '#ffffff' : colors.primary}',
+    border: '1px solid ${['playful', 'edgy', 'bold'].includes(headerConfig.headerStyle) ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.2)'}',
     textDecoration: 'none',
-    borderRadius: '8px',
+    borderRadius: '${headerConfig.headerStyle === 'edgy' ? '4px' : '8px'}',
     fontSize: '14px',
     fontWeight: '500',
     transition: 'all 0.2s',
@@ -3340,7 +4652,7 @@ const styles = {
     gap: '8px',
   },
   socialLink: {
-    color: '${headerConfig.headerStyle === 'playful' ? 'rgba(255,255,255,0.7)' : colors.textMuted}',
+    color: '${['playful', 'edgy', 'bold'].includes(headerConfig.headerStyle) ? 'rgba(255,255,255,0.7)' : colors.textMuted}',
     transition: 'color 0.2s',
   },
   // Search box (retail)
@@ -3405,7 +4717,7 @@ const styles = {
   hamburger: {
     background: 'none',
     border: 'none',
-    color: '${headerConfig.headerStyle === 'playful' ? '#ffffff' : colors.text}',
+    color: '${['playful', 'edgy', 'bold'].includes(headerConfig.headerStyle) ? '#ffffff' : colors.text}',
     cursor: 'pointer',
     padding: '12px',
     display: 'flex',
@@ -3851,10 +5163,26 @@ app.post('/api/analyze-site', async (req, res) => {
 }`
         }]
       });
-      
+
+      // Track API cost
+      if (response.usage && db && db.trackApiUsage) {
+        const inputTokens = response.usage.input_tokens || 0;
+        const outputTokens = response.usage.output_tokens || 0;
+        const cost = (inputTokens / 1000000) * 3.0 + (outputTokens / 1000000) * 15.0;
+        console.log(`   💰 API Cost: $${cost.toFixed(4)} (${inputTokens} in / ${outputTokens} out)`);
+        try {
+          await db.trackApiUsage({
+            endpoint: 'claude-api', operation: 'analyze-site-url',
+            tokensUsed: inputTokens + outputTokens, inputTokens, outputTokens, cost, responseStatus: 200
+          });
+        } catch (trackingErr) {
+          console.warn('   ⚠️ API usage tracking failed:', trackingErr.message);
+        }
+      }
+
       const jsonMatch = response.content[0].text.match(/\{[\s\S]*\}/);
       const analysis = jsonMatch ? JSON.parse(jsonMatch[0]) : null;
-      
+
       return res.json({
         success: true,
         analysis: { url: url, ...analysis, mock: false, method: 'url-only' }
@@ -3878,14 +5206,30 @@ app.post('/api/analyze-site', async (req, res) => {
         ]
       }]
     });
-    
+
+    // Track API cost
+    if (response.usage && db && db.trackApiUsage) {
+      const inputTokens = response.usage.input_tokens || 0;
+      const outputTokens = response.usage.output_tokens || 0;
+      const cost = (inputTokens / 1000000) * 3.0 + (outputTokens / 1000000) * 15.0;
+      console.log(`   💰 API Cost: $${cost.toFixed(4)} (${inputTokens} in / ${outputTokens} out)`);
+      try {
+        await db.trackApiUsage({
+          endpoint: 'claude-api', operation: 'analyze-site-vision',
+          tokensUsed: inputTokens + outputTokens, inputTokens, outputTokens, cost, responseStatus: 200
+        });
+      } catch (trackingErr) {
+          console.warn('   ⚠️ API usage tracking failed:', trackingErr.message);
+        }
+    }
+
     const responseText = response.content[0].text;
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-    
+
     if (!jsonMatch) {
       throw new Error('Could not parse AI response');
     }
-    
+
     const analysis = JSON.parse(jsonMatch[0]);
     console.log(`   ✅ Analysis complete for ${url}`);
     
@@ -3955,7 +5299,23 @@ Return ONLY valid JSON with this structure:
 }`
       }]
     });
-    
+
+    // Track API cost
+    if (response.usage && db && db.trackApiUsage) {
+      const inputTokens = response.usage.input_tokens || 0;
+      const outputTokens = response.usage.output_tokens || 0;
+      const cost = (inputTokens / 1000000) * 3.0 + (outputTokens / 1000000) * 15.0;
+      console.log(`   💰 API Cost: $${cost.toFixed(4)} (${inputTokens} in / ${outputTokens} out)`);
+      try {
+        await db.trackApiUsage({
+          endpoint: 'claude-api', operation: 'generate-theme',
+          tokensUsed: inputTokens + outputTokens, inputTokens, outputTokens, cost, responseStatus: 200
+        });
+      } catch (trackingErr) {
+          console.warn('   ⚠️ API usage tracking failed:', trackingErr.message);
+        }
+    }
+
     const responseText = response.content[0].text;
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
     
@@ -4279,7 +5639,7 @@ Return JSON with this structure:
   "businessName": "extracted business name",
   "industry": "detected industry",
   "phone": "phone number",
-  "email": "email address", 
+  "email": "email address",
   "address": "physical address if found",
   "description": "2-3 sentence description",
   "keyServices": ["service1", "service2"],
@@ -4290,7 +5650,23 @@ Return JSON with this structure:
 }`
       }]
     });
-    
+
+    // Track API cost
+    if (response.usage && db && db.trackApiUsage) {
+      const inputTokens = response.usage.input_tokens || 0;
+      const outputTokens = response.usage.output_tokens || 0;
+      const cost = (inputTokens / 1000000) * 3.0 + (outputTokens / 1000000) * 15.0;
+      console.log(`   💰 API Cost: $${cost.toFixed(4)} (${inputTokens} in / ${outputTokens} out)`);
+      try {
+        await db.trackApiUsage({
+          endpoint: 'claude-api', operation: 'analyze-existing-site',
+          tokensUsed: inputTokens + outputTokens, inputTokens, outputTokens, cost, responseStatus: 200
+        });
+      } catch (trackingErr) {
+          console.warn('   ⚠️ API usage tracking failed:', trackingErr.message);
+        }
+    }
+
     const responseText = response.content[0].text;
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
     
@@ -4342,45 +5718,72 @@ async function autoDeployProject(projectPath, projectName, adminEmail) {
 }
 
 // Deploy a generated project
+// Deploy endpoint with Server-Sent Events for real-time progress
 app.post('/api/deploy', async (req, res) => {
-  const { projectPath, projectName, adminEmail } = req.body;
+  const { projectPath, projectName, adminEmail, stream } = req.body;
 
   if (!deployReady) {
-    return res.status(500).json({ 
-      success: false, 
-      error: 'Deploy service not configured. Check .env for missing credentials.' 
+    return res.status(500).json({
+      success: false,
+      error: 'Deploy service not configured. Check .env for missing credentials.'
     });
   }
 
   if (!projectPath || !projectName) {
-    return res.status(400).json({ 
-      success: false, 
-      error: 'projectPath and projectName required' 
+    return res.status(400).json({
+      success: false,
+      error: 'projectPath and projectName required'
     });
   }
 
   // Check project exists
   if (!fs.existsSync(projectPath)) {
-    return res.status(400).json({ 
-      success: false, 
-      error: `Project not found: ${projectPath}` 
+    return res.status(400).json({
+      success: false,
+      error: `Project not found: ${projectPath}`
     });
   }
 
   console.log(`\n🚀 Deploy request received for: ${projectName}`);
 
-  try {
-    const result = await deployService.deployProject(projectPath, projectName, {
-      adminEmail: adminEmail || 'admin@be1st.io'
-    });
+  // If streaming requested, use SSE
+  if (stream) {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
 
-    res.json(result);
-  } catch (error) {
-    console.error('Deploy error:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
-    });
+    try {
+      const result = await deployService.deployProject(projectPath, projectName, {
+        adminEmail: adminEmail || 'admin@be1st.io',
+        onProgress: (progress) => {
+          res.write(`data: ${JSON.stringify(progress)}\n\n`);
+        }
+      });
+
+      // Send final result
+      res.write(`data: ${JSON.stringify({ type: 'complete', result })}\n\n`);
+      res.end();
+    } catch (error) {
+      console.error('Deploy error:', error);
+      res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`);
+      res.end();
+    }
+  } else {
+    // Non-streaming mode (original behavior)
+    try {
+      const result = await deployService.deployProject(projectPath, projectName, {
+        adminEmail: adminEmail || 'admin@be1st.io'
+      });
+
+      res.json(result);
+    } catch (error) {
+      console.error('Deploy error:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
   }
 });
 
