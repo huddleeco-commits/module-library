@@ -1,10 +1,58 @@
 {
   "name": "achievements",
   "type": "backend",
+  "description": "Gamification system with achievements, badges, and user challenges",
   "source": "financial",
   "extractedAt": "2026-01-08T13:05:46.395Z",
+  "updatedAt": "2026-01-16T00:00:00.000Z",
   "files": [
     "routes/achievements.js",
-    "routes/challenges.js"
+    "routes/challenges.js",
+    "database/db.js",
+    "database/schema.sql"
+  ],
+  "dependencies": {
+    "pg": "^8.11.3"
+  },
+  "endpoints": [
+    "GET /api/achievements/all - Get all achievements with user's status",
+    "GET /api/achievements/my-achievements - Get user's unlocked achievements",
+    "GET /api/achievements/progress - Get achievement progress",
+    "POST /api/achievements/progress/:key - Update progress for an achievement",
+    "POST /api/achievements/unlock/:key - Manually unlock an achievement",
+    "GET /api/achievements/showcase - Get user's showcase badges",
+    "PUT /api/achievements/showcase - Update user's showcase badges",
+    "GET /api/challenges - Get challenges by status",
+    "GET /api/challenges/my-challenges - Get user's challenges",
+    "GET /api/challenges/:id - Get challenge by ID",
+    "POST /api/challenges/create - Create a new challenge",
+    "POST /api/challenges/:id/join - Join a challenge",
+    "GET /api/challenges/:id/leaderboard - Get challenge leaderboard",
+    "POST /api/challenges/:id/score - Update participant score",
+    "POST /api/challenges/:id/complete - Complete a challenge (admin)"
+  ],
+  "tables": [
+    "achievements",
+    "user_achievements",
+    "achievement_progress",
+    "user_showcase",
+    "challenges",
+    "challenge_participants",
+    "challenge_activity"
+  ],
+  "defaultAchievements": [
+    { "key": "first_trade", "name": "First Trade", "icon": "🎯", "points": 10 },
+    { "key": "hot_streak", "name": "Hot Streak", "icon": "🔥", "points": 25 },
+    { "key": "diversified", "name": "Diversified", "icon": "📊", "points": 50 },
+    { "key": "diamond_hands", "name": "Diamond Hands", "icon": "💎", "points": 100 },
+    { "key": "market_mover", "name": "Market Mover", "icon": "🚀", "points": 200 },
+    { "key": "profit_king", "name": "Profit King", "icon": "👑", "points": 500 },
+    { "key": "social_butterfly", "name": "Social Butterfly", "icon": "🦋", "points": 15 },
+    { "key": "challenger", "name": "Challenger", "icon": "⚔️", "points": 20 },
+    { "key": "champion", "name": "Champion", "icon": "🏆", "points": 250 },
+    { "key": "survey_starter", "name": "Survey Starter", "icon": "📝", "points": 10 },
+    { "key": "survey_master", "name": "Survey Master", "icon": "🎓", "points": 100 },
+    { "key": "referral_rookie", "name": "Referral Rookie", "icon": "🤝", "points": 25 },
+    { "key": "referral_master", "name": "Referral Master", "icon": "🌟", "points": 150 }
   ]
 }
