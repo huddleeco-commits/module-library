@@ -1,9 +1,38 @@
 {
   "name": "streaks",
   "type": "backend",
+  "description": "Daily login streaks with milestone rewards and leaderboards",
   "source": "commoncents",
   "extractedAt": "2026-01-12T00:00:00.000Z",
+  "updatedAt": "2026-01-16T00:00:00.000Z",
   "files": [
-    "routes/streaks.js"
+    "routes/streaks.js",
+    "database/db.js",
+    "database/schema.sql"
+  ],
+  "dependencies": {
+    "pg": "^8.11.3"
+  },
+  "endpoints": [
+    "GET /api/streaks/:userId - Get user streak info",
+    "POST /api/streaks/:userId/checkin - Record daily check-in",
+    "GET /api/streaks/:userId/history - Get check-in history",
+    "GET /api/streaks/:userId/milestones - Get milestones with progress",
+    "GET /api/streaks/:userId/rank - Get user's leaderboard rank",
+    "GET /api/streaks/leaderboard/top - Get streak leaderboard",
+    "POST /api/streaks/:userId/reset - Reset user streak (admin)"
+  ],
+  "tables": [
+    "user_streaks",
+    "streak_checkins",
+    "streak_milestones"
+  ],
+  "milestones": [
+    { "days": 7, "reward": 0.50, "badge": "Week Warrior" },
+    { "days": 14, "reward": 1.00, "badge": "Fortnight Fighter" },
+    { "days": 30, "reward": 2.50, "badge": "Monthly Master" },
+    { "days": 60, "reward": 5.00, "badge": "Dedication King" },
+    { "days": 100, "reward": 10.00, "badge": "Century Legend" },
+    { "days": 365, "reward": 50.00, "badge": "Year Champion" }
   ]
 }
