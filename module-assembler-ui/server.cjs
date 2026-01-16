@@ -5038,6 +5038,259 @@ body { margin: 0; font-family: var(--font-body); color: var(--color-text); }
 }
 
 // ============================================
+// ORCHESTRATOR ENDPOINT
+// ============================================
+
+// Rate limiter for orchestrate endpoint (same as assemble)
+const orchestrateRateLimiter = require('express-rate-limit')({
+  windowMs: 60 * 1000, // 1 minute
+  max: 10, // 10 requests per minute
+  message: { success: false, error: 'Too many requests. Please wait a moment before trying again.' }
+});
+
+/**
+ * POST /api/orchestrate
+ * Takes a single sentence and autonomously creates a complete website
+ *
+ * Request: { input: "Create a website for Mario's Pizza in Brooklyn" }
+ * Response: Same as /api/assemble (project URL, deployment status, etc.)
+ */
+app.post('/api/orchestrate', orchestrateRateLimiter, async (req, res) => {
+  const { input, autoDeploy = false } = req.body;
+  const startTime = Date.now();
+
+  // Validate input
+  if (!input || typeof input !== 'string' || input.trim().length < 3) {
+    return res.status(400).json({
+      success: false,
+      error: 'Please provide a description of the website you want to create (minimum 3 characters)'
+    });
+  }
+
+  const userInput = input.trim();
+  console.log('\n' + '='.repeat(60));
+  console.log('⚡ ORCHESTRATOR MODE');
+  console.log('='.repeat(60));
+  console.log(`📝 Input: "${userInput}"`);
+  console.log('');
+
+  try {
+    // Load orchestrator service
+    const { orchestrate, validatePayload } = require('./services/orchestrator');
+
+    // Run orchestration - AI infers all details
+    console.log('🤖 AI Analysis in progress...');
+    const orchestratorResult = await orchestrate(userInput);
+
+    if (!orchestratorResult.success) {
+      return res.status(400).json({
+        success: false,
+        error: orchestratorResult.error || 'Orchestration failed'
+      });
+    }
+
+    const { payload, summary } = orchestratorResult;
+
+    // Log AI decisions
+    console.log('');
+    console.log('📊 AI DECISIONS:');
+    console.log('─'.repeat(40));
+    console.log(`   🏢 Business Name: ${summary.businessName}`);
+    console.log(`   🏭 Industry: ${summary.industryName} (${payload.industry})`);
+    console.log(`   📍 Location: ${summary.location}`);
+    console.log(`   📄 Pages (${summary.pages}): ${payload.pages.join(', ')}`);
+    console.log(`   🔧 Modules (${summary.modules}): ${payload.modules.join(', ')}`);
+    console.log(`   🎨 Colors: Primary ${payload.theme?.colors?.primary || 'default'}, Accent ${payload.theme?.colors?.accent || 'default'}`);
+    console.log(`   🎯 Confidence: ${summary.confidence}`);
+    if (payload.metadata?.inferredDetails) {
+      console.log(`   💬 Tagline: "${payload.metadata.inferredDetails.tagline || 'N/A'}"`);
+      console.log(`   📢 CTA: "${payload.metadata.inferredDetails.callToAction || 'N/A'}"`);
+    }
+    console.log('─'.repeat(40));
+    console.log('');
+
+    // Validate the payload
+    const validation = validatePayload(payload);
+    if (!validation.valid) {
+      console.log('❌ Validation failed:', validation.errors.join(', '));
+      return res.status(400).json({
+        success: false,
+        error: `Invalid configuration: ${validation.errors.join(', ')}`
+      });
+    }
+
+    // Now execute the assembly by calling the same logic as /api/assemble
+    // We'll forward the orchestrated payload to the internal assembly logic
+    console.log('🚀 Starting assembly with orchestrated configuration...');
+
+    // Sanitize project name - same as /api/assemble
+    const sanitizedName = payload.name
+      .replace(/&/g, ' and ')
+      .replace(/[^a-zA-Z0-9\s-]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .substring(0, 100);
+
+    if (!sanitizedName || sanitizedName.length < 2) {
+      return res.status(400).json({
+        success: false,
+        error: 'Generated project name is invalid'
+      });
+    }
+
+    // Build command arguments
+    const args = ['--name', sanitizedName];
+
+    // Add industry
+    const sanitizedIndustry = payload.industry
+      .toLowerCase()
+      .replace(/[&]/g, 'and')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+    args.push('--industry', sanitizedIndustry);
+
+    console.log(`   📦 Project: ${sanitizedName}`);
+    console.log(`   🏭 Industry: ${sanitizedIndustry}`);
+
+    const ASSEMBLY_TIMEOUT = 5 * 60 * 1000; // 5 minute timeout
+    let responded = false;
+
+    // Execute the assembly script
+    const childProcess = spawn(process.execPath, [ASSEMBLE_SCRIPT, ...args], {
+      cwd: path.dirname(ASSEMBLE_SCRIPT),
+      shell: false,
+      env: { ...process.env, MODULE_LIBRARY_PATH: MODULE_LIBRARY, OUTPUT_PATH: GENERATED_PROJECTS }
+    });
+
+    // Timeout handler
+    const timeoutId = setTimeout(() => {
+      if (!responded) {
+        responded = true;
+        childProcess.kill('SIGTERM');
+        console.error('❌ Assembly timeout');
+        res.status(504).json({
+          success: false,
+          error: 'Assembly timeout - process took too long',
+          orchestratorSummary: summary
+        });
+      }
+    }, ASSEMBLY_TIMEOUT);
+
+    let output = '';
+    let errorOutput = '';
+
+    childProcess.stdout.on('data', (data) => {
+      output += data.toString();
+      console.log(data.toString());
+    });
+
+    childProcess.stderr.on('data', (data) => {
+      errorOutput += data.toString();
+      console.error(data.toString());
+    });
+
+    childProcess.on('error', (err) => {
+      clearTimeout(timeoutId);
+      if (!responded) {
+        responded = true;
+        console.error(`❌ Spawn error: ${err.message}`);
+        res.status(500).json({
+          success: false,
+          error: `Failed to start assembly: ${err.message}`,
+          orchestratorSummary: summary
+        });
+      }
+    });
+
+    childProcess.on('close', async (code) => {
+      clearTimeout(timeoutId);
+      if (responded) return;
+      responded = true;
+
+      const duration = Date.now() - startTime;
+
+      if (code === 0) {
+        const projectPath = path.join(GENERATED_PROJECTS, sanitizedName);
+
+        // Generate brain.json with orchestrator metadata
+        const industryConfig = INDUSTRIES[sanitizedIndustry] || INDUSTRIES['consulting'] || {};
+        const brainJsonContent = generateBrainJson(sanitizedName, sanitizedIndustry, industryConfig);
+        fs.writeFileSync(path.join(projectPath, 'brain.json'), brainJsonContent);
+        console.log('   🧠 brain.json generated');
+
+        // Save orchestrator metadata
+        const orchestratorMeta = {
+          generatedAt: new Date().toISOString(),
+          originalInput: userInput,
+          aiDecisions: summary,
+          payload: payload,
+          processingTimeMs: duration
+        };
+        fs.writeFileSync(
+          path.join(projectPath, 'orchestrator-meta.json'),
+          JSON.stringify(orchestratorMeta, null, 2)
+        );
+        console.log('   📋 orchestrator-meta.json saved');
+
+        // Copy business-admin module
+        const businessAdminSrc = path.join(MODULE_LIBRARY, 'frontend', 'business-admin');
+        const businessAdminDest = path.join(projectPath, 'admin');
+        if (fs.existsSync(businessAdminSrc)) {
+          copyDirectorySync(businessAdminSrc, businessAdminDest);
+          console.log('   🎛️ business-admin module copied');
+        }
+
+        console.log('');
+        console.log('✅ ORCHESTRATION COMPLETE');
+        console.log(`   ⏱️ Total time: ${(duration / 1000).toFixed(1)}s`);
+        console.log('='.repeat(60));
+
+        res.json({
+          success: true,
+          project: {
+            name: sanitizedName,
+            path: projectPath
+          },
+          orchestrator: {
+            originalInput: userInput,
+            summary: summary,
+            decisions: {
+              businessName: summary.businessName,
+              industry: summary.industry,
+              industryName: summary.industryName,
+              location: summary.location,
+              pages: payload.pages,
+              modules: payload.modules,
+              colors: payload.theme?.colors,
+              tagline: payload.metadata?.inferredDetails?.tagline,
+              callToAction: payload.metadata?.inferredDetails?.callToAction,
+              confidence: summary.confidence
+            }
+          },
+          duration: duration
+        });
+      } else {
+        console.error(`❌ Assembly failed with code ${code}`);
+        res.status(500).json({
+          success: false,
+          error: 'Assembly failed',
+          details: errorOutput || output,
+          orchestratorSummary: summary
+        });
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Orchestrator error:', error.message);
+    captureException(error, { tags: { component: 'orchestrator' } });
+    res.status(500).json({
+      success: false,
+      error: `Orchestration failed: ${error.message}`
+    });
+  }
+});
+
+// ============================================
 // UTILITY ENDPOINTS
 // ============================================
 
