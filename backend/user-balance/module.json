@@ -1,9 +1,30 @@
-﻿{
+{
   "name": "user-balance",
   "type": "backend",
+  "description": "User wallet and balance management with transaction history",
   "source": "commoncents",
   "extractedAt": "2026-01-12T00:00:00.000Z",
+  "updatedAt": "2026-01-16T00:00:00.000Z",
   "files": [
-    "routes/balance.js"
+    "routes/balance.js",
+    "database/db.js",
+    "database/schema.sql"
+  ],
+  "dependencies": {
+    "pg": "^8.11.3"
+  },
+  "endpoints": [
+    "GET /api/balance/:userId - Get user balance summary",
+    "POST /api/balance/:userId/credit - Add to balance",
+    "POST /api/balance/:userId/debit - Deduct from balance",
+    "POST /api/balance/:userId/hold - Hold balance for cashout",
+    "POST /api/balance/:userId/release - Release held balance",
+    "GET /api/balance/:userId/transactions - Get transaction history",
+    "GET /api/balance/:userId/earnings - Get earnings breakdown",
+    "POST /api/balance/:userId/adjust - Admin balance adjustment"
+  ],
+  "tables": [
+    "user_balances",
+    "balance_transactions"
   ]
 }
