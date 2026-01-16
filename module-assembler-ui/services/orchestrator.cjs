@@ -1309,11 +1309,26 @@ Return ONLY this JSON structure (no other text):
     const industryConfig = INDUSTRIES[industry] || INDUSTRIES['consulting'];
     const category = getIndustryCategory(industry);
 
+    // Suggest admin tier based on industry
+    let adminTierSuggestion = { tier: 'standard', modules: [], reason: 'Default' };
+    try {
+      const { suggestAdminTier } = require('../lib/services/admin-module-loader.cjs');
+      adminTierSuggestion = suggestAdminTier(industry, input);
+      console.log(`[orchestrator] Admin tier suggested: ${adminTierSuggestion.tier} (${adminTierSuggestion.reason})`);
+    } catch (err) {
+      console.warn('[orchestrator] Admin tier suggestion failed, using default:', err.message);
+    }
+
     // Build the final payload for /api/assemble
     const assemblePayload = {
       type: 'business',
       name: aiConfig.businessName || quickBusinessName || 'New Business',
       industry: industry,
+
+      // Admin configuration
+      adminTier: adminTierSuggestion.tier,
+      adminModules: adminTierSuggestion.modules,
+      adminReason: adminTierSuggestion.reason,
 
       // Theme configuration
       theme: {
@@ -1384,6 +1399,8 @@ Return ONLY this JSON structure (no other text):
         industryName: industryConfig.name,
         pages: assemblePayload.pages.length,
         modules: assemblePayload.modules.length,
+        adminTier: adminTierSuggestion.tier,
+        adminModuleCount: adminTierSuggestion.modules.length,
         location: aiConfig.location?.city
           ? `${aiConfig.location.city}${aiConfig.location.state ? ', ' + aiConfig.location.state : ''}`
           : 'Not specified',
@@ -1402,6 +1419,13 @@ Return ONLY this JSON structure (no other text):
       const industryConfig = INDUSTRIES[industry] || INDUSTRIES['consulting'];
       const category = getIndustryCategory(industry);
 
+      // Get fallback admin tier
+      let fallbackAdminTier = { tier: 'standard', modules: [], reason: 'Fallback default' };
+      try {
+        const { suggestAdminTier } = require('../lib/services/admin-module-loader.cjs');
+        fallbackAdminTier = suggestAdminTier(industry, input);
+      } catch (err) {}
+
       return {
         success: true,
         type: 'business',
@@ -1409,6 +1433,9 @@ Return ONLY this JSON structure (no other text):
           type: 'business',
           name: quickBusinessName || 'New Business',
           industry: industry,
+          adminTier: fallbackAdminTier.tier,
+          adminModules: fallbackAdminTier.modules,
+          adminReason: fallbackAdminTier.reason,
           theme: {
             colors: industryConfig.colors,
             typography: industryConfig.typography,
@@ -1444,6 +1471,8 @@ Return ONLY this JSON structure (no other text):
           industryName: industryConfig.name,
           pages: (PAGE_RECOMMENDATIONS[category] || PAGE_RECOMMENDATIONS.default).length,
           modules: (MODULE_RECOMMENDATIONS[industry] || MODULE_RECOMMENDATIONS.default).length,
+          adminTier: fallbackAdminTier.tier,
+          adminModuleCount: fallbackAdminTier.modules.length,
           location: 'Not specified',
           confidence: 'low',
           fallbackUsed: true
@@ -3030,28 +3059,56 @@ function generateSuiteStyles(branding) {
     modern: {
       radius: '12px',
       shadow: '0 4px 20px rgba(0,0,0,0.1)',
-      font: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif"
+      font: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+      fontImport: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
     },
     minimal: {
       radius: '4px',
       shadow: '0 1px 3px rgba(0,0,0,0.08)',
-      font: "'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif"
+      font: "'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif",
+      fontImport: null
     },
     playful: {
       radius: '20px',
       shadow: '0 8px 30px rgba(0,0,0,0.12)',
-      font: "'Poppins', 'Comic Sans MS', sans-serif"
+      font: "'Poppins', 'Comic Sans MS', sans-serif",
+      fontImport: "https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
     },
     professional: {
       radius: '6px',
       shadow: '0 2px 8px rgba(0,0,0,0.06)',
-      font: "'Roboto', 'Helvetica Neue', sans-serif"
+      font: "'Roboto', 'Helvetica Neue', sans-serif",
+      fontImport: "https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+    },
+    luxury: {
+      radius: '8px',
+      shadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+      font: "'Montserrat', sans-serif",
+      titleFont: "'Cormorant Garamond', serif",
+      fontImport: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap",
+      darkMode: true
+    },
+    classic: {
+      radius: '6px',
+      shadow: '0 4px 16px rgba(0,0,0,0.08)',
+      font: "'Merriweather', Georgia, serif",
+      fontImport: "https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap"
+    },
+    futuristic: {
+      radius: '0px',
+      shadow: '0 0 30px rgba(99, 102, 241, 0.3)',
+      font: "'Orbitron', monospace",
+      fontImport: "https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap"
     }
   };
 
   const preset = stylePresets[style] || stylePresets.modern;
+  const isDarkMode = preset.darkMode === true;
+  const fontImport = preset.fontImport ? `@import url('${preset.fontImport}');` : '';
 
   return `
+    ${fontImport}
+
     :root {
       --primary: ${primary};
       --accent: ${accent};
@@ -3059,25 +3116,27 @@ function generateSuiteStyles(branding) {
       --radius: ${preset.radius};
       --shadow: ${preset.shadow};
       --font: ${preset.font};
+      ${preset.titleFont ? `--title-font: ${preset.titleFont};` : ''}
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: var(--font);
-      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+      background: ${isDarkMode ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)' : 'linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%)'};
       min-height: 100vh;
-      color: #333;
+      color: ${isDarkMode ? '#e0e0e0' : '#333'};
     }
 
     .suite-header {
-      background: white;
+      background: ${isDarkMode ? '#1f1f1f' : 'white'};
       padding: 16px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       box-shadow: var(--shadow);
       position: sticky;
+      ${isDarkMode ? 'border-bottom: 1px solid rgba(201, 169, 98, 0.3);' : ''}
       top: 0;
       z-index: 100;
     }
@@ -3108,7 +3167,8 @@ function generateSuiteStyles(branding) {
     .suite-title {
       font-size: 1.25rem;
       font-weight: 700;
-      color: #333;
+      color: ${isDarkMode ? 'var(--primary)' : '#333'};
+      ${isDarkMode && preset.titleFont ? 'font-family: var(--title-font);' : ''}
     }
 
     .suite-nav {
@@ -3119,14 +3179,14 @@ function generateSuiteStyles(branding) {
     .suite-nav a {
       padding: 8px 16px;
       text-decoration: none;
-      color: #666;
+      color: ${isDarkMode ? '#aaa' : '#666'};
       border-radius: var(--radius);
       font-size: 0.9rem;
       transition: all 0.2s;
     }
 
     .suite-nav a:hover, .suite-nav a.active {
-      background: var(--primary-light);
+      background: ${isDarkMode ? 'rgba(201, 169, 98, 0.15)' : 'var(--primary-light)'};
       color: var(--primary);
     }
 
@@ -3146,14 +3206,12 @@ function generateSuiteStyles(branding) {
       font-size: 2.5rem;
       font-weight: 800;
       margin-bottom: 12px;
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      ${isDarkMode ? `color: var(--primary); font-family: var(--title-font);` : `background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;`}
     }
 
     .suite-hero p {
       font-size: 1.1rem;
-      color: #666;
+      color: ${isDarkMode ? '#888' : '#666'};
       max-width: 600px;
       margin: 0 auto;
     }
@@ -3165,7 +3223,7 @@ function generateSuiteStyles(branding) {
     }
 
     .tool-card {
-      background: white;
+      background: ${isDarkMode ? 'linear-gradient(145deg, #1f1f1f 0%, #2a2a2a 100%)' : 'white'};
       border-radius: var(--radius);
       padding: 24px;
       box-shadow: var(--shadow);
@@ -3173,11 +3231,13 @@ function generateSuiteStyles(branding) {
       text-decoration: none;
       color: inherit;
       display: block;
+      ${isDarkMode ? 'border: 1px solid rgba(201, 169, 98, 0.2);' : ''}
     }
 
     .tool-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+      box-shadow: ${isDarkMode ? '0 12px 40px rgba(0,0,0,0.3)' : '0 12px 40px rgba(0,0,0,0.15)'};
+      ${isDarkMode ? 'border-color: var(--primary);' : ''}
     }
 
     .tool-card-icon {
@@ -3196,11 +3256,12 @@ function generateSuiteStyles(branding) {
       font-size: 1.15rem;
       font-weight: 600;
       margin-bottom: 8px;
+      ${isDarkMode && preset.titleFont ? 'font-family: var(--title-font);' : ''}
     }
 
     .tool-card p {
       font-size: 0.9rem;
-      color: #666;
+      color: ${isDarkMode ? '#888' : '#666'};
       line-height: 1.5;
     }
 
@@ -3215,16 +3276,17 @@ function generateSuiteStyles(branding) {
 
     /* Tabbed interface styles */
     .tabs-container {
-      background: white;
+      background: ${isDarkMode ? 'linear-gradient(145deg, #1f1f1f 0%, #2a2a2a 100%)' : 'white'};
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow: hidden;
+      ${isDarkMode ? 'border: 1px solid rgba(201, 169, 98, 0.3);' : ''}
     }
 
     .tabs-nav {
       display: flex;
-      background: #f8fafc;
-      border-bottom: 1px solid #e2e8f0;
+      background: ${isDarkMode ? '#1a1a1a' : '#f8fafc'};
+      border-bottom: 1px solid ${isDarkMode ? 'rgba(201, 169, 98, 0.2)' : '#e2e8f0'};
       overflow-x: auto;
     }
 
@@ -3234,7 +3296,7 @@ function generateSuiteStyles(branding) {
       background: none;
       font-size: 0.95rem;
       font-weight: 500;
-      color: #666;
+      color: ${isDarkMode ? '#888' : '#666'};
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -3246,13 +3308,13 @@ function generateSuiteStyles(branding) {
 
     .tab-btn:hover {
       color: var(--primary);
-      background: var(--primary-light);
+      background: ${isDarkMode ? 'rgba(201, 169, 98, 0.1)' : 'var(--primary-light)'};
     }
 
     .tab-btn.active {
       color: var(--primary);
       border-bottom-color: var(--primary);
-      background: white;
+      background: ${isDarkMode ? '#2a2a2a' : 'white'};
     }
 
     .tab-content {
@@ -3272,8 +3334,8 @@ function generateSuiteStyles(branding) {
     }
 
     .suite-sidebar {
-      background: white;
-      border-right: 1px solid #e2e8f0;
+      background: ${isDarkMode ? '#1f1f1f' : 'white'};
+      border-right: 1px solid ${isDarkMode ? 'rgba(201, 169, 98, 0.2)' : '#e2e8f0'};
       padding: 24px 0;
       position: sticky;
       top: 72px;
@@ -3577,9 +3639,14 @@ function generateSuiteToolPage(tool, allTools, branding, organization) {
     branding: branding
   });
 
-  // Extract just the body content from the tool HTML
+  // Extract body content, styles, and scripts from the tool HTML
   const bodyMatch = toolHtml.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+  const styleMatch = toolHtml.match(/<style[^>]*>([\s\S]*?)<\/style>/gi);
+  const scriptMatch = toolHtml.match(/<script[^>]*>([\s\S]*?)<\/script>/gi);
+
   const toolBodyContent = bodyMatch ? bodyMatch[1] : toolHtml;
+  const toolStyles = styleMatch ? styleMatch.join('\n') : '';
+  const toolScripts = scriptMatch ? scriptMatch.join('\n') : '';
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -3588,9 +3655,11 @@ function generateSuiteToolPage(tool, allTools, branding, organization) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${tool.name} - ${businessName}</title>
   <style>${generateSuiteStyles(branding)}</style>
+  ${toolStyles}
   <style>
     .tool-embed { padding: 0; }
     .tool-embed .container { max-width: 100%; }
+    .tool-embed .tool-container { margin: 0; max-width: 100%; }
   </style>
 </head>
 <body>
@@ -3614,6 +3683,7 @@ function generateSuiteToolPage(tool, allTools, branding, organization) {
       ${toolBodyContent}
     </div>
   </div>
+  ${toolScripts}
 </body>
 </html>`;
 }

@@ -243,6 +243,7 @@ router.post('/orchestrate', orchestrateRateLimiter, async (req, res) => {
     console.log(`   📄 Pages (${summary.pages || 0}): ${safeJoin(payload.pages)}`);
     console.log(`   🔧 Modules (${summary.modules || 0}): ${safeJoin(payload.modules)}`);
     console.log(`   🎨 Colors: Primary ${payload.theme?.colors?.primary || 'default'}, Accent ${payload.theme?.colors?.accent || 'default'}`);
+    console.log(`   🎛️ Admin Tier: ${payload.adminTier || 'standard'} (${payload.adminModules?.length || 0} modules)`);
     console.log(`   🎯 Confidence: ${summary.confidence || 'unknown'}`);
     if (payload.metadata?.inferredDetails) {
       console.log(`   💬 Tagline: "${payload.metadata.inferredDetails.tagline || 'N/A'}"`);
@@ -358,9 +359,13 @@ router.post('/orchestrate', orchestrateRateLimiter, async (req, res) => {
 
         // Generate brain.json with orchestrator metadata
         const industryConfig = INDUSTRIES[sanitizedIndustry] || INDUSTRIES['consulting'] || {};
-        const brainJsonContent = generateBrainJson(sanitizedName, sanitizedIndustry, industryConfig);
+        const brainJsonContent = generateBrainJson(sanitizedName, sanitizedIndustry, industryConfig, {
+          adminTier: payload.adminTier,
+          adminModules: payload.adminModules,
+          adminReason: payload.adminReason
+        });
         fs.writeFileSync(path.join(projectPath, 'brain.json'), brainJsonContent);
-        console.log('   🧠 brain.json generated');
+        console.log('   🧠 brain.json generated (admin tier: ' + (payload.adminTier || 'standard') + ')');
 
         // Save orchestrator metadata
         const orchestratorMeta = {
@@ -376,12 +381,61 @@ router.post('/orchestrate', orchestrateRateLimiter, async (req, res) => {
         );
         console.log('   📋 orchestrator-meta.json saved');
 
-        // Copy business-admin module
-        const businessAdminSrc = path.join(MODULE_LIBRARY, 'frontend', 'business-admin');
-        const businessAdminDest = path.join(projectPath, 'admin');
-        if (fs.existsSync(businessAdminSrc)) {
-          copyDirectorySync(businessAdminSrc, businessAdminDest);
-          console.log('   🎛️ business-admin module copied');
+        // Copy admin modules based on tier
+        const adminTier = payload.adminTier || 'standard';
+        const adminModules = payload.adminModules || [];
+        const adminDest = path.join(projectPath, 'admin');
+
+        try {
+          const { loadModulesForAssembly, generateAdminAppJsx } = require('../services/admin-module-loader.cjs');
+
+          // Load selected admin modules
+          const moduleData = loadModulesForAssembly(adminModules);
+
+          // Create admin directory
+          if (!fs.existsSync(adminDest)) {
+            fs.mkdirSync(adminDest, { recursive: true });
+          }
+
+          // Copy shared admin components
+          const sharedSrc = path.join(__dirname, '../../backend/admin-modules/_shared');
+          if (fs.existsSync(sharedSrc)) {
+            copyDirectorySync(sharedSrc, path.join(adminDest, '_shared'));
+          }
+
+          // Copy each module
+          for (const mod of moduleData.modules) {
+            const modSrc = path.join(__dirname, '../../backend/admin-modules', mod.name);
+            const modDest = path.join(adminDest, 'modules', mod.name);
+            if (fs.existsSync(modSrc)) {
+              copyDirectorySync(modSrc, modDest);
+            }
+          }
+
+          // Generate admin App.jsx
+          const adminAppJsx = generateAdminAppJsx(adminModules, {
+            businessName: summary.businessName
+          });
+          fs.writeFileSync(path.join(adminDest, 'App.jsx'), adminAppJsx);
+
+          // Save admin config
+          fs.writeFileSync(path.join(adminDest, 'admin-config.json'), JSON.stringify({
+            tier: adminTier,
+            modules: adminModules,
+            generatedAt: new Date().toISOString(),
+            sidebar: moduleData.sidebar,
+            routes: moduleData.routes
+          }, null, 2));
+
+          console.log(`   🎛️ Admin modules copied (${adminTier} tier, ${adminModules.length} modules)`);
+        } catch (adminErr) {
+          console.warn('   ⚠️ Admin module setup failed, using fallback:', adminErr.message);
+          // Fallback to old business-admin
+          const businessAdminSrc = path.join(MODULE_LIBRARY, 'frontend', 'business-admin');
+          if (fs.existsSync(businessAdminSrc)) {
+            copyDirectorySync(businessAdminSrc, adminDest);
+            console.log('   🎛️ Fallback: business-admin module copied');
+          }
         }
 
         // ========================================
