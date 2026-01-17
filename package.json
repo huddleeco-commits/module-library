@@ -1,0 +1,14 @@
+{
+  "name": "module-library-root",
+  "version": "1.0.0",
+  "description": "Root package for Railway deployment - delegates to module-assembler-ui",
+  "scripts": {
+    "install": "cd module-assembler-ui && npm install",
+    "build": "cd module-assembler-ui && npm run build",
+    "start": "cd module-assembler-ui && npm start",
+    "postinstall": "cd module-assembler-ui && npm install"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
