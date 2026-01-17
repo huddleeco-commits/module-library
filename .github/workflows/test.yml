@@ -1,0 +1,164 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+jobs:
+  backend-tests:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          npm ci
+
+      - name: Run backend unit tests
+        run: |
+          cd backend
+          npm run test:unit
+        env:
+          NODE_ENV: test
+          JWT_SECRET: test-jwt-secret-key
+
+      - name: Run backend integration tests
+        run: |
+          cd backend
+          npm run test:integration
+        env:
+          NODE_ENV: test
+          JWT_SECRET: test-jwt-secret-key
+
+      - name: Upload backend coverage
+        uses: codecov/codecov-action@v4
+        with:
+          directory: ./backend/tests/coverage
+          flags: backend
+          name: backend-coverage
+        continue-on-error: true
+
+  frontend-tests:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: module-assembler-ui/package-lock.json
+
+      - name: Install frontend dependencies
+        run: |
+          cd module-assembler-ui
+          npm ci
+
+      - name: Run frontend tests
+        run: |
+          cd module-assembler-ui
+          npm run test
+        env:
+          CI: true
+
+      - name: Upload frontend coverage
+        uses: codecov/codecov-action@v4
+        with:
+          directory: ./module-assembler-ui/src/__tests__/coverage
+          flags: frontend
+          name: frontend-coverage
+        continue-on-error: true
+
+  build-check:
+    name: Build Check
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-tests]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - name: Install frontend dependencies
+        run: |
+          cd module-assembler-ui
+          npm ci
+
+      - name: Build frontend
+        run: |
+          cd module-assembler-ui
+          npm run build
+        env:
+          CI: true
+
+  lint-check:
+    name: Lint Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - name: Install dependencies
+        run: |
+          cd module-assembler-ui
+          npm ci
+
+      - name: Run ESLint (if configured)
+        run: |
+          cd module-assembler-ui
+          npm run lint --if-present
+        continue-on-error: true
+
+  all-tests-pass:
+    name: All Tests Pass
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-tests, build-check]
+    if: always()
+
+    steps:
+      - name: Check test results
+        run: |
+          if [[ "${{ needs.backend-tests.result }}" == "success" &&
+                "${{ needs.frontend-tests.result }}" == "success" &&
+                "${{ needs.build-check.result }}" == "success" ]]; then
+            echo "All tests passed!"
+            exit 0
+          else
+            echo "Some tests failed"
+            exit 1
+          fi

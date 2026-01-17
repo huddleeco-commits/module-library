@@ -1,4 +1,34 @@
 {
+  "pizza": {
+    "name": "Pizza / Pizzeria",
+    "icon": "🍕",
+    "category": "Food & Beverage",
+    "layouts": ["food-hero-full", "ambiance-video", "menu-split"],
+    "defaultLayout": "ambiance-video",
+    "effects": ["fade-up", "food-zoom", "warm-overlay"],
+    "sections": ["hero", "menu-preview", "about-chef", "gallery", "testimonials", "order-cta", "location"],
+    "vibe": "Warm, authentic, family-friendly, appetizing, Italian",
+    "typography": {
+      "heading": "'Playfair Display', Georgia, serif",
+      "body": "'Lato', system-ui, sans-serif",
+      "style": "Warm Italian-inspired headlines, clean readable body"
+    },
+    "colors": {
+      "primary": "#8B0000",
+      "accent": "#FFD700",
+      "secondary": "#2c1810",
+      "background": "#faf7f2",
+      "text": "#2c1810",
+      "textMuted": "#6b5b4f"
+    },
+    "imagery": {
+      "hero": "Fresh pizza being made, wood-fired oven, melted cheese",
+      "style": "Artisan pizza making, rustic Italian atmosphere, fresh ingredients",
+      "unsplash": "pizza making pizzeria italian restaurant"
+    },
+    "visualPrompt": "Create a warm, authentic pizzeria website. Hero should feature video of pizza being made or stunning pizza photography with Italian colors. Use warm Italian reds and golds. Include menu with pizza categories (specialty, classic, build-your-own), prices ($14-24), toppings. Sections: hero with order CTA, menu with pizza cards showing ingredients and prices, about section with Italian heritage/family story, photo gallery of pizzas and restaurant, testimonials, easy online ordering CTA, location with hours. Evoke authentic Italian pizzeria warmth."
+  },
+
   "restaurant": {
     "name": "Restaurant / Food Service",
     "icon": "🍽️",

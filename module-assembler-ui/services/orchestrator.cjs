@@ -24,6 +24,9 @@ const path = require('path');
 // Import styled tool generator
 const { generateStyledTool, STYLE_PRESETS } = require('../lib/generators/styled-tool-generator.cjs');
 
+// Import tier selector for L1-L4 recommendations
+const { selectTier, buildGenerationPlan } = require('../lib/orchestrators/index.cjs');
+
 // Load industries config
 const INDUSTRIES = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../../prompts/industries.json'), 'utf8')
@@ -1319,6 +1322,24 @@ Return ONLY this JSON structure (no other text):
       console.warn('[orchestrator] Admin tier suggestion failed, using default:', err.message);
     }
 
+    // SELECT OUTPUT TIER (L1-L4) based on detected features
+    let tierRecommendation = { recommended: 'L2', tier: { name: 'Presence' }, estimatedCost: '$0.20', estimatedTime: '2 minutes' };
+    let generationPlan = null;
+    try {
+      tierRecommendation = selectTier(input, industry);
+      generationPlan = buildGenerationPlan(input, industry);
+      console.log(`[orchestrator] Tier recommended: ${tierRecommendation.recommended} (${tierRecommendation.tier.name})`);
+      console.log(`[orchestrator] Features detected: ${tierRecommendation.detectedFeatures?.join(', ') || 'none'}`);
+
+      // Override admin tier if L1-L4 tier suggests different
+      if (tierRecommendation.adminTier && tierRecommendation.adminTier !== adminTierSuggestion.tier) {
+        console.log(`[orchestrator] Overriding admin tier: ${adminTierSuggestion.tier} → ${tierRecommendation.adminTier}`);
+        adminTierSuggestion.tier = tierRecommendation.adminTier;
+      }
+    } catch (err) {
+      console.warn('[orchestrator] Tier selection failed, using default L2:', err.message);
+    }
+
     // Build the final payload for /api/assemble
     const assemblePayload = {
       type: 'business',
@@ -1329,6 +1350,14 @@ Return ONLY this JSON structure (no other text):
       adminTier: adminTierSuggestion.tier,
       adminModules: adminTierSuggestion.modules,
       adminReason: adminTierSuggestion.reason,
+
+      // Output tier (L1-L4) configuration
+      outputTier: tierRecommendation.recommended,
+      outputTierName: tierRecommendation.tier?.name || 'Presence',
+      outputTierCost: tierRecommendation.estimatedCost || '$0.20',
+      outputTierTime: tierRecommendation.estimatedTime || '2 minutes',
+      detectedFeatures: tierRecommendation.detectedFeatures || [],
+      generationPlan: generationPlan,
 
       // Theme configuration
       theme: {
@@ -1404,7 +1433,15 @@ Return ONLY this JSON structure (no other text):
         location: aiConfig.location?.city
           ? `${aiConfig.location.city}${aiConfig.location.state ? ', ' + aiConfig.location.state : ''}`
           : 'Not specified',
-        confidence: aiConfig.confidence
+        confidence: aiConfig.confidence,
+        // Output tier (L1-L4) for UI display
+        outputTier: tierRecommendation.recommended,
+        outputTierName: tierRecommendation.tier?.name || 'Presence',
+        outputTierCost: tierRecommendation.estimatedCost || '$0.20',
+        outputTierTime: tierRecommendation.estimatedTime || '2 minutes',
+        detectedFeatures: tierRecommendation.detectedFeatures || [],
+        canUpgrade: tierRecommendation.upgradeOptions?.length > 0,
+        canDowngrade: tierRecommendation.downgradeOptions?.length > 0
       }
     };
 
@@ -1424,6 +1461,12 @@ Return ONLY this JSON structure (no other text):
       try {
         const { suggestAdminTier } = require('../lib/services/admin-module-loader.cjs');
         fallbackAdminTier = suggestAdminTier(industry, input);
+      } catch (err) {}
+
+      // Get fallback tier recommendation
+      let fallbackTier = { recommended: 'L2', tier: { name: 'Presence' }, estimatedCost: '$0.20', estimatedTime: '2 minutes', detectedFeatures: [] };
+      try {
+        fallbackTier = selectTier(input, industry);
       } catch (err) {}
 
       return {
@@ -1446,6 +1489,13 @@ Return ONLY this JSON structure (no other text):
           pages: PAGE_RECOMMENDATIONS[category] || PAGE_RECOMMENDATIONS.default,
           modules: MODULE_RECOMMENDATIONS[industry] || MODULE_RECOMMENDATIONS.default,
           autoDeploy: false,
+          // Output tier (L1-L4) configuration
+          outputTier: fallbackTier.recommended,
+          outputTierName: fallbackTier.tier?.name || 'Presence',
+          outputTierCost: fallbackTier.estimatedCost || '$0.20',
+          outputTierTime: fallbackTier.estimatedTime || '2 minutes',
+          detectedFeatures: fallbackTier.detectedFeatures || [],
+          generationPlan: null,
           metadata: {
             orchestratorVersion: '2.0',
             generatedAt: new Date().toISOString(),
@@ -1475,7 +1525,15 @@ Return ONLY this JSON structure (no other text):
           adminModuleCount: fallbackAdminTier.modules.length,
           location: 'Not specified',
           confidence: 'low',
-          fallbackUsed: true
+          fallbackUsed: true,
+          // Output tier (L1-L4) for UI display
+          outputTier: fallbackTier.recommended,
+          outputTierName: fallbackTier.tier?.name || 'Presence',
+          outputTierCost: fallbackTier.estimatedCost || '$0.20',
+          outputTierTime: fallbackTier.estimatedTime || '2 minutes',
+          detectedFeatures: fallbackTier.detectedFeatures || [],
+          canUpgrade: fallbackTier.upgradeOptions?.length > 0,
+          canDowngrade: fallbackTier.downgradeOptions?.length > 0
         }
       };
     }

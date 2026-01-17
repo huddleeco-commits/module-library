@@ -6,6 +6,8 @@
  */
 
 const { VALID_LUCIDE_ICONS, ICON_REPLACEMENTS } = require('../configs/index.cjs');
+const { toComponentName, toRoutePath, toNavLabel } = require('../utils/index.cjs');
+const { getIndustryHeaderConfig } = require('../prompt-builders/index.cjs');
 
 // ============================================
 // BRAIN.JSON GENERATOR

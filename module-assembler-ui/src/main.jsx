@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 
 // Initialize Sentry error tracking FIRST
-import { initSentry, SentryErrorBoundary, ErrorFallback } from './lib/sentry.js';
+import { initSentry, SentryErrorBoundary, ErrorFallback } from './lib/sentry.jsx';
 initSentry();
 
 ReactDOM.createRoot(document.getElementById('root')).render(

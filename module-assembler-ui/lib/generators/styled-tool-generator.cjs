@@ -737,7 +737,7 @@ const TOOL_GENERATORS = {
   'calorie-calculator': (config) => generateCalorieCalculator(config),
   'grade-calculator': (config) => generateGradeCalculator(config),
   'mortgage-calculator': (config) => generateMortgageCalculator(config),
-  'invoice-generator': (config) => generateInvoiceGenerator(config),
+  'invoice-generator': (config) => generateQuoteCalculator({ ...config, name: config.name || 'Invoice Generator' }),
   'password-generator': (config) => generatePasswordGenerator(config),
   'countdown': (config) => generateCountdown(config),
   'word-counter': (config) => generateWordCounter(config),
@@ -3231,14 +3231,784 @@ function generateQuoteCalculator(config) {
 }
 
 // ============================================
+// TIMER / STOPWATCH TOOL
+// ============================================
+
+function generateTimerTool(config) {
+  const { name, style, colors, branding } = config;
+  const stylePreset = STYLE_PRESETS[style] || STYLE_PRESETS.modern;
+  const css = stylePreset.getCSS(colors);
+  const toolName = name || 'Timer';
+  const toolNameLower = toolName.toLowerCase();
+
+  // Context-aware presets
+  const isCoffee = toolNameLower.includes('coffee') || toolNameLower.includes('brew') || toolNameLower.includes('espresso');
+  const isCooking = toolNameLower.includes('cook') || toolNameLower.includes('kitchen') || toolNameLower.includes('baking');
+
+  let presetsHtml;
+  if (isCoffee) {
+    presetsHtml = `
+      <button class="preset-btn" onclick="setTimer(25, 'Espresso')">☕ Espresso<br><small>0:25</small></button>
+      <button class="preset-btn" onclick="setTimer(240, 'Pour Over')">💧 Pour Over<br><small>4:00</small></button>
+      <button class="preset-btn" onclick="setTimer(240, 'French Press')">🫖 French Press<br><small>4:00</small></button>
+      <button class="preset-btn" onclick="setTimer(90, 'Aeropress')">⏱️ Aeropress<br><small>1:30</small></button>
+      <button class="preset-btn" onclick="setTimer(300, 'Moka Pot')">🔥 Moka Pot<br><small>5:00</small></button>
+      <button class="preset-btn" onclick="setTimer(180, 'Cold Brew Bloom')">🧊 Cold Brew<br><small>3:00</small></button>`;
+  } else if (isCooking) {
+    presetsHtml = `
+      <button class="preset-btn" onclick="setTimer(360, 'Soft Boil Egg')">🥚 Soft Boil<br><small>6:00</small></button>
+      <button class="preset-btn" onclick="setTimer(600, 'Hard Boil Egg')">🥚 Hard Boil<br><small>10:00</small></button>
+      <button class="preset-btn" onclick="setTimer(480, 'Pasta')">🍝 Pasta<br><small>8:00</small></button>
+      <button class="preset-btn" onclick="setTimer(1080, 'Rice')">🍚 Rice<br><small>18:00</small></button>
+      <button class="preset-btn" onclick="setTimer(900, 'Rest Dough')">🍞 Rest Dough<br><small>15:00</small></button>
+      <button class="preset-btn" onclick="setTimer(300, 'Rest Steak')">🥩 Rest Steak<br><small>5:00</small></button>`;
+  } else {
+    presetsHtml = `
+      <button class="preset-btn" onclick="setTimer(30, '30 Seconds')">⚡ 30 sec</button>
+      <button class="preset-btn" onclick="setTimer(60, '1 Minute')">⏱️ 1 min</button>
+      <button class="preset-btn" onclick="setTimer(180, '3 Minutes')">⏰ 3 min</button>
+      <button class="preset-btn" onclick="setTimer(300, '5 Minutes')">🕐 5 min</button>
+      <button class="preset-btn" onclick="setTimer(600, '10 Minutes')">🕙 10 min</button>
+      <button class="preset-btn" onclick="setTimer(900, '15 Minutes')">🕒 15 min</button>`;
+  }
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${toolName} | ${branding?.businessName || 'Tools'}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    ${css}
+
+    .timer-display {
+      text-align: center;
+      padding: 40px 20px;
+      position: relative;
+    }
+    .timer-ring {
+      width: 220px;
+      height: 220px;
+      margin: 0 auto 20px;
+      position: relative;
+    }
+    .timer-ring svg {
+      transform: rotate(-90deg);
+      width: 100%;
+      height: 100%;
+    }
+    .timer-ring circle {
+      fill: none;
+      stroke-width: 8;
+    }
+    .ring-bg { stroke: ${colors.primary}20; }
+    .ring-progress {
+      stroke: ${colors.primary};
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.3s ease;
+    }
+    .timer-time {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 3.5rem;
+      font-weight: 700;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      color: ${colors.primary};
+    }
+    .timer-label {
+      font-size: 0.9rem;
+      color: #888;
+      margin-top: 8px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .presets-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .preset-btn {
+      padding: 14px 10px;
+      background: rgba(255,255,255,0.05);
+      border: 2px solid ${colors.primary}30;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: inherit;
+      transition: all 0.2s ease;
+      line-height: 1.4;
+    }
+    .preset-btn:hover { border-color: ${colors.primary}60; background: ${colors.primary}10; }
+    .preset-btn.active { border-color: ${colors.primary}; background: ${colors.primary}20; }
+    .preset-btn small { color: #888; font-size: 0.75rem; }
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .control-btn {
+      flex: 1;
+      padding: 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-start { background: ${colors.primary}; color: white; }
+    .btn-start:hover { filter: brightness(1.1); }
+    .btn-pause { background: #f59e0b; color: white; }
+    .btn-reset { background: rgba(255,255,255,0.1); color: inherit; border: 1px solid rgba(255,255,255,0.2); }
+    .custom-time {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .custom-time .form-input { width: 70px; text-align: center; }
+    .timer-running .timer-time { animation: pulse 1s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+    .timer-done .timer-time { animation: flash 0.5s ease-in-out infinite; color: #22c55e; }
+    @keyframes flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  </style>
+</head>
+<body>
+  <div class="tool-container">
+    <div class="tool-header">
+      <h1 class="tool-title">${toolName}</h1>
+      <p class="tool-subtitle">Precision timing</p>
+    </div>
+
+    <div class="timer-display" id="timer-display">
+      <div class="timer-ring">
+        <svg viewBox="0 0 220 220">
+          <circle class="ring-bg" cx="110" cy="110" r="100"></circle>
+          <circle class="ring-progress" id="ring-progress" cx="110" cy="110" r="100"
+                  stroke-dasharray="628.32" stroke-dashoffset="0"></circle>
+        </svg>
+        <div class="timer-time" id="timer-time">00:00</div>
+      </div>
+      <div class="timer-label" id="timer-label">Select a preset or set custom time</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Quick Presets</label>
+      <div class="presets-grid">${presetsHtml}</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Custom Time</label>
+      <div class="custom-time">
+        <input type="number" class="form-input" id="custom-min" placeholder="Min" min="0" max="99" value="0">
+        <span style="font-size:1.5rem">:</span>
+        <input type="number" class="form-input" id="custom-sec" placeholder="Sec" min="0" max="59" value="0">
+        <button class="btn-primary" onclick="setCustomTime()" style="padding:12px 16px">Set</button>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="control-btn btn-start" id="start-btn" onclick="toggleTimer()">▶ Start</button>
+      <button class="control-btn btn-reset" onclick="resetTimer()">↺ Reset</button>
+    </div>
+
+    <footer class="brand-footer">
+      ${branding?.businessName || 'Timer'} • Powered by Blink
+    </footer>
+  </div>
+
+  <script>
+    let totalSeconds = 0;
+    let remainingSeconds = 0;
+    let timerInterval = null;
+    let isRunning = false;
+    const circumference = 628.32;
+
+    function formatTime(s) {
+      const m = Math.floor(s / 60);
+      const sec = s % 60;
+      return String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+    }
+
+    function updateDisplay() {
+      document.getElementById('timer-time').textContent = formatTime(remainingSeconds);
+      const progress = totalSeconds > 0 ? remainingSeconds / totalSeconds : 1;
+      document.getElementById('ring-progress').style.strokeDashoffset = circumference * (1 - progress);
+    }
+
+    function setTimer(seconds, label) {
+      if (isRunning) pauseTimer();
+      totalSeconds = seconds;
+      remainingSeconds = seconds;
+      document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+      if (event && event.target) event.target.classList.add('active');
+      document.getElementById('timer-label').textContent = label || 'Ready';
+      document.getElementById('timer-display').classList.remove('timer-done');
+      updateDisplay();
+    }
+
+    function setCustomTime() {
+      const min = parseInt(document.getElementById('custom-min').value) || 0;
+      const sec = parseInt(document.getElementById('custom-sec').value) || 0;
+      setTimer(min * 60 + sec, 'Custom Timer');
+      document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    }
+
+    function toggleTimer() {
+      isRunning ? pauseTimer() : startTimer();
+    }
+
+    function startTimer() {
+      if (remainingSeconds <= 0) return;
+      isRunning = true;
+      document.getElementById('start-btn').innerHTML = '⏸ Pause';
+      document.getElementById('start-btn').classList.remove('btn-start');
+      document.getElementById('start-btn').classList.add('btn-pause');
+      document.getElementById('timer-display').classList.add('timer-running');
+      document.getElementById('timer-display').classList.remove('timer-done');
+
+      timerInterval = setInterval(() => {
+        remainingSeconds--;
+        updateDisplay();
+        if (remainingSeconds <= 0) {
+          clearInterval(timerInterval);
+          isRunning = false;
+          document.getElementById('timer-label').textContent = "⏰ Time's Up!";
+          document.getElementById('timer-display').classList.remove('timer-running');
+          document.getElementById('timer-display').classList.add('timer-done');
+          document.getElementById('start-btn').innerHTML = '▶ Start';
+          document.getElementById('start-btn').classList.add('btn-start');
+          document.getElementById('start-btn').classList.remove('btn-pause');
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      clearInterval(timerInterval);
+      isRunning = false;
+      document.getElementById('start-btn').innerHTML = '▶ Resume';
+      document.getElementById('start-btn').classList.add('btn-start');
+      document.getElementById('start-btn').classList.remove('btn-pause');
+      document.getElementById('timer-display').classList.remove('timer-running');
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      isRunning = false;
+      remainingSeconds = totalSeconds;
+      document.getElementById('timer-label').textContent = 'Ready';
+      document.getElementById('start-btn').innerHTML = '▶ Start';
+      document.getElementById('start-btn').classList.add('btn-start');
+      document.getElementById('start-btn').classList.remove('btn-pause');
+      document.getElementById('timer-display').classList.remove('timer-running', 'timer-done');
+      updateDisplay();
+    }
+  </script>
+</body>
+</html>`;
+}
+
+// ============================================
+// QR CODE GENERATOR TOOL
+// ============================================
+
+function generateQRCodeTool(config) {
+  const { name, style, colors, branding } = config;
+  const stylePreset = STYLE_PRESETS[style] || STYLE_PRESETS.modern;
+  const css = stylePreset.getCSS(colors);
+  const toolName = name || 'QR Code Generator';
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${toolName} | ${branding?.businessName || 'Tools'}</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"><\/script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    ${css}
+
+    .qr-preview {
+      text-align: center;
+      padding: 32px;
+      background: white;
+      border-radius: 12px;
+      margin: 24px 0;
+    }
+    #qr-canvas { max-width: 100%; height: auto; }
+    .qr-placeholder {
+      width: 200px; height: 200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f5f5f5;
+      border-radius: 8px;
+      color: #888;
+    }
+    .type-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .type-tab {
+      padding: 10px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid ${colors.primary}30;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: inherit;
+      transition: all 0.2s ease;
+    }
+    .type-tab:hover { border-color: ${colors.primary}60; }
+    .type-tab.active { background: ${colors.primary}; color: white; border-color: ${colors.primary}; }
+    .color-row {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .color-row label { display: flex; flex-direction: column; gap: 4px; }
+    .color-row small { color: #888; }
+    .color-row input[type="color"] {
+      width: 50px; height: 40px;
+      border: none; border-radius: 6px;
+      cursor: pointer;
+    }
+    .download-btns {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .download-btn {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    .btn-png { background: ${colors.primary}; color: white; }
+    .btn-svg { background: rgba(255,255,255,0.1); color: inherit; border: 1px solid rgba(255,255,255,0.2); }
+  </style>
+</head>
+<body>
+  <div class="tool-container">
+    <div class="tool-header">
+      <h1 class="tool-title">${toolName}</h1>
+      <p class="tool-subtitle">Create QR codes instantly</p>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Content Type</label>
+      <div class="type-tabs">
+        <button class="type-tab active" onclick="setType('url', this)">🔗 URL</button>
+        <button class="type-tab" onclick="setType('text', this)">📝 Text</button>
+        <button class="type-tab" onclick="setType('email', this)">✉️ Email</button>
+        <button class="type-tab" onclick="setType('phone', this)">📞 Phone</button>
+        <button class="type-tab" onclick="setType('wifi', this)">📶 WiFi</button>
+      </div>
+    </div>
+
+    <div id="input-section">
+      <div class="form-group" id="url-input">
+        <label class="form-label">URL</label>
+        <input type="url" class="form-input" id="qr-url" placeholder="https://example.com" value="https://${(branding?.businessName || 'example').toLowerCase().replace(/\s+/g, '')}.com">
+      </div>
+      <div class="form-group" id="text-input" style="display:none">
+        <label class="form-label">Text</label>
+        <textarea class="form-input" id="qr-text" rows="3" placeholder="Enter any text..."></textarea>
+      </div>
+      <div class="form-group" id="email-input" style="display:none">
+        <label class="form-label">Email Address</label>
+        <input type="email" class="form-input" id="qr-email" placeholder="email@example.com">
+      </div>
+      <div class="form-group" id="phone-input" style="display:none">
+        <label class="form-label">Phone Number</label>
+        <input type="tel" class="form-input" id="qr-phone" placeholder="+1234567890">
+      </div>
+      <div id="wifi-inputs" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Network Name (SSID)</label>
+          <input type="text" class="form-input" id="wifi-ssid" placeholder="MyNetwork">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="text" class="form-input" id="wifi-pass" placeholder="Password">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Security</label>
+          <select class="form-input" id="wifi-security">
+            <option value="WPA">WPA/WPA2</option>
+            <option value="WEP">WEP</option>
+            <option value="">None</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Colors</label>
+      <div class="color-row">
+        <label><small>Foreground</small><input type="color" id="qr-fg" value="#000000"></label>
+        <label><small>Background</small><input type="color" id="qr-bg" value="#ffffff"></label>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="generateQR()">Generate QR Code</button>
+
+    <div class="qr-preview">
+      <div id="qr-placeholder" class="qr-placeholder">Click Generate to create QR code</div>
+      <canvas id="qr-canvas" style="display:none"></canvas>
+    </div>
+
+    <div class="download-btns">
+      <button class="download-btn btn-png" onclick="downloadPNG()">📥 Download PNG</button>
+      <button class="download-btn btn-svg" onclick="downloadSVG()">📄 Download SVG</button>
+    </div>
+
+    <footer class="brand-footer">
+      ${branding?.businessName || 'QR Generator'} • Powered by Blink
+    </footer>
+  </div>
+
+  <script>
+    let currentType = 'url';
+
+    function setType(type, btn) {
+      currentType = type;
+      document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+
+      // Hide all inputs
+      ['url', 'text', 'email', 'phone'].forEach(t => {
+        document.getElementById(t + '-input').style.display = 'none';
+      });
+      document.getElementById('wifi-inputs').style.display = 'none';
+
+      // Show selected input
+      if (type === 'wifi') {
+        document.getElementById('wifi-inputs').style.display = 'block';
+      } else {
+        document.getElementById(type + '-input').style.display = 'block';
+      }
+    }
+
+    function getContent() {
+      switch(currentType) {
+        case 'url': return document.getElementById('qr-url').value;
+        case 'text': return document.getElementById('qr-text').value;
+        case 'email': return 'mailto:' + document.getElementById('qr-email').value;
+        case 'phone': return 'tel:' + document.getElementById('qr-phone').value;
+        case 'wifi':
+          const ssid = document.getElementById('wifi-ssid').value;
+          const pass = document.getElementById('wifi-pass').value;
+          const sec = document.getElementById('wifi-security').value;
+          return 'WIFI:T:' + sec + ';S:' + ssid + ';P:' + pass + ';;';
+        default: return '';
+      }
+    }
+
+    function generateQR() {
+      const content = getContent();
+      if (!content) { alert('Please enter content first'); return; }
+
+      const canvas = document.getElementById('qr-canvas');
+      const placeholder = document.getElementById('qr-placeholder');
+      const fg = document.getElementById('qr-fg').value;
+      const bg = document.getElementById('qr-bg').value;
+
+      QRCode.toCanvas(canvas, content, {
+        width: 256,
+        margin: 2,
+        color: { dark: fg, light: bg }
+      }, function(err) {
+        if (err) { console.error(err); return; }
+        placeholder.style.display = 'none';
+        canvas.style.display = 'block';
+      });
+    }
+
+    function downloadPNG() {
+      const canvas = document.getElementById('qr-canvas');
+      if (canvas.style.display === 'none') { alert('Generate a QR code first'); return; }
+      const link = document.createElement('a');
+      link.download = 'qrcode.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    function downloadSVG() {
+      const content = getContent();
+      if (!content) { alert('Generate a QR code first'); return; }
+      const fg = document.getElementById('qr-fg').value;
+      const bg = document.getElementById('qr-bg').value;
+
+      QRCode.toString(content, { type: 'svg', width: 256, margin: 2, color: { dark: fg, light: bg } }, function(err, svg) {
+        if (err) { console.error(err); return; }
+        const blob = new Blob([svg], { type: 'image/svg+xml' });
+        const link = document.createElement('a');
+        link.download = 'qrcode.svg';
+        link.href = URL.createObjectURL(blob);
+        link.click();
+      });
+    }
+  </script>
+</body>
+</html>`;
+}
+
+// ============================================
+// SALES CALCULATOR TOOL
+// ============================================
+
+function generateSalesCalculatorTool(config) {
+  const { name, style, colors, branding } = config;
+  const stylePreset = STYLE_PRESETS[style] || STYLE_PRESETS.modern;
+  const css = stylePreset.getCSS(colors);
+  const toolName = name || 'Sales Calculator';
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${toolName} | ${branding?.businessName || 'Business Tools'}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    ${css}
+
+    .sales-entries { margin-bottom: 24px; }
+    .sales-entry {
+      display: grid;
+      grid-template-columns: 1fr 90px 90px 60px;
+      gap: 10px;
+      margin-bottom: 10px;
+      align-items: center;
+      padding: 12px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+    }
+    .sales-entry .form-input { margin: 0; }
+    .add-sale {
+      padding: 12px 16px;
+      background: transparent;
+      border: 1px dashed ${colors.primary}60;
+      color: ${colors.primary};
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+    }
+    .remove-btn {
+      padding: 8px 12px;
+      background: #fee2e2;
+      color: #dc2626;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    .stat-card {
+      text-align: center;
+      padding: 20px 16px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+    }
+    .stat-card.main { background: ${colors.primary}15; border: 1px solid ${colors.primary}30; }
+    .stat-value { font-size: 1.8rem; font-weight: 700; color: ${colors.primary}; }
+    .stat-label { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+    .breakdown { margin-top: 20px; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 8px; }
+    .breakdown-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .breakdown-row:last-child { border-bottom: none; }
+    .positive { color: #22c55e; }
+    .negative { color: #ef4444; }
+  </style>
+</head>
+<body>
+  <div class="tool-container">
+    <div class="tool-header">
+      <h1 class="tool-title">${toolName}</h1>
+      <p class="tool-subtitle">Track daily revenue</p>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Sales Entries</label>
+      <div style="display:grid;grid-template-columns:1fr 90px 90px 60px;gap:10px;margin-bottom:8px;font-size:0.7rem;color:#888;text-transform:uppercase;">
+        <span>Item/Category</span><span>Qty</span><span>Price</span><span></span>
+      </div>
+      <div class="sales-entries" id="sales-entries">
+        <div class="sales-entry">
+          <input type="text" class="form-input" placeholder="Item" value="Coffee">
+          <input type="number" class="form-input" value="45" min="0" onchange="calculate()">
+          <input type="number" class="form-input" value="4.50" step="0.01" onchange="calculate()">
+          <button type="button" class="remove-btn" onclick="removeEntry(this)">×</button>
+        </div>
+        <div class="sales-entry">
+          <input type="text" class="form-input" placeholder="Item" value="Pastries">
+          <input type="number" class="form-input" value="28" min="0" onchange="calculate()">
+          <input type="number" class="form-input" value="3.75" step="0.01" onchange="calculate()">
+          <button type="button" class="remove-btn" onclick="removeEntry(this)">×</button>
+        </div>
+        <div class="sales-entry">
+          <input type="text" class="form-input" placeholder="Item" value="Sandwiches">
+          <input type="number" class="form-input" value="15" min="0" onchange="calculate()">
+          <input type="number" class="form-input" value="8.50" step="0.01" onchange="calculate()">
+          <button type="button" class="remove-btn" onclick="removeEntry(this)">×</button>
+        </div>
+      </div>
+      <button type="button" class="add-sale" onclick="addEntry()">+ Add Item</button>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Cost of Goods Sold (%)</label>
+      <input type="number" class="form-input" id="cogs" value="35" min="0" max="100" onchange="calculate()">
+    </div>
+
+    <button class="btn-primary" onclick="calculate()">Calculate</button>
+
+    <div class="result-card visible" id="result">
+      <div class="result-title">Sales Summary</div>
+      <div class="stats-grid">
+        <div class="stat-card main">
+          <div class="stat-value" id="revenue">$430.25</div>
+          <div class="stat-label">Total Revenue</div>
+        </div>
+        <div class="stat-card main">
+          <div class="stat-value positive" id="profit">$279.66</div>
+          <div class="stat-label">Gross Profit</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="items">88</div>
+          <div class="stat-label">Items Sold</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="avg">$4.89</div>
+          <div class="stat-label">Avg/Item</div>
+        </div>
+      </div>
+      <div class="breakdown">
+        <div class="breakdown-row">
+          <span>Cost of Goods</span>
+          <span class="negative" id="cogs-amount">-$150.59</span>
+        </div>
+        <div class="breakdown-row">
+          <span>Profit Margin</span>
+          <span class="positive" id="margin">65.0%</span>
+        </div>
+      </div>
+    </div>
+
+    <footer class="brand-footer">
+      ${branding?.businessName || 'Business'} • Powered by Blink
+    </footer>
+  </div>
+
+  <script>
+    function addEntry() {
+      const list = document.getElementById('sales-entries');
+      const entry = document.createElement('div');
+      entry.className = 'sales-entry';
+      entry.innerHTML = \`
+        <input type="text" class="form-input" placeholder="Item">
+        <input type="number" class="form-input" value="0" min="0" onchange="calculate()">
+        <input type="number" class="form-input" value="0.00" step="0.01" onchange="calculate()">
+        <button type="button" class="remove-btn" onclick="removeEntry(this)">×</button>
+      \`;
+      list.appendChild(entry);
+    }
+
+    function removeEntry(btn) {
+      const list = document.getElementById('sales-entries');
+      if (list.children.length > 1) {
+        btn.closest('.sales-entry').remove();
+        calculate();
+      }
+    }
+
+    function calculate() {
+      let revenue = 0, items = 0;
+      document.querySelectorAll('.sales-entry').forEach(entry => {
+        const inputs = entry.querySelectorAll('input');
+        const qty = parseFloat(inputs[1].value) || 0;
+        const price = parseFloat(inputs[2].value) || 0;
+        items += qty;
+        revenue += qty * price;
+      });
+
+      const cogsRate = parseFloat(document.getElementById('cogs').value) || 0;
+      const cogs = revenue * (cogsRate / 100);
+      const profit = revenue - cogs;
+      const margin = revenue > 0 ? (profit / revenue * 100) : 0;
+      const avg = items > 0 ? revenue / items : 0;
+
+      document.getElementById('revenue').textContent = '$' + revenue.toFixed(2);
+      document.getElementById('profit').textContent = '$' + profit.toFixed(2);
+      document.getElementById('items').textContent = items;
+      document.getElementById('avg').textContent = '$' + avg.toFixed(2);
+      document.getElementById('cogs-amount').textContent = '-$' + cogs.toFixed(2);
+      document.getElementById('margin').textContent = margin.toFixed(1) + '%';
+    }
+
+    calculate();
+  </script>
+</body>
+</html>`;
+}
+
+// ============================================
 // MAIN EXPORT
 // ============================================
 
 function generateStyledTool(toolType, config) {
-  const generator = TOOL_GENERATORS[toolType];
-  if (generator) {
-    return generator(config);
+  // First, try exact match
+  if (TOOL_GENERATORS[toolType]) {
+    return TOOL_GENERATORS[toolType](config);
   }
+
+  // Smart detection based on tool type or name
+  const searchText = (toolType + ' ' + (config.name || '')).toLowerCase();
+
+  // Timer/Countdown/Stopwatch detection
+  if (searchText.includes('timer') || searchText.includes('stopwatch') ||
+      searchText.includes('countdown') || searchText.includes('pomodoro') ||
+      searchText.includes('brewing') || searchText.includes('cooking time')) {
+    return generateTimerTool(config);
+  }
+
+  // QR Code detection
+  if (searchText.includes('qr') || searchText.includes('barcode')) {
+    return generateQRCodeTool(config);
+  }
+
+  // Sales/Revenue Calculator detection
+  if (searchText.includes('sales') || searchText.includes('revenue') ||
+      searchText.includes('daily total') || searchText.includes('profit margin')) {
+    return generateSalesCalculatorTool(config);
+  }
+
+  // Receipt/Invoice detection - use quote-calculator as it has line items
+  if (searchText.includes('receipt') || searchText.includes('invoice') || searchText.includes('bill')) {
+    return generateQuoteCalculator({ ...config, name: config.name || 'Receipt Generator' });
+  }
+
+  // Try partial matches on existing generators
+  for (const [key, generator] of Object.entries(TOOL_GENERATORS)) {
+    if (searchText.includes(key.replace(/-/g, ' ')) || searchText.includes(key.replace(/-/g, ''))) {
+      return generator(config);
+    }
+  }
+
+  // Fallback to generic
   return generateGenericTool({ ...config, name: config.name || toolType });
 }
 

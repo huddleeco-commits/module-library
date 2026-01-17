@@ -48,82 +48,104 @@ function getModuleInfo() {
  */
 function suggestAdminTier(industry, businessDescription = '') {
   const { adminTiers, industryMapping } = loadConfigs();
+  const desc = (businessDescription || '').toLowerCase();
 
-  // Check direct industry mapping
+  // Track detected modules and reasons
+  let detectedModules = new Set();
+  let reasons = [];
+  let baseTier = 'standard';
+  let tierSource = 'default';
+
+  // Check direct industry mapping first
   const industryConfig = industryMapping.industries[industry?.toLowerCase()];
   if (industryConfig) {
-    const tier = industryConfig.defaultTier;
-    const tierConfig = adminTiers.tiers[tier];
+    baseTier = industryConfig.defaultTier;
+    tierSource = 'industry-mapping';
+    reasons.push(industryConfig.reason);
 
-    // Add suggested modules if not already in tier
-    let modules = [...tierConfig.modules];
+    // Add industry's suggested modules
     for (const mod of industryConfig.suggestedModules || []) {
-      if (!modules.includes(mod)) {
-        modules.push(mod);
-      }
+      detectedModules.add(mod);
     }
-
-    return {
-      tier,
-      tierName: tierConfig.name,
-      modules,
-      moduleCount: modules.length,
-      reason: industryConfig.reason,
-      source: 'industry-mapping'
-    };
   }
 
-  // Keyword matching from business description
-  if (businessDescription) {
-    const desc = businessDescription.toLowerCase();
-    let detectedModules = new Set();
-    let detectedTier = 'standard';
-
-    for (const [keyword, modules] of Object.entries(industryMapping.keywords)) {
-      if (desc.includes(keyword)) {
+  // Keyword matching from business description - always apply for additional modules
+  if (desc) {
+    for (const [keyword, modules] of Object.entries(industryMapping.keywords || {})) {
+      if (desc.includes(keyword.toLowerCase())) {
         modules.forEach(m => detectedModules.add(m));
       }
     }
 
-    // Determine tier based on detected modules - find smallest tier that contains all detected modules
-    if (detectedModules.size > 0) {
-      const tierOrder = [...adminTiers.tierOrder]; // Copy to avoid mutation
-      for (const tier of tierOrder) {
-        const tierModules = adminTiers.tiers[tier].modules;
-        if ([...detectedModules].every(m => tierModules.includes(m))) {
-          detectedTier = tier;
+    // Check for tier bump keywords - these override the base tier
+    const tierBumpKeywords = industryMapping.tierBumpKeywords || {};
+
+    // Check enterprise bump keywords
+    for (const keyword of tierBumpKeywords.enterprise || []) {
+      if (desc.includes(keyword.toLowerCase())) {
+        if (baseTier !== 'enterprise') {
+          baseTier = 'enterprise';
+          tierSource = 'keyword-bump';
+          reasons.push(`Detected "${keyword}" - requires enterprise tier`);
+        }
+        break;
+      }
+    }
+
+    // Check pro bump keywords (only if not already enterprise)
+    if (baseTier !== 'enterprise') {
+      for (const keyword of tierBumpKeywords.pro || []) {
+        if (desc.includes(keyword.toLowerCase())) {
+          if (baseTier === 'lite' || baseTier === 'standard') {
+            baseTier = 'pro';
+            tierSource = 'keyword-bump';
+            reasons.push(`Detected "${keyword}" - requires pro tier`);
+          }
           break;
         }
       }
-
-      const tierConfig = adminTiers.tiers[detectedTier];
-      let modules = [...tierConfig.modules];
-      detectedModules.forEach(m => {
-        if (!modules.includes(m)) modules.push(m);
-      });
-
-      return {
-        tier: detectedTier,
-        tierName: tierConfig.name,
-        modules,
-        moduleCount: modules.length,
-        reason: `Detected keywords suggesting: ${[...detectedModules].join(', ')}`,
-        source: 'keyword-detection'
-      };
     }
   }
 
-  // Default to standard tier
-  const defaultTier = adminTiers.defaultTier || 'standard';
-  const tierConfig = adminTiers.tiers[defaultTier];
+  // Get the tier configuration
+  const tierConfig = adminTiers.tiers[baseTier];
+  if (!tierConfig) {
+    console.warn(`Unknown tier: ${baseTier}, falling back to standard`);
+    baseTier = 'standard';
+  }
+
+  // Start with tier's modules
+  let modules = [...(adminTiers.tiers[baseTier]?.modules || [])];
+
+  // Add any detected modules not already in the tier
+  detectedModules.forEach(m => {
+    if (!modules.includes(m)) {
+      modules.push(m);
+    }
+  });
+
+  // If we detected modules via keywords, add that to reasons
+  if (detectedModules.size > 0 && tierSource !== 'keyword-bump') {
+    const moduleNames = [...detectedModules].map(m => {
+      const info = adminTiers.moduleInfo?.[m];
+      return info?.name || m.replace('admin-', '');
+    });
+    if (reasons.length === 0) {
+      reasons.push(`Detected features: ${moduleNames.join(', ')}`);
+    }
+  }
+
+  // Build final reason
+  let finalReason = reasons.length > 0 ? reasons.join('. ') : 'Default tier for unknown industry';
 
   return {
-    tier: defaultTier,
-    tierName: tierConfig.name,
-    modules: tierConfig.modules,
-    moduleCount: tierConfig.modules.length,
-    reason: 'Default tier for unknown industry',
-    source: 'default'
+    tier: baseTier,
+    tierName: adminTiers.tiers[baseTier]?.name || baseTier,
+    modules,
+    moduleCount: modules.length,
+    reason: finalReason,
+    source: tierSource,
+    detectedKeywords: [...detectedModules]
   };
 }
 
@@ -319,7 +341,9 @@ function generateAdminAppJsx(modules, branding = {}) {
     const componentName = config.name.replace(/-/g, '').replace('admin', '') + 'Page';
     const pascalName = componentName.charAt(0).toUpperCase() + componentName.slice(1);
 
-    imports.push(`import ${pascalName} from './modules/${config.name}/components/index.jsx';`);
+    // Use the main component path from module.json instead of hardcoding index.jsx
+    const mainComponent = config.components?.main || 'components/index.jsx';
+    imports.push(`import ${pascalName} from './modules/${config.name}/${mainComponent}';`);
 
     if (config.components?.sidebar) {
       const sb = config.components.sidebar;

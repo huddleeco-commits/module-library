@@ -1,0 +1,31 @@
+{
+  "name": "blink-admin",
+  "version": "1.0.0",
+  "description": "Comprehensive admin dashboard for Blink platform with 16 tabs",
+  "main": "routes/admin.js",
+  "routes": {
+    "prefix": "/api/admin",
+    "file": "routes/admin.js"
+  },
+  "dependencies": ["auth"],
+  "requiredTables": ["users", "generations", "api_usage", "system_alerts", "alert_rules", "email_campaigns", "referral_codes", "platform_config", "admin_audit_log", "data_quality_log"],
+  "features": [
+    "Dashboard overview with key metrics",
+    "User management (search, tier changes, bans)",
+    "Generation tracking and analytics",
+    "API cost analytics with date filtering",
+    "Revenue and MRR tracking",
+    "Industry analytics",
+    "Module usage analytics",
+    "Error monitoring and patterns",
+    "Performance metrics",
+    "Template analytics",
+    "Email campaign builder",
+    "Referral code management",
+    "System alerts and rules",
+    "Data quality checks",
+    "Platform configuration",
+    "System health monitoring",
+    "CSV exports"
+  ]
+}

@@ -1,18 +1,22 @@
 /**
- * FULL IMAGE HERO HOMEPAGE
+ * FULL IMAGE HERO HOMEPAGE (with VideoBackground support)
  * Best for: Restaurants, Hotels, Real Estate, Event Venues
- * 
+ *
  * Features:
- * - Full-viewport background image with overlay
+ * - VideoBackground hero with fallback image (for supported industries)
+ * - Full-viewport background image with overlay (fallback)
  * - Elegant centered typography
  * - Signature offerings section
  * - Story/About preview
  * - Reservation CTA
+ *
+ * VideoBackground: Automatically plays video on desktop, falls back to image on mobile
  */
 
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, MapPin, Phone, Clock, Star, Quote, ChevronRight } from 'lucide-react';
+import { VideoBackground, ScrollReveal, AnimatedCounter } from '../effects';
 
 const HomePage = () => {
   // ===== CONTENT - Replace with AI-generated content =====
@@ -23,7 +27,9 @@ const HomePage = () => {
       subheadline: "Experience authentic Italian cuisine crafted from family recipes passed down through generations. Wood-fired pizzas, handmade pasta, and an extensive wine selection.",
       primaryCta: "Make a Reservation",
       secondaryCta: "View Menu",
-      backgroundImage: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920"
+      backgroundImage: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920",
+      // Video URL for supported industries (restaurant, fitness, spa, barbershop, tattoo, pizza)
+      backgroundVideo: "https://videos.pexels.com/video-files/3195394/3195394-uhd_2560_1440_25fps.mp4"
     },
     intro: {
       label: "OUR STORY",
@@ -70,128 +76,178 @@ const HomePage = () => {
     bodyFont: "'Lato', system-ui, sans-serif"
   };
 
+  // Hero content component (reused for both video and static versions)
+  const HeroContent = () => (
+    <div style={{ maxWidth: '900px', textAlign: 'center', padding: '0 20px' }}>
+      <span style={{
+        color: THEME.accent,
+        fontSize: '13px',
+        fontWeight: '500',
+        letterSpacing: '4px',
+        textTransform: 'uppercase',
+        marginBottom: '24px',
+        display: 'block'
+      }}>
+        {CONTENT.hero.label}
+      </span>
+      <div style={{
+        width: '60px',
+        height: '2px',
+        background: THEME.accent,
+        margin: '0 auto 32px'
+      }} />
+      <h1 style={{
+        fontSize: '64px',
+        fontWeight: '400',
+        color: '#ffffff',
+        fontFamily: THEME.headingFont,
+        lineHeight: 1.1,
+        marginBottom: '24px'
+      }}>
+        {CONTENT.hero.headline}
+      </h1>
+      <p style={{
+        fontSize: '18px',
+        color: 'rgba(255,255,255,0.85)',
+        lineHeight: 1.7,
+        marginBottom: '40px',
+        maxWidth: '700px',
+        margin: '0 auto 40px'
+      }}>
+        {CONTENT.hero.subheadline}
+      </p>
+      <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+        <Link to="/reservations" style={{
+          padding: '18px 40px',
+          background: THEME.accent,
+          color: '#ffffff',
+          textDecoration: 'none',
+          fontSize: '14px',
+          fontWeight: '500',
+          letterSpacing: '2px',
+          textTransform: 'uppercase'
+        }}>
+          {CONTENT.hero.primaryCta}
+        </Link>
+        <Link to="/menu" style={{
+          padding: '18px 40px',
+          background: 'transparent',
+          color: '#ffffff',
+          textDecoration: 'none',
+          border: '1px solid rgba(255,255,255,0.4)',
+          fontSize: '14px',
+          fontWeight: '500',
+          letterSpacing: '2px',
+          textTransform: 'uppercase'
+        }}>
+          {CONTENT.hero.secondaryCta}
+        </Link>
+      </div>
+    </div>
+  );
+
   return (
     <div>
-      {/* HERO - Full Image */}
-      <section style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.6)), url("${CONTENT.hero.backgroundImage}")`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        textAlign: 'center',
-        padding: '0 20px'
-      }}>
-        <div style={{ maxWidth: '900px' }}>
-          <span style={{
-            color: THEME.accent,
-            fontSize: '13px',
-            fontWeight: '500',
-            letterSpacing: '4px',
-            textTransform: 'uppercase',
-            marginBottom: '24px',
-            display: 'block'
-          }}>
-            {CONTENT.hero.label}
-          </span>
-          <div style={{
-            width: '60px',
-            height: '2px',
-            background: THEME.accent,
-            margin: '0 auto 32px'
-          }} />
-          <h1 style={{
-            fontSize: '64px',
-            fontWeight: '400',
-            color: '#ffffff',
-            fontFamily: THEME.headingFont,
-            lineHeight: 1.1,
-            marginBottom: '24px'
-          }}>
-            {CONTENT.hero.headline}
-          </h1>
-          <p style={{
-            fontSize: '18px',
-            color: 'rgba(255,255,255,0.85)',
-            lineHeight: 1.7,
-            marginBottom: '40px',
-            maxWidth: '700px',
-            margin: '0 auto 40px'
-          }}>
-            {CONTENT.hero.subheadline}
-          </p>
-          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
-            <Link to="/reservations" style={{
-              padding: '18px 40px',
-              background: THEME.accent,
-              color: '#ffffff',
-              textDecoration: 'none',
-              fontSize: '14px',
-              fontWeight: '500',
-              letterSpacing: '2px',
-              textTransform: 'uppercase'
-            }}>
-              {CONTENT.hero.primaryCta}
-            </Link>
-            <Link to="/menu" style={{
-              padding: '18px 40px',
-              background: 'transparent',
-              color: '#ffffff',
-              textDecoration: 'none',
-              border: '1px solid rgba(255,255,255,0.4)',
-              fontSize: '14px',
-              fontWeight: '500',
-              letterSpacing: '2px',
-              textTransform: 'uppercase'
-            }}>
-              {CONTENT.hero.secondaryCta}
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* HERO - VideoBackground for supported industries, falls back to static image on mobile */}
+      {CONTENT.hero.backgroundVideo ? (
+        <VideoBackground
+          videoSrc={CONTENT.hero.backgroundVideo}
+          posterImage={CONTENT.hero.backgroundImage}
+          overlay="linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.6))"
+          height="100vh"
+        >
+          <HeroContent />
+        </VideoBackground>
+      ) : (
+        <section style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.6)), url("${CONTENT.hero.backgroundImage}")`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}>
+          <HeroContent />
+        </section>
+      )}
 
-      {/* INTRO */}
-      <section style={{
-        padding: '120px 20px',
-        background: THEME.cream,
-        textAlign: 'center'
-      }}>
-        <div style={{ maxWidth: '700px', margin: '0 auto' }}>
-          <span style={{
-            color: THEME.accent,
-            fontSize: '12px',
-            fontWeight: '500',
-            letterSpacing: '4px',
-            textTransform: 'uppercase',
-            marginBottom: '20px',
-            display: 'block'
-          }}>
-            {CONTENT.intro.label}
-          </span>
-          <h2 style={{
-            fontSize: '42px',
-            fontWeight: '400',
-            color: THEME.primary,
-            fontFamily: THEME.headingFont,
-            marginBottom: '24px',
-            lineHeight: 1.2
-          }}>
-            {CONTENT.intro.title}
-          </h2>
-          <p style={{
-            fontSize: '18px',
-            color: THEME.textMuted,
-            lineHeight: 1.8,
-            marginBottom: '32px'
-          }}>
-            {CONTENT.intro.text}
-          </p>
-          <Link to="/about" style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
+      {/* INTRO with ScrollReveal */}
+      <ScrollReveal>
+        <section style={{
+          padding: '120px 20px',
+          background: THEME.cream,
+          textAlign: 'center'
+        }}>
+          <div style={{ maxWidth: '700px', margin: '0 auto' }}>
+            <span style={{
+              color: THEME.accent,
+              fontSize: '12px',
+              fontWeight: '500',
+              letterSpacing: '4px',
+              textTransform: 'uppercase',
+              marginBottom: '20px',
+              display: 'block'
+            }}>
+              {CONTENT.intro.label}
+            </span>
+            <h2 style={{
+              fontSize: '42px',
+              fontWeight: '400',
+              color: THEME.primary,
+              fontFamily: THEME.headingFont,
+              marginBottom: '24px',
+              lineHeight: 1.2
+            }}>
+              {CONTENT.intro.title}
+            </h2>
+            <p style={{
+              fontSize: '18px',
+              color: THEME.textMuted,
+              lineHeight: 1.8,
+              marginBottom: '32px'
+            }}>
+              {CONTENT.intro.text}
+            </p>
+
+            {/* Stats with AnimatedCounter */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '60px',
+              marginBottom: '32px',
+              flexWrap: 'wrap'
+            }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '48px', fontWeight: '300', color: THEME.primary, fontFamily: THEME.headingFont }}>
+                  <AnimatedCounter end={38} suffix="+" duration={2} />
+                </div>
+                <div style={{ fontSize: '14px', color: THEME.textMuted, letterSpacing: '2px', textTransform: 'uppercase' }}>
+                  Years of Excellence
+                </div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '48px', fontWeight: '300', color: THEME.primary, fontFamily: THEME.headingFont }}>
+                  <AnimatedCounter end={50000} suffix="+" duration={2.5} />
+                </div>
+                <div style={{ fontSize: '14px', color: THEME.textMuted, letterSpacing: '2px', textTransform: 'uppercase' }}>
+                  Happy Guests
+                </div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '48px', fontWeight: '300', color: THEME.primary, fontFamily: THEME.headingFont }}>
+                  <AnimatedCounter end={98} suffix="%" duration={2} />
+                </div>
+                <div style={{ fontSize: '14px', color: THEME.textMuted, letterSpacing: '2px', textTransform: 'uppercase' }}>
+                  5-Star Reviews
+                </div>
+              </div>
+            </div>
+
+            <Link to="/about" style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
             color: THEME.accent,
             textDecoration: 'none',
             fontSize: '14px',
@@ -201,8 +257,9 @@ const HomePage = () => {
             {CONTENT.intro.linkText}
             <ChevronRight size={18} />
           </Link>
-        </div>
-      </section>
+          </div>
+        </section>
+      </ScrollReveal>
 
       {/* FEATURED DISHES */}
       <section style={{

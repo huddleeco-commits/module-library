@@ -4,6 +4,7 @@ const UniversalBusinessGenerator = require('../../src/core/UniversalBusinessGene
 const ClaudeService = require('../services/claude-service');
 const path = require('path');
 const fs = require('fs').promises;
+const costTracker = require('../../blink-admin/services/costTracker');
 
 // AI business info extraction endpoint
 router.post('/api/ai/extract-business-info', async (req, res) => {
@@ -21,27 +22,69 @@ router.post('/api/ai/extract-business-info', async (req, res) => {
         if (process.env.CLAUDE_API_ENABLED === 'true' && process.env.CLAUDE_API_KEY) {
             const claudeService = new ClaudeService(process.env.CLAUDE_API_KEY);
             
-            const prompt = `Extract business information from: "${message}"
+            const prompt = `You are a business analyst expert. Analyze this input and INFER as much context as possible: "${message}"
 
-Return ONLY valid JSON:
+CRITICAL: Use common sense and industry knowledge to fill in realistic details, even from minimal input.
+
+Examples of inference:
+- "Pizza" → Italian pizzeria restaurant, casual dining, menu with pizzas/pastas/salads, typical prices ($12-25 entrees)
+- "Mario's Pizza Brooklyn" → Family-owned pizzeria in Brooklyn NY, New York-style pizza, likely established business
+- "Dr. Smith" → Medical practice or dental office, healthcare professional
+- "Joe's Auto" → Auto repair shop or car dealership
+- "Sunrise Yoga" → Yoga studio, wellness/fitness focus
+
+Return ONLY valid JSON with ALL fields filled using smart inference:
 {
-  "industry": "restaurant|healthcare|ecommerce|real-estate|fitness|education|automotive|legal|professional-services|home-services|crypto-vault",
-  "businessName": "name or null",
-  "variant": "specific type or null",
-  "specialization": "focus area or null",
-  "tier": "essential or premium",
+  "industry": "restaurant|healthcare|ecommerce|real-estate|fitness|education|automotive|legal|professional-services|home-services|spa-salon|construction|plumber|dental|consulting|agency|cleaning|moving|pet-services|photography|bar",
+  "businessName": "inferred professional business name",
+  "variant": "specific business subtype (e.g., 'pizzeria', 'family-dental', 'crossfit-gym')",
+  "specialization": "what they specialize in (e.g., 'New York style pizza', 'cosmetic dentistry')",
+  "tier": "premium",
   "location": {
-    "city": "city or null",
-    "state": "state or null",
+    "city": "inferred city or null",
+    "state": "inferred state or null",
     "country": "USA",
-    "raw": "raw location string"
+    "raw": "any location mentioned"
+  },
+  "inferredDetails": {
+    "yearsInBusiness": "realistic estimate (e.g., '15+ years')",
+    "priceRange": "typical price range for this business type",
+    "targetAudience": "who they serve (e.g., 'families', 'young professionals')",
+    "uniqueSellingPoints": ["key differentiators based on business type"],
+    "typicalServices": ["list of 4-6 services/products this business would offer"],
+    "businessHours": "typical hours for this industry",
+    "atmosphere": "the vibe/feel (e.g., 'family-friendly', 'upscale', 'casual')"
+  },
+  "suggestedContent": {
+    "heroHeadline": "compelling headline for their homepage",
+    "tagline": "short memorable tagline",
+    "callToAction": "primary CTA text (e.g., 'Order Now', 'Book Appointment')",
+    "keyStats": ["3-4 impressive but realistic stats to display"]
   }
 }`;
 
             try {
+                const startTime = Date.now();
                 const aiResponse = await claudeService.callClaudeAPI(prompt);
-                const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
-                
+                const durationMs = Date.now() - startTime;
+
+                // Track the API call for cost analytics
+                const userId = req.user?.id || null;
+                await costTracker.trackApiCall({
+                    userId,
+                    apiName: 'claude',
+                    operationType: 'business_info_extraction',
+                    inputTokens: aiResponse.inputTokens || Math.ceil(prompt.length / 4),
+                    outputTokens: aiResponse.outputTokens || Math.ceil((aiResponse.content || aiResponse).length / 4),
+                    model: 'claude-sonnet-4-20250514',
+                    durationMs,
+                    success: true,
+                    metadata: { endpoint: '/api/ai/extract-business-info' }
+                });
+
+                const responseText = aiResponse.content || aiResponse;
+                const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+
                 if (jsonMatch) {
                     const parsed = JSON.parse(jsonMatch[0]);
                     return res.json({
@@ -51,6 +94,15 @@ Return ONLY valid JSON:
                     });
                 }
             } catch (error) {
+                // Track failed API call
+                await costTracker.trackApiCall({
+                    userId: req.user?.id || null,
+                    apiName: 'claude',
+                    operationType: 'business_info_extraction',
+                    success: false,
+                    errorMessage: error.message,
+                    metadata: { endpoint: '/api/ai/extract-business-info' }
+                });
                 console.warn('AI extraction failed, using fallback:', error.message);
             }
         }
@@ -75,9 +127,14 @@ Return ONLY valid JSON:
 
 // Business generation endpoint
 router.post('/api/generate/business', async (req, res) => {
+    const startTime = Date.now();
+    const userId = req.user?.id || null;
+    const userEmail = req.user?.email || null;
+    let generationId = null;
+
     try {
-        const { industry, businessName, variant, tier, theme, location, generateAll } = req.body;
-        
+        const { industry, businessName, variant, tier, theme, location, generateAll, modules = [] } = req.body;
+
         if (!industry) {
             return res.status(400).json({
                 success: false,
@@ -86,19 +143,32 @@ router.post('/api/generate/business', async (req, res) => {
         }
 
         console.log(`[Generate] Starting generation for ${industry}`);
-        
-        const startTime = Date.now();
+
+        // Start generation tracking
+        const genStart = await costTracker.startGeneration({
+            userId,
+            userEmail,
+            siteName: businessName || `${industry} Business`,
+            industry,
+            template: tier || 'premium',
+            modules
+        });
+
+        if (genStart.success) {
+            generationId = genStart.generationId;
+        }
+
         const businessId = `${industry}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        
+
         // Initialize generator
         const generator = new UniversalBusinessGenerator(industry, {
             tier: tier || 'premium',
             variant: variant,
             businessId: businessId
         });
-        
+
         await generator.initialize();
-        
+
         // Generate business
         const result = await generator.generateBusiness({
             name: businessName || `${industry} Business`,
@@ -107,18 +177,18 @@ router.post('/api/generate/business', async (req, res) => {
             theme: theme,
             location: location
         });
-        
+
         // Create output directory
         const outputDir = path.join(__dirname, '../../output');
         await fs.mkdir(outputDir, { recursive: true });
-        
+
         const businessSlug = (businessName || industry).toLowerCase().replace(/[^a-z0-9]+/g, '-');
         const businessFolder = `${businessSlug}-${Date.now()}`;
         const businessPath = path.join(outputDir, businessFolder);
         const pagesPath = path.join(businessPath, 'pages');
-        
+
         await fs.mkdir(pagesPath, { recursive: true });
-        
+
         // Save all pages
         const savedPages = [];
         for (const [filename, content] of Object.entries(result.pages)) {
@@ -130,15 +200,27 @@ router.post('/api/generate/business', async (req, res) => {
                 category: categorizePageId(filename.replace('.html', ''))
             });
         }
-        
-        const generationTime = ((Date.now() - startTime) / 1000).toFixed(1);
-        
+
+        const generationTimeMs = Date.now() - startTime;
+        const generationTime = (generationTimeMs / 1000).toFixed(1);
+
+        // Complete generation tracking
+        if (generationId) {
+            await costTracker.completeGeneration(generationId, {
+                success: true,
+                pagesGenerated: savedPages.length,
+                generationTimeMs,
+                downloadUrl: `/output/${businessFolder}`
+            });
+        }
+
         console.log(`[Generate] Completed in ${generationTime}s - ${savedPages.length} pages`);
-        
+
         res.json({
             success: true,
             businessId: businessId,
             businessFolder: businessFolder,
+            generationId: generationId,
             pages: savedPages,
             generationTime: generationTime,
             message: `Successfully generated ${savedPages.length} pages`
@@ -146,6 +228,17 @@ router.post('/api/generate/business', async (req, res) => {
 
     } catch (error) {
         console.error('[Generate] Error:', error);
+
+        // Track failed generation
+        if (generationId) {
+            await costTracker.completeGeneration(generationId, {
+                success: false,
+                generationTimeMs: Date.now() - startTime,
+                errorMessage: error.message,
+                errorLog: [{ error: error.message, stack: error.stack, timestamp: new Date().toISOString() }]
+            });
+        }
+
         res.status(500).json({
             success: false,
             error: error.message

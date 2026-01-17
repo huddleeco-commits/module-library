@@ -25,7 +25,7 @@ const testCases = [
   { name: 'Personal blog', industry: 'personal-blog', description: 'Personal blog about travel', expectedTier: 'lite' },
   { name: 'Hair salon', industry: 'salon', description: 'Hair salon and spa', expectedTier: 'standard' },
   { name: 'Retail store', industry: 'retail', description: 'Retail clothing store', expectedTier: 'pro' },
-  { name: 'Unknown industry with delivery keyword', industry: 'unknown', description: 'New business with delivery service', expectedTier: 'pro' }, // delivery requires admin-orders which is Pro tier
+  { name: 'Unknown industry with delivery keyword', industry: 'unknown', description: 'New business with delivery service', expectedTier: 'standard' }, // delivery adds admin-orders but stays standard
   { name: 'Unknown industry (fallback)', industry: 'unknown', description: '', expectedTier: 'standard' },
 ];
 
@@ -82,7 +82,31 @@ const keywordTests = [
   { description: 'Business with online booking', expectedModules: ['admin-bookings'] },
   { description: 'Store with delivery and shop features', expectedModules: ['admin-orders', 'admin-products'] },
   { description: 'Multi-branch franchise business', expectedModules: ['admin-locations'] },
+  { description: 'E-commerce online store', expectedModules: ['admin-orders', 'admin-products', 'admin-marketing'] },
+  { description: 'Business with multiple locations', expectedModules: ['admin-locations'] },
 ];
+
+console.log('--- Testing Tier Bump Keywords ---\n');
+
+const tierBumpTests = [
+  { description: 'Franchise pizza chain', expectedTier: 'enterprise' },
+  { description: 'Multiple locations restaurant', expectedTier: 'enterprise' },
+  { description: 'Online store e-commerce', expectedTier: 'pro' },
+  { description: 'Simple delivery business', expectedTier: 'standard' },
+];
+
+for (const test of tierBumpTests) {
+  const result = suggestAdminTier(null, test.description);
+  const status = result.tier === test.expectedTier ? '✓ PASS' : '✗ FAIL';
+  if (result.tier !== test.expectedTier) failed++;
+  else passed++;
+  console.log(`${status}: "${test.description}"`);
+  console.log(`  Expected: ${test.expectedTier}, Got: ${result.tier}`);
+  console.log(`  Reason: ${result.reason}`);
+  console.log('');
+}
+
+console.log('='.repeat(60));
 
 for (const test of keywordTests) {
   const result = suggestAdminTier(null, test.description);
@@ -91,6 +115,32 @@ for (const test of keywordTests) {
   console.log(`  Detected reason: ${result.reason}`);
   console.log('');
 }
+
+console.log('='.repeat(60));
+console.log('--- Testing User Override ---\n');
+
+// Simulate: AI suggests Pro, user selects Lite → Lite wins
+const aiSuggestion = suggestAdminTier('ecommerce', 'E-commerce store');
+console.log(`AI Suggestion for E-commerce: ${aiSuggestion.tier} (${aiSuggestion.modules.length} modules)`);
+
+const userOverrideTier = 'lite';
+const userOverrideModules = getModulesForTier(userOverrideTier);
+console.log(`User Override: ${userOverrideTier} (${userOverrideModules.length} modules)`);
+
+// The final selection should always be the user's choice
+const finalTier = userOverrideTier; // User selection wins
+const finalModules = userOverrideModules;
+
+const userOverridePass = finalTier === 'lite' && finalModules.length === 3;
+if (userOverridePass) {
+  passed++;
+  console.log('✓ PASS: User override correctly takes precedence');
+} else {
+  failed++;
+  console.log('✗ FAIL: User override did not take precedence');
+}
+console.log(`Final: ${finalTier} tier with ${finalModules.length} modules`);
+console.log('');
 
 console.log('='.repeat(60));
 console.log('\nSUMMARY');

@@ -801,11 +801,16 @@ async function addCloudflareDNS(subdomain, target, type = 'CNAME', proxied = tru
 // ============================================
 
 async function deployProject(projectPath, projectName, options = {}) {
+  // Progress callback for real-time updates
+  const onProgress = options.onProgress || (() => {});
+
   console.log('');
   console.log('═══════════════════════════════════════════════════════════════');
   console.log(`🚀 DEPLOYING: ${projectName}`);
   console.log('═══════════════════════════════════════════════════════════════');
   console.log('');
+
+  onProgress({ step: 'starting', status: 'Starting deployment...', icon: '🚀', progress: 0 });
 
   const subdomain = projectName
   .toLowerCase()
@@ -821,39 +826,50 @@ async function deployProject(projectPath, projectName, options = {}) {
   };
 
   try {
+    onProgress({ step: 'github-auth', status: 'Authenticating with GitHub...', icon: '🔑', progress: 5 });
     const githubUsername = await getGitHubUsername();
     console.log(`👤 GitHub user: ${githubUsername}`);
 
+    onProgress({ step: 'prepare', status: 'Preparing project files...', icon: '📋', progress: 8 });
     prepareProjectForDeployment(projectPath, subdomain);
 
     const backendRepoName = `${subdomain}-backend`;
     const frontendRepoName = `${subdomain}-frontend`;
     const adminRepoName = `${subdomain}-admin`;
 
+    onProgress({ step: 'github-cleanup', status: 'Cleaning up old repositories...', icon: '🧹', progress: 10 });
     await deleteGitHubRepo(githubUsername, backendRepoName);
     await deleteGitHubRepo(githubUsername, frontendRepoName);
     await deleteGitHubRepo(githubUsername, adminRepoName);
 
     await sleep(1000);
 
+    onProgress({ step: 'github-create', status: 'Creating GitHub repositories...', icon: '📦', progress: 15 });
     await createGitHubRepo(backendRepoName);
     await createGitHubRepo(frontendRepoName);
     await createGitHubRepo(adminRepoName);
 
+    onProgress({ step: 'github-push-backend', status: 'Pushing backend code to GitHub...', icon: '📤', progress: 20 });
     await pushFolderToGitHub(projectPath, 'backend', backendRepoName, githubUsername);
+
+    onProgress({ step: 'github-push-frontend', status: 'Pushing frontend code to GitHub...', icon: '📤', progress: 28 });
     await pushFolderToGitHub(projectPath, 'frontend', frontendRepoName, githubUsername);
-    
+
     // Only push admin if it exists
     const adminPath = path.join(projectPath, 'admin');
     if (fs.existsSync(adminPath)) {
+      onProgress({ step: 'github-push-admin', status: 'Pushing admin code to GitHub...', icon: '📤', progress: 35 });
       await pushFolderToGitHub(projectPath, 'admin', adminRepoName, githubUsername);
     }
 
+    onProgress({ step: 'railway-project', status: 'Creating Railway project...', icon: '🚂', progress: 40 });
     const railwayProject = await createRailwayProject(subdomain);
     const environmentId = railwayProject.environmentId;
 
+    onProgress({ step: 'railway-database', status: 'Provisioning PostgreSQL database...', icon: '🗄️', progress: 45 });
     const postgresInfo = await createRailwayPostgres(railwayProject.id, environmentId);
 
+    onProgress({ step: 'railway-backend', status: 'Creating backend service...', icon: '⚙️', progress: 50 });
     const backendService = await createRailwayService(
       railwayProject.id,
       environmentId,
@@ -861,6 +877,7 @@ async function deployProject(projectPath, projectName, options = {}) {
       `${githubUsername}/${backendRepoName}`
     );
 
+    onProgress({ step: 'railway-frontend', status: 'Creating frontend service...', icon: '🌐', progress: 55 });
     const frontendService = await createRailwayService(
       railwayProject.id,
       environmentId,
@@ -871,6 +888,7 @@ async function deployProject(projectPath, projectName, options = {}) {
     // Create admin service if admin folder exists
     let adminService = null;
     if (fs.existsSync(path.join(projectPath, 'admin'))) {
+      onProgress({ step: 'railway-admin', status: 'Creating admin service...', icon: '🔧', progress: 58 });
       adminService = await createRailwayService(
         railwayProject.id,
         environmentId,
@@ -879,9 +897,10 @@ async function deployProject(projectPath, projectName, options = {}) {
       );
     }
 
+    onProgress({ step: 'railway-env', status: 'Configuring environment variables...', icon: '🔐', progress: 62 });
     const jwtSecret = require('crypto').randomBytes(32).toString('hex');
     const adminPassword = require('crypto').randomBytes(8).toString('hex');
-    
+
     await setRailwayVariables(railwayProject.id, environmentId, backendService.id, {
       NODE_ENV: 'production',
       JWT_SECRET: jwtSecret,
@@ -906,10 +925,12 @@ async function deployProject(projectPath, projectName, options = {}) {
     }
 
     // Wait for Railway to fully establish GitHub webhook connection
+    onProgress({ step: 'railway-wait', status: 'Waiting for Railway webhooks...', icon: '⏳', progress: 65 });
     console.log('   ⏳ Waiting 20s for Railway to establish GitHub webhooks...');
     await sleep(20000);
 
     // Trigger initial deployments with longer delays
+    onProgress({ step: 'deploy-backend', status: 'Deploying backend service...', icon: '🚀', progress: 70 });
     console.log('   🚀 Triggering backend deployment...');
     try {
       await deployRailwayService(environmentId, backendService.id);
@@ -917,7 +938,8 @@ async function deployProject(projectPath, projectName, options = {}) {
       console.log('   ⚠️ Backend deploy trigger failed, Railway will auto-deploy from GitHub');
     }
     await sleep(3000);
-    
+
+    onProgress({ step: 'deploy-frontend', status: 'Deploying frontend service...', icon: '🚀', progress: 75 });
     console.log('   🚀 Triggering frontend deployment...');
     try {
       await deployRailwayService(environmentId, frontendService.id);
@@ -928,6 +950,7 @@ async function deployProject(projectPath, projectName, options = {}) {
     // Trigger admin deployment if service exists
     if (adminService) {
       await sleep(3000);
+      onProgress({ step: 'deploy-admin', status: 'Deploying admin dashboard...', icon: '🚀', progress: 78 });
       console.log('   🚀 Triggering admin deployment...');
       try {
         await deployRailwayService(environmentId, adminService.id);
@@ -936,10 +959,12 @@ async function deployProject(projectPath, projectName, options = {}) {
       }
     }
 
+    onProgress({ step: 'domains', status: 'Generating service domains...', icon: '🔗', progress: 82 });
     const backendRailwayDomain = await generateRailwayServiceDomain(railwayProject.id, environmentId, backendService.id);
     const frontendRailwayDomain = await generateRailwayServiceDomain(railwayProject.id, environmentId, frontendService.id);
     const adminRailwayDomain = adminService ? await generateRailwayServiceDomain(railwayProject.id, environmentId, adminService.id) : null;
 
+    onProgress({ step: 'custom-domains', status: 'Configuring custom domains...', icon: '🌍', progress: 86 });
     console.log(`\n📌 Configuring custom domains...`);
     
     // Add custom domains to Railway and get the target domains
@@ -947,24 +972,27 @@ async function deployProject(projectPath, projectName, options = {}) {
     const backendCustom = await addRailwayCustomDomain(railwayProject.id, environmentId, backendService.id, `api.${subdomain}.be1st.io`);
     const adminCustom = adminService ? await addRailwayCustomDomain(railwayProject.id, environmentId, adminService.id, `admin.${subdomain}.be1st.io`) : null;
     
+    onProgress({ step: 'dns', status: 'Setting up DNS records...', icon: '📡', progress: 90 });
     console.log(`\n📌 Configuring DNS (Cloudflare → Railway)...`);
-    
+
     // Use Railway's custom domain target if available, otherwise fall back to service domain
     const frontendTarget = frontendCustom.target || frontendRailwayDomain;
     const backendTarget = backendCustom.target || backendRailwayDomain;
     const adminTarget = adminCustom?.target || adminRailwayDomain;
-    
+
     if (frontendTarget) {
       await addCloudflareDNS(subdomain, frontendTarget, 'CNAME', true);
     }
-    
+
     if (backendTarget) {
       await addCloudflareDNS(`api.${subdomain}`, backendTarget, 'CNAME', false);
     }
 
     if (adminTarget) {
-  await addCloudflareDNS(`admin.${subdomain}`, adminTarget, 'CNAME', false);  // DNS only, no proxy
-}
+      await addCloudflareDNS(`admin.${subdomain}`, adminTarget, 'CNAME', false);  // DNS only, no proxy
+    }
+
+    onProgress({ step: 'finalizing', status: 'Finalizing deployment...', icon: '✨', progress: 95 });
 
     results.success = true;
     results.railwayProjectId = railwayProject.id;
@@ -985,6 +1013,8 @@ async function deployProject(projectPath, projectName, options = {}) {
       adminEmail: options.adminEmail || 'admin@be1st.io',
       adminPassword: adminPassword
     };
+
+    onProgress({ step: 'complete', status: 'Deployment complete!', icon: '✅', progress: 100, urls: results.urls });
 
     console.log('');
     console.log('═══════════════════════════════════════════════════════════════');
