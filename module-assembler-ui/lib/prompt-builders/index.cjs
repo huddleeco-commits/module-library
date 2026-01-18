@@ -14,6 +14,12 @@ const {
   analyzeGenerationRequest
 } = require('../configs/index.cjs');
 
+// Import video services for dynamic video fetching
+const { getIndustryVideo } = require('../services/video.cjs');
+
+// Import page name utilities
+const { toNavLabel } = require('../utils/page-names.cjs');
+
 // These need to be passed in or loaded separately
 let INDUSTRIES, LAYOUTS, EFFECTS, SECTIONS;
 
@@ -45,6 +51,7 @@ function detectIndustryFromDescription(description) {
     { industry: 'healthcare', keywords: ['medical', 'healthcare', 'clinic', 'hospital', 'physician', 'doctor office', 'health center'] },
     { industry: 'dental', keywords: ['dental', 'dentist', 'orthodont', 'oral surgery'] },
     { industry: 'chiropractic', keywords: ['chiropract', 'physical therapy', 'pt clinic', 'rehab center'] },
+    { industry: 'barbershop', keywords: ['barbershop', 'barber', 'barber shop', 'brass razor', 'mens grooming', 'fade', 'haircut', 'shave'] },
     { industry: 'spa-salon', keywords: ['spa', 'salon', 'beauty', 'nail', 'hair stylist', 'esthetician', 'massage therapy'] },
     
     // Food & Beverage (pizza FIRST - more specific than restaurant)
@@ -558,6 +565,7 @@ NEVER use 0 or placeholder text like "X" - always use real numbers!`;
  */
 function getIndustryImageUrls(industryName) {
   const industry = (industryName || '').toLowerCase();
+  console.log(`   🖼️ getIndustryImageUrls called with: "${industryName}" → normalized: "${industry}"`);
 
   // Context-aware image configurations - different images for different page sections
   const imageConfig = {
@@ -653,6 +661,30 @@ function getIndustryImageUrls(industryName) {
         'https://images.unsplash.com/photo-1579751626657-72bc17010498?w=800'
       ],
       searchTerms: ['pizza chef', 'pizzeria', 'pizza making', 'italian restaurant']
+    },
+    // Luxury Steakhouse - upscale dining, dry-aged beef, wine, elegant atmosphere
+    steakhouse: {
+      hero: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920', // Fine dining table setting
+      heroVideo: 'https://videos.pexels.com/video-files/4253001/4253001-uhd_2560_1440_25fps.mp4', // Steak searing
+      team: [
+        'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=800', // Chef portrait in whites
+        'https://images.unsplash.com/photo-1581299894007-aaa50297cf16?w=800', // Chef with knife
+        'https://images.unsplash.com/photo-1560717789-0ac7c58ac90a?w=800', // Sommelier with wine
+        'https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?w=800'  // Kitchen staff
+      ],
+      gallery: [
+        'https://images.unsplash.com/photo-1544025162-d76694265947?w=800', // Perfectly plated steak
+        'https://images.unsplash.com/photo-1558030006-450675393462?w=800', // Ribeye steak
+        'https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=800', // Wine selection
+        'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800', // Elegant dining room
+        'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=800', // Steak being cut
+        'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800'  // Food presentation
+      ],
+      services: [
+        'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800', // Fine dining
+        'https://images.unsplash.com/photo-1544025162-d76694265947?w=800'  // Plated steak
+      ],
+      searchTerms: ['luxury steakhouse', 'fine dining steak', 'dry aged beef', 'ribeye', 'wagyu', 'upscale restaurant', 'wine cellar']
     },
     dental: {
       hero: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1920',
@@ -810,6 +842,11 @@ function getIndustryImageUrls(industryName) {
     config = imageConfig.salon;
   } else if (industry.includes('pizza') || industry.includes('pizzeria')) {
     config = imageConfig.pizza;
+  } else if (industry.includes('steakhouse') || industry.includes('steak house') ||
+             industry.includes('prime') || industry.includes('chophouse') ||
+             (industry.includes('steak') && (industry.includes('luxury') || industry.includes('fine') || industry.includes('upscale')))) {
+    console.log(`   🥩 STEAKHOUSE MATCH! Using steakhouse config with video: ${imageConfig.steakhouse.heroVideo}`);
+    config = imageConfig.steakhouse;
   } else if (industry.includes('restaurant') || industry.includes('food') || industry.includes('dining') || industry.includes('cafe')) {
     config = imageConfig.restaurant;
   } else if (industry.includes('dental') || industry.includes('dentist')) {
@@ -832,6 +869,7 @@ function getIndustryImageUrls(industryName) {
   }
 
   // Return with backward compatibility (hero and secondary) PLUS new context-specific fields
+  console.log(`   📸 Selected config has heroVideo: ${config.heroVideo ? 'YES - ' + config.heroVideo.substring(0, 50) + '...' : 'NO'}`);
   return {
     hero: config.hero,
     heroVideo: config.heroVideo || null, // Video background for supported industries
@@ -1508,7 +1546,7 @@ CRITICAL HERO TEXT RULES:
 ${getIndustryDesignGuidance(industry.name)}
 
 PAGE REQUIREMENTS:
-${getPageRequirements(pageId)}
+${getPageRequirements(pageId, industry.name)}
 
 ══════════════════════════════════════════════════════════════
 EFFECTS LIBRARY - ADD POLISH WITH THESE COMPONENTS
@@ -1602,10 +1640,14 @@ TECHNICAL RULES (MUST FOLLOW):
    DO NOT use icons not in this list. If you need "Handshake", use "Users" or "Link" instead.
 3. NAVIGATION: Use <Link to="/path"> from react-router-dom.
 4. NO nav/footer - those are provided by App.jsx.
-5. WHITESPACE: Use THEME.spacing.sectionPadding for top/bottom margins.
-6. INNOVATION: Do not use standard vertical blocks. Experiment with the ARCHETYPE provided above.
-7. APP PAGES: For dashboard/earn/rewards/wallet/profile/leaderboard pages, these are FUNCTIONAL APP PAGES not marketing pages. Build them with useState hooks, mock data arrays, and interactive elements. Create the full UI inline - do not import from ../modules/.
-8. MOBILE-FIRST: Design for mobile screens FIRST (375px width). Use these patterns:
+5. NO CartContext/CartProvider - NEVER create your own cart context or provider. The app-level CartProvider already wraps all pages.
+   If you need cart functionality: import { useCart } from '../context/CartContext';
+   Then use: const { cart, addItem, removeItem, clearCart, getTotal } = useCart();
+   DO NOT create local cart state, CartContext, or CartProvider - it will conflict with the app-level provider and cause "useCart must be used within CartProvider" errors.
+6. WHITESPACE: Use THEME.spacing.sectionPadding for top/bottom margins.
+7. INNOVATION: Do not use standard vertical blocks. Experiment with the ARCHETYPE provided above.
+8. APP PAGES: For dashboard/earn/rewards/wallet/profile/leaderboard pages, these are FUNCTIONAL APP PAGES not marketing pages. Build them with useState hooks, mock data arrays, and interactive elements. Create the full UI inline - do not import from ../modules/.
+9. MOBILE-FIRST: Design for mobile screens FIRST (375px width). Use these patterns:
    - Single column layouts by default
    - Large touch targets (min 44px height for buttons)
    - Bottom navigation bar for app pages (fixed position)
@@ -1640,6 +1682,22 @@ IMAGERY: High-quality food photos, interior shots, chef at work. Real Unsplash f
 LAYOUT PATTERNS: Magazine-style, image-heavy, overlapping elements.
 SECTIONS: Featured dishes with photos, chef story, ambiance gallery, reservation CTA prominently placed, location/hours sticky.
 UNIQUE: Menu should be THE STAR - consider tabbed menu categories, hoverable dish cards, or a visual menu grid.`,
+
+    'Steakhouse / Fine Dining': `
+STYLE: Luxurious, sophisticated, elegant, upscale dining experience
+HERO: Perfectly plated steak with dramatic lighting, elegant table setting, or wine cellar. Dark, moody atmosphere.
+TYPOGRAPHY: Elegant serif fonts (Playfair Display, Cormorant). Large, refined headlines. Thin weights.
+COLORS: Deep burgundy, rich gold, charcoal black, cream accents. Warm, intimate palette.
+IMAGERY: CRITICAL - Use ONLY steakhouse-specific images:
+- Perfectly seared steaks (ribeye, filet mignon, tomahawk)
+- Dry-aged beef display, butcher presentation
+- Wine selection, sommelier service, wine cellar shots
+- Elegant dining room with white tablecloths and candlelight
+- Professional chef plating, kitchen fire/grill action
+- NEVER use generic food images, sushi, pasta, or ethnic cuisine photos
+LAYOUT PATTERNS: Elegant cards with subtle borders, generous whitespace, refined grid layouts.
+SECTIONS: Featured cuts with descriptions, wine pairings section, chef story/philosophy, private dining, reservations CTA (prominent), awards/accolades.
+UNIQUE: Emphasize QUALITY and CRAFTSMANSHIP - show the aging process, the selection process, the expertise. Include tasting notes style descriptions for cuts.`,
 
     'SaaS / B2B Platform': `
 STYLE: Modern, clean, innovative, trustworthy
@@ -1844,6 +1902,12 @@ SECTIONS: Hero, features/services, about snippet, testimonials, CTA`
   if (lowerName.includes('yoga') || lowerName.includes('pilates') || lowerName.includes('meditation')) {
     return guidance['Yoga Studio'];
   }
+  // STEAKHOUSE - must match BEFORE generic restaurant
+  if (lowerName.includes('steakhouse') || lowerName.includes('steak house') ||
+      lowerName.includes('chophouse') || lowerName.includes('chop house') ||
+      (lowerName.includes('steak') && (lowerName.includes('luxury') || lowerName.includes('fine') || lowerName.includes('prime') || lowerName.includes('upscale')))) {
+    return guidance['Steakhouse / Fine Dining'];
+  }
   if (lowerName.includes('restaurant') || lowerName.includes('food') || lowerName.includes('dining') || lowerName.includes('cafe') || lowerName.includes('bistro')) {
     return guidance['Restaurant / Food Service'];
   }
@@ -1881,29 +1945,90 @@ SECTIONS: Hero, features/services, about snippet, testimonials, CTA`
   return guidance['default'];
 }
 
-function getPageRequirements(pageId) {
-  const requirements = {
-    home: `
-- Create a Hero that feels unique to the ARCHETYPE (not just a background image).
-- Include 3-4 sections that showcase the business value.
-- Mix up the order: Consider starting with a "Stat Strip" or "Featured Work" before the features.
-- Ensure a clear CTA at the end.`,
-    
-    about: `
-- Tell the story using the ARCHETYPE layout.
-- Include a "Values" section that doesn't use standard cards (try a list or large text blocks).
-- Highlight the mission with a massive pull-quote.`,
+function getPageRequirements(pageId, industry) {
+  const lowerIndustry = (industry || '').toLowerCase();
 
-    services: `
-- Show 3-6 offerings. 
-- If Bento archetype: Use different box sizes for different service tiers.
-- If Editorial archetype: Use large images for each service with minimal text.`,
+  // ===========================================
+  // INDUSTRY-SPECIFIC APP PAGE REQUIREMENTS
+  // ===========================================
 
-    contact: `
-- Split layout: Contact form + Business details.
-- Use Lucide icons for phone, email, and address.
-- Minimal, high-contrast inputs.`,
+  // COLLECTIBLES INDUSTRY (sneakers, cards, memorabilia, etc.)
+  const collectiblesPages = {
+    dashboard: `
+APP PAGE - Collection Dashboard (Mobile-first, works great on desktop too)
+- COLLECTION FOCUSED - NOT survey/earn focused!
+- Top section: Large "Collection Value" display (e.g., "$47,850") with percentage change
+- Stats row: 3 stat cards - Total Items, Wallet Balance, Reward Points
+- Quick actions: Add to Collection, Browse Marketplace, Scan Item, Trading Hub
+- Recent activity: Sales, purchases, authentications, scans - show item names like "Jordan 1 Chicago"
+- Achievement badges: "Grail Hunter", "Century Club", unlocked status indicators
+- Bottom CTA: "Find your next grail" with marketplace and scan buttons
+- Mobile bottom nav: Collection, Dashboard, Scan, Trade, Rewards
+- Use mock data arrays with realistic collectible items (sneakers, cards, etc.)`,
 
+    earn: `
+APP PAGE - Collection Rewards/Earn Page (Mobile-first, works great on desktop too)
+- COLLECTION FOCUSED - Earn by engaging with the platform
+- Header: "Earn Rewards" with filter tabs (All, Scans, Trades, Referrals, Daily)
+- Reward opportunity cards showing:
+  * "Scan a Pair" - Earn points for authenticating items
+  * "Complete a Trade" - Earn points for successful trades
+  * "Daily Check-in" - Streak bonus for daily visits
+  * "Refer a Friend" - Referral rewards
+- Points balance prominently displayed
+- Progress bars for tiered rewards
+- NOT surveys - these are platform engagement activities`,
+
+    rewards: `
+APP PAGE - Collection Rewards Page (Mobile-first, works great on desktop too)
+- COLLECTION FOCUSED rewards system
+- Hero: Current tier status (Bronze/Silver/Gold/Platinum) with progress to next tier
+- Rewards showcase: Redeemable items like:
+  * Free authentications/scans
+  * Marketplace fee discounts
+  * Exclusive drops access
+  * Priority support
+- Daily spin wheel for bonus points
+- Streak bonus display showing consecutive days active
+- Recent rewards claimed section
+- Tier benefits comparison`,
+
+    wallet: `
+APP PAGE - Collection Wallet Page (Mobile-first, works great on desktop too)
+- COLLECTION FOCUSED wallet for marketplace transactions
+- Balance hero: Large wallet balance display (funds from sales, ready to spend)
+- Quick actions: Add Funds, Withdraw, Transfer
+- Payment methods: Connected cards, bank accounts, PayPal
+- Transaction history: Show item sales, purchases, scan fees, withdrawals
+  * Each row: Item name, type (sale/purchase/fee), amount, date
+  * Color code: +green for sales, -red for purchases
+- Pending transactions section
+- Section: "Funds from Recent Sales" showing items sold`,
+
+    profile: `
+APP PAGE - Collector Profile (Mobile-first, works great on desktop too)
+- COLLECTION FOCUSED profile
+- Profile header: Avatar, username, member tier badge, "Collecting since 2023"
+- Stats: Collection Value, Total Items, Completed Trades, Authentications
+- Collection highlights: Top 3-5 most valuable items with images
+- Referral section: Invite collectors, show referral code, bonus structure
+- Settings: Notifications, Payment Methods, Privacy, Shipping Address
+- Achievement badges: Collection milestones earned
+- Public profile toggle`,
+
+    leaderboard: `
+APP PAGE - Collector Leaderboard (Mobile-first, works great on desktop too)
+- COLLECTION FOCUSED rankings
+- Tabs: Collection Value, Items Owned, Trades Completed, Authentications
+- Top 3 podium with collector avatars and top item thumbnails
+- Ranked list: Rank, avatar, username, stat value
+- User's own rank highlighted
+- Monthly/All-time toggle
+- Prize indicators for top collectors`
+  };
+
+  // SURVEY-REWARDS INDUSTRY (survey apps, reward platforms, GPT sites)
+  const surveyRewardsPages = {
     dashboard: `
 APP PAGE - User Dashboard (Mobile-first, works great on desktop too)
 - Top section: Large balance display with current earnings (centered, bold)
@@ -1930,7 +2055,7 @@ APP PAGE - Rewards/Spin Page (Mobile-first, works great on desktop too)
 - Hero section: Daily spin wheel centered, max-width 320px (build a colorful wheel with CSS transforms)
 - Big "SPIN NOW" button below wheel (green, 56px height, full-width max 300px)
 - Countdown timer if spin not available ("Next spin in 4:32:15")
-- Streak bonus display: "🔥 5-day streak! 2x multiplier active"
+- Streak bonus display showing consecutive days
 - Recent winners: horizontal scroll of small winner cards showing avatar + amount won
 - Achievements grid at bottom: 3 columns of badge icons with labels
 - Max-width 500px centered on desktop, full-width with 16px padding on mobile`,
@@ -1968,6 +2093,63 @@ APP PAGE - Leaderboard (Mobile-first, works great on desktop too)
 - Use alternating subtle background colors for rows`
   };
 
+  // Detect industry and select appropriate app page requirements
+  const isCollectibles = lowerIndustry.includes('collectible') ||
+    lowerIndustry.includes('sneaker') ||
+    lowerIndustry.includes('card') ||
+    lowerIndustry.includes('memorabilia') ||
+    lowerIndustry.includes('trading') ||
+    lowerIndustry.includes('vault') ||
+    lowerIndustry.includes('authentication');
+
+  const isSurveyRewards = lowerIndustry.includes('survey') ||
+    lowerIndustry.includes('reward') ||
+    lowerIndustry.includes('earn') ||
+    lowerIndustry.includes('cashback') ||
+    lowerIndustry.includes('gpt');
+
+  // App pages that need industry-specific content
+  const appPages = ['dashboard', 'earn', 'rewards', 'wallet', 'profile', 'leaderboard'];
+
+  if (appPages.includes(pageId)) {
+    if (isCollectibles && collectiblesPages[pageId]) {
+      return collectiblesPages[pageId];
+    }
+    if (isSurveyRewards && surveyRewardsPages[pageId]) {
+      return surveyRewardsPages[pageId];
+    }
+    // Default to survey-rewards style for any app with these pages
+    if (surveyRewardsPages[pageId]) {
+      return surveyRewardsPages[pageId];
+    }
+  }
+
+  // ===========================================
+  // STANDARD PAGE REQUIREMENTS (non-app pages)
+  // ===========================================
+  const requirements = {
+    home: `
+- Create a Hero that feels unique to the ARCHETYPE (not just a background image).
+- Include 3-4 sections that showcase the business value.
+- Mix up the order: Consider starting with a "Stat Strip" or "Featured Work" before the features.
+- Ensure a clear CTA at the end.`,
+
+    about: `
+- Tell the story using the ARCHETYPE layout.
+- Include a "Values" section that doesn't use standard cards (try a list or large text blocks).
+- Highlight the mission with a massive pull-quote.`,
+
+    services: `
+- Show 3-6 offerings.
+- If Bento archetype: Use different box sizes for different service tiers.
+- If Editorial archetype: Use large images for each service with minimal text.`,
+
+    contact: `
+- Split layout: Contact form + Business details.
+- Use Lucide icons for phone, email, and address.
+- Minimal, high-contrast inputs.`
+  };
+
   return requirements[pageId] || `Create a unique ${pageId} page layout using the assigned archetype.`;
 }
 
@@ -1993,6 +2175,7 @@ RULES:
 - Inline styles (style={{ }}) - NO Tailwind
 - Lucide React icons - NO emojis
 - NO header/footer - App.jsx handles those
+- NO CartContext/CartProvider - NEVER create your own cart context. Use: import { useCart } from '../context/CartContext';
 - <Link> from react-router-dom
 - USE their image URLs in img tags
 
@@ -2302,6 +2485,10 @@ TECHNICAL REQUIREMENTS:
 4. Use semantic HTML (header, main, section, footer)
 5. Include responsive breakpoints using CSS-in-JS
 6. Add smooth scroll behavior for anchor links
+7. NO nav/footer - those are provided by App.jsx
+8. NO CartContext/CartProvider - NEVER create your own cart context. If you need cart functionality:
+   import { useCart } from '../context/CartContext';
+   Then use: const { cart, addItem, removeItem, clearCart, getTotal } = useCart();
 
 CRITICAL:
 - Return ONLY the JSX code, no markdown code blocks
