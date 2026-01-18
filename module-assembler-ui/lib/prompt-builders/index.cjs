@@ -2093,7 +2093,472 @@ APP PAGE - Leaderboard (Mobile-first, works great on desktop too)
 - Use alternating subtle background colors for rows`
   };
 
-  // Detect industry and select appropriate app page requirements
+  // RESTAURANT / FOOD SERVICE INDUSTRY
+  const restaurantPages = {
+    dashboard: `
+APP PAGE - Restaurant Member Dashboard (Mobile-first, works great on desktop too)
+- DINING FOCUSED - loyalty and reservations
+- Top section: Loyalty points balance with progress ring to next reward
+- Stats row: 3 cards - Total Visits, Points Earned, Rewards Redeemed
+- Upcoming reservations: Card showing next reservation date/time/party size with "Modify" button
+- Quick actions: Make Reservation, View Menu, Order Online, Redeem Reward
+- Recent orders: Last 3-5 orders with items ordered, date, and "Reorder" button
+- Favorite dishes: Horizontal scroll of dishes with images, tap to add to order
+- Special offers: Banner for current promotions or birthday rewards
+- Mobile bottom nav: Home, Menu, Reservations, Rewards, Profile`,
+
+    earn: `
+APP PAGE - Restaurant Earn Points Page (Mobile-first, works great on desktop too)
+- DINING FOCUSED - earn through visits and spending
+- Header: "Earn Points" with current balance prominently displayed
+- Points structure explanation:
+  * "$1 = 1 point" for dining
+  * "50 bonus points" for writing a review
+  * "100 points" for referring a friend
+  * "Double points" on your birthday month
+- Current offers: Cards showing bonus point opportunities
+- Recent point activity: List of recent earnings with date and source
+- Referral section: Share code to earn bonus points
+- NOT surveys - these are dining engagement rewards`,
+
+    rewards: `
+APP PAGE - Restaurant Rewards Page (Mobile-first, works great on desktop too)
+- DINING FOCUSED rewards redemption
+- Hero: Current tier (Bronze/Silver/Gold/VIP) with progress to next tier
+- Available rewards to redeem:
+  * Free appetizer (500 pts)
+  * $10 off entree (750 pts)
+  * Free dessert (400 pts)
+  * Complimentary drink (300 pts)
+- Birthday reward: Special banner if birthday month
+- VIP perks: Priority seating, exclusive menu items, chef's table access
+- Reward history: Past redemptions
+- No spin wheel - dining rewards are straightforward`,
+
+    wallet: `
+APP PAGE - Restaurant Wallet Page (Mobile-first, works great on desktop too)
+- DINING FOCUSED payment and gift cards
+- Gift card balance: Large display of any restaurant gift cards
+- Saved payment methods: Credit cards for quick checkout
+- Recent transactions: Dining history with amounts
+- Add gift card: Input field to add new gift card codes
+- Auto-reload option: Set up automatic gift card reload
+- Split payment preferences: Default tip percentage, split bill settings`,
+
+    profile: `
+APP PAGE - Restaurant Member Profile (Mobile-first, works great on desktop too)
+- DINING FOCUSED profile
+- Profile header: Avatar, name, member tier badge, "Member since 2023"
+- Stats: Total Visits, Lifetime Points, Rewards Redeemed, Favorite Location
+- Dining preferences: Dietary restrictions, allergies, seating preferences
+- Special dates: Birthday, anniversary (for special offers)
+- Favorite orders: Quick reorder list
+- Settings: Notifications, Payment Methods, Reservation Preferences
+- Referral code: Share to earn points`
+  };
+
+  // REAL ESTATE INDUSTRY
+  const realEstatePages = {
+    dashboard: `
+APP PAGE - Real Estate Client Dashboard (Mobile-first, works great on desktop too)
+- PROPERTY SEARCH FOCUSED
+- Top section: Search status summary ("Actively Searching" or "Under Contract")
+- Stats row: Saved Properties count, Price Alerts, Showings Scheduled
+- Saved properties: Grid of 2-3 property cards with image, price, beds/baths, heart icon
+- Upcoming showings: Calendar-style list of scheduled property tours
+- Price alerts: Recent notifications about price drops on saved properties
+- Market updates: Local market trends, new listings in your criteria
+- Quick actions: Search Properties, Schedule Showing, Contact Agent, Mortgage Calculator
+- Agent contact: Quick message or call button to your agent
+- Mobile bottom nav: Search, Saved, Showings, Messages, Profile`,
+
+    profile: `
+APP PAGE - Real Estate Client Profile (Mobile-first, works great on desktop too)
+- PROPERTY SEARCH FOCUSED profile
+- Profile header: Avatar, name, search status badge
+- Search criteria summary: Location, price range, beds/baths, property type
+- Pre-approval status: Approved amount, lender info, expiration date
+- Timeline: Target move-in date, urgency level
+- Preferences: Must-haves, nice-to-haves, deal-breakers
+- Documents: Upload section for pre-approval letter, ID
+- Communication preferences: Email, text, call preferences
+- Assigned agent: Agent photo, contact info, direct message`,
+
+    wallet: `
+APP PAGE - Real Estate Financial Dashboard (Mobile-first, works great on desktop too)
+- PROPERTY PURCHASE FOCUSED
+- Pre-approval amount: Large display of approved loan amount
+- Earnest money tracker: If under contract, show escrow status
+- Closing cost estimate: Breakdown of expected costs
+- Down payment savings: Progress toward target down payment
+- Monthly payment calculator: Interactive slider for different scenarios
+- Document checklist: Required financial documents status
+- Important dates: Inspection, appraisal, closing deadlines`
+  };
+
+  // HEALTHCARE / MEDICAL INDUSTRY
+  const healthcarePages = {
+    dashboard: `
+APP PAGE - Patient Portal Dashboard (Mobile-first, works great on desktop too)
+- HEALTHCARE FOCUSED - appointments and health info
+- Top section: Welcome message with next appointment prominently displayed
+- Upcoming appointments: Card with date, time, provider, location, "Check In" button
+- Quick actions: Schedule Appointment, Message Provider, Refill Prescription, View Results
+- Recent activity: Test results ready, messages from provider, prescription updates
+- Health reminders: Annual checkup due, vaccination reminder, screening due
+- Prescription refills: Medications needing refill with "Request Refill" button
+- Care team: Photos and names of your providers with message buttons
+- Mobile bottom nav: Home, Appointments, Messages, Records, Profile
+- HIPAA compliant messaging throughout`,
+
+    profile: `
+APP PAGE - Patient Profile (Mobile-first, works great on desktop too)
+- HEALTHCARE FOCUSED profile
+- Profile header: Avatar, name, patient ID, date of birth
+- Insurance information: Provider, member ID, group number
+- Emergency contacts: Name, relationship, phone number
+- Primary care provider: Assigned doctor info
+- Pharmacy preference: Preferred pharmacy for prescriptions
+- Medical history summary: Allergies, conditions, medications
+- Communication preferences: Email, text, call for appointments
+- Advance directives: Link to view/update
+- Settings: Notifications, Proxy access, Privacy settings`,
+
+    wallet: `
+APP PAGE - Patient Billing Dashboard (Mobile-first, works great on desktop too)
+- HEALTHCARE BILLING FOCUSED
+- Outstanding balance: Large display of amount due
+- Payment options: Pay Now button, payment plan setup
+- Recent statements: List of bills with dates and amounts
+- Insurance claims: Pending claims status, EOB documents
+- HSA/FSA balance: If connected, show available balance
+- Payment history: Past payments with receipts
+- Financial assistance: Link to apply for aid programs
+- Billing questions: Quick contact to billing department`
+  };
+
+  // FITNESS / GYM INDUSTRY
+  const fitnessPages = {
+    dashboard: `
+APP PAGE - Fitness Member Dashboard (Mobile-first, works great on desktop too)
+- FITNESS FOCUSED - workouts and classes
+- Top section: Check-in streak counter with flame icon, "X days this week"
+- Stats row: 3 cards - This Month's Visits, Classes Booked, Personal Records
+- Today's schedule: Upcoming classes booked with time and instructor
+- Quick actions: Check In, Book Class, Find Trainer, View Schedule
+- Recent workouts: Last 5 check-ins with date, duration, calories burned
+- Class recommendations: Suggested classes based on history
+- Challenges: Active fitness challenges with progress bars
+- Trainer availability: Quick book with favorite trainers
+- Mobile bottom nav: Home, Classes, Check In, Progress, Profile`,
+
+    earn: `
+APP PAGE - Fitness Rewards/Earn Page (Mobile-first, works great on desktop too)
+- FITNESS FOCUSED - earn through activity
+- Header: "Earn Points" with current balance
+- How to earn:
+  * Check-in: 10 points per visit
+  * Complete class: 25 points
+  * Refer a friend: 500 points
+  * Hit weekly goal: 100 bonus points
+  * Personal training session: 50 points
+- Active challenges: Join challenges to earn bonus points
+- Streak bonuses: 7-day streak = 2x points
+- Leaderboard preview: Top 3 members this month`,
+
+    rewards: `
+APP PAGE - Fitness Rewards Page (Mobile-first, works great on desktop too)
+- FITNESS FOCUSED rewards
+- Current tier: Bronze/Silver/Gold/Platinum with progress bar
+- Available rewards:
+  * Free guest pass (200 pts)
+  * Personal training session (1000 pts)
+  * Pro shop discount (300 pts)
+  * Free smoothie (150 pts)
+  * Branded merchandise (500 pts)
+- Tier benefits comparison: What each level unlocks
+- Reward history: Past redemptions`,
+
+    wallet: `
+APP PAGE - Fitness Account/Wallet Page (Mobile-first, works great on desktop too)
+- FITNESS MEMBERSHIP FOCUSED
+- Membership status: Plan type, renewal date, monthly cost
+- Personal training credits: Remaining sessions purchased
+- Guest passes: Available passes to share
+- Add-ons: Locker rental, towel service status
+- Payment method: Update billing info
+- Freeze membership: Option to pause
+- Transaction history: Dues, purchases, credits`,
+
+    profile: `
+APP PAGE - Fitness Member Profile (Mobile-first, works great on desktop too)
+- FITNESS FOCUSED profile
+- Profile header: Avatar, name, member tier, "Member since 2023"
+- Stats: Total Visits, Classes Attended, Personal Records
+- Fitness goals: Weight, strength, cardio targets
+- Body metrics: Optional tracking of weight, measurements
+- Workout preferences: Favorite classes, preferred times
+- Trainer: Assigned or favorite trainer
+- Settings: Notifications, Privacy, Class reminders
+- Referral code: Share to earn points`,
+
+    leaderboard: `
+APP PAGE - Fitness Leaderboard (Mobile-first, works great on desktop too)
+- FITNESS FOCUSED rankings
+- Tabs: Check-ins, Classes, Challenges, Streaks
+- Top 3 podium with member photos and stats
+- Ranked list: Rank, avatar, name, stat value
+- Your position highlighted
+- Monthly/All-time toggle
+- Active challenge rankings
+- Gym location filter for multi-location gyms`
+  };
+
+  // SALON / SPA / BEAUTY INDUSTRY
+  const salonPages = {
+    dashboard: `
+APP PAGE - Salon/Spa Client Dashboard (Mobile-first, works great on desktop too)
+- BEAUTY FOCUSED - appointments and loyalty
+- Top section: Next appointment with stylist/esthetician name and service
+- Stats row: Total Visits, Loyalty Points, Rewards Earned
+- Quick actions: Book Appointment, Rebook Last Service, View Services, Buy Gift Card
+- Upcoming appointments: List with date, time, service, provider
+- Favorite services: Quick rebook your regular services
+- Product recommendations: Based on your service history
+- Stylist/provider: Your preferred provider with direct booking
+- Special offers: Current promotions, birthday discount
+- Mobile bottom nav: Home, Book, Services, Rewards, Profile`,
+
+    earn: `
+APP PAGE - Salon/Spa Earn Points Page (Mobile-first, works great on desktop too)
+- BEAUTY FOCUSED - earn through visits and purchases
+- Header: "Earn Points" with current balance
+- How to earn:
+  * Service visit: Points per dollar spent
+  * Product purchase: Points per dollar
+  * Refer a friend: Bonus points
+  * Review on Google: Bonus points
+  * Birthday bonus: Double points all month
+- Current promotions: Bonus point opportunities
+- Referral section: Share your code`,
+
+    rewards: `
+APP PAGE - Salon/Spa Rewards Page (Mobile-first, works great on desktop too)
+- BEAUTY FOCUSED rewards
+- Current tier: Guest/Member/VIP/Elite with progress
+- Available rewards:
+  * Free add-on service (300 pts)
+  * $20 off any service (500 pts)
+  * Free product sample (200 pts)
+  * Complimentary deep conditioning (400 pts)
+- VIP perks: Priority booking, exclusive products, special events
+- Birthday reward: Free service or discount
+- Reward history: Past redemptions`,
+
+    wallet: `
+APP PAGE - Salon/Spa Wallet Page (Mobile-first, works great on desktop too)
+- BEAUTY SERVICE FOCUSED
+- Gift card balance: Restaurant-style gift cards for services
+- Prepaid packages: Service packages purchased (e.g., 5 blowouts)
+- Membership status: If on a monthly membership plan
+- Payment methods: Saved cards for quick checkout
+- Recent transactions: Service history with amounts
+- Add gift card: Input code to add balance`,
+
+    profile: `
+APP PAGE - Salon/Spa Client Profile (Mobile-first, works great on desktop too)
+- BEAUTY FOCUSED profile
+- Profile header: Avatar, name, loyalty tier, "Client since 2022"
+- Stats: Total Visits, Services Tried, Products Purchased
+- Hair/skin profile: Hair type, color history, skin type, sensitivities
+- Preferred stylist/esthetician: Default provider
+- Service preferences: Favorite services, appointment time preferences
+- Product preferences: Brands you love, allergies
+- Settings: Appointment reminders, marketing preferences
+- Referral code: Share to earn rewards`
+  };
+
+  // EDUCATION / COURSES INDUSTRY
+  const educationPages = {
+    dashboard: `
+APP PAGE - Student/Learner Dashboard (Mobile-first, works great on desktop too)
+- EDUCATION FOCUSED - courses and progress
+- Top section: Current course progress with percentage complete
+- Stats row: Courses Enrolled, Completed, Certificates Earned
+- Continue learning: Resume where you left off with course card
+- Upcoming deadlines: Assignments, quizzes, project due dates
+- Recent activity: Completed lessons, quiz scores, achievements
+- Quick actions: Browse Courses, View Calendar, Check Grades, Get Help
+- Announcements: Important updates from instructors
+- Study streak: Days in a row of learning activity
+- Mobile bottom nav: Home, Courses, Calendar, Grades, Profile`,
+
+    earn: `
+APP PAGE - Education Earn/Achievements Page (Mobile-first, works great on desktop too)
+- EDUCATION FOCUSED - earn through learning
+- Header: "Earn Achievements" with XP or points display
+- How to earn:
+  * Complete lesson: XP per lesson
+  * Pass quiz: Bonus XP for high scores
+  * Finish course: Certificate + major XP
+  * Daily learning: Streak bonuses
+  * Help peers: Community contribution points
+- Active challenges: Learning challenges with deadlines
+- Skill badges: Earn badges for mastering topics`,
+
+    rewards: `
+APP PAGE - Education Rewards/Achievements Page (Mobile-first, works great on desktop too)
+- EDUCATION FOCUSED achievements
+- Current level: Student level with XP progress bar
+- Certificates earned: Display of completed course certificates
+- Badges gallery: Grid of earned skill badges
+- Honor roll status: If qualifying GPA/score
+- Unlock progress: What's needed for next achievements
+- Share achievements: LinkedIn, social sharing options`,
+
+    wallet: `
+APP PAGE - Education Account/Billing Page (Mobile-first, works great on desktop too)
+- EDUCATION BILLING FOCUSED
+- Tuition balance: Outstanding amount due
+- Payment plan: Current installment plan status
+- Financial aid: Scholarships, grants applied
+- Course purchases: Individual course purchases
+- Subscription status: If monthly/annual learning subscription
+- Payment methods: Update billing info
+- Transaction history: Payments made, receipts`,
+
+    profile: `
+APP PAGE - Student Profile (Mobile-first, works great on desktop too)
+- EDUCATION FOCUSED profile
+- Profile header: Avatar, name, student ID, enrollment date
+- Stats: Courses Completed, Certificates, Current GPA/Score
+- Learning goals: What you're working toward
+- Enrolled courses: Current course list with progress
+- Completed courses: History of finished courses
+- Skills: List of skills learned with proficiency levels
+- Settings: Notification preferences, study reminders
+- Transcript: Link to view/download academic record`,
+
+    leaderboard: `
+APP PAGE - Education Leaderboard (Mobile-first, works great on desktop too)
+- EDUCATION FOCUSED rankings
+- Tabs: This Course, All Courses, This Month, All Time
+- Top 3 podium with student avatars and XP/scores
+- Class rankings: Rank, avatar, name, score/XP
+- Your position highlighted
+- Filter by course or subject
+- Quiz high scores section
+- Study streak leaders`
+  };
+
+  // PROFESSIONAL SERVICES (Law, Accounting, Consulting)
+  const professionalPages = {
+    dashboard: `
+APP PAGE - Client Portal Dashboard (Mobile-first, works great on desktop too)
+- PROFESSIONAL SERVICES FOCUSED - matters and communication
+- Top section: Active matter/case status summary
+- Stats row: Active Matters, Documents Pending, Upcoming Meetings
+- Active matters: List of current cases/projects with status indicators
+- Upcoming meetings: Scheduled calls, consultations with join links
+- Document requests: Items your firm needs from you with upload buttons
+- Recent activity: New documents, messages, case updates
+- Quick actions: Schedule Meeting, Upload Document, Message Team, View Invoice
+- Your team: Photos of assigned professionals with direct message
+- Mobile bottom nav: Home, Matters, Documents, Messages, Profile`,
+
+    profile: `
+APP PAGE - Client Profile (Mobile-first, works great on desktop too)
+- PROFESSIONAL SERVICES FOCUSED profile
+- Profile header: Avatar, name, client ID, "Client since 2023"
+- Contact information: Phone, email, address
+- Company info: If business client, company details
+- Matter history: Past completed matters/cases
+- Key contacts: Your primary attorney/accountant/consultant
+- Communication preferences: Email, phone, secure message preferences
+- Settings: Notifications, Document delivery preferences
+- Important dates: Deadlines, renewal dates`,
+
+    wallet: `
+APP PAGE - Client Billing Dashboard (Mobile-first, works great on desktop too)
+- PROFESSIONAL BILLING FOCUSED
+- Outstanding balance: Amount currently due
+- Retainer balance: If on retainer, remaining funds
+- Recent invoices: List with amounts and due dates
+- Payment options: Pay online, payment plan setup
+- Billing history: Past invoices and payments
+- Time/expense details: If available, billable hours breakdown
+- Payment methods: Update billing information
+- Billing contact: Questions to billing department`
+  };
+
+  // COWORKING / WORKSPACE INDUSTRY
+  const coworkingPages = {
+    dashboard: `
+APP PAGE - Coworking Member Dashboard (Mobile-first, works great on desktop too)
+- WORKSPACE FOCUSED - bookings and credits
+- Top section: Today's bookings with room/desk details
+- Stats row: Credits Remaining, Bookings This Month, Events Attended
+- Today's schedule: Your reserved spaces with times and locations
+- Quick actions: Book Desk, Reserve Room, View Events, Get Day Pass
+- Available now: Real-time availability of desks and rooms
+- Upcoming events: Networking events, workshops at the space
+- Recent bookings: Past week's usage history
+- Community: New members, member spotlights
+- Mobile bottom nav: Home, Book, Events, Community, Profile`,
+
+    earn: `
+APP PAGE - Coworking Earn Credits Page (Mobile-first, works great on desktop too)
+- COWORKING FOCUSED - earn through engagement
+- Header: "Earn Credits" with current balance
+- How to earn:
+  * Refer a member: Free day passes or credits
+  * Long-term booking discount: Book monthly, save more
+  * Event attendance: Earn credits for joining events
+  * Community contribution: Host a workshop, earn credits
+- Current promotions: Bonus credit opportunities
+- Referral section: Share your member code`,
+
+    rewards: `
+APP PAGE - Coworking Rewards/Perks Page (Mobile-first, works great on desktop too)
+- COWORKING FOCUSED member perks
+- Current tier: Flex/Standard/Premium/Enterprise
+- Available perks:
+  * Free guest day passes
+  * Meeting room credits
+  * Event access
+  * Partner discounts (coffee, food, services)
+- Tier benefits: What each membership level includes
+- Upgrade options: Move to higher tier`,
+
+    wallet: `
+APP PAGE - Coworking Account/Credits Page (Mobile-first, works great on desktop too)
+- WORKSPACE BILLING FOCUSED
+- Credit balance: Available booking credits
+- Membership status: Plan type, renewal date
+- Add-ons: Mail handling, storage, phone booth hours
+- Guest passes: Available passes to share
+- Recent usage: Booking history with credits used
+- Payment method: Update billing
+- Upgrade/downgrade: Change membership plan`,
+
+    profile: `
+APP PAGE - Coworking Member Profile (Mobile-first, works great on desktop too)
+- COWORKING FOCUSED profile
+- Profile header: Avatar, name, company, membership tier
+- Stats: Total Bookings, Events Attended, Referrals Made
+- Company info: Your business details for directory
+- Workspace preferences: Preferred location, quiet vs collaborative
+- Booking preferences: Favorite desks, regular schedule
+- Community visibility: Public profile settings
+- Settings: Notifications, Calendar sync, WiFi preferences
+- Referral code: Share to earn credits`
+  };
+
+  // ===========================================
+  // INDUSTRY DETECTION AND ROUTING
+  // ===========================================
+
+  // Detect industry type
   const isCollectibles = lowerIndustry.includes('collectible') ||
     lowerIndustry.includes('sneaker') ||
     lowerIndustry.includes('card') ||
@@ -2104,19 +2569,116 @@ APP PAGE - Leaderboard (Mobile-first, works great on desktop too)
 
   const isSurveyRewards = lowerIndustry.includes('survey') ||
     lowerIndustry.includes('reward') ||
-    lowerIndustry.includes('earn') ||
     lowerIndustry.includes('cashback') ||
     lowerIndustry.includes('gpt');
+
+  const isRestaurant = lowerIndustry.includes('restaurant') ||
+    lowerIndustry.includes('steakhouse') ||
+    lowerIndustry.includes('cafe') ||
+    lowerIndustry.includes('bistro') ||
+    lowerIndustry.includes('dining') ||
+    lowerIndustry.includes('food') ||
+    lowerIndustry.includes('pizza') ||
+    lowerIndustry.includes('bar') ||
+    lowerIndustry.includes('brewery') ||
+    lowerIndustry.includes('grill');
+
+  const isRealEstate = lowerIndustry.includes('real estate') ||
+    lowerIndustry.includes('realtor') ||
+    lowerIndustry.includes('property') ||
+    lowerIndustry.includes('homes') ||
+    lowerIndustry.includes('housing') ||
+    lowerIndustry.includes('realty') ||
+    lowerIndustry.includes('mortgage');
+
+  const isHealthcare = lowerIndustry.includes('medical') ||
+    lowerIndustry.includes('healthcare') ||
+    lowerIndustry.includes('doctor') ||
+    lowerIndustry.includes('clinic') ||
+    lowerIndustry.includes('dental') ||
+    lowerIndustry.includes('dentist') ||
+    lowerIndustry.includes('hospital') ||
+    lowerIndustry.includes('wellness') ||
+    lowerIndustry.includes('therapy') ||
+    lowerIndustry.includes('patient');
+
+  const isFitness = lowerIndustry.includes('fitness') ||
+    lowerIndustry.includes('gym') ||
+    lowerIndustry.includes('workout') ||
+    lowerIndustry.includes('crossfit') ||
+    lowerIndustry.includes('yoga') ||
+    lowerIndustry.includes('pilates') ||
+    lowerIndustry.includes('training') ||
+    lowerIndustry.includes('athletic');
+
+  const isSalon = lowerIndustry.includes('salon') ||
+    lowerIndustry.includes('spa') ||
+    lowerIndustry.includes('beauty') ||
+    lowerIndustry.includes('hair') ||
+    lowerIndustry.includes('nails') ||
+    lowerIndustry.includes('barbershop') ||
+    lowerIndustry.includes('barber') ||
+    lowerIndustry.includes('massage') ||
+    lowerIndustry.includes('skincare');
+
+  const isEducation = lowerIndustry.includes('education') ||
+    lowerIndustry.includes('school') ||
+    lowerIndustry.includes('course') ||
+    lowerIndustry.includes('training') ||
+    lowerIndustry.includes('learning') ||
+    lowerIndustry.includes('academy') ||
+    lowerIndustry.includes('tutoring') ||
+    lowerIndustry.includes('university');
+
+  const isProfessional = lowerIndustry.includes('law') ||
+    lowerIndustry.includes('legal') ||
+    lowerIndustry.includes('attorney') ||
+    lowerIndustry.includes('accounting') ||
+    lowerIndustry.includes('consulting') ||
+    lowerIndustry.includes('advisory') ||
+    lowerIndustry.includes('financial');
+
+  const isCoworking = lowerIndustry.includes('coworking') ||
+    lowerIndustry.includes('workspace') ||
+    lowerIndustry.includes('office') ||
+    lowerIndustry.includes('flex space') ||
+    lowerIndustry.includes('desk') ||
+    lowerIndustry.includes('meeting room');
 
   // App pages that need industry-specific content
   const appPages = ['dashboard', 'earn', 'rewards', 'wallet', 'profile', 'leaderboard'];
 
   if (appPages.includes(pageId)) {
+    // Return industry-specific page content if available
     if (isCollectibles && collectiblesPages[pageId]) {
       return collectiblesPages[pageId];
     }
     if (isSurveyRewards && surveyRewardsPages[pageId]) {
       return surveyRewardsPages[pageId];
+    }
+    if (isRestaurant && restaurantPages[pageId]) {
+      return restaurantPages[pageId];
+    }
+    if (isRealEstate && realEstatePages[pageId]) {
+      return realEstatePages[pageId];
+    }
+    if (isHealthcare && healthcarePages[pageId]) {
+      return healthcarePages[pageId];
+    }
+    if (isFitness && fitnessPages[pageId]) {
+      return fitnessPages[pageId];
+    }
+    if (isSalon && salonPages[pageId]) {
+      return salonPages[pageId];
+    }
+    if (isEducation && educationPages[pageId]) {
+      return educationPages[pageId];
+    }
+    if (isProfessional && professionalPages[pageId]) {
+      return professionalPages[pageId];
+    }
+    if (isCoworking && coworkingPages[pageId]) {
+      return coworkingPages[pageId];
     }
     // Default to survey-rewards style for any app with these pages
     if (surveyRewardsPages[pageId]) {
