@@ -26,8 +26,16 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const RAILWAY_TOKEN = process.env.RAILWAY_TOKEN;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const CLOUDFLARE_TOKEN = process.env.CLOUDFLARE_TOKEN;
-const CLOUDFLARE_ZONE_ID = process.env.CLOUDFLARE_ZONE_ID;
+const CLOUDFLARE_ZONE_ID = process.env.CLOUDFLARE_ZONE_ID;           // be1st.io zone
+const CLOUDFLARE_ZONE_ID_APP = process.env.CLOUDFLARE_ZONE_ID_APP;   // be1st.app zone
 const RAILWAY_TEAM_ID = process.env.RAILWAY_TEAM_ID;
+
+// Domain configuration
+const DOMAINS = {
+  website: 'be1st.io',        // Websites deploy to .io
+  'companion-app': 'be1st.app', // Companion apps deploy to .app (frontend only)
+  'advanced-app': 'be1st.app'   // Standalone apps deploy to .app (full stack)
+};
 
 // ============================================
 // UTILITY FUNCTIONS
@@ -35,6 +43,19 @@ const RAILWAY_TEAM_ID = process.env.RAILWAY_TEAM_ID;
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Detect if a project is an Advanced App (flat structure with server.js in root)
+ * vs a Website (backend/frontend/admin subfolders)
+ */
+function detectAdvancedApp(projectPath) {
+  const hasServerJs = fs.existsSync(path.join(projectPath, 'server.js'));
+  const hasBackendFolder = fs.existsSync(path.join(projectPath, 'backend'));
+  const hasSrcFolder = fs.existsSync(path.join(projectPath, 'src'));
+
+  // Advanced App: has server.js in root, no backend folder, has src folder
+  return hasServerJs && !hasBackendFolder && hasSrcFolder;
 }
 
 // ============================================
@@ -242,6 +263,176 @@ dist/
   }
 
   console.log(`   ✅ Project prepared for deployment`);
+}
+
+/**
+ * Prepare Advanced App for deployment (single service)
+ * - Creates railway.json for single full-stack service
+ * - Updates server.js to serve /dist in production
+ * - Creates .gitignore
+ * - Regenerates package-lock.json
+ */
+function prepareAdvancedAppForDeployment(projectPath, subdomain) {
+  console.log(`📋 Preparing Advanced App for deployment...`);
+
+  // Clean up any existing .git folder
+  const gitDir = path.join(projectPath, '.git');
+  if (fs.existsSync(gitDir)) {
+    fs.rmSync(gitDir, { recursive: true, force: true });
+    console.log(`   ✅ Cleaned up .git folder`);
+  }
+
+  // Create railway.json for single full-stack service
+  const railwayConfig = {
+    "$schema": "https://railway.com/railway.schema.json",
+    "build": {
+      "builder": "NIXPACKS",
+      "buildCommand": "npm install && npm run build"
+    },
+    "deploy": {
+      "startCommand": "node server.js",
+      "restartPolicyType": "ON_FAILURE",
+      "restartPolicyMaxRetries": 10
+    }
+  };
+
+  fs.writeFileSync(
+    path.join(projectPath, 'railway.json'),
+    JSON.stringify(railwayConfig, null, 2)
+  );
+  console.log(`   ✅ Created railway.json`);
+
+  // Update server.js to serve /dist in production
+  const serverJsPath = path.join(projectPath, 'server.js');
+  if (fs.existsSync(serverJsPath)) {
+    let serverContent = fs.readFileSync(serverJsPath, 'utf8');
+
+    // Check if already updated
+    if (!serverContent.includes("express.static('dist')") && !serverContent.includes('express.static("dist")')) {
+      // Add production static serving after existing static line or after express.json()
+      if (serverContent.includes("express.static('public')")) {
+        serverContent = serverContent.replace(
+          "app.use(express.static('public'));",
+          `// Serve static files - in production serve built frontend from /dist
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('dist'));
+} else {
+  app.use(express.static('public'));
+}
+
+// SPA fallback - serve index.html for non-API routes
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  const indexPath = process.env.NODE_ENV === 'production'
+    ? path.join(__dirname, 'dist', 'index.html')
+    : path.join(__dirname, 'public', 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    next();
+  }
+});`
+        );
+
+        // Add path and fs requires if not present
+        if (!serverContent.includes("require('path')") && !serverContent.includes('require("path")')) {
+          serverContent = serverContent.replace(
+            "const express = require('express');",
+            "const express = require('express');\nconst path = require('path');"
+          );
+        }
+        if (!serverContent.includes("require('fs')") && !serverContent.includes('require("fs")')) {
+          serverContent = serverContent.replace(
+            "const express = require('express');",
+            "const express = require('express');\nconst fs = require('fs');"
+          );
+        }
+
+        fs.writeFileSync(serverJsPath, serverContent);
+        console.log(`   ✅ Updated server.js to serve /dist in production`);
+      }
+    }
+  }
+
+  // Create .gitignore
+  const gitignoreContent = `node_modules/
+.env
+.env.local
+dist/
+.DS_Store
+*.log
+`;
+  const gitignorePath = path.join(projectPath, '.gitignore');
+  if (!fs.existsSync(gitignorePath)) {
+    fs.writeFileSync(gitignorePath, gitignoreContent);
+    console.log(`   ✅ Created .gitignore`);
+  }
+
+  // Remove node_modules if exists
+  const nodeModulesPath = path.join(projectPath, 'node_modules');
+  if (fs.existsSync(nodeModulesPath)) {
+    fs.rmSync(nodeModulesPath, { recursive: true, force: true });
+    console.log(`   ✅ Removed node_modules`);
+  }
+
+  // Remove dist if exists (Railway will build fresh)
+  const distPath = path.join(projectPath, 'dist');
+  if (fs.existsSync(distPath)) {
+    fs.rmSync(distPath, { recursive: true, force: true });
+    console.log(`   ✅ Removed dist folder`);
+  }
+
+  // Regenerate package-lock.json
+  console.log(`\n📦 Regenerating package-lock.json...`);
+  regeneratePackageLock(projectPath, 'root');
+
+  console.log(`   ✅ Advanced App prepared for deployment`);
+}
+
+/**
+ * Push entire project folder to GitHub (for Advanced Apps)
+ */
+async function pushProjectToGitHub(projectPath, repoName, githubUsername) {
+  console.log(`📤 Pushing project to GitHub repo: ${repoName}...`);
+
+  if (!fs.existsSync(projectPath)) {
+    throw new Error(`Project not found: ${projectPath}`);
+  }
+
+  try {
+    const gitUrl = `https://${GITHUB_TOKEN}@github.com/${githubUsername}/${repoName}.git`;
+
+    const options = {
+      cwd: projectPath,
+      stdio: 'pipe',
+      maxBuffer: 50 * 1024 * 1024,
+      windowsHide: true
+    };
+
+    console.log(`   Initializing git...`);
+    execSync('git init', options);
+
+    console.log(`   Adding files...`);
+    execSync('git add .', options);
+
+    console.log(`   Creating commit...`);
+    execSync('git commit -m "Initial commit from Blink Advanced Apps"', options);
+
+    console.log(`   Setting branch...`);
+    execSync('git branch -M main', options);
+
+    console.log(`   Adding remote...`);
+    execSync(`git remote add origin ${gitUrl}`, options);
+
+    console.log(`   Pushing to GitHub...`);
+    execSync('git push -u origin main --force', options);
+
+    console.log(`   ✅ Project pushed to ${repoName}`);
+    return true;
+  } catch (error) {
+    console.error(`   ❌ Git push error: ${error.message}`);
+    throw error;
+  }
 }
 
 // ============================================
@@ -688,12 +879,14 @@ async function addRailwayCustomDomain(projectId, environmentId, serviceId, custo
 // CLOUDFLARE API
 // ============================================
 
-async function deleteCloudflareDNS(subdomain) {
+async function deleteCloudflareDNS(subdomain, domain = 'be1st.io') {
+  const zoneId = domain === 'be1st.app' ? CLOUDFLARE_ZONE_ID_APP : CLOUDFLARE_ZONE_ID;
+
   // First, find any existing records
   return new Promise((resolve) => {
     const req = https.request({
       hostname: 'api.cloudflare.com',
-      path: `/client/v4/zones/${CLOUDFLARE_ZONE_ID}/dns_records?name=${subdomain}.be1st.io`,
+      path: `/client/v4/zones/${zoneId}/dns_records?name=${subdomain}.${domain}`,
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${CLOUDFLARE_TOKEN}`,
@@ -744,12 +937,13 @@ async function deleteCloudflareRecord(recordId) {
   });
 }
 
-async function addCloudflareDNS(subdomain, target, type = 'CNAME', proxied = true) {
-  console.log(`🌐 Adding DNS record: ${subdomain}.be1st.io → ${target} (proxied: ${proxied})`);
-  
+async function addCloudflareDNS(subdomain, target, type = 'CNAME', proxied = true, domain = 'be1st.io') {
+  const zoneId = domain === 'be1st.app' ? CLOUDFLARE_ZONE_ID_APP : CLOUDFLARE_ZONE_ID;
+  console.log(`🌐 Adding DNS record: ${subdomain}.${domain} → ${target} (proxied: ${proxied})`);
+
   // First delete any existing record
-  await deleteCloudflareDNS(subdomain);
-  
+  await deleteCloudflareDNS(subdomain, domain);
+
   const data = JSON.stringify({
     type: type,
     name: subdomain,
@@ -761,7 +955,7 @@ async function addCloudflareDNS(subdomain, target, type = 'CNAME', proxied = tru
   return new Promise((resolve) => {
     const req = https.request({
       hostname: 'api.cloudflare.com',
-      path: `/client/v4/zones/${CLOUDFLARE_ZONE_ID}/dns_records`,
+      path: `/client/v4/zones/${zoneId}/dns_records`,
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${CLOUDFLARE_TOKEN}`,
@@ -797,10 +991,409 @@ async function addCloudflareDNS(subdomain, target, type = 'CNAME', proxied = tru
 }
 
 // ============================================
-// MAIN DEPLOY FUNCTION
+// ADVANCED APP DEPLOYMENT (Single Service)
+// ============================================
+
+/**
+ * Deploy an Advanced App as a single Railway service
+ * - ONE GitHub repo (not 3)
+ * - ONE Railway service + Postgres
+ * - Express serves built Vite frontend from /dist
+ */
+async function deployAdvancedApp(projectPath, projectName, options = {}) {
+  const onProgress = options.onProgress || (() => {});
+
+  console.log('');
+  console.log('═══════════════════════════════════════════════════════════════');
+  console.log(`🚀 DEPLOYING ADVANCED APP: ${projectName}`);
+  console.log('═══════════════════════════════════════════════════════════════');
+  console.log('');
+
+  onProgress({ step: 'starting', status: 'Starting Advanced App deployment...', icon: '🚀', progress: 0 });
+
+  const subdomain = projectName
+    .toLowerCase()
+    .replace(/&/g, '-and-')
+    .replace(/[^a-z0-9]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+
+  const results = {
+    success: false,
+    urls: {},
+    credentials: {},
+    errors: []
+  };
+
+  try {
+    onProgress({ step: 'github-auth', status: 'Authenticating with GitHub...', icon: '🔑', progress: 5 });
+    const githubUsername = await getGitHubUsername();
+    console.log(`👤 GitHub user: ${githubUsername}`);
+
+    onProgress({ step: 'prepare', status: 'Preparing Advanced App...', icon: '📋', progress: 10 });
+    prepareAdvancedAppForDeployment(projectPath, subdomain);
+
+    const repoName = `${subdomain}-app`;
+
+    onProgress({ step: 'github-cleanup', status: 'Cleaning up old repository...', icon: '🧹', progress: 15 });
+    await deleteGitHubRepo(githubUsername, repoName);
+    await sleep(1000);
+
+    onProgress({ step: 'github-create', status: 'Creating GitHub repository...', icon: '📦', progress: 20 });
+    await createGitHubRepo(repoName);
+
+    onProgress({ step: 'github-push', status: 'Pushing code to GitHub...', icon: '📤', progress: 30 });
+    await pushProjectToGitHub(projectPath, repoName, githubUsername);
+
+    onProgress({ step: 'railway-project', status: 'Creating Railway project...', icon: '🚂', progress: 40 });
+    const railwayProject = await createRailwayProject(subdomain);
+    const environmentId = railwayProject.environmentId;
+
+    onProgress({ step: 'railway-database', status: 'Provisioning PostgreSQL database...', icon: '🗄️', progress: 50 });
+    const postgresInfo = await createRailwayPostgres(railwayProject.id, environmentId);
+
+    onProgress({ step: 'railway-service', status: 'Creating app service...', icon: '⚙️', progress: 60 });
+    const appService = await createRailwayService(
+      railwayProject.id,
+      environmentId,
+      'app',
+      `${githubUsername}/${repoName}`
+    );
+
+    onProgress({ step: 'railway-env', status: 'Configuring environment variables...', icon: '🔐', progress: 70 });
+    const jwtSecret = require('crypto').randomBytes(32).toString('hex');
+
+    await setRailwayVariables(railwayProject.id, environmentId, appService.id, {
+      NODE_ENV: 'production',
+      JWT_SECRET: jwtSecret,
+      PORT: '3000',
+      DATABASE_URL: postgresInfo.connectionString
+    });
+
+    // Wait for Railway webhooks
+    onProgress({ step: 'railway-wait', status: 'Waiting for Railway webhooks...', icon: '⏳', progress: 75 });
+    console.log('   ⏳ Waiting 15s for Railway to establish GitHub webhooks...');
+    await sleep(15000);
+
+    onProgress({ step: 'deploy', status: 'Triggering deployment...', icon: '🚀', progress: 80 });
+    try {
+      await deployRailwayService(environmentId, appService.id);
+    } catch (e) {
+      console.log('   ⚠️ Deploy trigger failed, Railway will auto-deploy from GitHub');
+    }
+
+    onProgress({ step: 'domains', status: 'Generating service domain...', icon: '🔗', progress: 85 });
+    const appRailwayDomain = await generateRailwayServiceDomain(railwayProject.id, environmentId, appService.id);
+
+    // Advanced apps use be1st.app domain
+    const appDomain = 'be1st.app';
+
+    onProgress({ step: 'custom-domains', status: 'Configuring custom domain...', icon: '🌍', progress: 88 });
+    const appCustom = await addRailwayCustomDomain(railwayProject.id, environmentId, appService.id, `${subdomain}.${appDomain}`);
+
+    onProgress({ step: 'dns', status: 'Setting up DNS records...', icon: '📡', progress: 92 });
+    const appTarget = appCustom.target || appRailwayDomain;
+    if (appTarget) {
+      await addCloudflareDNS(subdomain, appTarget, 'CNAME', true, appDomain);
+    }
+
+    onProgress({ step: 'finalizing', status: 'Finalizing deployment...', icon: '✨', progress: 98 });
+
+    results.success = true;
+    results.railwayProjectId = railwayProject.id;
+    results.railwayEnvironmentId = environmentId;
+    results.urls = {
+      frontend: `https://${subdomain}.${appDomain}`,
+      github: `https://github.com/${githubUsername}/${repoName}`,
+      railway: `https://railway.app/project/${railwayProject.id}`,
+      railwayDirect: appRailwayDomain ? `https://${appRailwayDomain}` : null
+    };
+    results.credentials = {
+      note: 'Use the admin credentials you set during app generation'
+    };
+
+    onProgress({ step: 'complete', status: 'Deployment complete!', icon: '✅', progress: 100, urls: results.urls });
+
+    console.log('');
+    console.log('═══════════════════════════════════════════════════════════════');
+    console.log('✅ ADVANCED APP DEPLOYMENT COMPLETE!');
+    console.log('═══════════════════════════════════════════════════════════════');
+    console.log('');
+    console.log('📱 Domain: be1st.app (standalone app)');
+    console.log('');
+    console.log('🔗 URLs:');
+    console.log(`   Live App: ${results.urls.frontend}`);
+    console.log(`   GitHub:   ${results.urls.github}`);
+    console.log(`   Railway:  ${results.urls.railway}`);
+    if (results.urls.railwayDirect) {
+      console.log(`   Railway Direct: ${results.urls.railwayDirect}`);
+    }
+    console.log('');
+    console.log('🔑 Login with the credentials you set during app generation');
+    console.log('');
+    console.log('⏱️  Note: Build takes 2-3 minutes. Check Railway dashboard for status.');
+    console.log('');
+
+  } catch (error) {
+    console.error('');
+    console.error('❌ ADVANCED APP DEPLOYMENT FAILED:', error.message);
+    results.errors.push(error.message);
+    onProgress({ step: 'error', status: `Deployment failed: ${error.message}`, icon: '❌', progress: 0 });
+  }
+
+  return results;
+}
+
+// ============================================
+// COMPANION APP DEPLOYMENT (Frontend-only to .app)
+// ============================================
+
+/**
+ * Deploy a Companion App - frontend-only PWA that connects to existing website backend
+ * - ONE GitHub repo (frontend only)
+ * - ONE Railway service (static/Vite)
+ * - Calls existing [parentSite].be1st.io/api for backend
+ * - Deploys to [sitename].be1st.app
+ */
+async function deployCompanionApp(projectPath, projectName, options = {}) {
+  const onProgress = options.onProgress || (() => {});
+  const parentSiteSubdomain = options.parentSiteSubdomain; // The .io site this connects to
+
+  if (!parentSiteSubdomain) {
+    throw new Error('parentSiteSubdomain is required for companion app deployment');
+  }
+
+  console.log('');
+  console.log('═══════════════════════════════════════════════════════════════');
+  console.log(`📱 DEPLOYING COMPANION APP: ${projectName}`);
+  console.log(`   Parent Site: ${parentSiteSubdomain}.be1st.io`);
+  console.log('═══════════════════════════════════════════════════════════════');
+  console.log('');
+
+  onProgress({ step: 'starting', status: 'Starting Companion App deployment...', icon: '📱', progress: 0 });
+
+  // For companion apps, use the parent site's subdomain for the domain
+  // This means website gilani-s.be1st.io has companion app at gilani-s.be1st.app
+  const subdomain = parentSiteSubdomain
+    .toLowerCase()
+    .replace(/&/g, '-and-')
+    .replace(/[^a-z0-9]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+
+  const appDomain = 'be1st.app';
+  const apiUrl = `https://api.${subdomain}.be1st.io`;
+
+  const results = {
+    success: false,
+    urls: {},
+    errors: []
+  };
+
+  try {
+    onProgress({ step: 'github-auth', status: 'Authenticating with GitHub...', icon: '🔑', progress: 5 });
+    const githubUsername = await getGitHubUsername();
+    console.log(`👤 GitHub user: ${githubUsername}`);
+
+    // Prepare companion app for deployment
+    onProgress({ step: 'prepare', status: 'Preparing Companion App...', icon: '📋', progress: 10 });
+    prepareCompanionAppForDeployment(projectPath, subdomain, apiUrl);
+
+    // Use subdomain-app for repo name (companion app uses same subdomain as website, just .app domain)
+    const repoName = `${subdomain}-app`;
+
+    onProgress({ step: 'github-cleanup', status: 'Cleaning up old repository...', icon: '🧹', progress: 15 });
+    await deleteGitHubRepo(githubUsername, repoName);
+    await sleep(1000);
+
+    onProgress({ step: 'github-create', status: 'Creating GitHub repository...', icon: '📦', progress: 20 });
+    await createGitHubRepo(repoName);
+
+    onProgress({ step: 'github-push', status: 'Pushing code to GitHub...', icon: '📤', progress: 35 });
+    await pushProjectToGitHub(projectPath, repoName, githubUsername);
+
+    onProgress({ step: 'railway-project', status: 'Creating Railway project...', icon: '🚂', progress: 50 });
+    // Use subdomain-app for Railway project name
+    const railwayProject = await createRailwayProject(`${subdomain}-app`);
+    const environmentId = railwayProject.environmentId;
+
+    // No database needed - companion apps call parent site's API
+    onProgress({ step: 'railway-service', status: 'Creating app service...', icon: '⚙️', progress: 60 });
+    const appService = await createRailwayService(
+      railwayProject.id,
+      environmentId,
+      'companion',
+      `${githubUsername}/${repoName}`
+    );
+
+    onProgress({ step: 'railway-env', status: 'Configuring environment variables...', icon: '🔐', progress: 70 });
+    await setRailwayVariables(railwayProject.id, environmentId, appService.id, {
+      NODE_ENV: 'production',
+      VITE_API_URL: apiUrl,
+      VITE_PARENT_SITE: `https://${parentSiteSubdomain}.be1st.io`
+    });
+
+    // Wait for Railway webhooks
+    onProgress({ step: 'railway-wait', status: 'Waiting for Railway webhooks...', icon: '⏳', progress: 75 });
+    console.log('   ⏳ Waiting 10s for Railway to establish GitHub webhooks...');
+    await sleep(10000);
+
+    onProgress({ step: 'deploy', status: 'Triggering deployment...', icon: '🚀', progress: 80 });
+    try {
+      await deployRailwayService(environmentId, appService.id);
+    } catch (e) {
+      console.log('   ⚠️ Deploy trigger failed, Railway will auto-deploy from GitHub');
+    }
+
+    onProgress({ step: 'domains', status: 'Generating service domain...', icon: '🔗', progress: 85 });
+    const appRailwayDomain = await generateRailwayServiceDomain(railwayProject.id, environmentId, appService.id);
+
+    onProgress({ step: 'custom-domains', status: 'Configuring custom domain...', icon: '🌍', progress: 90 });
+    const appCustom = await addRailwayCustomDomain(railwayProject.id, environmentId, appService.id, `${subdomain}.${appDomain}`);
+
+    onProgress({ step: 'dns', status: 'Setting up DNS records...', icon: '📡', progress: 95 });
+    const appTarget = appCustom.target || appRailwayDomain;
+    if (appTarget) {
+      await addCloudflareDNS(subdomain, appTarget, 'CNAME', true, appDomain);
+    }
+
+    onProgress({ step: 'finalizing', status: 'Finalizing deployment...', icon: '✨', progress: 98 });
+
+    results.success = true;
+    results.railwayProjectId = railwayProject.id;
+    results.railwayEnvironmentId = environmentId;
+    results.urls = {
+      companion: `https://${subdomain}.${appDomain}`,
+      parentSite: `https://${parentSiteSubdomain}.be1st.io`,
+      parentApi: apiUrl,
+      github: `https://github.com/${githubUsername}/${repoName}`,
+      railway: `https://railway.app/project/${railwayProject.id}`,
+      railwayDirect: appRailwayDomain ? `https://${appRailwayDomain}` : null
+    };
+
+    onProgress({ step: 'complete', status: 'Companion App deployed!', icon: '✅', progress: 100, urls: results.urls });
+
+    console.log('');
+    console.log('═══════════════════════════════════════════════════════════════');
+    console.log('✅ COMPANION APP DEPLOYMENT COMPLETE!');
+    console.log('═══════════════════════════════════════════════════════════════');
+    console.log('');
+    console.log('📱 Domain: be1st.app (companion app - frontend only)');
+    console.log(`🔗 Connected to: ${parentSiteSubdomain}.be1st.io`);
+    console.log('');
+    console.log('🔗 URLs:');
+    console.log(`   Companion App: ${results.urls.companion}`);
+    console.log(`   Parent Site:   ${results.urls.parentSite}`);
+    console.log(`   API Endpoint:  ${results.urls.parentApi}`);
+    console.log(`   GitHub:        ${results.urls.github}`);
+    console.log(`   Railway:       ${results.urls.railway}`);
+    if (results.urls.railwayDirect) {
+      console.log(`   Railway Direct: ${results.urls.railwayDirect}`);
+    }
+    console.log('');
+    console.log('📝 Note: Users log in with the same credentials as the parent site.');
+    console.log('⏱️  Build takes 1-2 minutes. Check Railway dashboard for status.');
+    console.log('');
+
+  } catch (error) {
+    console.error('');
+    console.error('❌ COMPANION APP DEPLOYMENT FAILED:', error.message);
+    results.errors.push(error.message);
+    onProgress({ step: 'error', status: `Deployment failed: ${error.message}`, icon: '❌', progress: 0 });
+  }
+
+  return results;
+}
+
+/**
+ * Prepare Companion App for deployment (frontend-only Vite PWA)
+ */
+function prepareCompanionAppForDeployment(projectPath, subdomain, apiUrl) {
+  console.log(`📋 Preparing Companion App for deployment...`);
+
+  // Clean up any existing .git folder
+  const gitDir = path.join(projectPath, '.git');
+  if (fs.existsSync(gitDir)) {
+    fs.rmSync(gitDir, { recursive: true, force: true });
+    console.log(`   ✅ Cleaned up .git folder`);
+  }
+
+  // Create .env.production with API URL pointing to parent site
+  const envContent = `VITE_API_URL=${apiUrl}\nVITE_APP_TYPE=companion\n`;
+  fs.writeFileSync(path.join(projectPath, '.env.production'), envContent);
+  console.log(`   ✅ Created .env.production (API: ${apiUrl})`);
+
+  // Create railway.json for Vite static hosting
+  const railwayConfig = {
+    "$schema": "https://railway.com/railway.schema.json",
+    "build": {
+      "builder": "NIXPACKS",
+      "buildCommand": "npm install && npm run build"
+    },
+    "deploy": {
+      "startCommand": "npm run preview -- --host --port $PORT",
+      "restartPolicyType": "ON_FAILURE",
+      "restartPolicyMaxRetries": 10
+    }
+  };
+
+  fs.writeFileSync(
+    path.join(projectPath, 'railway.json'),
+    JSON.stringify(railwayConfig, null, 2)
+  );
+  console.log(`   ✅ Created railway.json`);
+
+  // Create .gitignore
+  const gitignoreContent = `node_modules/
+.env
+.env.local
+dist/
+.DS_Store
+*.log
+`;
+  const gitignorePath = path.join(projectPath, '.gitignore');
+  if (!fs.existsSync(gitignorePath)) {
+    fs.writeFileSync(gitignorePath, gitignoreContent);
+    console.log(`   ✅ Created .gitignore`);
+  }
+
+  // Remove node_modules if exists
+  const nodeModulesPath = path.join(projectPath, 'node_modules');
+  if (fs.existsSync(nodeModulesPath)) {
+    fs.rmSync(nodeModulesPath, { recursive: true, force: true });
+    console.log(`   ✅ Removed node_modules`);
+  }
+
+  // Remove dist if exists
+  const distPath = path.join(projectPath, 'dist');
+  if (fs.existsSync(distPath)) {
+    fs.rmSync(distPath, { recursive: true, force: true });
+    console.log(`   ✅ Removed dist folder`);
+  }
+
+  // Regenerate package-lock.json
+  console.log(`\n📦 Regenerating package-lock.json...`);
+  regeneratePackageLock(projectPath, 'companion');
+
+  console.log(`   ✅ Companion App prepared for deployment`);
+}
+
+// ============================================
+// MAIN DEPLOY FUNCTION (Websites)
 // ============================================
 
 async function deployProject(projectPath, projectName, options = {}) {
+  // Check if this is an Advanced App
+  if (options.appType === 'advanced-app' || detectAdvancedApp(projectPath)) {
+    console.log('🔍 Detected Advanced App - using single-service deployment to be1st.app');
+    return deployAdvancedApp(projectPath, projectName, options);
+  }
+
+  // Check if this is a Companion App
+  if (options.appType === 'companion-app') {
+    console.log('🔍 Detected Companion App - using frontend-only deployment to be1st.app');
+    return deployCompanionApp(projectPath, projectName, options);
+  }
   // Progress callback for real-time updates
   const onProgress = options.onProgress || (() => {});
 
@@ -1064,13 +1657,18 @@ async function deployProject(projectPath, projectName, options = {}) {
 // CREDENTIAL CHECK
 // ============================================
 
-function checkCredentials() {
+function checkCredentials(appType = 'website') {
   const missing = [];
   if (!RAILWAY_TOKEN) missing.push('RAILWAY_TOKEN');
   if (!GITHUB_TOKEN) missing.push('GITHUB_TOKEN');
   if (!CLOUDFLARE_TOKEN) missing.push('CLOUDFLARE_TOKEN');
   if (!CLOUDFLARE_ZONE_ID) missing.push('CLOUDFLARE_ZONE_ID');
-  
+
+  // Apps (.app domain) need the app zone ID
+  if ((appType === 'advanced-app' || appType === 'companion-app') && !CLOUDFLARE_ZONE_ID_APP) {
+    missing.push('CLOUDFLARE_ZONE_ID_APP');
+  }
+
   if (missing.length > 0) {
     console.error('❌ Missing credentials in .env:', missing.join(', '));
     return false;
@@ -1080,13 +1678,21 @@ function checkCredentials() {
 
 module.exports = {
   deployProject,
+  deployAdvancedApp,
+  deployCompanionApp,
   checkCredentials,
   createGitHubRepo,
   pushFolderToGitHub,
+  pushProjectToGitHub,
   createRailwayProject,
   createRailwayPostgres,
   addCloudflareDNS,
   prepareProjectForDeployment,
+  prepareAdvancedAppForDeployment,
+  prepareCompanionAppForDeployment,
+  detectAdvancedApp,
   getGitHubUsername,
-  deleteGitHubRepo
+  deleteGitHubRepo,
+  // Domain configuration
+  DOMAINS
 };
