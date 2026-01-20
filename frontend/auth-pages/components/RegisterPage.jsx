@@ -83,6 +83,7 @@ export function RegisterPage() {
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="John Doe"
                 required
+                autoComplete="name"
                 style={styles.input}
               />
             </div>
@@ -98,6 +99,7 @@ export function RegisterPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
+                autoComplete="email"
                 style={styles.input}
               />
             </div>
@@ -113,6 +115,7 @@ export function RegisterPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
+                autoComplete="new-password"
                 style={styles.input}
               />
               <button
@@ -135,6 +138,7 @@ export function RegisterPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
                 required
+                autoComplete="new-password"
                 style={styles.input}
               />
             </div>

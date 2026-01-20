@@ -23,7 +23,12 @@ export function DevPasswordModal({ onSuccess, onCancel }) {
       });
 
       if (response.ok) {
+        const data = await response.json();
         localStorage.setItem('blink_dev_access', 'granted');
+        // Store dev token for admin API access
+        if (data.devToken) {
+          localStorage.setItem('blink_admin_token', data.devToken);
+        }
         onSuccess();
       } else {
         setError(true);

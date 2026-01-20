@@ -1,0 +1,80 @@
+{
+  "projectName": "pizzatest2-admin-companion",
+  "deletedAt": "2026-01-20T01:10:26.097Z",
+  "resourcesFound": {
+    "name": "pizzatest2-admin-companion",
+    "sanitizedName": "pizzatest2-admin-companion",
+    "github": {
+      "repos": [
+        {
+          "name": "pizzatest2-admin-companion-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "pizzatest2-admin-companion-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "pizzatest2-admin-companion-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/pizzatest2-admin-companion-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/pizzatest2-admin-companion-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/pizzatest2-admin-companion-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "pizzatest2-admin-companion",
+          "verified": true
+        },
+        {
+          "subdomain": "api.pizzatest2-admin-companion",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.pizzatest2-admin-companion",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

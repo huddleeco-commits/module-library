@@ -1,0 +1,38 @@
+{
+  "projectName": "test-restaurant-companion",
+  "savedAt": "2026-01-19T01:12:17.716Z",
+  "resources": {
+    "name": "test-restaurant-companion",
+    "sanitizedName": "test-restaurant-companion",
+    "github": {
+      "repos": [
+        {
+          "name": "test-restaurant-companion-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-restaurant-companion-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-restaurant-companion-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

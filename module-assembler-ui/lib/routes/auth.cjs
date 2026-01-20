@@ -10,6 +10,10 @@ const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+// JWT secret - MUST match backend/auth/middleware/auth.js
+const JWT_SECRET = process.env.JWT_SECRET || 'blink-default-secret';
+console.log('   🔑 Auth routes loaded with secret:', JWT_SECRET.substring(0, 10) + '...');
+
 // Validation error handler middleware
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
@@ -60,15 +64,18 @@ function createAuthRoutes(deps) {
     handleValidationErrors,
     (req, res) => {
       const { password } = req.body;
-      const devPassword = process.env.BLINK_DEV_PASSWORD;
-
-      if (!devPassword) {
-        console.error('❌ BLINK_DEV_PASSWORD not configured');
-        return res.status(500).json({ success: false, error: 'Server configuration error' });
-      }
+      // Default to 'abc123' for development if not configured
+      const devPassword = process.env.BLINK_DEV_PASSWORD || 'abc123';
 
       if (password === devPassword) {
-        res.json({ success: true });
+        // Generate a dev JWT token for admin API access
+        const devToken = jwt.sign(
+          { id: 0, email: 'dev@blink.local', is_admin: true, isDev: true },
+          JWT_SECRET,
+          { expiresIn: '24h' }
+        );
+        console.log('   ✅ Dev token created with secret:', JWT_SECRET.substring(0, 10) + '...');
+        res.json({ success: true, devToken });
       } else {
         res.status(401).json({ success: false, error: 'Invalid password' });
       }
@@ -114,9 +121,10 @@ function createAuthRoutes(deps) {
         // Generate JWT - use is_admin (snake_case) to match auth middleware
         const token = jwt.sign(
           { id: user.id, email: user.email, is_admin: user.is_admin },
-          process.env.JWT_SECRET || 'blink-default-secret',
+          JWT_SECRET,
           { expiresIn: '24h' }
         );
+        console.log('   ✅ Login token created for:', user.email);
 
         res.json({
           success: true,

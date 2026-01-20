@@ -1,0 +1,84 @@
+{
+  "projectName": "PlanoPizza",
+  "savedAt": "2026-01-20T01:22:31.139Z",
+  "resources": {
+    "name": "PlanoPizza",
+    "sanitizedName": "planopizza",
+    "github": {
+      "repos": [
+        {
+          "name": "planopizza-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "planopizza-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "planopizza-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "96c35bdc-2127-45f4-9433-a55bf8696a20",
+        "name": "planopizza",
+        "createdAt": "2026-01-20T01:14:12.323Z",
+        "environments": [
+          {
+            "id": "9bff11e2-4ff0-46b3-894a-2bd08b5bde46",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "24d0765f-baeb-4c2a-ad29-74da4a4c16f1",
+          "name": "backend"
+        },
+        {
+          "id": "30a0aa6f-ff69-4fe4-861c-a98fe610ccde",
+          "name": "admin"
+        },
+        {
+          "id": "95c197bc-f833-4e68-840e-c1b0e040eec7",
+          "name": "frontend"
+        },
+        {
+          "id": "acf2ab78-6562-4e5f-96a2-b21472d42825",
+          "name": "postgres"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "538ad508a583543fa3137bf75324ef24",
+          "name": "planopizza.be1st.io",
+          "type": "CNAME",
+          "content": "do63203w.up.railway.app"
+        },
+        {
+          "id": "8a1d55cad220d6b708151f778f9095cd",
+          "name": "api.planopizza.be1st.io",
+          "type": "CNAME",
+          "content": "tgkacpwn.up.railway.app"
+        },
+        {
+          "id": "a2f4735b974099003bb774f02b65a5ec",
+          "name": "admin.planopizza.be1st.io",
+          "type": "CNAME",
+          "content": "7maox9hu.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\PlanoPizza",
+      "exists": true
+    }
+  }
+}

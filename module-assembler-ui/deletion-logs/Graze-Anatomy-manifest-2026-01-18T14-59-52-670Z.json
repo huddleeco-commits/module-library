@@ -1,0 +1,84 @@
+{
+  "projectName": "Graze-Anatomy",
+  "savedAt": "2026-01-18T14:59:52.671Z",
+  "resources": {
+    "name": "Graze-Anatomy",
+    "sanitizedName": "graze-anatomy",
+    "github": {
+      "repos": [
+        {
+          "name": "graze-anatomy-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "graze-anatomy-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "graze-anatomy-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "d88a4360-ee30-45d4-9499-67839f4c9628",
+        "name": "graze-anatomy",
+        "createdAt": "2026-01-13T21:23:31.039Z",
+        "environments": [
+          {
+            "id": "3a81bf1b-f758-4a67-8aac-a64ab64f3f8f",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "5d298143-f8ed-4b85-beef-177f9b0e6faa",
+          "name": "admin"
+        },
+        {
+          "id": "7a38c6f0-4a19-4731-8b32-de44ab992423",
+          "name": "frontend"
+        },
+        {
+          "id": "94c2fda2-1505-48bf-8fc4-df480a1773b2",
+          "name": "backend"
+        },
+        {
+          "id": "97464925-8a66-4e8d-b1ac-9082f06c4d61",
+          "name": "postgres"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "01a42e54ea7c73190f40d1f293c268be",
+          "name": "graze-anatomy.be1st.io",
+          "type": "CNAME",
+          "content": "yph7a9to.up.railway.app"
+        },
+        {
+          "id": "2e8446d28c5711289229f013cdb7a2d3",
+          "name": "api.graze-anatomy.be1st.io",
+          "type": "CNAME",
+          "content": "3dja7wyu.up.railway.app"
+        },
+        {
+          "id": "3b659916305211793439ca7a7791b966",
+          "name": "admin.graze-anatomy.be1st.io",
+          "type": "CNAME",
+          "content": "6pr7ga5e.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Graze-Anatomy",
+      "exists": true
+    }
+  }
+}

@@ -302,6 +302,98 @@ const customStyles = {
   generateBtnDisabled: {
     opacity: 0.5,
     cursor: 'not-allowed'
+  },
+  // Companion App Toggle Styles
+  companionSection: {
+    marginTop: '8px',
+    marginBottom: '16px'
+  },
+  companionToggle: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '16px 20px',
+    background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(102, 126, 234, 0.08) 100%)',
+    borderRadius: '12px',
+    border: '2px solid rgba(139, 92, 246, 0.2)',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease'
+  },
+  companionToggleActive: {
+    background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(102, 126, 234, 0.15) 100%)',
+    borderColor: '#8b5cf6'
+  },
+  companionCheckbox: {
+    width: '22px',
+    height: '22px',
+    borderRadius: '6px',
+    border: '2px solid #8b5cf6',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'white',
+    flexShrink: 0
+  },
+  companionCheckboxActive: {
+    background: '#8b5cf6'
+  },
+  companionText: {
+    flex: 1,
+    textAlign: 'left'
+  },
+  companionLabel: {
+    fontSize: '0.95rem',
+    fontWeight: '600',
+    color: '#1f2937'
+  },
+  companionDesc: {
+    fontSize: '0.8rem',
+    color: '#6b7280',
+    marginTop: '2px'
+  },
+  companionPreview: {
+    marginTop: '12px',
+    padding: '14px',
+    background: 'rgba(139, 92, 246, 0.05)',
+    border: '1px solid rgba(139, 92, 246, 0.15)',
+    borderRadius: '10px'
+  },
+  companionPreviewHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    marginBottom: '10px'
+  },
+  companionPreviewIcon: {
+    fontSize: '16px'
+  },
+  companionPreviewTitle: {
+    color: '#7c3aed',
+    fontSize: '0.85rem',
+    fontWeight: '600'
+  },
+  companionPreviewUrl: {
+    padding: '8px 12px',
+    background: 'white',
+    borderRadius: '8px',
+    color: '#374151',
+    fontSize: '0.85rem',
+    fontFamily: 'monospace',
+    marginBottom: '10px',
+    border: '1px solid #e5e7eb'
+  },
+  companionFeatures: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '8px'
+  },
+  companionFeature: {
+    padding: '5px 10px',
+    background: 'rgba(139, 92, 246, 0.1)',
+    borderRadius: '14px',
+    color: '#7c3aed',
+    fontSize: '0.75rem',
+    fontWeight: '500'
   }
 };
 
@@ -323,6 +415,7 @@ export function SiteCustomizationScreen({
   const [adminTier, setAdminTier] = useState(sharedContext?.adminTier || null);
   const [adminModules, setAdminModules] = useState(sharedContext?.adminModules || []);
   const [dragOver, setDragOver] = useState(false);
+  const [includeCompanionApp, setIncludeCompanionApp] = useState(false);
 
   // Get page config for this industry
   const industryCategory = getIndustryPageCategory(industry);
@@ -385,7 +478,8 @@ export function SiteCustomizationScreen({
       adminTier: adminTier || 'standard',
       adminModules,
       industry,
-      industryDisplay
+      industryDisplay,
+      includeCompanionApp
     });
   };
 
@@ -586,6 +680,53 @@ export function SiteCustomizationScreen({
             onTierChange={setAdminTier}
             onModulesChange={setAdminModules}
           />
+        </div>
+
+        {/* Companion App Toggle */}
+        <div style={customStyles.companionSection}>
+          <div
+            style={{
+              ...customStyles.companionToggle,
+              ...(includeCompanionApp ? customStyles.companionToggleActive : {})
+            }}
+            onClick={() => setIncludeCompanionApp(!includeCompanionApp)}
+          >
+            <div
+              style={{
+                ...customStyles.companionCheckbox,
+                ...(includeCompanionApp ? customStyles.companionCheckboxActive : {})
+              }}
+            >
+              {includeCompanionApp && <span style={{ color: 'white', fontSize: '14px' }}>✓</span>}
+            </div>
+            <div style={customStyles.companionText}>
+              <div style={customStyles.companionLabel}>
+                📱 Also generate companion app
+              </div>
+              <div style={customStyles.companionDesc}>
+                PWA mobile app with loyalty program, quick actions & push notifications
+              </div>
+            </div>
+          </div>
+
+          {/* Companion App Preview when selected */}
+          {includeCompanionApp && businessName.trim() && (
+            <div style={customStyles.companionPreview}>
+              <div style={customStyles.companionPreviewHeader}>
+                <span style={customStyles.companionPreviewIcon}>📱</span>
+                <span style={customStyles.companionPreviewTitle}>Your companion app will include:</span>
+              </div>
+              <div style={customStyles.companionPreviewUrl}>
+                🌐 {businessName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-')}.be1st.app
+              </div>
+              <div style={customStyles.companionFeatures}>
+                <span style={customStyles.companionFeature}>⚡ Quick Actions</span>
+                <span style={customStyles.companionFeature}>🎁 Loyalty Program</span>
+                <span style={customStyles.companionFeature}>📱 Mobile-First</span>
+                <span style={customStyles.companionFeature}>🔔 Push Notifications</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Actions */}

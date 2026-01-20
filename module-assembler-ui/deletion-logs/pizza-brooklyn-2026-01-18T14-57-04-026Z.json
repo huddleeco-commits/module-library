@@ -1,0 +1,161 @@
+{
+  "projectName": "pizza-brooklyn",
+  "deletedAt": "2026-01-18T14:57:04.026Z",
+  "resourcesFound": {
+    "name": "pizza-brooklyn",
+    "sanitizedName": "pizza-brooklyn",
+    "github": {
+      "repos": [
+        {
+          "name": "pizza-brooklyn-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "pizza-brooklyn-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "pizza-brooklyn-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "be8e7ad8-c349-4942-9b05-950d737abfd5",
+        "name": "pizza-brooklyn",
+        "createdAt": "2026-01-17T05:05:49.215Z",
+        "environments": [
+          {
+            "id": "34029c99-3acf-4747-8814-019c04a0c644",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "9484bee3-5eba-417b-91d3-d3c9eca7e586",
+          "name": "frontend"
+        },
+        {
+          "id": "a91c2b33-f57b-42de-bc2f-97e4876cefa9",
+          "name": "postgres"
+        },
+        {
+          "id": "d733c03d-9c69-4643-b42a-e236c734ea10",
+          "name": "admin"
+        },
+        {
+          "id": "f600c47c-5996-4bd5-ab58-ec6b19022584",
+          "name": "backend"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "3aa1a4305ae2d888597ad14a61b57bd3",
+          "name": "pizza-brooklyn.be1st.io",
+          "type": "CNAME",
+          "content": "c0c16rld.up.railway.app"
+        },
+        {
+          "id": "57e4ff978a066a5371e1042adb99f3c3",
+          "name": "api.pizza-brooklyn.be1st.io",
+          "type": "CNAME",
+          "content": "ls5s89yw.up.railway.app"
+        },
+        {
+          "id": "706d57240eb4649f064ff10a66e5bc3a",
+          "name": "admin.pizza-brooklyn.be1st.io",
+          "type": "CNAME",
+          "content": "jm9rl4pc.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\pizza-brooklyn",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/pizza-brooklyn-backend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/pizza-brooklyn-backend"
+      },
+      {
+        "repo": "huddleeco-commits/pizza-brooklyn-frontend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/pizza-brooklyn-frontend"
+      },
+      {
+        "repo": "huddleeco-commits/pizza-brooklyn-admin",
+        "success": true,
+        "message": "Deleted huddleeco-commits/pizza-brooklyn-admin"
+      }
+    ],
+    "railway": {
+      "success": true,
+      "message": "Deleted Railway project be8e7ad8-c349-4942-9b05-950d737abfd5"
+    },
+    "cloudflare": [
+      {
+        "record": "pizza-brooklyn.be1st.io",
+        "success": true,
+        "message": "Deleted pizza-brooklyn.be1st.io"
+      },
+      {
+        "record": "api.pizza-brooklyn.be1st.io",
+        "success": true,
+        "message": "Deleted api.pizza-brooklyn.be1st.io"
+      },
+      {
+        "record": "admin.pizza-brooklyn.be1st.io",
+        "success": true,
+        "message": "Deleted admin.pizza-brooklyn.be1st.io"
+      }
+    ],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\pizza-brooklyn"
+    },
+    "errors": [],
+    "verification": {
+      "github": [
+        {
+          "repo": "huddleeco-commits/pizza-brooklyn-backend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/pizza-brooklyn-frontend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/pizza-brooklyn-admin",
+          "verified": true
+        }
+      ],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "pizza-brooklyn",
+          "verified": true
+        },
+        {
+          "subdomain": "api.pizza-brooklyn",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.pizza-brooklyn",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

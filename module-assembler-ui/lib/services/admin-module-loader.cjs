@@ -342,6 +342,7 @@ function generateAdminAppJsx(modules, branding = {}) {
     const pascalName = componentName.charAt(0).toUpperCase() + componentName.slice(1);
 
     // Use the main component path from module.json instead of hardcoding index.jsx
+    // Path is relative from src/App.jsx to src/modules/ folder (./modules/)
     const mainComponent = config.components?.main || 'components/index.jsx';
     imports.push(`import ${pascalName} from './modules/${config.name}/${mainComponent}';`);
 

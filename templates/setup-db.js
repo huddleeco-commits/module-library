@@ -430,6 +430,9 @@ async function setupDatabase() {
     // Seed admin user if ADMIN_EMAIL and ADMIN_PASSWORD are set
     await seedAdminUser();
 
+    // Always seed demo user for testing (demo@example.com / demo1234)
+    await seedDemoUser();
+
     // Summary
     const tableCount = await pool.query(`
       SELECT COUNT(*) FROM information_schema.tables
@@ -496,6 +499,57 @@ async function seedAdminUser() {
   } catch (err) {
     console.error('⚠️  Could not seed admin user:', err.message);
   }
+}
+
+/**
+ * Seed demo users - ALWAYS creates demo accounts for testing
+ * Customer: demo@demo.com / demo1234
+ * Admin: admin@demo.com / admin1234
+ */
+async function seedDemoUser() {
+  const bcrypt = require('bcryptjs');
+
+  console.log('\n👤 Seeding demo accounts...');
+
+  // Demo customer account
+  const demoUsers = [
+    { email: 'demo@demo.com', password: 'demo1234', name: 'Demo Customer', isAdmin: false },
+    { email: 'admin@demo.com', password: 'admin1234', name: 'Admin User', isAdmin: true }
+  ];
+
+  for (const user of demoUsers) {
+    try {
+      const existingResult = await pool.query(
+        'SELECT id FROM users WHERE email = $1',
+        [user.email]
+      );
+
+      const passwordHash = await bcrypt.hash(user.password, 10);
+
+      if (existingResult.rows.length > 0) {
+        // Update existing user
+        await pool.query(
+          'UPDATE users SET password_hash = $1, is_admin = $2, updated_at = NOW() WHERE email = $3',
+          [passwordHash, user.isAdmin, user.email]
+        );
+        console.log(`✅ ${user.isAdmin ? 'Admin' : 'Demo'} user updated: ${user.email}`);
+      } else {
+        // Create new user
+        await pool.query(
+          `INSERT INTO users (email, password_hash, full_name, is_admin, subscription_tier, created_at, updated_at)
+           VALUES ($1, $2, $3, $4, $5, NOW(), NOW())`,
+          [user.email, passwordHash, user.name, user.isAdmin, user.isAdmin ? 'admin' : 'free']
+        );
+        console.log(`✅ ${user.isAdmin ? 'Admin' : 'Demo'} user created: ${user.email}`);
+      }
+    } catch (err) {
+      console.error(`⚠️  Could not seed ${user.email}:`, err.message);
+    }
+  }
+
+  console.log('\n   Demo Accounts:');
+  console.log('   👤 Customer: demo@demo.com / demo1234');
+  console.log('   👑 Admin: admin@demo.com / admin1234');
 }
 
 // Run setup

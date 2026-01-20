@@ -11,6 +11,9 @@ const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 
+// Module validator for auto-fixing icon imports
+const { validateProject, validateFrontendPages } = require('../services/module-validator.cjs');
+
 /**
  * Create orchestrator routes
  * @param {Object} deps - Dependencies
@@ -33,6 +36,7 @@ function createOrchestratorRoutes(deps) {
     generateBrainRoutes,
     generateHealthRoutes,
     buildAppJsx,
+    validateGeneratedCode,
     toComponentName,
     toPageFileName,
     toRoutePath,
@@ -63,7 +67,7 @@ function createOrchestratorRoutes(deps) {
  * Response: Same as /api/assemble (project URL, deployment status, etc.)
  */
 router.post('/orchestrate', orchestrateRateLimiter, async (req, res) => {
-  const { input, autoDeploy = false } = req.body;
+  const { input, deviceTarget = 'both', autoDeploy = false, includeCompanionApp = false, industryKey = null } = req.body;
   const startTime = Date.now();
 
   // Validate input
@@ -79,15 +83,18 @@ router.post('/orchestrate', orchestrateRateLimiter, async (req, res) => {
   console.log('⚡ ORCHESTRATOR MODE');
   console.log('='.repeat(60));
   console.log(`📝 Input: "${userInput}"`);
+  console.log(`📱 Device Target: ${deviceTarget}`);
+  console.log(`📱 Include Companion App: ${includeCompanionApp}`);
+  console.log(`🏭 Industry Key Override: ${industryKey || 'none (AI will detect)'}`);
   console.log('');
 
   try {
     // Load orchestrator service
     const { orchestrate, validatePayload } = require('../../services/orchestrator.cjs');
 
-    // Run orchestration - AI infers all details
+    // Run orchestration - AI infers all details (unless industry is explicitly overridden)
     console.log('🤖 AI Analysis in progress...');
-    const orchestratorResult = await orchestrate(userInput);
+    const orchestratorResult = await orchestrate(userInput, { deviceTarget, industryKey });
 
     if (!orchestratorResult.success) {
       return res.status(400).json({
@@ -129,6 +136,23 @@ router.post('/orchestrate', orchestrateRateLimiter, async (req, res) => {
       console.log(`   🎯 Confidence: ${summary.confidence || 'high'}`);
       console.log('─'.repeat(40));
       console.log('');
+
+      // Track tool generation start
+      let toolGenerationId = null;
+      if (db && db.trackGenerationStart) {
+        try {
+          toolGenerationId = await db.trackGenerationStart({
+            siteName: payload.name || summary.toolName,
+            industry: `tool-${toolKey}`,
+            templateUsed: 'blink-tool-generator',
+            modulesSelected: [],
+            pagesGenerated: 1
+          });
+          console.log(`   📊 Tool generation tracked: ID ${toolGenerationId}`);
+        } catch (trackErr) {
+          console.warn('   ⚠️ Tool generation tracking failed:', trackErr.message);
+        }
+      }
 
       const duration = Date.now() - startTime;
 
@@ -197,6 +221,19 @@ router.post('/orchestrate', orchestrateRateLimiter, async (req, res) => {
       console.log(`   📁 Path: ${projectPath}`);
       console.log('='.repeat(60));
 
+      // Track tool generation complete
+      if (toolGenerationId && db && db.trackGenerationComplete) {
+        try {
+          await db.trackGenerationComplete(toolGenerationId, {
+            pagesGenerated: 1,
+            generationTimeMs: duration
+          });
+          console.log(`   📊 Tool generation ${toolGenerationId} marked complete`);
+        } catch (trackErr) {
+          console.warn('   ⚠️ Tool generation complete tracking failed:', trackErr.message);
+        }
+      }
+
       return res.json({
         success: true,
         type: 'tool',
@@ -225,7 +262,8 @@ router.post('/orchestrate', orchestrateRateLimiter, async (req, res) => {
           allPassed: testResults.allPassed,
           details: testResults.details
         },
-        duration: duration
+        duration: duration,
+        generationId: toolGenerationId
       });
     }
 
@@ -263,6 +301,25 @@ router.post('/orchestrate', orchestrateRateLimiter, async (req, res) => {
     }
 
     console.log('🏢 BUSINESS MODE - Starting multi-page assembly');
+
+    // ========================================
+    // TRACK GENERATION START
+    // ========================================
+    let generationId = null;
+    if (db && db.trackGenerationStart) {
+      try {
+        generationId = await db.trackGenerationStart({
+          siteName: summary.businessName || payload.name,
+          industry: payload.industry,
+          templateUsed: 'blink-orchestrator',
+          modulesSelected: payload.modules || [],
+          pagesGenerated: payload.pages?.length || 0
+        });
+        console.log(`   📊 Generation tracked: ID ${generationId}`);
+      } catch (trackErr) {
+        console.warn('   ⚠️ Generation tracking failed:', trackErr.message);
+      }
+    }
 
     // Now execute the assembly by calling the same logic as /api/assemble
     // We'll forward the orchestrated payload to the internal assembly logic
@@ -392,33 +449,43 @@ router.post('/orchestrate', orchestrateRateLimiter, async (req, res) => {
           // Load selected admin modules
           const moduleData = loadModulesForAssembly(adminModules);
 
-          // Create admin directory
-          if (!fs.existsSync(adminDest)) {
-            fs.mkdirSync(adminDest, { recursive: true });
+          // STEP 1: Copy base business-admin for build infrastructure
+          // (includes index.html, package.json, vite.config.js, main.jsx, etc.)
+          const businessAdminSrc = path.join(MODULE_LIBRARY, 'frontend', 'business-admin');
+          if (fs.existsSync(businessAdminSrc)) {
+            copyDirectorySync(businessAdminSrc, adminDest);
+            console.log('   📦 Admin base infrastructure copied');
           }
 
-          // Copy shared admin components
+          // STEP 2: Create modules directory and copy modules
+          const modulesDir = path.join(adminDest, 'src', 'modules');
+          if (!fs.existsSync(modulesDir)) {
+            fs.mkdirSync(modulesDir, { recursive: true });
+          }
+
+          // STEP 3: Copy shared admin components to src/modules/_shared
+          // (imports from components are '../../_shared' which resolves to src/modules/_shared)
           const sharedSrc = path.join(__dirname, '../../backend/admin-modules/_shared');
           if (fs.existsSync(sharedSrc)) {
-            copyDirectorySync(sharedSrc, path.join(adminDest, '_shared'));
+            copyDirectorySync(sharedSrc, path.join(modulesDir, '_shared'));
           }
 
-          // Copy each module
+          // STEP 4: Copy each selected module to src/modules/ (Vite requires imports from within src/)
           for (const mod of moduleData.modules) {
             const modSrc = path.join(__dirname, '../../backend/admin-modules', mod.name);
-            const modDest = path.join(adminDest, 'modules', mod.name);
+            const modDest = path.join(modulesDir, mod.name);
             if (fs.existsSync(modSrc)) {
               copyDirectorySync(modSrc, modDest);
             }
           }
 
-          // Generate admin App.jsx
+          // STEP 5: Generate custom admin App.jsx (overwrites base)
           const adminAppJsx = generateAdminAppJsx(adminModules, {
             businessName: summary.businessName
           });
-          fs.writeFileSync(path.join(adminDest, 'App.jsx'), adminAppJsx);
+          fs.writeFileSync(path.join(adminDest, 'src', 'App.jsx'), adminAppJsx);
 
-          // Save admin config
+          // STEP 6: Save admin config
           fs.writeFileSync(path.join(adminDest, 'admin-config.json'), JSON.stringify({
             tier: adminTier,
             modules: adminModules,
@@ -441,6 +508,13 @@ router.post('/orchestrate', orchestrateRateLimiter, async (req, res) => {
         // ========================================
         // GENERATE FRONTEND PAGES (like Quick Start)
         // ========================================
+        console.log('');
+        console.log('   🔍 AI Page Generation Check (Orchestrator):');
+        console.log(`      - payload.pages exists: ${!!payload.pages}`);
+        console.log(`      - pages count: ${payload.pages?.length || 0}`);
+        console.log(`      - pages: ${JSON.stringify(payload.pages || [])}`);
+        console.log(`      - API key present: ${!!(process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY)}`);
+
         if (payload.pages && payload.pages.length > 0) {
           console.log('');
           console.log('🎨 GENERATING FRONTEND PAGES');
@@ -456,11 +530,23 @@ router.post('/orchestrate', orchestrateRateLimiter, async (req, res) => {
           }
 
           // Build prompt config from orchestrator data
+          // Priority: industry colors > user theme > hardcoded defaults
+          const industryColors = industryConfig?.colors || {};
+          const userColors = payload.theme?.colors || {};
+          const defaultColors = { primary: '#6366f1', accent: '#06b6d4', background: '#ffffff', text: '#1a1a2e' };
+
           const promptConfig = {
             businessName: summary.businessName,
             industry: industryConfig,
-            colors: payload.theme?.colors || { primary: '#6366f1', accent: '#06b6d4' },
-            typography: payload.theme?.typography || { heading: "'Inter', sans-serif", body: "system-ui, sans-serif" }
+            colors: {
+              primary: industryColors.primary || userColors.primary || defaultColors.primary,
+              accent: industryColors.accent || userColors.accent || defaultColors.accent,
+              secondary: industryColors.secondary || userColors.secondary || defaultColors.primary,
+              background: industryColors.background || userColors.background || defaultColors.background,
+              text: industryColors.text || userColors.text || defaultColors.text,
+              textMuted: industryColors.textMuted || userColors.textMuted || '#64748b'
+            },
+            typography: industryConfig?.typography || payload.theme?.typography || { heading: "'Inter', sans-serif", body: "system-ui, sans-serif" }
           };
 
           // Build description object for page generation
@@ -505,8 +591,15 @@ router.post('/orchestrate', orchestrateRateLimiter, async (req, res) => {
                   // Validate generated code
                   const validation = validateGeneratedCode(pageCode, componentName);
                   if (!validation.isValid) {
-                    console.log(`   ⚠️ ${pageId} has issues: ${validation.errors.join(', ')}`);
-                    pageCode = validation.fixedCode;
+                    console.log(`   ❌ ${pageId} ERRORS: ${validation.errors.join(', ')}`);
+                  }
+                  // Always use fixedCode - it contains auto-fixes for apostrophes, quotes, fonts, etc.
+                  pageCode = validation.fixedCode;
+                  if (validation.warnings && validation.warnings.length > 0) {
+                    console.log(`   ⚠️ ${pageId} WARNINGS: ${validation.warnings.join(', ')}`);
+                  }
+                  if (validation.stats) {
+                    console.log(`   📊 ${pageId}: ${validation.stats.lines} lines, content: ${validation.stats.hasRealContent ? 'yes' : 'NO'}`);
                   }
 
                   if (!pageCode.includes('export default')) {
@@ -561,13 +654,61 @@ router.post('/orchestrate', orchestrateRateLimiter, async (req, res) => {
             console.log('   ✅ Fallback pages and App.jsx created');
           }
 
+          // Copy CartContext if needed (for ecommerce/restaurant industries)
+          const cartRequiredIndustries = ['restaurant', 'ecommerce', 'retail', 'pizzeria', 'pizza', 'cafe', 'bakery', 'food-truck', 'barbershop', 'spa-salon'];
+          const needsCart = cartRequiredIndustries.includes(sanitizedIndustry) ||
+                           payload.pages.some(p => ['menu', 'cart', 'checkout', 'order', 'products', 'services', 'booking'].includes(p.toLowerCase()));
+          if (needsCart) {
+            const contextDir = path.join(frontendSrcPath, 'context');
+            if (!fs.existsSync(contextDir)) {
+              fs.mkdirSync(contextDir, { recursive: true });
+            }
+            const cartContextSrc = path.join(__dirname, '../saas-templates/pizza-ordering/frontend/context/CartContext.jsx');
+            if (fs.existsSync(cartContextSrc)) {
+              fs.copyFileSync(cartContextSrc, path.join(contextDir, 'CartContext.jsx'));
+              console.log('   🛒 CartContext copied for cart functionality');
+            }
+          }
+
           console.log('─'.repeat(40));
+
+          // ========================================
+          // MODULE VALIDATION (auto-fix icon imports)
+          // ========================================
+          console.log('');
+          console.log('   🔍 Running module validation...');
+          try {
+            const validationResults = await validateProject(projectPath);
+            if (validationResults.summary.totalFixes > 0) {
+              console.log(`   ✅ Auto-fixed ${validationResults.summary.totalFixes} issue(s)`);
+            }
+            if (validationResults.summary.totalIssues === 0) {
+              console.log('   ✅ All module validations passed');
+            }
+          } catch (validationErr) {
+            console.warn('   ⚠️ Module validation error:', validationErr.message);
+          }
         }
 
         console.log('');
         console.log('✅ ORCHESTRATION COMPLETE');
         console.log(`   ⏱️ Total time: ${(duration / 1000).toFixed(1)}s`);
         console.log('='.repeat(60));
+
+        // ========================================
+        // TRACK GENERATION COMPLETE
+        // ========================================
+        if (generationId && db && db.trackGenerationComplete) {
+          try {
+            await db.trackGenerationComplete(generationId, {
+              pagesGenerated: payload.pages?.length || 0,
+              generationTimeMs: duration
+            });
+            console.log(`   📊 Generation ${generationId} marked complete`);
+          } catch (trackErr) {
+            console.warn('   ⚠️ Generation complete tracking failed:', trackErr.message);
+          }
+        }
 
         res.json({
           success: true,
@@ -591,10 +732,22 @@ router.post('/orchestrate', orchestrateRateLimiter, async (req, res) => {
               confidence: summary.confidence
             }
           },
-          duration: duration
+          duration: duration,
+          generationId: generationId,
+          includeCompanionApp: includeCompanionApp
         });
       } else {
         console.error(`❌ Assembly failed with code ${code}`);
+
+        // Track generation failure
+        if (generationId && db && db.trackGenerationFailed) {
+          try {
+            await db.trackGenerationFailed(generationId, { message: `Assembly failed with exit code ${code}`, output: errorOutput });
+          } catch (trackErr) {
+            console.warn('   ⚠️ Generation failure tracking failed:', trackErr.message);
+          }
+        }
+
         res.status(500).json({
           success: false,
           error: 'Assembly failed',
@@ -607,6 +760,16 @@ router.post('/orchestrate', orchestrateRateLimiter, async (req, res) => {
   } catch (error) {
     console.error('❌ Orchestrator error:', error.message);
     captureException(error, { tags: { component: 'orchestrator' } });
+
+    // Track generation failure (generationId might not exist if error happened early)
+    if (typeof generationId !== 'undefined' && generationId && db && db.trackGenerationFailed) {
+      try {
+        await db.trackGenerationFailed(generationId, error);
+      } catch (trackErr) {
+        console.warn('   ⚠️ Generation failure tracking failed:', trackErr.message);
+      }
+    }
+
     res.status(500).json({
       success: false,
       error: `Orchestration failed: ${error.message}`
@@ -772,6 +935,173 @@ router.post('/orchestrate/recommend', orchestrateRateLimiter, async (req, res) =
     return res.status(500).json({
       success: false,
       error: `Failed to get recommendations: ${error.message}`
+    });
+  }
+});
+
+/**
+ * POST /api/orchestrate/analyze-for-tools
+ * AI-powered tool suite recommendation
+ * Takes a business description and returns personalized tool recommendations with reasons
+ *
+ * Request: { description: "I'm a personal trainer who tracks client workouts..." }
+ * Response: { success, industry, industryIcon, suggestedName, tools: [{toolType, name, icon, description, reason}] }
+ */
+router.post('/orchestrate/analyze-for-tools', orchestrateRateLimiter, async (req, res) => {
+  const { description } = req.body;
+  const startTime = Date.now();
+
+  if (!description || description.length < 10) {
+    return res.status(400).json({
+      success: false,
+      error: 'Please provide a description (minimum 10 characters)'
+    });
+  }
+
+  console.log('\n' + '='.repeat(60));
+  console.log('🤖 AI TOOL SUITE ANALYSIS');
+  console.log('='.repeat(60));
+  console.log(`📝 Description: "${description.substring(0, 100)}..."`);
+
+  try {
+    // All available tools for recommendation
+    const AVAILABLE_TOOLS = [
+      { id: 'invoice-generator', icon: '📄', name: 'Invoice Generator', desc: 'Create professional invoices', category: 'business' },
+      { id: 'receipt-generator', icon: '🧾', name: 'Receipt Generator', desc: 'Generate receipts instantly', category: 'business' },
+      { id: 'expense-tracker', icon: '💰', name: 'Expense Tracker', desc: 'Track spending & budgets', category: 'business' },
+      { id: 'time-tracker', icon: '⏰', name: 'Time Tracker', desc: 'Log hours & projects', category: 'business' },
+      { id: 'qr-generator', icon: '📱', name: 'QR Code Generator', desc: 'Generate QR codes instantly', category: 'utilities' },
+      { id: 'password-generator', icon: '🔐', name: 'Password Generator', desc: 'Secure random passwords', category: 'utilities' },
+      { id: 'countdown', icon: '⏱️', name: 'Countdown Timer', desc: 'Event countdowns & timers', category: 'utilities' },
+      { id: 'pomodoro', icon: '🍅', name: 'Pomodoro Timer', desc: 'Focus & productivity timer', category: 'utilities' },
+      { id: 'calculator', icon: '🧮', name: 'Calculator', desc: 'Custom calculations', category: 'calculators' },
+      { id: 'tip-calculator', icon: '💵', name: 'Tip Calculator', desc: 'Split bills & calculate tips', category: 'calculators' },
+      { id: 'bmi-calculator', icon: '⚖️', name: 'BMI Calculator', desc: 'Health & fitness metrics', category: 'calculators' },
+      { id: 'calorie-calculator', icon: '🍎', name: 'Calorie Calculator', desc: 'Nutrition & diet planning', category: 'calculators' },
+      { id: 'habit-tracker', icon: '✅', name: 'Habit Tracker', desc: 'Build better habits daily', category: 'lifestyle' },
+      { id: 'recipe-scaler', icon: '🍳', name: 'Recipe Scaler', desc: 'Adjust recipe portions', category: 'lifestyle' },
+      { id: 'unit-converter', icon: '🔄', name: 'Unit Converter', desc: 'Convert any measurements', category: 'lifestyle' },
+      { id: 'color-picker', icon: '🎨', name: 'Color Picker', desc: 'Find perfect color palettes', category: 'lifestyle' },
+    ];
+
+    // Industry detection patterns
+    const INDUSTRY_PATTERNS = {
+      fitness: { keywords: ['trainer', 'gym', 'fitness', 'workout', 'exercise', 'health'], icon: '💪' },
+      restaurant: { keywords: ['restaurant', 'cafe', 'food', 'chef', 'kitchen', 'menu', 'cook'], icon: '🍽️' },
+      freelance: { keywords: ['freelance', 'freelancer', 'client', 'invoice', 'contractor'], icon: '💼' },
+      design: { keywords: ['design', 'designer', 'creative', 'artist', 'graphic'], icon: '🎨' },
+      retail: { keywords: ['store', 'shop', 'retail', 'sell', 'inventory', 'product'], icon: '🛒' },
+      realestate: { keywords: ['real estate', 'property', 'agent', 'house', 'mortgage'], icon: '🏠' },
+      content: { keywords: ['youtube', 'content', 'creator', 'video', 'podcast', 'blog'], icon: '📹' },
+      coaching: { keywords: ['coach', 'coaching', 'mentor', 'teaching', 'training'], icon: '🎯' },
+    };
+
+    // Detect industry from description
+    const descLower = description.toLowerCase();
+    let detectedIndustry = null;
+    let industryIcon = '🎯';
+
+    for (const [industry, data] of Object.entries(INDUSTRY_PATTERNS)) {
+      if (data.keywords.some(kw => descLower.includes(kw))) {
+        detectedIndustry = industry;
+        industryIcon = data.icon;
+        break;
+      }
+    }
+
+    // Tool matching patterns (what tools are relevant for what keywords)
+    const TOOL_RELEVANCE = {
+      'invoice-generator': ['invoice', 'billing', 'client', 'freelance', 'payment', 'money'],
+      'receipt-generator': ['receipt', 'sale', 'purchase', 'retail', 'store', 'transaction'],
+      'expense-tracker': ['expense', 'budget', 'spending', 'money', 'cost', 'finance'],
+      'time-tracker': ['time', 'hours', 'project', 'client', 'track', 'log', 'work'],
+      'qr-generator': ['qr', 'menu', 'link', 'scan', 'restaurant', 'retail'],
+      'password-generator': ['password', 'security', 'account', 'login', 'safe'],
+      'countdown': ['timer', 'countdown', 'event', 'deadline', 'launch'],
+      'pomodoro': ['focus', 'productivity', 'work', 'concentrate', 'timer'],
+      'calculator': ['calculate', 'math', 'number', 'price', 'cost'],
+      'tip-calculator': ['tip', 'restaurant', 'cafe', 'bill', 'split'],
+      'bmi-calculator': ['bmi', 'weight', 'health', 'fitness', 'body', 'trainer'],
+      'calorie-calculator': ['calorie', 'diet', 'nutrition', 'food', 'meal', 'fitness', 'weight'],
+      'habit-tracker': ['habit', 'track', 'daily', 'routine', 'goal', 'progress'],
+      'recipe-scaler': ['recipe', 'cook', 'food', 'ingredient', 'portion', 'kitchen'],
+      'unit-converter': ['convert', 'unit', 'measurement', 'metric', 'size'],
+      'color-picker': ['color', 'design', 'palette', 'brand', 'creative'],
+    };
+
+    // Score each tool based on relevance
+    const scoredTools = AVAILABLE_TOOLS.map(tool => {
+      const relevanceKeywords = TOOL_RELEVANCE[tool.id] || [];
+      const matches = relevanceKeywords.filter(kw => descLower.includes(kw));
+      const score = matches.length;
+      const reason = matches.length > 0
+        ? `Relevant for: ${matches.slice(0, 2).join(', ')}`
+        : null;
+      return { ...tool, score, reason, matches };
+    });
+
+    // Get top scoring tools (at least 3, up to 6)
+    const recommendedTools = scoredTools
+      .filter(t => t.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 6);
+
+    // If not enough tools, add some based on industry defaults
+    if (recommendedTools.length < 3) {
+      const industryDefaults = {
+        fitness: ['bmi-calculator', 'calorie-calculator', 'habit-tracker', 'pomodoro'],
+        restaurant: ['tip-calculator', 'recipe-scaler', 'countdown', 'qr-generator'],
+        freelance: ['invoice-generator', 'time-tracker', 'expense-tracker', 'pomodoro'],
+        design: ['color-picker', 'pomodoro', 'password-generator', 'habit-tracker'],
+        retail: ['receipt-generator', 'calculator', 'qr-generator', 'expense-tracker'],
+        default: ['calculator', 'habit-tracker', 'pomodoro', 'password-generator'],
+      };
+
+      const defaults = industryDefaults[detectedIndustry] || industryDefaults.default;
+      for (const toolId of defaults) {
+        if (recommendedTools.length >= 4) break;
+        if (!recommendedTools.find(t => t.id === toolId)) {
+          const tool = AVAILABLE_TOOLS.find(t => t.id === toolId);
+          if (tool) {
+            recommendedTools.push({
+              ...tool,
+              reason: `Common for ${detectedIndustry || 'your'} work`,
+            });
+          }
+        }
+      }
+    }
+
+    // Generate suggested name
+    const suggestedName = detectedIndustry
+      ? `${detectedIndustry.charAt(0).toUpperCase() + detectedIndustry.slice(1)} Tools`
+      : 'My Business Tools';
+
+    const duration = Date.now() - startTime;
+    console.log(`✅ Recommended ${recommendedTools.length} tools in ${duration}ms`);
+    console.log(`   Detected industry: ${detectedIndustry || 'general'}`);
+    console.log('='.repeat(60));
+
+    return res.json({
+      success: true,
+      industry: detectedIndustry,
+      industryIcon,
+      suggestedName,
+      tools: recommendedTools.map(t => ({
+        toolType: t.id,
+        name: t.name,
+        icon: t.icon,
+        description: t.desc,
+        category: t.category,
+        reason: t.reason,
+      })),
+      duration,
+    });
+  } catch (error) {
+    console.error('❌ Analysis error:', error);
+    return res.status(500).json({
+      success: false,
+      error: `Analysis failed: ${error.message}`
     });
   }
 });

@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet Feeding Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg: #0f0f14;
+            --card-bg: rgba(255,255,255,0.03);
+            --border: rgba(255,255,255,0.08);
+            --text: #fff;
+            --text-muted: rgba(255,255,255,0.6);
+            --primary: #8b5cf6;
+            --primary-dark: #7c3aed;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .nav-tab {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav-tab:hover {
+            background: var(--card-bg);
+            border-color: var(--primary);
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .main-content {
+            padding: 2rem 0;
+            min-height: calc(100vh - 80px);
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-small {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.1);
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.7rem center;
+            background-size: 1em;
+            padding-right: 2.5rem;
+        }
+
+        .grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        .stats-card {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .stats-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .feeding-log-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+        }
+
+        .feeding-info {
+            flex: 1;
+        }
+
+        .pet-name {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .feeding-time {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .feeding-amount {
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .weight-chart-container {
+            height: 400px;
+            margin-top: 1rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: var(--warning);
+            color: #fbbf24;
+        }
+
+        .alert-info {
+            background: rgba(139, 92, 246, 0.1);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close-modal:hover {
+            background: var(--card-bg);
+            color: var(--text);
+        }
+
+        .reminder-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+        }
+
+        .reminder-overdue {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .pet-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .pet-chip {
+            padding: 0.5rem 1rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .pet-chip:hover {
+            border-color: var(--primary);
+        }
+
+        .pet-chip.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-wrap: wrap;
+                gap: 0.25rem;
+            }
+
+            .nav-tab {
+                font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            .feeding-log-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .modal-content {
+                padding: 1rem;
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">🐾 Pet Feeding Tracker</div>
+                <nav class="nav-tabs">
+                    <button class="nav-tab active" data-view="dashboard">Dashboard</button>
+                    <button class="nav-tab" data-view="feeding">Feeding Log</button>
+                    <button class="nav-tab" data-view="weight">Weight Tracker</button>
+                    <button class="nav-tab" data-view="reminders">Reminders</button>
+                    <button class="nav-tab" data-view="settings">Settings</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <!-- Dashboard View -->
+            <div class="view active" id="dashboard">
+                <div class="grid grid-3">
+                    <div class="card stats-card">
+                        <div class="stats-number" id="totalFeedings">0</div>
+                        <div class="stats-label">Total Feedings Today</div>
+                    </div>
+                    <div class="card stats-card">
+                        <div class="stats-number" id="totalPets">0</div>
+                        <div class="stats-label">Registered Pets</div>
+                    </div>
+                    <div class="card stats-card">
+                        <div class="stats-number" id="pendingReminders">0</div>
+                        <div class="stats-label">Pending Reminders</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Recent Feedings</h2>
+                        <button class="btn" onclick="showFeedingModal()">Quick Feed</button>
+                    </div>
+                    <div id="recentFeedings"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Upcoming Reminders</h2>
+                    </div>
+                    <div id="upcomingReminders"></div>
+                </div>
+            </div>
+
+            <!-- Feeding Log View -->
+            <div class="view" id="feeding">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Feeding Log</h2>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn" onclick="showFeedingModal()">Add Feeding</button>
+                            <button class="btn btn-secondary" onclick="exportFeedings()">Export CSV</button>
+                        </div>
+                    </div>
+                    
+                    <div class="pet-selector" id="feedingPetFilter"></div>
+                    
+                    <div id="feedingsList"></div>
+                </div>
+            </div>
+
+            <!-- Weight Tracker View -->
+            <div class="view" id="weight">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Weight Tracker</h2>
+                        <button class="btn" onclick="showWeightModal()">Add Weight</button>
+                    </div>
+                    
+                    <div class="pet-selector" id="weightPetFilter"></div>
+                    
+                    <div class="weight-chart-container">
+                        <canvas id="weightChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reminders View -->
+            <div class="view" id="reminders">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Feeding Reminders</h2>
+                        <button class="btn" onclick="showReminderModal()">Add Reminder</button>
+                    </div>
+                    
+                    <div id="remindersList"></div>
+                </div>
+            </div>
+
+            <!-- Settings View -->
+            <div class="view" id="settings">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Pet Management</h2>
+                        <button class="btn" onclick="showPetModal()">Add Pet</button>
+                    </div>
+                    
+                    <div id="petsList"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Data Export</h2>
+                    </div>
+                    <p style="color: var(--text-muted); margin-bottom: 1rem;">Export your data for backup or analysis.</p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button class="btn btn-secondary" onclick="exportAllData()">Export All Data (JSON)</button>
+                        <button class="btn btn-secondary" onclick="exportFeedings()">Export Feedings (CSV)</button>
+                        <button class="btn btn-secondary" onclick="exportWeights()">Export Weights (CSV)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Feeding Modal -->
+    <div class="modal" id="feedingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Record Feeding</h3>
+                <button class="close-modal" onclick="closeFeedingModal()">&times;</button>
+            </div>
+            <form id="feedingForm">
+                <div class="form-group">
+                    <label class="form-label">Pet</label>
+                    <select class="form-input form-select" id="feedingPetSelect" required>
+                        <option value="">Select a pet</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Food Type</label>
+                    <input type="text" class="form-input" id="foodType" placeholder="e.g., Dry kibble, Wet food" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Amount</label>
+                    <input type="text" class="form-input" id="foodAmount" placeholder="e.g., 1 cup, 200g" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date & Time</label>
+                    <input type="datetime-local" class="form-input" id="feedingDateTime" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-input" id="feedingNotes" rows="3" placeholder="Optional notes"></textarea>
+                </div>
+                <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeFeedingModal()">Cancel</button>
+                    <button type="submit" class="btn">Save Feeding</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Weight Modal -->
+    <div class="modal" id="weightModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Record Weight</h3>
+                <button class="close-modal" onclick="closeWeightModal()">&times;</button>
+            </div>
+            <form id="weightForm">
+                <div class="form-group">
+                    <label class="form-label">Pet</label>
+                    <select class="form-input form-select" id="weightPetSelect" required>
+                        <option value="">Select a pet</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Weight</label>
+                    <input type="number" step="0.1" class="form-input" id="petWeight" placeholder="e.g., 15.5" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Unit</label>
+                    <select class="form-input form-select" id="weightUnit" required>
+                        <option value="kg">Kilograms (kg)</option>
+                        <option value="lbs">Pounds (lbs)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-input" id="weightDate" required>
+                </div>
+                <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeWeightModal()">Cancel</button>
+                    <button type="submit" class="btn">Save Weight</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Pet Modal -->
+    <div class="modal" id="petModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="petModalTitle">Add Pet</h3>
+                <button class="close-modal" onclick="closePetModal()">&times;</button>
+            </div>
+            <form id="petForm">
+                <input type="hidden" id="editPetId">
+                <div class="form-group">
+                    <label class="form-label">Pet Name</label>
+                    <input type="text" class="form-input" id="petName" placeholder="e.g., Buddy" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Type</label>
+                    <select class="form-input form-select" id="petType" required>
+                        <option value="">Select type</option>
+                        <option value="dog">Dog</option>
+                        <option value="cat">Cat</option>
+                        <option value="bird">Bird</option>
+                        <option value="fish">Fish</option>
+                        <option value="rabbit">Rabbit</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Breed (Optional)</label>
+                    <input type="text" class="form-input" id="petBreed" placeholder="e.g., Golden Retriever">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Birth Date (Optional)</label>
+                    <input type="date" class="form-input" id="petBirthDate">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Default Feeding Times</label>
+                    <div id="feedingTimes">
+                        <input type="time" class="form-input" style="margin-bottom: 0.5rem;" placeholder="Morning">
+                        <input type="time" class="form-input" style="margin-bottom: 0.5rem;" placeholder="Evening">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closePetModal()">Cancel</button>
+                    <button type="submit" class="btn">Save Pet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reminder Modal -->
+    <div class="modal" id="reminderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Reminder</h3>
+                <button class="close-modal" onclick="closeReminderModal()">&times;</button>
+            </div>
+            <form id="reminderForm">
+                <div class="form-group">
+                    <label class="form-label">Pet</label>
+                    <select class="form-input form-select" id="reminderPetSelect" required>
+                        <option value="">Select a pet</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Reminder Time</label>
+                    <input type="time" class="form-input" id="reminderTime" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Repeat</label>
+                    <select class="form-input form-select" id="reminderRepeat" required>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="once">Once</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <input type="text" class="form-input" id="reminderNotes" placeholder="e.g., Morning feeding">
+                </div>
+                <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeReminderModal()">Cancel</button>
+                    <button type="submit" class="btn">Save Reminder</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Data structures
+        let pets = JSON.parse(localStorage.getItem('pets') || '[]');
+        let feedings = JSON.parse(localStorage.getItem('feedings') || '[]');
+        let weights = JSON.parse(localStorage.getItem('weights') || '[]');
+        let reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeNavigation();
+            loadView();
+            setInterval(checkReminders, 60000); // Check reminders every minute
+            checkReminders(); // Check immediately on load
+            
+            // Set current datetime for feeding form
+            document.getElementById('feedingDateTime').value = new Date().toISOString().slice(0, 16);
+            document.getElementById('weightDate').value = new Date().toISOString().slice(0, 10);
+        });
+
+        // Navigation
+        function initializeNavigation() {
+            const navTabs = document.querySelectorAll('.nav-tab');
+            navTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const view = this.dataset.view;
+                    setActiveView(view);
+                    window.location.hash = view;
+                });
+            });
+
+            // Handle back/forward navigation
+            window.addEventListener('hashchange', loadView);
+        }
+
+        function loadView() {
+            const hash = window.location.hash.slice(1) || 'dashboard';
+            setActiveView(hash);
+        }
+
+        function setActiveView(viewName) {
+            // Update nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.view === viewName);
+            });
+
+            // Update views
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.toggle('active', view.id === viewName);
+            });
+
+            // Load view data
+            switch(viewName) {
+                case 'dashboard':
+                    loadDashboard();
+                    break;
+                case 'feeding':
+                    loadFeedingLog();
+                    break;
+                case 'weight':
+                    loadWeightTracker();
+                    break;
+                case 'reminders':
+                    loadReminders();
+                    break;
+                case 'settings':
+                    loadSettings();
+                    break;
+            }
+        }
+
+        // Dashboard
+        function loadDashboard() {
+            const today = new Date().toDateString();
+            const todayFeedings = feedings.filter(f => new Date(f.datetime).toDateString() === today);
+            
+            document.getElementById('totalFeedings').textContent = todayFeedings.length;
+            document.getElementById('totalPets').textContent = pets.length;
+            document.getElementById('pendingReminders').textContent = getPendingReminders().length;
+
+            loadRecentFeedings();
+            loadUpcomingReminders();
+        }
+
+        function loadRecentFeedings() {
+            const container = document.getElementById('recentFeedings');
+            const recentFeedings = feedings.slice(-5).reverse();
+
+            if (recentFeedings.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon">🍽️</div><p>No feedings recorded yet</p></div>';
+                return;
+            }
+
+            container.innerHTML = recentFeedings.map(feeding => {
+                const pet = pets.find(p => p.id === feeding.petId);
+                const date = new Date(feeding.datetime);
+                return `
+                    <div class="feeding-log-item">
+                        <div class="feeding-info">
+                            <div class="pet-name">${pet ? pet.name : 'Unknown Pet'}</div>
+                            <div class="feeding-time">${date.toLocaleDateString()} at ${date.toLocaleTimeString()}</div>
+                            <div class="feeding-amount">${feeding.amount} of ${feeding.foodType}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadUpcomingReminders() {
+            const container = document.getElementById('upcomingReminders');
+            const pending = getPendingReminders().slice(0, 3);
+
+            if (pending.length === 0) {
+                container.innerHTML = '<div class="alert alert-info">No upcoming reminders</div>';
+                return;
+            }
+
+            container.innerHTML = pending.map(reminder => {
+                const pet = pets.find(p => p.id === reminder.petId);
+                const isOverdue = isReminderOverdue(reminder);
+                return `
+                    <div class="reminder-item ${isOverdue ? 'reminder-overdue' : ''}">
+                        <div>
+                            <div class="pet-name">${pet ? pet.name : 'Unknown Pet'}</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">
+                                ${reminder.time} - ${reminder.notes || 'Feeding time'}
+                                ${isOverdue ? ' (Overdue)' : ''}
+                            </div>
+                        </div>
+                        <button class="btn btn-small" onclick="markReminderDone('${reminder.id}')">Done</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Feeding Log
+        function loadFeedingLog() {
+            populatePetSelectors();
+            loadFeedingsPetFilter();
+            displayFeedings();
+        }
+
+        function loadFeedingsPetFilter() {
+            const container = document.getElementById('feedingPetFilter');
+            const allChip = `<div class="pet-chip active" onclick="filterFeedings('')">All Pets</div>`;
+            const petChips = pets.map(pet => 
+                `<div class="pet-chip" onclick="filterFeedings('${pet.id}')">${pet.name}</div>`
+            ).join('');
+            container.innerHTML = allChip + petChips;
+        }
+
+        function filterFeedings(petId) {
+            document.querySelectorAll('#feedingPetFilter .pet-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            displayFeedings(petId);
+        }
+
+        function displayFeedings(petId = '') {
+            const container = document.getElementById('feedingsList');
+            let filteredFeedings = feedings;
+            
+            if (petId) {
+                filteredFeedings = feedings.filter(f => f.petId === petId);
+            }
+
+            filteredFeedings.sort((a, b) => new Date(b.datetime) - new Date(a.datetime));
+
+            if (filteredFeedings.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon">🍽️</div><p>No feedings recorded yet</p></div>';
+                return;
+            }
+
+            container.innerHTML = filteredFeedings.map(feeding => {
+                const pet = pets.find(p => p.id === feeding.petId);
+                const date = new Date(feeding.datetime);
+                return `
+                    <div class="feeding-log-item">
+                        <div class="feeding-info">
+                            <div class="pet-name">${pet ? pet.name : 'Unknown Pet'}</div>
+                            <div class="feeding-time">${date.toLocaleDateString()} at ${date.toLocaleTimeString()}</div>
+                            <div class="feeding-amount">${feeding.amount} of ${feeding.foodType}</div>
+                            ${feeding.notes ? `<div style="font-size: 0.9rem; color: var(--text-muted);">${feeding.notes}</div>` : ''}
+                        </div>
+                        <button class="btn btn-danger btn-small" onclick="deleteFeeding('${feeding.id}')">Delete</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Weight Tracker
+        function loadWeightTracker() {
+            populatePetSelectors();
+            loadWeightPetFilter();
+            displayWeightChart();
+        }
+
+        function loadWeightPetFilter() {
+            const container = document.getElementById('weightPetFilter');
+            const petChips = pets.map(pet => 
+                `<div class="pet-chip ${pets.indexOf(pet) === 0 ? 'active' : ''}" onclick="filterWeights('${pet.id}')">${pet.name}</div>`
+            ).join('');
+            container.innerHTML = petChips;
+        }
+
+        function filterWeights(petId) {
+            document.querySelectorAll('#weightPetFilter .pet-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            displayWeightChart(petId);
+        }
+
+        let weightChart;
+        function displayWeightChart(petId) {
+            const ctx = document.getElementById('weightChart').getContext('2d');
+            
+            let selectedPetId = petId;
+            if (!selectedPetId && pets.length > 0) {
+                selectedPetId = pets[0].id;
+            }
+
+            const petWeights = weights.filter(w => w.petId === selectedPetId)
+                                   .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            if (weightChart) {
+                weightChart.destroy();
+            }
+
+            const pet = pets.find(p => p.id === selectedPetId);
+            const chartTitle = pet ? `${pet.name}'s Weight Over Time` : 'Weight Over Time';
+
+            weightChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: petWeights.map(w => new Date(w.date).toLocaleDateString()),
+                    datasets: [{
+                        label: 'Weight',
+                        data: petWeights.map(w => w.weight),
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: chartTitle,
+                            color: '#fff'
+                        },
+                        legend: {
+                            labels: {
+                                color: '#fff'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: {
+                                color: '#fff'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#fff'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Reminders
+        function loadReminders() {
+            displayReminders();
+        }
+
+        function displayReminders() {
+            const container = document.getElementById('remindersList');
+            
+            if (reminders.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon">⏰</div><p>No reminders set up yet</p></div>';
+                return;
+            }
+
+            container.innerHTML = reminders.map(reminder => {
+                const pet = pets.find(p => p.id === reminder.petId);
+                const isOverdue = isReminderOverdue(reminder);
+                return `
+                    <div class="reminder-item ${isOverdue ? 'reminder-overdue' : ''}">
+                        <div>
+                            <div class="pet-name">${pet ? pet.name : 'Unknown Pet'}</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">
+                                ${reminder.time} - ${reminder.repeat} - ${reminder.notes || 'Feeding time'}
+                                ${isOverdue ? ' (Overdue)' : ''}
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-small" onclick="markReminderDone('${reminder.id}')">Done</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteReminder('${reminder.id}')">Delete</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Settings
+        function loadSettings() {
+            displayPets();
+        }
+
+        function displayPets() {
+            const container = document.getElementById('petsList');
+            
+            if (pets.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon">🐾</div><p>No pets added yet</p></div>';
+                return;
+            }
+
+            container.innerHTML = pets.map(pet => {
+                const age = pet.birthDate ? calculateAge(pet.birthDate) : 'Unknown age';
+                return `
+                    <div class="feeding-log-item">
+                        <div class="feeding-info">
+                            <div class="pet-name">${pet.name} (${pet.type})</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">
+                                ${pet.breed ? pet.breed + ' • ' : ''}${age}
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-small btn-secondary" onclick="editPet('${pet.id}')">Edit</button>
+                            <button class="btn btn-danger btn-small" onclick="deletePet('${pet.id}')">Delete</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Modal functions
+        function showFeedingModal() {
+            populatePetSelectors();
+            document.getElementById('feedingModal').classList.add('active');
+            document.getElementById('feedingDateTime').value = new Date().toISOString().slice(0, 16);
+        }
+
+        function closeFeedingModal() {
+            document.getElementById('feedingModal').classList.remove('active');
+            document.getElementById('feedingForm').reset();
+        }
+
+        function showWeightModal() {
+            populatePetSelectors();
+            document.getElementById('weightModal').classList.add('active');
+            document.getElementById('weightDate').value = new Date().toISOString().slice(0, 10);
+        }
+
+        function closeWeightModal() {
+            document.getElementById('weightModal').classList.remove('active');
+            document.getElementById('weightForm').reset();
+        }
+
+        function showPetModal() {
+            document.getElementById('petModalTitle').textContent = 'Add Pet';
+            document.getElementById('editPetId').value = '';
+            document.getElementById('petModal').classList.add('active');
+        }
+
+        function closePetModal() {
+            document.getElementById('petModal').classList.remove('active');
+            document.getElementById('petForm').reset();
+        }
+
+        function showReminderModal() {
+            populatePetSelectors();
+            document.getElementById('reminderModal').classList.add('active');
+        }
+
+        function closeReminderModal() {
+            document.getElementById('reminderModal').classList.remove('active');
+            document.getElementById('reminderForm').reset();
+        }
+
+        // Form handlers
+        document.getElementById('feedingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const feeding = {
+                id: Date.now().toString(),
+                petId: document.getElementById('feedingPetSelect').value,
+                foodType: document.getElementById('foodType').value,
+                amount: document.getElementById('foodAmount').value,
+                datetime: document.getElementById('feedingDateTime').value,
+                notes: document.getElementById('feedingNotes').value
+            };
+
+            feedings.push(feeding);
+            localStorage.setItem('feedings', JSON.stringify(feedings));
+            closeFeedingModal();
+            
+            // Refresh current view
+            const currentView = document.querySelector('.view.active').id;
+            setActiveView(currentView);
+        });
+
+        document.getElementById('weightForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const weight = {
+                id: Date.now().toString(),
+                petId: document.getElementById('weightPetSelect').value,
+                weight: parseFloat(document.getElementById('petWeight').value),
+                unit: document.getElementById('weightUnit').value,
+                date: document.getElementById('weightDate').value
+            };
+
+            weights.push(weight);
+            localStorage.setItem('weights', JSON.stringify(weights));
+            closeWeightModal();
+            
+            // Refresh weight view
+            if (document.getElementById('weight').classList.contains('active')) {
+                loadWeightTracker();
+            }
+        });
+
+        document.getElementById('petForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const editId = document.getElementById('editPetId').value;
+            const feedingTimeInputs = document.querySelectorAll('#feedingTimes input');
+            const feedingTimes = Array.from(feedingTimeInputs)
+                .map(input => input.value)
+                .filter(time => time);
+
+            const petData = {
+                name: document.getElementById('petName').value,
+                type: document.getElementById('petType').value,
+                breed: document.getElementById('petBreed').value,
+                birthDate: document.getElementById('petBirthDate').value,
+                feedingTimes: feedingTimes
+            };
+
+            if (editId) {
+                const index = pets.findIndex(p => p.id === editId);
+                pets[index] = { ...pets[index], ...petData };
+            } else {
+                const pet = {
+                    id: Date.now().toString(),
+                    ...petData
+                };
+                pets.push(pet);
+            }
+
+            localStorage.setItem('pets', JSON.stringify(pets));
+            closePetModal();
+            
+            // Refresh current view
+            const currentView = document.querySelector('.view.active').id;
+            setActiveView(currentView);
+        });
+
+        document.getElementById('reminderForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const reminder = {
+                id: Date.now().toString(),
+                petId: document.getElementById('reminderPetSelect').value,
+                time: document.getElementById('reminderTime').value,
+                repeat: document.getElementById('reminderRepeat').value,
+                notes: document.getElementById('reminderNotes').value,
+                lastTriggered: null
+            };
+
+            reminders.push(reminder);
+            localStorage.setItem('reminders', JSON.stringify(reminders));
+            closeReminderModal();
+            
+            // Refresh reminders view
+            if (document.getElementById('reminders').classList.contains('active')) {
+                loadReminders();
+            }
+        });
+
+        // Helper functions
+        function populatePetSelectors() {
+            const selectors = [
+                'feedingPetSelect',
+                'weightPetSelect',
+                'reminderPetSelect'
+            ];
+
+            selectors.forEach(selectorId => {
+                const select = document.getElementById(selectorId);
+                if (select) {
+                    const currentValue = select.value;
+                    select.innerHTML = '<option value="">Select a pet</option>';
+                    
+                    pets.forEach(pet => {
+                        const option = document.createElement('option');
+                        option.value = pet.id;
+                        option.textContent = pet.name;
+                        if (pet.id === currentValue) {
+                            option.selected = true;
+                        }
+                        select.appendChild(option);
+                    });
+                }
+            });
+        }
+
+        function editPet(petId) {
+            const pet = pets.find(p => p.id === petId);
+            if (!pet) return;
+
+            document.getElementById('petModalTitle').textContent = 'Edit Pet';
+            document.getElementById('editPetId').value = pet.id;
+            document.getElementById('petName').value = pet.name;
+            document.getElementById('petType').value = pet.type;
+            document.getElementById('petBreed').value = pet.breed || '';
+            document.getElementById('petBirthDate').value = pet.birthDate || '';
+
+            // Populate feeding times
+            const feedingTimeInputs = document.querySelectorAll('#feedingTimes input');
+            feedingTimeInputs.forEach((input, index) => {
+                input.value = pet.feedingTimes && pet.feedingTimes[index] ? pet.feedingTimes[index] : '';
+            });
+
+            document.getElementById('petModal').classList.add('active');
+        }
+
+        function deletePet(petId) {
+            if (confirm('Are you sure you want to delete this pet? This will also delete all related feedings and weights.')) {
+                pets = pets.filter(p => p.id !== petId);
+                feedings = feedings.filter(f => f.petId !== petId);
+                weights = weights.filter(w => w.petId !== petId);
+                reminders = reminders.filter(r => r.petId !== petId);
+                
+                localStorage.setItem('pets', JSON.stringify(pets));
+                localStorage.setItem('feedings', JSON.stringify(feedings));
+                localStorage.setItem('weights', JSON.stringify(weights));
+                localStorage.setItem('reminders', JSON.stringify(reminders));
+                
+                loadSettings();
+            }
+        }
+
+        function deleteFeeding(feedingId) {
+            if (confirm('Are you sure you want to delete this feeding record?')) {
+                feedings = feedings.filter(f => f.id !== feedingId);
+                localStorage.setItem('feedings', JSON.stringify(feedings));
+                displayFeedings();
+            }
+        }
+
+        function deleteReminder(reminderId) {
+            if (confirm('Are you sure you want to delete this reminder?')) {
+                reminders = reminders.filter(r => r.id !== reminderId);
+                localStorage.setItem('reminders', JSON.stringify(reminders));
+                loadReminders();
+            }
+        }
+
+        function calculateAge(birthDate) {
+            const birth = new Date(birthDate);
+            const now = new Date();
+            const diffMs = now - birth;
+            const ageYears = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 365.25));
+            
+            if (ageYears < 1) {
+                const ageMonths = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 30.44));
+                return `${ageMonths} months old`;
+            }
+            return `${ageYears} years old`;
+        }
+
+        // Reminder functions
+        function checkReminders() {
+            const now = new Date();
+            const currentTime = now.toTimeString().slice(0, 5);
+            const today = now.toDateString();
+
+            reminders.forEach(reminder => {
+                const shouldTrigger = reminder.time === currentTime &&
+                    (!reminder.lastTriggered || new Date(reminder.lastTriggered).toDateString() !== today);
+
+                if (shouldTrigger) {
+                    const pet = pets.find(p => p.id === reminder.petId);
+                    showReminderNotification(pet ? pet.name : 'Unknown Pet', reminder.notes || 'Feeding time');
+                    
+                    reminder.lastTriggered = now.toISOString();
+                    localStorage.setItem('reminders', JSON.stringify(reminders));
+                }
+            });
+        }
+
+        function showReminderNotification(petName, notes) {
+            if ('Notification' in window) {
+                if (Notification.permission === 'granted') {
+                    new Notification(`🐾 Feeding Reminder`, {
+                        body: `Time to feed ${petName}! ${notes}`,
+                        icon: '🐾'
+                    });
+                } else if (Notification.permission !== 'denied') {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === 'granted') {
+                            new Notification(`🐾 Feeding Reminder`, {
+                                body: `Time to feed ${petName}! ${notes}`,
+                                icon: '🐾'
+                            });
+                        }
+                    });
+                }
+            }
+        }
+
+        function getPendingReminders() {
+            const now = new Date();
+            const currentTime = now.toTimeString().slice(0, 5);
+            const today = now.toDateString();
+
+            return reminders.filter(reminder => {
+                const reminderTime = reminder.time;
+                const wasTriggeredToday = reminder.lastTriggered && 
+                    new Date(reminder.lastTriggered).toDateString() === today;
+                
+                return reminderTime >= currentTime && !wasTriggeredToday;
+            }).sort((a, b) => a.time.localeCompare(b.time));
+        }
+
+        function isReminderOverdue(reminder) {
+            const now = new Date();
+            const currentTime = now.toTimeString().slice(0, 5);
+            const today = now.toDateString();
+            
+            const wasTriggeredToday = reminder.lastTriggered && 
+                new Date(reminder.lastTriggered).toDateString() === today;
+            
+            return reminder.time < currentTime && !wasTriggeredToday;
+        }
+
+        function markReminderDone(reminderId) {
+            const reminder = reminders.find(r => r.id === reminderId);
+            if (reminder) {
+                reminder.lastTriggered = new Date().toISOString();
+                localStorage.setItem('reminders', JSON.stringify(reminders));
+                
+                // Refresh current view
+                const currentView = document.querySelector('.view.active').id;
+                setActiveView(currentView);
+            }
+        }
+
+        // Export functions
+        function exportFeedings() {
+            const csv = convertToCSV(feedings.map(feeding => {
+                const pet = pets.find(p => p.id === feeding.petId);
+                return {
+                    'Pet Name': pet ? pet.name : 'Unknown',
+                    'Date': new Date(feeding.datetime).toLocaleDateString(),
+                    'Time': new Date(feeding.datetime).toLocaleTimeString(),
+                    'Food Type': feeding.foodType,
+                    'Amount': feeding.amount,
+                    'Notes': feeding.notes || ''
+                };
+            }));
+            
+            downloadCSV(csv, 'feeding-log.csv');
+        }
+
+        function exportWeights() {
+            const csv = convertToCSV(weights.map(weight => {
+                const pet = pets.find(p => p.id === weight.petId);
+                return {
+                    'Pet Name': pet ? pet.name : 'Unknown',
+                    'Date': weight.date,
+                    'Weight': weight.weight,
+                    'Unit': weight.unit
+                };
+            }));
+            
+            downloadCSV(csv, 'weight-log.csv');
+        }
+
+        function exportAllData() {
+            const data = {
+                pets,
+                feedings,
+                weights,
+                reminders,
+                exportDate: new Date().toISOString()
+            };
+            
+            const json = JSON.stringify(data, null, 2);
+            downloadJSON(json, 'pet-tracker-data.json');
+        }
+
+        function convertToCSV(data) {
+            if (data.length === 0) return '';
+            
+            const headers = Object.keys(data[0]);
+            const csvContent = [
+                headers.join(','),
+                ...data.map(row => 
+                    headers.map(header => 
+                        JSON.stringify(row[header] || '')
+                    ).join(',')
+                )
+            ].join('\n');
+            
+            return csvContent;
+        }
+
+        function downloadCSV(csv, filename) {
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function downloadJSON(json, filename) {
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Request notification permission on first load
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+    </script>
+</body>
+</html>

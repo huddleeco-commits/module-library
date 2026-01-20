@@ -1,0 +1,161 @@
+{
+  "projectName": "Slice-House",
+  "deletedAt": "2026-01-19T19:10:46.997Z",
+  "resourcesFound": {
+    "name": "Slice-House",
+    "sanitizedName": "slice-house",
+    "github": {
+      "repos": [
+        {
+          "name": "slice-house-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "slice-house-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "slice-house-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "ebb6d3e5-351f-4453-9f34-2ca6f3167143",
+        "name": "slice-house",
+        "createdAt": "2026-01-19T19:02:03.475Z",
+        "environments": [
+          {
+            "id": "74e17ca1-5243-4d41-a86f-cf854db549e0",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "149bbe11-22c2-43cc-86be-86f168d6f21f",
+          "name": "postgres"
+        },
+        {
+          "id": "7972f7a4-a080-4e79-8d15-ce48dd8f9678",
+          "name": "admin"
+        },
+        {
+          "id": "c1bf3303-6ba7-4c81-8840-d37a8d6d0a6b",
+          "name": "backend"
+        },
+        {
+          "id": "f9d134c4-fdcd-447d-a77a-e9a8d69cf7f0",
+          "name": "frontend"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "395e506e41647adbd0cb65d435038650",
+          "name": "slice-house.be1st.io",
+          "type": "CNAME",
+          "content": "frontend-production-71e6.up.railway.app"
+        },
+        {
+          "id": "8ef82de421c2133b39622fd2b0e04885",
+          "name": "api.slice-house.be1st.io",
+          "type": "CNAME",
+          "content": "backend-production-f512.up.railway.app"
+        },
+        {
+          "id": "3b9378c5005b16051f997a9a103572b1",
+          "name": "admin.slice-house.be1st.io",
+          "type": "CNAME",
+          "content": "admin-production-559e.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Slice-House",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/slice-house-backend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/slice-house-backend"
+      },
+      {
+        "repo": "huddleeco-commits/slice-house-frontend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/slice-house-frontend"
+      },
+      {
+        "repo": "huddleeco-commits/slice-house-admin",
+        "success": true,
+        "message": "Deleted huddleeco-commits/slice-house-admin"
+      }
+    ],
+    "railway": {
+      "success": true,
+      "message": "Deleted Railway project ebb6d3e5-351f-4453-9f34-2ca6f3167143"
+    },
+    "cloudflare": [
+      {
+        "record": "slice-house.be1st.io",
+        "success": true,
+        "message": "Deleted slice-house.be1st.io"
+      },
+      {
+        "record": "api.slice-house.be1st.io",
+        "success": true,
+        "message": "Deleted api.slice-house.be1st.io"
+      },
+      {
+        "record": "admin.slice-house.be1st.io",
+        "success": true,
+        "message": "Deleted admin.slice-house.be1st.io"
+      }
+    ],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Slice-House"
+    },
+    "errors": [],
+    "verification": {
+      "github": [
+        {
+          "repo": "huddleeco-commits/slice-house-backend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/slice-house-frontend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/slice-house-admin",
+          "verified": true
+        }
+      ],
+      "railway": false,
+      "cloudflare": [
+        {
+          "subdomain": "slice-house",
+          "verified": true
+        },
+        {
+          "subdomain": "api.slice-house",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.slice-house",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

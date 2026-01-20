@@ -1,0 +1,84 @@
+{
+  "projectName": "Aurelius",
+  "savedAt": "2026-01-18T19:27:06.232Z",
+  "resources": {
+    "name": "Aurelius",
+    "sanitizedName": "aurelius",
+    "github": {
+      "repos": [
+        {
+          "name": "aurelius-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "aurelius-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "aurelius-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "d7b744ab-ae24-4b8c-81a4-de6f4e4d7df3",
+        "name": "aurelius",
+        "createdAt": "2026-01-18T19:05:20.619Z",
+        "environments": [
+          {
+            "id": "77ab122f-2f95-44e3-b540-21d4bdfb3bfc",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "359158c4-0bc2-4012-87be-c593506b8069",
+          "name": "postgres"
+        },
+        {
+          "id": "8deeeacd-4ee1-4cf7-be3d-5b2bf41eee04",
+          "name": "backend"
+        },
+        {
+          "id": "a1945758-798e-47e5-a4fd-e4398b380e33",
+          "name": "frontend"
+        },
+        {
+          "id": "ccdb2ca4-33f4-4c85-97d7-35a5250147e2",
+          "name": "admin"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "8d5b1c77f390ce214608c490464e5486",
+          "name": "aurelius.be1st.io",
+          "type": "CNAME",
+          "content": "dvp23r55.up.railway.app"
+        },
+        {
+          "id": "4f18cc9de9f3fe2bedd0a1ff69214e39",
+          "name": "api.aurelius.be1st.io",
+          "type": "CNAME",
+          "content": "08deczui.up.railway.app"
+        },
+        {
+          "id": "35a71be3bcd9c75a113adb55294b3f51",
+          "name": "admin.aurelius.be1st.io",
+          "type": "CNAME",
+          "content": "ejith6v0.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Aurelius",
+      "exists": true
+    }
+  }
+}

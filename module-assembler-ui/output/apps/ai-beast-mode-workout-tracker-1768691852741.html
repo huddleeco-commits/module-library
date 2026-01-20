@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beast Mode - Workout Tracker</title>
+    <meta name="theme-color" content="#8b5cf6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #8b5cf6;
+            --primary-dark: #7c3aed;
+            --secondary: #ef4444;
+            --accent: #10b981;
+            --bg: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+            --card-bg: rgba(255,255,255,0.05);
+            --card-border: rgba(139,92,246,0.2);
+            --text: #ffffff;
+            --text-muted: rgba(255,255,255,0.6);
+            --shadow: 0 8px 32px rgba(139,92,246,0.15);
+            --glow: 0 0 40px rgba(139,92,246,0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--card-border);
+            padding: 20px 24px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stats-badge {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .container {
+            padding: 100px 24px 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .view {
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            will-change: transform;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--glow);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 4px;
+            text-shadow: 0 0 20px rgba(139,92,246,0.5);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .workout-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .workout-card:active {
+            transform: scale(0.98);
+        }
+
+        .workout-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .workout-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .workout-date {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .workout-stats {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .workout-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .exercise-list {
+            margin-top: 12px;
+        }
+
+        .exercise-item {
+            background: rgba(139,92,246,0.1);
+            border: 1px solid rgba(139,92,246,0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .exercise-name {
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .exercise-sets {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 16px 24px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            will-change: transform;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--glow);
+        }
+
+        .btn-full {
+            width: 100%;
+            margin-bottom: 12px;
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 16px;
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(139,92,246,0.2);
+        }
+
+        .exercise-form {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .sets-container {
+            margin-top: 12px;
+        }
+
+        .set-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+
+        .set-input {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        .remove-set {
+            background: var(--secondary);
+            border: none;
+            border-radius: 6px;
+            width: 32px;
+            height: 32px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .add-set {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--card-border);
+            padding: 12px 0;
+            display: flex;
+            justify-content: space-around;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            color: var(--text-muted);
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            background: rgba(139,92,246,0.1);
+            transform: scale(1.1);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .fab {
+            position: fixed;
+            bottom: 90px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            z-index: 99;
+        }
+
+        .fab:active {
+            transform: scale(0.9);
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: var(--glow);
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: flex-end;
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px 20px 0 0;
+            padding: 24px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px;
+            margin-left: auto;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .empty-text {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .chart-container {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            height: 300px;
+        }
+
+        .pr-badge {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-left: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        .success-animation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--accent);
+            color: white;
+            padding: 20px;
+            border-radius: 50%;
+            font-size: 32px;
+            z-index: 300;
+            animation: successPop 1s ease-out;
+        }
+
+        @keyframes successPop {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+        }
+
+        .streak-flame {
+            display: inline-block;
+            animation: flicker 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% { transform: scale(1) rotate(-2deg); }
+            100% { transform: scale(1.1) rotate(2deg); }
+        }
+
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .modal-content {
+                border-radius: 20px;
+                max-width: 500px;
+                margin: auto;
+                max-height: 70vh;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(139,92,246,0.5);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">💪</div>
+            <div class="logo-text">Beast Mode</div>
+        </div>
+        <div class="stats-badge" id="workoutStreak">
+            <span class="streak-flame">🔥</span> 0 day streak
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Dashboard View -->
+        <div class="view active" id="dashboard">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalWorkouts">0</div>
+                    <div class="stat-label">Workouts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="currentStreak">0</div>
+                    <div class="stat-label">Streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalWeight">0</div>
+                    <div class="stat-label">Lbs Lifted</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalTime">0</div>
+                    <div class="stat-label">Hours</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📈 Progress Chart</div>
+                <div class="chart-container">
+                    <canvas id="progressChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🏆 Recent Personal Records</div>
+                <div id="recentPRs">
+                    <div class="empty-state">
+                        <div class="empty-icon">🏆</div>
+                        <div class="empty-title">No PRs Yet</div>
+                        <div class="empty-text">Complete your first workout to start tracking personal records!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workouts View -->
+        <div class="view" id="workouts">
+            <div class="card">
+                <div class="card-title">💪 Recent Workouts</div>
+                <div id="workoutsList">
+                    <div class="empty-state">
+                        <div class="empty-icon">💪</div>
+                        <div class="empty-title">Ready to Beast It?</div>
+                        <div class="empty-text">Tap the + button to log your first workout and start your fitness journey!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRs View -->
+        <div class="view" id="prs">
+            <div class="card">
+                <div class="card-title">🏆 Personal Records</div>
+                <div id="prsList">
+                    <div class="empty-state">
+                        <div class="empty-icon">🏆</div>
+                        <div class="empty-title">No Records Set Yet</div>
+                        <div class="empty-text">Your personal records will appear here as you crush your workouts!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings View -->
+        <div class="view" id="settings">
+            <div class="card">
+                <div class="card-title">⚙️ Settings</div>
+                
+                <div class="form-group">
+                    <label class="form-label">Default Rest Time (seconds)</label>
+                    <input type="number" class="form-input" id="defaultRestTime" value="90" min="30" max="300">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Weight Unit</label>
+                    <select class="form-input" id="weightUnit">
+                        <option value="lbs">Pounds (lbs)</option>
+                        <option value="kg">Kilograms (kg)</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-full" onclick="exportData()">📤 Export Data</button>
+                <button class="btn btn-secondary btn-full" onclick="clearAllData()">🗑️ Clear All Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Workout Modal -->
+    <div class="modal" id="addWorkoutModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">💪 New Workout</div>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Workout Name</label>
+                <input type="text" class="form-input" id="workoutName" placeholder="e.g. Push Day, Leg Day">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Date</label>
+                <input type="date" class="form-input" id="workoutDate">
+            </div>
+
+            <div id="exercisesContainer">
+                <div class="exercise-form">
+                    <div class="form-group">
+                        <label class="form-label">Exercise Name</label>
+                        <input type="text" class="form-input exercise-name" placeholder="e.g. Bench Press">
+                    </div>
+                    
+                    <div class="sets-container">
+                        <div class="set-row">
+                            <input type="number" class="set-input" placeholder="Weight" min="0">
+                            <input type="number" class="set-input" placeholder="Reps" min="1">
+                            <button class="remove-set" onclick="removeSet(this)">×</button>
+                        </div>
+                    </div>
+                    
+                    <button class="add-set" onclick="addSet(this)">+ Add Set</button>
+                </div>
+            </div>
+
+            <button class="btn btn-secondary btn-full" onclick="addExercise()">+ Add Exercise</button>
+            <button class="btn btn-full" onclick="saveWorkout()">💾 Save Workout</button>
+        </div>
+    </div>
+
+    <!-- FAB -->
+    <button class="fab" onclick="openModal()">+</button>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="showView('dashboard')">
+            <div class="nav-icon">📊</div>
+            <div class="nav-label">Dashboard</div>
+        </div>
+        <div class="nav-item" onclick="showView('workouts')">
+            <div class="nav-icon">💪</div>
+            <div class="nav-label">Workouts</div>
+        </div>
+        <div class="nav-item" onclick="showView('prs')">
+            <div class="nav-icon">🏆</div>
+            <div class="nav-label">Records</div>
+        </div>
+        <div class="nav-item" onclick="showView('settings')">
+            <div class="nav-icon">⚙️</div>
+            <div class="nav-label">Settings</div>
+        </div>
+    </nav>
+
+    <script>
+        let workouts = JSON.parse(localStorage.getItem('beastmode_workouts') || '[]');
+        let personalRecords = JSON.parse(localStorage.getItem('beastmode_prs') || '{}');
+        let settings = JSON.parse(localStorage.getItem('beastmode_settings') || '{"restTime": 90, "weightUnit": "lbs"}');
+        let progressChart = null;
+
+        function showView(viewName) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById(viewName).classList.add('active');
+            event.target.closest('.nav-item').classList.add('active');
+
+            if (viewName === 'dashboard') {
+                updateDashboard();
+            } else if (viewName === 'workouts') {
+                displayWorkouts();
+            } else if (viewName === 'prs') {
+                displayPRs();
+            } else if (viewName === 'settings') {
+                loadSettings();
+            }
+        }
+
+        function openModal() {
+            document.getElementById('workoutDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('addWorkoutModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('addWorkoutModal').classList.remove('active');
+            // Reset form
+            document.getElementById('workoutName').value = '';
+            document.getElementById('exercisesContainer').innerHTML = createExerciseForm();
+        }
+
+        function createExerciseForm() {
+            return `
+                <div class="exercise-form">
+                    <div class="form-group">
+                        <label class="form-label">Exercise Name</label>
+                        <input type="text" class="form-input exercise-name" placeholder="e.g. Bench Press">
+                    </div>
+                    
+                    <div class="sets-container">
+                        <div class="set-row">
+                            <input type="number" class="set-input" placeholder="Weight" min="0">
+                            <input type="number" class="set-input" placeholder="Reps" min="1">
+                            <button class="remove-set" onclick="removeSet(this)">×</button>
+                        </div>
+                    </div>
+                    
+                    <button class="add-set" onclick="addSet(this)">+ Add Set</button>
+                </div>
+            `;
+        }
+
+        function addExercise() {
+            document.getElementById('exercisesContainer').insertAdjacentHTML('beforeend', createExerciseForm());
+        }
+
+        function addSet(btn) {
+            const setsContainer = btn.previousElementSibling;
+            const newSet = document.createElement('div');
+            newSet.className = 'set-row';
+            newSet.innerHTML = `
+                <input type="number" class="set-input" placeholder="Weight" min="0">
+                <input type="number" class="set-input" placeholder="Reps" min="1">
+                <button class="remove-set" onclick="removeSet(this)">×</button>
+            `;
+            setsContainer.appendChild(newSet);
+        }
+
+        function removeSet(btn) {
+            btn.parentElement.remove();
+        }
+
+        function saveWorkout() {
+            const workoutName = document.getElementById('workoutName').value;
+            const workoutDate = document.getElementById('workoutDate').value;
+            
+            if (!workoutName) {
+                alert('Please enter a workout name');
+                return;
+            }
+
+            const exercises = [];
+            const exerciseForms = document.querySelectorAll('.exercise-form');
+
+            exerciseForms.forEach(form => {
+                const exerciseName = form.querySelector('.exercise-name').value;
+                if (!exerciseName) return;
+
+                const sets = [];
+                const setRows = form.querySelectorAll('.set-row');
+                
+                setRows.forEach(row => {
+                    const inputs = row.querySelectorAll('.set-input');
+                    const weight = parseFloat(inputs[0].value) || 0;
+                    const reps = parseInt(inputs[1].value) || 0;
+                    
+                    if (weight > 0 && reps > 0) {
+                        sets.push({ weight, reps });
+                    }
+                });
+
+                if (sets.length > 0) {
+                    exercises.push({ name: exerciseName, sets });
+                }
+            });
+
+            if (exercises.length === 0) {
+                alert('Please add at least one exercise with sets');
+                return;
+            }
+
+            const workout = {
+                id: Date.now(),
+                name: workoutName,
+                date: workoutDate,
+                exercises: exercises,
+                totalWeight: exercises.reduce((total, ex) => 
+                    total + ex.sets.reduce((exTotal, set) => exTotal + (set.weight * set.reps), 0), 0),
+                duration: Math.floor(Math.random() * 90) + 30 // Random duration for demo
+            };
+
+            workouts.unshift(workout);
+            localStorage.setItem('beastmode_workouts', JSON.stringify(workouts));
+
+            updatePersonalRecords(workout);
+            showSuccessAnimation();
+            closeModal();
+            updateDashboard();
+        }
+
+        function updatePersonalRecords(workout) {
+            workout.exercises.forEach(exercise => {
+                const maxWeight = Math.max(...exercise.sets.map(set => set.weight));
+                const currentPR = personalRecords[exercise.name] || 0;
+                
+                if (maxWeight > currentPR) {
+                    personalRecords[exercise.name] = maxWeight;
+                }
+            });
+            
+            localStorage.setItem('beastmode_prs', JSON.stringify(personalRecords));
+        }
+
+        function showSuccessAnimation() {
+            const animation = document.createElement('div');
+            animation.className = 'success-animation';
+            animation.innerHTML = '✓';
+            document.body.appendChild(animation);
+            
+            setTimeout(() => {
+                document.body.removeChild(animation);
+            }, 1000);
+        }
+
+        function updateDashboard() {
+            const totalWorkouts = workouts.length;
+            const totalWeight = workouts.reduce((sum, w) => sum + w.totalWeight, 0);
+            const totalTime = workouts.reduce((sum, w) => sum + w.duration, 0);
+            const streak = calculateStreak();
+
+            document.getElementById('totalWorkouts').textContent = totalWorkouts;
+            document.getElementById('totalWeight').textContent = totalWeight.toLocaleString();
+            document.getElementById('totalTime').textContent = Math.round(totalTime / 60);
+            document.getElementById('currentStreak').textContent = streak;
+            document.getElementById('workoutStreak').innerHTML = `<span class="streak-flame">🔥</span> ${streak} day streak`;
+
+            updateProgressChart();
+            displayRecentPRs();
+        }
+
+        function calculateStreak() {
+            if (workouts.length === 0) return 0;
+            
+            const sortedWorkouts = [...workouts].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const today = new Date();
+            let streak = 0;
+            let currentDate = new Date(today);
+
+            for (const workout of sortedWorkouts) {
+                const workoutDate = new Date(workout.date);
+                const diffDays = Math.floor((currentDate - workoutDate) / (1000 * 60 * 60 * 24));
+                
+                if (diffDays <= 1 && streak === 0) {
+                    streak = 1;
+                    currentDate = workoutDate;
+                } else if (diffDays === 1) {
+                    streak++;
+                    currentDate = workoutDate;
+                } else {
+                    break;
+                }
+            }
+            
+            return streak;
+        }
+
+        function updateProgressChart() {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            
+            if (progressChart) {
+                progressChart.destroy();
+            }
+
+            const last7Workouts = workouts.slice(0, 7).reverse();
+            const labels = last7Workouts.map(w => new Date(w.date).toLocaleDateString());
+            const data = last7Workouts.map(w => w.totalWeight);
+
+            progressChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Weight',
+                        data: data,
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139,92,246,0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#8b5cf6',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255,255,255,0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255,255,255,0.6)'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255,255,255,0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255,255,255,0.6)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function displayRecentPRs() {
+            const container = document.getElementById('recentPRs');
+            const prEntries = Object.entries(personalRecords).slice(0, 3);
+            
+            if (prEntries.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🏆</div>
+                        <div class="empty-title">No PRs Yet</div>
+                        <div class="empty-text">Complete your first workout to start tracking personal records!</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = prEntries.map(([exercise, weight]) => `
+                <div class="exercise-item">
+                    <div class="exercise-name">${exercise} <span class="pr-badge">PR</span></div>
+                    <div class="exercise-sets">${weight} ${settings.weightUnit}</div>
+                </div>
+            `).join('');
+        }
+
+        function displayWorkouts() {
+            const container = document.getElementById('workoutsList');
+            
+            if (workouts.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">💪</div>
+                        <div class="empty-title">Ready to Beast It?</div>
+                        <div class="empty-text">Tap the + button to log your first workout and start your fitness journey!</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = workouts.map(workout => `
+                <div class="workout-card">
+                    <div class="workout-header">
+                        <div class="workout-name">${workout.name}</div>
+                        <div class="workout-date">${new Date(workout.date).toLocaleDateString()}</div>
+                    </div>
+                    <div class="workout-stats">
+                        <div class="workout-stat">
+                            <span>⚡</span> ${workout.exercises.length} exercises
+                        </div>
+                        <div class="workout-stat">
+                            <span>🏋️</span> ${workout.totalWeight} lbs
+                        </div>
+                        <div class="workout-stat">
+                            <span>⏱️</span> ${workout.duration}m
+                        </div>
+                    </div>
+                    <div class="exercise-list">
+                        ${workout.exercises.map(exercise => `
+                            <div class="exercise-item">
+                                <div class="exercise-name">${exercise.name}</div>
+                                <div class="exercise-sets">${exercise.sets.length} sets × ${exercise.sets.map(s => `${s.weight}×${s.reps}`).join(', ')}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayPRs() {
+            const container = document.getElementById('prsList');
+            const prEntries = Object.entries(personalRecords);
+            
+            if (prEntries.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🏆</div>
+                        <div class="empty-title">No Records Set Yet</div>
+                        <div class="empty-text">Your personal records will appear here as you crush your workouts!</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = prEntries
+                .sort((a, b) => b[1] - a[1])
+                .map(([exercise, weight]) => `
+                    <div class="exercise-item">
+                        <div class="exercise-name">${exercise} <span class="pr-badge">PR</span></div>
+                        <div class="exercise-sets">${weight} ${settings.weightUnit}</div>
+                    </div>
+                `).join('');
+        }
+
+        function loadSettings() {
+            document.getElementById('defaultRestTime').value = settings.restTime;
+            document.getElementById('weightUnit').value = settings.weightUnit;
+        }
+
+        function exportData() {
+            const data = {
+                workouts: workouts,
+                personalRecords: personalRecords,
+                settings: settings,
+                exportDate: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `beastmode-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+                localStorage.removeItem('beastmode_workouts');
+                localStorage.removeItem('beastmode_prs');
+                localStorage.removeItem('beastmode_settings');
+                workouts = [];
+                personalRecords = {};
+                settings = { restTime: 90, weightUnit: 'lbs' };
+                updateDashboard();
+                alert('All data cleared successfully!');
+            }
+        }
+
+        // Save settings when changed
+        document.getElementById('defaultRestTime').addEventListener('change', function() {
+            settings.restTime = parseInt(this.value);
+            localStorage.setItem('beastmode_settings', JSON.stringify(settings));
+        });
+
+        document.getElementById('weightUnit').addEventListener('change', function() {
+            settings.weightUnit = this.value;
+            localStorage.setItem('beastmode_settings', JSON.stringify(settings));
+            updateDashboard();
+        });
+
+        // Initialize app
+        updateDashboard();
+    </script>
+</body>
+</html>

@@ -159,6 +159,114 @@ router.get('/dashboard', authenticateAdmin, async (req, res) => {
   }
 });
 
+// Overview endpoint - returns data structure expected by generated admin DashboardPage
+router.get('/overview', authenticateAdmin, async (req, res) => {
+  try {
+    const stats = await db.getDashboardStats();
+    const recentProjects = await db.getRecentProjects(10);
+
+    // Parse stats
+    const totalUsers = parseInt(stats.total_users) || 0;
+    const paidUsers = parseInt(stats.paid_users) || parseInt(stats.active_subscribers) || 0;
+    const mrr = parseFloat(stats.total_mrr) || 0;
+    const apiCost = parseFloat(stats.api_cost_this_month) || 0;
+    const totalGenerations = parseInt(stats.total_projects) || 0;
+    const generationsToday = parseInt(stats.projects_today) || 0;
+    const successRate = parseFloat(stats.success_rate) || 95.0;
+    const avgGenTime = parseInt(stats.avg_generation_time) || 45000;
+    const signupsToday = parseInt(stats.signups_today) || 0;
+
+    // Calculate profit margin
+    const profitMargin = mrr > 0 ? ((mrr - apiCost) / mrr * 100) : 0;
+    const conversionRate = totalUsers > 0 ? (paidUsers / totalUsers * 100) : 0;
+    const costPerGeneration = totalGenerations > 0 ? (apiCost / totalGenerations) : 0;
+
+    // Format recent generations for the table
+    const recentGenerations = recentProjects.map(p => ({
+      id: p.id,
+      site_name: p.site_name || p.name || 'Untitled',
+      industry: p.industry || 'General',
+      user_email: p.user_email || p.email || 'Unknown',
+      status: p.status || 'completed',
+      generation_time_ms: parseInt(p.generation_time_ms) || parseInt(p.api_cost) * 1000 || 30000,
+      created_at: p.created_at
+    }));
+
+    // Get tier distribution from subscribers (schema uses 'plan' not 'tier')
+    let tierDistribution = [];
+    try {
+      const tierResult = await db.query(`
+        SELECT COALESCE(plan, 'free') as tier, COUNT(*) as count
+        FROM subscribers
+        GROUP BY plan
+        ORDER BY count DESC
+      `);
+      tierDistribution = tierResult.rows || [];
+    } catch (e) {
+      // Fallback if subscribers table doesn't exist
+      tierDistribution = [
+        { tier: 'free', count: Math.max(0, totalUsers - paidUsers) },
+        { tier: 'pro', count: paidUsers }
+      ];
+    }
+
+    // Get 7-day trends
+    let trends = [];
+    try {
+      const trendsResult = await db.query(`
+        SELECT
+          DATE(created_at) as date,
+          COUNT(*) as generations
+        FROM generated_projects
+        WHERE created_at >= NOW() - INTERVAL '7 days'
+        GROUP BY DATE(created_at)
+        ORDER BY date ASC
+      `);
+      trends = trendsResult.rows.map(r => ({
+        date: new Date(r.date).toLocaleDateString('en-US', { weekday: 'short' }),
+        generations: parseInt(r.generations)
+      }));
+    } catch (e) {
+      // Fallback empty trends
+    }
+
+    res.json({
+      success: true,
+      overview: {
+        users: {
+          total: totalUsers,
+          paid: paidUsers,
+          conversionRate: conversionRate.toFixed(1),
+          signupsToday
+        },
+        generations: {
+          total: totalGenerations,
+          today: generationsToday,
+          successRate: successRate.toFixed(1),
+          avgTime: avgGenTime
+        },
+        costs: {
+          thisMonth: apiCost,
+          perGeneration: costPerGeneration.toFixed(4)
+        },
+        revenue: {
+          mrr,
+          profitMargin: profitMargin.toFixed(1)
+        },
+        alerts: {
+          active: 0
+        },
+        recentGenerations,
+        trends,
+        tierDistribution
+      }
+    });
+  } catch (err) {
+    console.error('Overview error:', err);
+    res.status(500).json({ success: false, error: 'Failed to load overview' });
+  }
+});
+
 // ============================================
 // PROJECTS ROUTES
 // ============================================
@@ -203,6 +311,120 @@ router.get('/projects/:id', authenticateAdmin, async (req, res) => {
   } catch (err) {
     console.error('Project detail error:', err);
     res.status(500).json({ success: false, error: 'Failed to load project' });
+  }
+});
+
+// Delete a project and all associated resources
+router.delete('/projects/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const projectId = parseInt(req.params.id);
+
+    // Get project details first
+    const result = await db.query('SELECT * FROM generated_projects WHERE id = $1', [projectId]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'Project not found' });
+    }
+
+    const project = result.rows[0];
+    const projectName = project.name;
+
+    // Use project-deleter to remove all resources
+    const projectDeleter = require('../lib/services/project-deleter.cjs');
+
+    console.log(`🗑️ API: Deleting project ${projectName} (ID: ${projectId})`);
+
+    const deleteResult = await projectDeleter.deleteProject(projectName, {
+      dryRun: false,
+      skipVerification: false
+    });
+
+    // Remove from database regardless of external deletion results
+    await db.query('DELETE FROM api_usage WHERE project_id = $1', [projectId]);
+    await db.query('DELETE FROM deployments WHERE project_id = $1', [projectId]);
+    await db.query('DELETE FROM generated_projects WHERE id = $1', [projectId]);
+
+    res.json({
+      success: true,
+      message: `Project "${projectName}" deleted`,
+      details: {
+        projectId,
+        projectName,
+        resourcesDeleted: deleteResult.results || {},
+        errors: deleteResult.results?.errors || []
+      }
+    });
+  } catch (err) {
+    console.error('Delete project error:', err);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to delete project',
+      details: err.message
+    });
+  }
+});
+
+// ============================================
+// GENERATIONS ROUTES
+// ============================================
+
+// Get paginated list of generations with URLs
+router.get('/generations', authenticateAdmin, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 25;
+    const offset = (page - 1) * limit;
+
+    // Get generations with all URL columns and companion app tracking
+    const result = await db.query(`
+      SELECT
+        id, name as site_name, industry, status,
+        user_email, domain,
+        frontend_url, admin_url, backend_url,
+        github_frontend, github_backend, github_admin,
+        railway_project_url, railway_project_id,
+        api_cost as total_cost, api_tokens_used as total_tokens,
+        created_at, deployed_at, metadata,
+        app_type, parent_project_id, domain_type
+      FROM generated_projects
+      ORDER BY created_at DESC
+      LIMIT $1 OFFSET $2
+    `, [limit, offset]);
+
+    // Get total count
+    const countResult = await db.query('SELECT COUNT(*) FROM generated_projects');
+    const total = parseInt(countResult.rows[0].count);
+
+    // Parse metadata for each generation to extract additional fields
+    const generations = result.rows.map(g => {
+      let meta = {};
+      try {
+        meta = typeof g.metadata === 'string' ? JSON.parse(g.metadata) : (g.metadata || {});
+      } catch (e) {}
+
+      return {
+        ...g,
+        pages_generated: meta.pagesGenerated || 0,
+        generation_time_ms: meta.generationTimeMs || 0,
+        // Ensure companion app fields have defaults
+        app_type: g.app_type || 'website',
+        parent_project_id: g.parent_project_id || null,
+        domain_type: g.domain_type || 'be1st.io',
+        // Extract parent site info from metadata for companion apps
+        parent_site_name: meta.parentSiteName || null,
+        parent_site_subdomain: meta.parentSiteSubdomain || null
+      };
+    });
+
+    res.json({
+      success: true,
+      generations,
+      total,
+      page,
+      pages: Math.ceil(total / limit)
+    });
+  } catch (err) {
+    console.error('Generations error:', err);
+    res.status(500).json({ success: false, error: 'Failed to load generations' });
   }
 });
 
@@ -354,6 +576,108 @@ router.get('/analytics', authenticateAdmin, async (req, res) => {
   } catch (err) {
     console.error('Analytics error:', err);
     res.status(500).json({ success: false, error: 'Failed to load analytics' });
+  }
+});
+
+// ============================================
+// DEMO MANAGEMENT ROUTES
+// ============================================
+
+// Get all demo deployments
+router.get('/demos', authenticateAdmin, async (req, res) => {
+  try {
+    const demos = await db.getDemoDeployments(100);
+    const batches = await db.getDemoBatches();
+
+    res.json({
+      success: true,
+      demos,
+      batches,
+      count: demos.length
+    });
+  } catch (err) {
+    console.error('Demo list error:', err);
+    res.status(500).json({ success: false, error: 'Failed to load demos' });
+  }
+});
+
+// Delete a single demo (resources + DB record)
+router.delete('/demos/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const demoId = parseInt(req.params.id);
+    const { name } = req.body;
+
+    if (!name) {
+      return res.status(400).json({ success: false, error: 'Project name required' });
+    }
+
+    console.log(`🗑️ API: Deleting demo "${name}" (ID: ${demoId})`);
+
+    // Use project-deleter to remove all cloud resources
+    const projectDeleter = require('../lib/services/project-deleter.cjs');
+
+    const deleteResult = await projectDeleter.deleteProject(name, {
+      dryRun: false,
+      skipVerification: true
+    });
+
+    // Remove from database
+    await db.deleteDemoRecord(demoId);
+
+    res.json({
+      success: true,
+      message: `Demo "${name}" deleted`,
+      details: deleteResult
+    });
+  } catch (err) {
+    console.error('Demo delete error:', err);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to delete demo',
+      details: err.message
+    });
+  }
+});
+
+// Delete all demos
+router.delete('/demos/all', authenticateAdmin, async (req, res) => {
+  try {
+    // Get all demos first
+    const demos = await db.getDemoDeployments(500);
+
+    console.log(`🗑️ API: Deleting ALL ${demos.length} demo deployments`);
+
+    const projectDeleter = require('../lib/services/project-deleter.cjs');
+    const results = [];
+
+    // Delete each demo's cloud resources
+    for (const demo of demos) {
+      try {
+        await projectDeleter.deleteProject(demo.name, {
+          dryRun: false,
+          skipVerification: true
+        });
+        results.push({ name: demo.name, success: true });
+      } catch (err) {
+        results.push({ name: demo.name, success: false, error: err.message });
+      }
+    }
+
+    // Clear all demo records from DB
+    const deletedCount = await db.deleteAllDemoRecords();
+
+    res.json({
+      success: true,
+      deleted: deletedCount,
+      results
+    });
+  } catch (err) {
+    console.error('Delete all demos error:', err);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to delete all demos',
+      details: err.message
+    });
   }
 });
 

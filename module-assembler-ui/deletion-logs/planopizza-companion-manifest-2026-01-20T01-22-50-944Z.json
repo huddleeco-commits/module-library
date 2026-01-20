@@ -1,0 +1,38 @@
+{
+  "projectName": "planopizza-companion",
+  "savedAt": "2026-01-20T01:22:50.944Z",
+  "resources": {
+    "name": "planopizza-companion",
+    "sanitizedName": "planopizza-companion",
+    "github": {
+      "repos": [
+        {
+          "name": "planopizza-companion-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "planopizza-companion-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "planopizza-companion-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

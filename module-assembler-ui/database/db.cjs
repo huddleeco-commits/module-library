@@ -164,6 +164,301 @@ function calculateClaudeCost(inputTokens, outputTokens, model = 'claude-sonnet-4
 }
 
 // ============================================
+// GENERATION TRACKING (uses generated_projects table)
+// ============================================
+
+/**
+ * Start tracking a new generation
+ * Call this when generation begins
+ */
+async function trackGenerationStart(data) {
+  const result = await query(
+    `INSERT INTO generated_projects
+     (name, industry, user_email, status, metadata)
+     VALUES ($1, $2, $3, 'building', $4)
+     RETURNING id`,
+    [
+      data.siteName || data.name,
+      data.industry,
+      data.userEmail || null,
+      JSON.stringify({
+        templateUsed: data.templateUsed || 'blink-orchestrator',
+        modulesSelected: data.modulesSelected || []
+      })
+    ]
+  );
+  return result.rows[0].id;
+}
+
+/**
+ * Mark generation as completed with cost/token data
+ * Call this when generation succeeds
+ */
+async function trackGenerationComplete(generationId, data) {
+  await query(
+    `UPDATE generated_projects SET
+     status = 'completed',
+     api_tokens_used = $2,
+     api_cost = $3,
+     metadata = COALESCE(metadata, '{}'::jsonb) || $4::jsonb
+     WHERE id = $1`,
+    [
+      generationId,
+      data.totalTokens || (data.inputTokens || 0) + (data.outputTokens || 0),
+      data.totalCost || 0,
+      JSON.stringify({
+        pagesGenerated: data.pagesGenerated || 0,
+        generationTimeMs: data.generationTimeMs || 0,
+        inputTokens: data.inputTokens || 0,
+        outputTokens: data.outputTokens || 0
+      })
+    ]
+  );
+}
+
+/**
+ * Update deployment URLs after successful deployment
+ * Call this after deploy completes
+ */
+async function updateProjectDeploymentUrls(projectId, urls) {
+  await query(
+    `UPDATE generated_projects SET
+     status = 'deployed',
+     deployed_at = NOW(),
+     domain = $2,
+     deploy_url = $3,
+     frontend_url = $4,
+     admin_url = $5,
+     backend_url = $6,
+     github_frontend = $7,
+     github_backend = $8,
+     github_admin = $9,
+     railway_project_url = $10,
+     railway_project_id = $11
+     WHERE id = $1`,
+    [
+      projectId,
+      urls.domain || null,
+      urls.frontend || urls.deployUrl || null,
+      urls.frontend || null,
+      urls.admin || null,
+      urls.backend || null,
+      urls.githubFrontend || null,
+      urls.githubBackend || null,
+      urls.githubAdmin || null,
+      urls.railway || null,
+      urls.railwayProjectId || null
+    ]
+  );
+}
+
+/**
+ * Mark generation as failed with error info
+ * Call this when generation fails
+ */
+async function trackGenerationFailed(generationId, error) {
+  await query(
+    `UPDATE generated_projects SET
+     status = 'failed',
+     metadata = COALESCE(metadata, '{}'::jsonb) || $2::jsonb
+     WHERE id = $1`,
+    [generationId, JSON.stringify({
+      error: error.message || error,
+      failedAt: new Date().toISOString(),
+      errorStack: error.stack || null
+    })]
+  );
+}
+
+/**
+ * Mark deployment as failed with error info
+ * Call this when code generation succeeded but deployment failed
+ */
+async function trackDeploymentFailed(generationId, error) {
+  await query(
+    `UPDATE generated_projects SET
+     status = 'deploy_failed',
+     metadata = COALESCE(metadata, '{}'::jsonb) || $2::jsonb
+     WHERE id = $1`,
+    [generationId, JSON.stringify({
+      deployError: error.message || error,
+      deployFailedAt: new Date().toISOString(),
+      deployStage: error.stage || null
+    })]
+  );
+}
+
+/**
+ * Track build validation result (AUDIT 1 & 2)
+ * Call this after running vite build validation
+ */
+async function trackBuildResult(generationId, result) {
+  const status = result.success ? 'build_passed' : 'build_failed';
+  await query(
+    `UPDATE generated_projects SET
+     status = $2,
+     metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb
+     WHERE id = $1`,
+    [generationId, status, JSON.stringify({
+      buildResult: {
+        success: result.success,
+        auditType: result.auditType || 'audit1', // audit1, audit2, audit3
+        durationMs: result.durationMs || 0,
+        errorCount: result.errors?.length || 0,
+        warningCount: result.warnings?.length || 0,
+        errors: (result.errors || []).slice(0, 10), // Limit stored errors
+        warnings: (result.warnings || []).slice(0, 5),
+        autoFixesApplied: result.autoFixesApplied || [],
+        buildLog: (result.buildLog || '').substring(0, 5000), // Truncate log
+        timestamp: new Date().toISOString()
+      }
+    })]
+  );
+}
+
+/**
+ * Update project metadata (generic merge)
+ * Useful for adding arbitrary data at any stage
+ */
+async function updateProjectMetadata(projectId, newMetadata) {
+  await query(
+    `UPDATE generated_projects SET
+     metadata = COALESCE(metadata, '{}'::jsonb) || $2::jsonb
+     WHERE id = $1`,
+    [projectId, JSON.stringify(newMetadata)]
+  );
+}
+
+/**
+ * Get recent generations (for dashboard)
+ */
+async function getRecentGenerations(limit = 20) {
+  const result = await query(
+    `SELECT id, name as site_name, industry, status,
+            api_cost as total_cost, api_tokens_used as total_tokens,
+            frontend_url, admin_url, backend_url,
+            github_frontend, github_backend, github_admin,
+            railway_project_url, railway_project_id,
+            user_email, created_at, deployed_at, metadata,
+            app_type, parent_project_id, domain_type
+     FROM generated_projects
+     ORDER BY created_at DESC
+     LIMIT $1`,
+    [limit]
+  );
+  return result.rows;
+}
+
+// ============================================
+// COMPANION APP TRACKING
+// ============================================
+
+/**
+ * Track a new companion app generation
+ * Returns the new project ID
+ */
+async function trackCompanionAppStart(data) {
+  const result = await query(
+    `INSERT INTO generated_projects
+     (name, industry, user_email, status, app_type, parent_project_id, domain_type, metadata)
+     VALUES ($1, $2, $3, 'building', 'companion-app', $4, 'be1st.app', $5)
+     RETURNING id`,
+    [
+      data.appName || data.name,
+      data.industry || null,
+      data.userEmail || null,
+      data.parentProjectId || null,
+      JSON.stringify({
+        parentSiteName: data.parentSiteName,
+        parentSiteSubdomain: data.parentSiteSubdomain,
+        quickActions: data.quickActions || [],
+        companionType: data.companionType || 'customer' // customer or staff
+      })
+    ]
+  );
+  return result.rows[0].id;
+}
+
+/**
+ * Update companion app with deployment URLs after successful deployment
+ */
+async function updateCompanionAppDeployment(projectId, urls) {
+  await query(
+    `UPDATE generated_projects SET
+     status = 'deployed',
+     deployed_at = NOW(),
+     domain = $2,
+     frontend_url = $3,
+     backend_url = $4,
+     github_frontend = $5,
+     railway_project_url = $6,
+     railway_project_id = $7,
+     metadata = COALESCE(metadata, '{}'::jsonb) || $8::jsonb
+     WHERE id = $1`,
+    [
+      projectId,
+      urls.domain || null,
+      urls.companion || urls.frontend || null,
+      urls.parentApi || null,  // Companion apps use parent's API
+      urls.github || null,
+      urls.railway || null,
+      urls.railwayProjectId || null,
+      JSON.stringify({
+        parentSiteUrl: urls.parentSite || null,
+        deployedAt: new Date().toISOString()
+      })
+    ]
+  );
+}
+
+/**
+ * Get companion apps for a specific parent project
+ */
+async function getCompanionAppsForProject(parentProjectId) {
+  const result = await query(
+    `SELECT id, name as site_name, status, frontend_url,
+            github_frontend, railway_project_url, created_at, deployed_at, metadata
+     FROM generated_projects
+     WHERE parent_project_id = $1 AND app_type = 'companion-app'
+     ORDER BY created_at DESC`,
+    [parentProjectId]
+  );
+  return result.rows;
+}
+
+/**
+ * Find parent project ID by subdomain
+ */
+async function findParentProjectBySubdomain(subdomain) {
+  const result = await query(
+    `SELECT id FROM generated_projects
+     WHERE (domain LIKE $1 OR frontend_url LIKE $2)
+       AND app_type = 'website'
+     ORDER BY created_at DESC
+     LIMIT 1`,
+    [`${subdomain}.%`, `%${subdomain}.be1st.io%`]
+  );
+  return result.rows[0]?.id || null;
+}
+
+/**
+ * Get generation stats for a time period
+ */
+async function getGenerationStats(days = 30) {
+  const result = await query(`
+    SELECT
+      COUNT(*) as total_generations,
+      COUNT(*) FILTER (WHERE status = 'completed' OR status = 'deployed') as completed,
+      COUNT(*) FILTER (WHERE status = 'failed') as failed,
+      COALESCE(SUM(api_cost), 0) as total_cost,
+      COALESCE(SUM(api_tokens_used), 0) as total_tokens
+    FROM generated_projects
+    WHERE created_at >= NOW() - $1 * INTERVAL '1 day'
+  `, [days]);
+  return result.rows[0];
+}
+
+// ============================================
 // ADMIN DASHBOARD QUERIES
 // ============================================
 
@@ -173,19 +468,34 @@ async function getDashboardStats() {
       (SELECT COUNT(*) FROM generated_projects) as total_projects,
       (SELECT COUNT(*) FROM generated_projects WHERE status = 'deployed') as deployed_projects,
       (SELECT COUNT(*) FROM generated_projects WHERE created_at >= DATE_TRUNC('month', NOW())) as projects_this_month,
+      (SELECT COUNT(*) FROM generated_projects WHERE created_at >= CURRENT_DATE) as projects_today,
       (SELECT COUNT(*) FROM subscribers WHERE status = 'active') as active_subscribers,
+      (SELECT COUNT(*) FROM subscribers) as total_users,
+      (SELECT COUNT(*) FROM subscribers WHERE plan != 'free' AND status = 'active') as paid_users,
+      (SELECT COUNT(*) FROM subscribers WHERE created_at >= CURRENT_DATE) as signups_today,
       (SELECT COALESCE(SUM(mrr), 0) FROM subscribers WHERE status = 'active') as total_mrr,
       (SELECT COALESCE(SUM(cost), 0) FROM api_usage WHERE timestamp >= DATE_TRUNC('month', NOW())) as api_cost_this_month,
-      (SELECT COALESCE(SUM(tokens_used), 0) FROM api_usage WHERE timestamp >= DATE_TRUNC('month', NOW())) as tokens_this_month
+      (SELECT COALESCE(SUM(tokens_used), 0) FROM api_usage WHERE timestamp >= DATE_TRUNC('month', NOW())) as tokens_this_month,
+      (SELECT COALESCE(AVG(EXTRACT(EPOCH FROM (deployed_at - created_at)) * 1000), 45000)
+       FROM generated_projects WHERE deployed_at IS NOT NULL) as avg_generation_time,
+      (SELECT ROUND(
+        (COUNT(*) FILTER (WHERE status IN ('deployed', 'completed')))::numeric /
+        NULLIF(COUNT(*), 0)::numeric * 100, 1
+      ) FROM generated_projects) as success_rate
   `);
   return stats.rows[0];
 }
 
 async function getRecentProjects(limit = 20) {
   const result = await query(
-    `SELECT id, name, industry, domain, status, deploy_url, api_cost, created_at, deployed_at
-     FROM generated_projects
-     ORDER BY created_at DESC
+    `SELECT
+       gp.id, gp.name as site_name, gp.industry, gp.domain, gp.status,
+       gp.deploy_url, gp.api_cost, gp.created_at, gp.deployed_at,
+       COALESCE(s.email, gp.user_email, 'Unknown') as user_email,
+       EXTRACT(EPOCH FROM (COALESCE(gp.deployed_at, NOW()) - gp.created_at)) * 1000 as generation_time_ms
+     FROM generated_projects gp
+     LEFT JOIN subscribers s ON gp.subscriber_id = s.id
+     ORDER BY gp.created_at DESC
      LIMIT $1`,
     [limit]
   );
@@ -348,6 +658,118 @@ async function updateSubscriberStatus(email, status) {
 }
 
 // ============================================
+// DEMO DEPLOYMENT TRACKING
+// ============================================
+
+/**
+ * Track a demo deployment
+ */
+async function trackDemoDeployment(data) {
+  const result = await query(
+    `INSERT INTO generated_projects
+     (name, industry, status, is_demo, demo_batch_id, app_type, metadata,
+      frontend_url, admin_url, backend_url, companion_app_url,
+      github_frontend, github_backend, github_admin,
+      railway_project_id, railway_project_url, domain)
+     VALUES ($1, $2, $3, TRUE, $4, 'website', $5,
+      $6, $7, $8, $9,
+      $10, $11, $12,
+      $13, $14, $15)
+     RETURNING id`,
+    [
+      data.name,
+      data.industry,
+      data.status || 'deployed',
+      data.demoBatchId,
+      JSON.stringify({
+        originalName: data.originalName,
+        tagline: data.tagline,
+        location: data.location,
+        deployedAt: new Date().toISOString(),
+        stats: data.stats || {}
+      }),
+      data.urls?.frontend || null,
+      data.urls?.admin || null,
+      data.urls?.backend || null,
+      data.urls?.companion || null,
+      data.github?.frontend || null,
+      data.github?.backend || null,
+      data.github?.admin || null,
+      data.railwayProjectId || null,
+      data.railwayProjectUrl || null,
+      data.domain || null
+    ]
+  );
+  return result.rows[0].id;
+}
+
+/**
+ * Get all demo deployments
+ */
+async function getDemoDeployments(limit = 50) {
+  const result = await query(
+    `SELECT
+       id, name, industry, status, domain,
+       frontend_url, admin_url, backend_url, companion_app_url,
+       github_frontend, github_backend, github_admin,
+       railway_project_id, railway_project_url,
+       demo_batch_id, created_at, deployed_at, metadata
+     FROM generated_projects
+     WHERE is_demo = TRUE
+     ORDER BY created_at DESC
+     LIMIT $1`,
+    [limit]
+  );
+  return result.rows;
+}
+
+/**
+ * Get demo deployments by batch ID
+ */
+async function getDemosByBatch(batchId) {
+  const result = await query(
+    `SELECT * FROM generated_projects
+     WHERE is_demo = TRUE AND demo_batch_id = $1
+     ORDER BY created_at DESC`,
+    [batchId]
+  );
+  return result.rows;
+}
+
+/**
+ * Delete a demo deployment record
+ */
+async function deleteDemoRecord(projectId) {
+  await query('DELETE FROM generated_projects WHERE id = $1 AND is_demo = TRUE', [projectId]);
+}
+
+/**
+ * Delete all demo records (just DB records, not actual deployments)
+ */
+async function deleteAllDemoRecords() {
+  const result = await query('DELETE FROM generated_projects WHERE is_demo = TRUE RETURNING id');
+  return result.rowCount;
+}
+
+/**
+ * Get unique demo batch IDs for grouping
+ */
+async function getDemoBatches() {
+  const result = await query(
+    `SELECT
+       demo_batch_id,
+       MIN(created_at) as created_at,
+       COUNT(*) as project_count,
+       array_agg(name ORDER BY name) as project_names
+     FROM generated_projects
+     WHERE is_demo = TRUE AND demo_batch_id IS NOT NULL
+     GROUP BY demo_batch_id
+     ORDER BY MIN(created_at) DESC`
+  );
+  return result.rows;
+}
+
+// ============================================
 // ADMIN AUTH
 // ============================================
 
@@ -365,10 +787,25 @@ module.exports = {
   query,
   transaction,
   initializeDatabase,
-  // Project tracking
+  // Project tracking (generated_projects table)
   trackProjectStart,
   trackProjectDeployed,
   trackProjectFailed,
+  // Generation tracking (uses generated_projects table)
+  trackGenerationStart,
+  trackGenerationComplete,
+  trackGenerationFailed,
+  trackDeploymentFailed,
+  trackBuildResult,
+  updateProjectMetadata,
+  updateProjectDeploymentUrls,
+  getRecentGenerations,
+  getGenerationStats,
+  // Companion app tracking
+  trackCompanionAppStart,
+  updateCompanionAppDeployment,
+  getCompanionAppsForProject,
+  findParentProjectBySubdomain,
   // API tracking
   trackApiUsage,
   calculateClaudeCost,
@@ -388,5 +825,12 @@ module.exports = {
   updateSubscriberStatus,
   // Admin
   getAdminByEmail,
-  updateAdminLastLogin
+  updateAdminLastLogin,
+  // Demo tracking
+  trackDemoDeployment,
+  getDemoDeployments,
+  getDemosByBatch,
+  deleteDemoRecord,
+  deleteAllDemoRecords,
+  getDemoBatches
 };

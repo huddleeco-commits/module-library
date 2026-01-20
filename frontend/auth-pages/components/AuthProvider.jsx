@@ -14,14 +14,31 @@ export function useAuth() {
   return context;
 }
 
+// Detect API URL - in production, API is served from same origin
+function getApiUrl() {
+  if (typeof window === 'undefined') return 'http://localhost:5000';
+
+  // Check for explicit overrides first
+  if (window.__API_URL__) return window.__API_URL__;
+  if (import.meta.env?.VITE_API_URL) return import.meta.env.VITE_API_URL;
+
+  // Auto-detect: in production (be1st.io), API is at same origin
+  // In development (localhost), use backend port 5000
+  const hostname = window.location.hostname;
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:5000';
+  }
+
+  // Production: API is served from same origin (frontend and backend share subdomain.be1st.io)
+  return '';
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const API_URL = typeof window !== 'undefined' 
-    ? (window.__API_URL__ || import.meta.env?.VITE_API_URL || 'http://localhost:5000')
-    : 'http://localhost:5000';
+  const API_URL = getApiUrl();
 
   useEffect(() => {
     checkAuth();

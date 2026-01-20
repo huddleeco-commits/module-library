@@ -389,6 +389,36 @@
     "visualPrompt": "Create a healing, wellness-focused chiropractic website. Hero showing relief and movement - patient in treatment or active lifestyle. Green palette for natural healing. Sections: conditions treated with body diagram, techniques/approach explanation, doctor profile with philosophy, patient success testimonials, what to expect on first visit, easy appointment booking. Emphasize natural, drug-free healing. Welcoming and hopeful tone."
   },
 
+  "barbershop": {
+    "name": "Barbershop / Men's Grooming",
+    "icon": "💈",
+    "category": "Healthcare",
+    "layouts": ["dark-classic-hero", "services-menu", "team-showcase"],
+    "defaultLayout": "dark-classic-hero",
+    "effects": ["fade-up", "hover-lift", "image-reveal"],
+    "sections": ["hero", "services-menu", "barber-team", "gallery", "reviews", "booking-cta"],
+    "vibe": "Classic, masculine, traditional craftsmanship, attention to detail, community",
+    "typography": {
+      "heading": "'Playfair Display', Georgia, serif",
+      "body": "'Lato', system-ui, sans-serif",
+      "style": "Bold classic headlines, clean readable body"
+    },
+    "colors": {
+      "primary": "#1a1a1a",
+      "accent": "#c4a35a",
+      "secondary": "#8b4513",
+      "background": "#0f0f0f",
+      "text": "#f5f5f5",
+      "textMuted": "#9ca3af"
+    },
+    "imagery": {
+      "hero": "Classic barbershop interior, leather chairs, hot towel shave, skilled barber at work",
+      "style": "Vintage-modern aesthetic, warm wood tones, brass fixtures, attention to craft",
+      "unsplash": "barbershop barber haircut mens grooming classic"
+    },
+    "visualPrompt": "Create a classic, masculine barbershop website. Hero with striking imagery of a traditional barbershop - leather chairs, warm lighting, skilled barbers at work. Dark color scheme with gold accents for a premium feel. Classic serif headlines. Sections: services with pricing (haircut, beard trim, hot towel shave $25-55), skilled barber team profiles with specialties, photo gallery of cuts and shop ambiance, customer reviews, easy online booking. Evoke traditional craftsmanship and attention to detail. The vibe should feel like a classic gentleman's club meets modern precision."
+  },
+
   "spa-salon": {
     "name": "Spa / Salon / Beauty",
     "icon": "💆",

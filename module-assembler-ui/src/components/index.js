@@ -31,3 +31,6 @@ export { default as LayoutPicker } from './LayoutPicker.jsx';
 export { default as SectionToggles } from './SectionToggles.jsx';
 export { default as AIPageChat } from './AIPageChat.jsx';
 export { default as PageCustomizer } from './PageCustomizer.jsx';
+
+// Dev Tools
+export { TestGenerator } from './TestGenerator.jsx';

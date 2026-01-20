@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  loyalty-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fullapptest4-loyalty
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - JWT_SECRET=${JWT_SECRET:-change-this-secret-to-something-secure}
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@fullapptest4.com}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin123}
+      - DATABASE_PATH=/app/data/loyalty.db
+      - BUSINESS_NAME=fullapptest4
+      - POINTS_CURRENCY=points
+      - EARN_RATE=1
+    volumes:
+      - loyalty_data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - loyalty_network
+
+volumes:
+  loyalty_data:
+    driver: local
+
+networks:
+  loyalty_network:
+    driver: bridge

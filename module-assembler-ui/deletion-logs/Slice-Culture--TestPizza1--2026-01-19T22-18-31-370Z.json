@@ -1,0 +1,161 @@
+{
+  "projectName": "Slice-Culture--TestPizza1-",
+  "deletedAt": "2026-01-19T22:18:31.370Z",
+  "resourcesFound": {
+    "name": "Slice-Culture--TestPizza1-",
+    "sanitizedName": "slice-culture-testpizza1",
+    "github": {
+      "repos": [
+        {
+          "name": "slice-culture-testpizza1-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "slice-culture-testpizza1-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "slice-culture-testpizza1-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "b3aa3486-59dd-4e06-8320-53ffbb2bf890",
+        "name": "slice-culture-testpizza1",
+        "createdAt": "2026-01-19T21:16:45.469Z",
+        "environments": [
+          {
+            "id": "91d50b98-534d-4178-a4a5-2cd214e805bd",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "214407af-9e4f-40fc-a8b1-e55a345f3286",
+          "name": "frontend"
+        },
+        {
+          "id": "3fd98735-ec80-4124-b2b3-f7cbcf2c235b",
+          "name": "admin"
+        },
+        {
+          "id": "8d106705-7993-4f95-b68a-6dc751fec8ee",
+          "name": "backend"
+        },
+        {
+          "id": "e33b32de-d900-4718-a3ab-bd6785b0b4ba",
+          "name": "postgres"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "244802b9c792272e93da1bdda9cb4f65",
+          "name": "slice-culture-testpizza1.be1st.io",
+          "type": "CNAME",
+          "content": "d7a2hzyx.up.railway.app"
+        },
+        {
+          "id": "daf448c48dbdf6ce03521870bca1be77",
+          "name": "api.slice-culture-testpizza1.be1st.io",
+          "type": "CNAME",
+          "content": "9kse4v4j.up.railway.app"
+        },
+        {
+          "id": "3d684de3961310e156a3da4c8358fce2",
+          "name": "admin.slice-culture-testpizza1.be1st.io",
+          "type": "CNAME",
+          "content": "4aqnu4y9.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Slice-Culture--TestPizza1-",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/slice-culture-testpizza1-backend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/slice-culture-testpizza1-backend"
+      },
+      {
+        "repo": "huddleeco-commits/slice-culture-testpizza1-frontend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/slice-culture-testpizza1-frontend"
+      },
+      {
+        "repo": "huddleeco-commits/slice-culture-testpizza1-admin",
+        "success": true,
+        "message": "Deleted huddleeco-commits/slice-culture-testpizza1-admin"
+      }
+    ],
+    "railway": {
+      "success": true,
+      "message": "Deleted Railway project b3aa3486-59dd-4e06-8320-53ffbb2bf890"
+    },
+    "cloudflare": [
+      {
+        "record": "slice-culture-testpizza1.be1st.io",
+        "success": true,
+        "message": "Deleted slice-culture-testpizza1.be1st.io"
+      },
+      {
+        "record": "api.slice-culture-testpizza1.be1st.io",
+        "success": true,
+        "message": "Deleted api.slice-culture-testpizza1.be1st.io"
+      },
+      {
+        "record": "admin.slice-culture-testpizza1.be1st.io",
+        "success": true,
+        "message": "Deleted admin.slice-culture-testpizza1.be1st.io"
+      }
+    ],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Slice-Culture--TestPizza1-"
+    },
+    "errors": [],
+    "verification": {
+      "github": [
+        {
+          "repo": "huddleeco-commits/slice-culture-testpizza1-backend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/slice-culture-testpizza1-frontend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/slice-culture-testpizza1-admin",
+          "verified": true
+        }
+      ],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "slice-culture-testpizza1",
+          "verified": true
+        },
+        {
+          "subdomain": "api.slice-culture-testpizza1",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.slice-culture-testpizza1",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

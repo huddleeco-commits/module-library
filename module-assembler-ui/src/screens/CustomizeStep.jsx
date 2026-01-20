@@ -1045,6 +1045,51 @@ function CustomizeStep({ projectData, updateProject, industries, layouts, effect
           </div>
         )}
 
+        {/* Companion App Toggle */}
+        <div
+          style={{
+            ...customizeStyles.companionToggle,
+            ...(projectData.includeCompanionApp ? customizeStyles.companionToggleActive : {})
+          }}
+          onClick={() => updateProject({ includeCompanionApp: !projectData.includeCompanionApp })}
+        >
+          <div
+            style={{
+              ...customizeStyles.companionCheckbox,
+              ...(projectData.includeCompanionApp ? customizeStyles.companionCheckboxActive : {})
+            }}
+          >
+            {projectData.includeCompanionApp && <span style={{ color: 'white', fontSize: '14px' }}>✓</span>}
+          </div>
+          <div style={customizeStyles.companionText}>
+            <div style={customizeStyles.companionLabel}>
+              📱 Also generate companion app
+            </div>
+            <div style={customizeStyles.companionDesc}>
+              PWA mobile app with loyalty program, quick actions & push notifications
+            </div>
+          </div>
+        </div>
+
+        {/* Companion App Preview when selected */}
+        {projectData.includeCompanionApp && projectData.businessName.trim() && (
+          <div style={customizeStyles.companionPreview}>
+            <div style={customizeStyles.companionPreviewHeader}>
+              <span style={customizeStyles.companionPreviewIcon}>📱</span>
+              <span style={customizeStyles.companionPreviewTitle}>Your companion app will include:</span>
+            </div>
+            <div style={customizeStyles.companionPreviewUrl}>
+              🌐 {projectData.businessName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-')}.be1st.app
+            </div>
+            <div style={customizeStyles.companionFeatures}>
+              <span style={customizeStyles.companionFeature}>⚡ Quick Actions</span>
+              <span style={customizeStyles.companionFeature}>🎁 Loyalty Program</span>
+              <span style={customizeStyles.companionFeature}>📱 Mobile-First Design</span>
+              <span style={customizeStyles.companionFeature}>🔔 Push Notifications</span>
+            </div>
+          </div>
+        )}
+
         <button
           style={{
             ...styles.generateBtn,
@@ -1307,6 +1352,94 @@ const customizeStyles = {
     marginTop: '10px',
     marginLeft: '32px',
     lineHeight: 1.5
+  },
+  // Companion App Toggle Styles
+  companionToggle: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    marginBottom: '16px',
+    padding: '14px 18px',
+    background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(102, 126, 234, 0.08) 100%)',
+    borderRadius: '12px',
+    border: '1px solid rgba(139, 92, 246, 0.2)',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease'
+  },
+  companionToggleActive: {
+    background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(102, 126, 234, 0.15) 100%)',
+    border: '2px solid #8b5cf6'
+  },
+  companionCheckbox: {
+    width: '22px',
+    height: '22px',
+    borderRadius: '6px',
+    border: '2px solid #8b5cf6',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'rgba(255,255,255,0.05)',
+    flexShrink: 0
+  },
+  companionCheckboxActive: {
+    background: '#8b5cf6'
+  },
+  companionText: {
+    flex: 1,
+    textAlign: 'left'
+  },
+  companionLabel: {
+    fontSize: '14px',
+    fontWeight: '600',
+    color: '#fff'
+  },
+  companionDesc: {
+    fontSize: '12px',
+    color: '#888',
+    marginTop: '3px'
+  },
+  companionPreview: {
+    padding: '16px',
+    background: 'rgba(139, 92, 246, 0.08)',
+    border: '1px solid rgba(139, 92, 246, 0.2)',
+    borderRadius: '12px',
+    marginBottom: '16px'
+  },
+  companionPreviewHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    marginBottom: '12px'
+  },
+  companionPreviewIcon: {
+    fontSize: '18px'
+  },
+  companionPreviewTitle: {
+    color: '#a78bfa',
+    fontSize: '13px',
+    fontWeight: '600'
+  },
+  companionPreviewUrl: {
+    padding: '10px 14px',
+    background: 'rgba(255,255,255,0.05)',
+    borderRadius: '8px',
+    color: '#fff',
+    fontSize: '13px',
+    fontFamily: 'monospace',
+    marginBottom: '12px'
+  },
+  companionFeatures: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '8px'
+  },
+  companionFeature: {
+    padding: '6px 12px',
+    background: 'rgba(139, 92, 246, 0.15)',
+    borderRadius: '16px',
+    color: '#a78bfa',
+    fontSize: '12px',
+    fontWeight: '500'
   }
 };
 

@@ -1,0 +1,166 @@
+{
+  "id": "coffee-cafe",
+  "name": "Coffee Shop / Cafe",
+  "icon": "☕",
+  "business": {
+    "name": "Test Bean & Leaf",
+    "location": "Portland, OR",
+    "tagline": "Craft coffee, cozy vibes",
+    "industry": "cafe",
+    "teamSize": "5-10",
+    "priceRange": "$$",
+    "established": "2017",
+    "phone": "(503) 555-2345",
+    "email": "hello@testbeanleaf.com",
+    "address": "123 Coffee Lane, Portland, OR 97204",
+    "hours": {
+      "monday": "6:00 AM - 7:00 PM",
+      "tuesday": "6:00 AM - 7:00 PM",
+      "wednesday": "6:00 AM - 7:00 PM",
+      "thursday": "6:00 AM - 7:00 PM",
+      "friday": "6:00 AM - 8:00 PM",
+      "saturday": "7:00 AM - 8:00 PM",
+      "sunday": "7:00 AM - 6:00 PM"
+    }
+  },
+  "theme": {
+    "colors": {
+      "primary": "#8B5A2B",
+      "secondary": "#D69E2E",
+      "accent": "#2D5016",
+      "background": "#FDF6E3",
+      "text": "#3D3D3D"
+    },
+    "fonts": {
+      "heading": "Merriweather",
+      "body": "Source Sans Pro"
+    },
+    "style": "warm-organic"
+  },
+  "pages": {
+    "home": {
+      "hero": {
+        "headline": "Craft Coffee, Cozy Vibes",
+        "subheadline": "Locally roasted beans, house-made pastries, and a welcoming space to call your own",
+        "cta": "View Our Menu",
+        "backgroundImage": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1920"
+      },
+      "sections": [
+        {
+          "type": "features",
+          "title": "The Bean & Leaf Difference",
+          "items": [
+            { "icon": "Coffee", "title": "Locally Roasted", "description": "We roast our beans fresh every week" },
+            { "icon": "Leaf", "title": "Organic Options", "description": "Fair trade and organic selections" },
+            { "icon": "Heart", "title": "Community First", "description": "A neighborhood gathering spot" }
+          ]
+        },
+        {
+          "type": "menu-preview",
+          "title": "Customer Favorites",
+          "items": [
+            { "name": "Pour Over", "price": 4.50, "description": "Single origin, made to order" },
+            { "name": "Oat Milk Latte", "price": 5.50, "description": "Creamy, smooth, delicious" },
+            { "name": "Avocado Toast", "price": 9, "description": "Sourdough, everything seasoning" }
+          ]
+        }
+      ]
+    },
+    "menu": {
+      "categories": [
+        {
+          "name": "Coffee",
+          "items": [
+            { "name": "Drip Coffee", "price": 2.75, "description": "House blend" },
+            { "name": "Pour Over", "price": 4.50, "description": "Single origin" },
+            { "name": "Espresso", "price": 3.00, "description": "Double shot" },
+            { "name": "Americano", "price": 3.50, "description": "Espresso + water" },
+            { "name": "Latte", "price": 4.75, "description": "Classic or flavored" },
+            { "name": "Cappuccino", "price": 4.50, "description": "Equal parts espresso, milk, foam" }
+          ]
+        },
+        {
+          "name": "Tea & Other",
+          "items": [
+            { "name": "Loose Leaf Tea", "price": 3.50, "description": "Various selections" },
+            { "name": "Chai Latte", "price": 5.00, "description": "House-made chai" },
+            { "name": "Matcha Latte", "price": 5.50, "description": "Ceremonial grade" },
+            { "name": "Hot Chocolate", "price": 4.00, "description": "Dark chocolate" }
+          ]
+        },
+        {
+          "name": "Food",
+          "items": [
+            { "name": "Avocado Toast", "price": 9, "description": "Sourdough, everything seasoning" },
+            { "name": "Breakfast Burrito", "price": 10, "description": "Eggs, cheese, veggies" },
+            { "name": "Fresh Pastry", "price": 4, "description": "Baker's selection" },
+            { "name": "Acai Bowl", "price": 12, "description": "Organic acai, granola, fruit" }
+          ]
+        }
+      ]
+    },
+    "about": {
+      "story": "Test Bean & Leaf was born from a love of great coffee and community. Founded in 2017 by two barista friends, we've grown into Portland's favorite neighborhood cafe while staying true to our craft roots.",
+      "team": [
+        { "name": "Emma Chen", "role": "Co-Founder & Head Roaster", "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400", "bio": "Q Grader certified, coffee obsessed" },
+        { "name": "David Park", "role": "Co-Founder & Operations", "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400", "bio": "Former restaurant manager" }
+      ]
+    },
+    "contact": {
+      "address": "123 Coffee Lane, Portland, OR 97204",
+      "phone": "(503) 555-2345",
+      "email": "hello@testbeanleaf.com"
+    },
+    "gallery": {
+      "images": [
+        { "url": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800", "caption": "Fresh pour over" },
+        { "url": "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=800", "caption": "Cozy interior" },
+        { "url": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800", "caption": "Latte art" },
+        { "url": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=800", "caption": "Pastry selection" }
+      ]
+    }
+  },
+  "companionApp": {
+    "dashboard": {
+      "greeting": "Ready for your daily brew?",
+      "widgets": [
+        { "type": "points", "label": "Bean Points", "value": 340 },
+        { "type": "drinks", "label": "Drinks to Free", "value": "2 more" },
+        { "type": "orders", "label": "Total Orders", "value": 28 },
+        { "type": "savings", "label": "Total Savings", "value": "$24.50" }
+      ]
+    },
+    "rewards": {
+      "tiers": [
+        { "name": "Regular", "minPoints": 0, "perks": ["10th drink free"] },
+        { "name": "Preferred", "minPoints": 250, "perks": ["Every 8th drink free", "Birthday drink"] },
+        { "name": "VIP", "minPoints": 500, "perks": ["Every 6th drink free", "Free size upgrades"] }
+      ],
+      "currentPoints": 340,
+      "currentTier": "Preferred"
+    },
+    "profile": {
+      "fields": [
+        { "name": "fullName", "label": "Full Name", "type": "text", "value": "Demo Coffee Lover" },
+        { "name": "email", "label": "Email", "type": "email", "value": "demo@example.com" }
+      ]
+    },
+    "wallet": {
+      "balance": 15.00,
+      "transactions": [
+        { "id": "t1", "type": "credit", "amount": 25.00, "description": "Gift card added", "date": "2024-01-10" },
+        { "id": "t2", "type": "debit", "amount": -5.50, "description": "Oat Milk Latte", "date": "2024-01-12" },
+        { "id": "t3", "type": "debit", "amount": -4.50, "description": "Pour Over", "date": "2024-01-15" }
+      ]
+    }
+  },
+  "sync": {
+    "sharedState": ["user", "rewards", "wallet", "orders", "profile"],
+    "endpoints": [
+      { "path": "/api/auth/me", "method": "GET", "description": "User profile" },
+      { "path": "/api/loyalty", "method": "GET", "description": "Bean Points" },
+      { "path": "/api/wallet", "method": "GET", "description": "Wallet balance" },
+      { "path": "/api/orders", "method": "GET", "description": "Order history" }
+    ]
+  }
+}

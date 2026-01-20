@@ -1,0 +1,38 @@
+{
+  "projectName": "pizza-restaurant-in-brooklyn-4-companion",
+  "savedAt": "2026-01-20T01:10:51.739Z",
+  "resources": {
+    "name": "pizza-restaurant-in-brooklyn-4-companion",
+    "sanitizedName": "pizza-restaurant-in-brooklyn-4-companion",
+    "github": {
+      "repos": [
+        {
+          "name": "pizza-restaurant-in-brooklyn-4-companion-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "pizza-restaurant-in-brooklyn-4-companion-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "pizza-restaurant-in-brooklyn-4-companion-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

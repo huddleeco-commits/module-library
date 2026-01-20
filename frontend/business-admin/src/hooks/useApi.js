@@ -1,14 +1,31 @@
 ﻿/**
  * useApi Hook - Real API Implementation
- * 
+ *
  * Connects to the actual backend API.
- * API URL is set via VITE_API_URL environment variable.
+ * API URL is auto-detected in production, or set via VITE_API_URL.
  */
 
 import { useState, useEffect, useCallback } from 'react';
 
-// API Base URL - uses environment variable (set during build)
-const API_URL = import.meta.env.VITE_API_URL || '';
+// Get API URL - auto-detect production vs development
+function getApiUrl() {
+  // Check for explicit override first
+  if (import.meta.env?.VITE_API_URL) return import.meta.env.VITE_API_URL;
+
+  // Auto-detect: in production (be1st.io), API is at same origin
+  // In development (localhost), use backend port 5000
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:5000';
+    }
+  }
+
+  // Production: API is served from same origin
+  return '';
+}
+
+const API_URL = getApiUrl();
 
 export function useApi(endpoint, options = {}) {
   const [data, setData] = useState(null);

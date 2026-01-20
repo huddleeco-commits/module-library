@@ -1,0 +1,80 @@
+{
+  "projectName": "test-restaurant-companion",
+  "deletedAt": "2026-01-19T01:12:19.816Z",
+  "resourcesFound": {
+    "name": "test-restaurant-companion",
+    "sanitizedName": "test-restaurant-companion",
+    "github": {
+      "repos": [
+        {
+          "name": "test-restaurant-companion-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-restaurant-companion-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-restaurant-companion-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-restaurant-companion-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-restaurant-companion-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-restaurant-companion-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "test-restaurant-companion",
+          "verified": true
+        },
+        {
+          "subdomain": "api.test-restaurant-companion",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.test-restaurant-companion",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

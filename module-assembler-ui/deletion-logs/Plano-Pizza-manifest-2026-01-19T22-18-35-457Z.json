@@ -1,0 +1,38 @@
+{
+  "projectName": "Plano-Pizza",
+  "savedAt": "2026-01-19T22:18:35.457Z",
+  "resources": {
+    "name": "Plano-Pizza",
+    "sanitizedName": "plano-pizza",
+    "github": {
+      "repos": [
+        {
+          "name": "plano-pizza-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "plano-pizza-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "plano-pizza-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Plano-Pizza",
+      "exists": true
+    }
+  }
+}

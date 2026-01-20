@@ -109,9 +109,80 @@ function generateBrainJson(projectName, industryKey, industryConfig, additionalC
     theme: {
       mode: 'dark',
       primaryColor: colors.primary || '#3b82f6',
-      accentColor: colors.accent || '#8b5cf6'
-    }
+      accentColor: colors.accent || '#8b5cf6',
+      backgroundColor: '#1A1A1A',
+      textColor: '#F5F0E6',
+      fonts: {
+        heading: 'system-ui, sans-serif',
+        body: 'system-ui, sans-serif'
+      }
+    },
+    // Menu structure for restaurants/food businesses
+    menu: generateMenuStructure(industryKey),
+    // Loyalty program structure
+    loyalty: generateLoyaltyStructure(industryKey)
   }, null, 2);
+}
+
+/**
+ * Generate menu structure based on industry
+ */
+function generateMenuStructure(industry) {
+  const foodIndustries = ['restaurant', 'steakhouse', 'pizza', 'pizzeria', 'cafe', 'bakery', 'bar', 'food-truck'];
+  if (!foodIndustries.includes(industry)) return null;
+
+  return {
+    categories: [
+      {
+        id: 'main',
+        name: 'Main Dishes',
+        description: 'Our signature offerings',
+        items: [
+          { id: 1, name: 'House Special', description: 'Chef\'s signature dish', price: 24, popular: true },
+          { id: 2, name: 'Daily Feature', description: 'Ask about today\'s selection', price: 22 }
+        ]
+      },
+      {
+        id: 'starters',
+        name: 'Starters',
+        description: 'Begin your meal',
+        items: [
+          { id: 3, name: 'Soup of the Day', description: 'Made fresh daily', price: 8 },
+          { id: 4, name: 'House Salad', description: 'Mixed greens, house dressing', price: 10 }
+        ]
+      },
+      {
+        id: 'desserts',
+        name: 'Desserts',
+        description: 'Sweet endings',
+        items: [
+          { id: 5, name: 'Dessert of the Day', description: 'Chef\'s selection', price: 10, popular: true }
+        ]
+      }
+    ]
+  };
+}
+
+/**
+ * Generate loyalty program structure
+ */
+function generateLoyaltyStructure(industry) {
+  return {
+    enabled: true,
+    pointsPerDollar: 1,
+    tiers: [
+      { name: 'Bronze', minPoints: 0, multiplier: 1, perks: ['Earn 1pt per $1', 'Birthday reward'] },
+      { name: 'Silver', minPoints: 1000, multiplier: 1.25, perks: ['Earn 1.25pt per $1', 'Priority service'] },
+      { name: 'Gold', minPoints: 2500, multiplier: 1.5, perks: ['Earn 1.5pt per $1', 'Exclusive perks'] },
+      { name: 'Platinum', minPoints: 5000, multiplier: 2, perks: ['Earn 2pt per $1', 'VIP access', 'Personal concierge'] }
+    ],
+    rewards: [
+      { id: 1, name: 'Free Appetizer', points: 500, description: 'Any starter from our menu' },
+      { id: 2, name: 'Free Dessert', points: 750, description: 'Chef\'s selection dessert' },
+      { id: 3, name: '$25 Off', points: 1500, description: 'On orders $75+' },
+      { id: 4, name: 'Free Entree', points: 3000, description: 'Up to $50 value' }
+    ]
+  };
 }
 
 // ============================================
@@ -609,17 +680,236 @@ module.exports = router;
 `;
 }
 
+/**
+ * Generate Menu API Routes
+ * Serves menu data from brain.json
+ */
+function generateMenuRoutes() {
+  return `/**
+ * Menu API Routes
+ * Serves menu data from brain.json - single source of truth
+ */
+const express = require('express');
+const router = express.Router();
+const fs = require('fs');
+const path = require('path');
+
+const BRAIN_PATH = path.join(__dirname, '..', '..', 'brain.json');
+
+function readBrain() {
+  try {
+    if (fs.existsSync(BRAIN_PATH)) {
+      return JSON.parse(fs.readFileSync(BRAIN_PATH, 'utf-8'));
+    }
+  } catch (e) {
+    console.error('Error reading brain.json:', e.message);
+  }
+  return null;
+}
+
+// GET /api/menu - Get full menu
+router.get('/', (req, res) => {
+  const brain = readBrain();
+  if (!brain || !brain.menu) {
+    return res.status(500).json({ success: false, error: 'Menu not available' });
+  }
+  res.json({
+    success: true,
+    business: { name: brain.business?.name || 'Restaurant', currency: brain.business?.currencySymbol || '$' },
+    menu: brain.menu
+  });
+});
+
+// GET /api/menu/categories - Get category list
+router.get('/categories', (req, res) => {
+  const brain = readBrain();
+  if (!brain || !brain.menu) return res.status(500).json({ success: false, error: 'Menu not available' });
+  const categories = brain.menu.categories.map(cat => ({ id: cat.id, name: cat.name, description: cat.description, itemCount: cat.items?.length || 0 }));
+  res.json({ success: true, categories });
+});
+
+// GET /api/menu/popular - Get popular items
+router.get('/popular', (req, res) => {
+  const brain = readBrain();
+  if (!brain || !brain.menu) return res.status(500).json({ success: false, error: 'Menu not available' });
+  const popularItems = [];
+  for (const cat of brain.menu.categories) {
+    for (const item of cat.items) {
+      if (item.popular) popularItems.push({ ...item, category: cat.name });
+    }
+  }
+  res.json({ success: true, items: popularItems });
+});
+
+module.exports = router;
+`;
+}
+
+/**
+ * Generate Loyalty API Routes
+ */
+function generateLoyaltyRoutes() {
+  return `/**
+ * Loyalty API Routes
+ */
+const express = require('express');
+const router = express.Router();
+const fs = require('fs');
+const path = require('path');
+
+const BRAIN_PATH = path.join(__dirname, '..', '..', 'brain.json');
+const userPoints = new Map();
+
+function readBrain() {
+  try {
+    if (fs.existsSync(BRAIN_PATH)) return JSON.parse(fs.readFileSync(BRAIN_PATH, 'utf-8'));
+  } catch (e) { console.error('Error reading brain.json:', e.message); }
+  return null;
+}
+
+function getUserTier(points, tiers) {
+  let currentTier = tiers[0];
+  for (const tier of tiers) { if (points >= tier.minPoints) currentTier = tier; }
+  return currentTier;
+}
+
+router.get('/config', (req, res) => {
+  const brain = readBrain();
+  if (!brain || !brain.loyalty) return res.status(500).json({ success: false, error: 'Loyalty program not configured' });
+  res.json({ success: true, loyalty: brain.loyalty });
+});
+
+router.get('/tiers', (req, res) => {
+  const brain = readBrain();
+  if (!brain || !brain.loyalty) return res.status(500).json({ success: false, error: 'Loyalty program not configured' });
+  res.json({ success: true, tiers: brain.loyalty.tiers });
+});
+
+router.get('/rewards', (req, res) => {
+  const brain = readBrain();
+  if (!brain || !brain.loyalty) return res.status(500).json({ success: false, error: 'Loyalty program not configured' });
+  res.json({ success: true, rewards: brain.loyalty.rewards });
+});
+
+router.get('/user/:userId', (req, res) => {
+  const brain = readBrain();
+  if (!brain || !brain.loyalty) return res.status(500).json({ success: false, error: 'Loyalty program not configured' });
+  const userId = req.params.userId;
+  const points = userPoints.get(userId) || 0;
+  const currentTier = getUserTier(points, brain.loyalty.tiers);
+  const nextTier = brain.loyalty.tiers.find(t => t.minPoints > points);
+  res.json({ success: true, userId, points, tier: currentTier, nextTier: nextTier || null, pointsToNextTier: nextTier ? nextTier.minPoints - points : 0, availableRewards: brain.loyalty.rewards.filter(r => r.points <= points) });
+});
+
+router.post('/user/:userId/add', (req, res) => {
+  const brain = readBrain();
+  if (!brain || !brain.loyalty) return res.status(500).json({ success: false, error: 'Loyalty program not configured' });
+  const { points, reason } = req.body;
+  if (!points || points <= 0) return res.status(400).json({ success: false, error: 'Points must be positive' });
+  const userId = req.params.userId;
+  const currentPoints = userPoints.get(userId) || 0;
+  const newPoints = currentPoints + points;
+  userPoints.set(userId, newPoints);
+  res.json({ success: true, userId, pointsAdded: points, totalPoints: newPoints, tier: getUserTier(newPoints, brain.loyalty.tiers), reason: reason || 'Points added' });
+});
+
+module.exports = router;
+`;
+}
+
+/**
+ * Generate Orders API Routes
+ */
+function generateOrdersRoutes() {
+  return `/**
+ * Orders API Routes
+ */
+const express = require('express');
+const router = express.Router();
+
+let orders = [];
+let orderIdCounter = 1000;
+
+router.post('/', (req, res) => {
+  try {
+    const { items, customerId, customerName, customerEmail, total, notes } = req.body;
+    if (!items || !Array.isArray(items) || items.length === 0) return res.status(400).json({ success: false, error: 'Order must have items' });
+    const order = {
+      id: ++orderIdCounter, items, customerId: customerId || null, customerName: customerName || 'Guest',
+      customerEmail: customerEmail || null, total: total || items.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+      notes: notes || null, status: 'pending', pointsEarned: Math.floor(total || 0),
+      createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+    };
+    orders.push(order);
+    res.status(201).json({ success: true, order, message: 'Order placed successfully' });
+  } catch (error) { res.status(500).json({ success: false, error: error.message }); }
+});
+
+router.get('/', (req, res) => {
+  res.json({ success: true, orders: orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)), count: orders.length });
+});
+
+router.get('/:id', (req, res) => {
+  const order = orders.find(o => o.id === parseInt(req.params.id));
+  if (!order) return res.status(404).json({ success: false, error: 'Order not found' });
+  res.json({ success: true, order });
+});
+
+router.patch('/:id/status', (req, res) => {
+  const { status } = req.body;
+  const validStatuses = ['pending', 'confirmed', 'preparing', 'ready', 'completed', 'cancelled'];
+  if (!validStatuses.includes(status)) return res.status(400).json({ success: false, error: 'Invalid status' });
+  const orderIndex = orders.findIndex(o => o.id === parseInt(req.params.id));
+  if (orderIndex === -1) return res.status(404).json({ success: false, error: 'Order not found' });
+  orders[orderIndex].status = status;
+  orders[orderIndex].updatedAt = new Date().toISOString();
+  res.json({ success: true, order: orders[orderIndex] });
+});
+
+module.exports = router;
+`;
+}
+
 function buildAppJsx(name, pages, promptConfig, industry) {
-  const colors = promptConfig?.colors || { primary: '#0a1628', text: '#1a1a2e', textMuted: '#4a5568' };
+  const colors = promptConfig?.colors || { primary: '#0a1628', text: '#1a1a2e', textMuted: '#4a5568', accent: '#22c55e' };
   const typography = promptConfig?.typography || { heading: "Georgia, 'Times New Roman', serif" };
+
+  // Get accent color from theme (for CTA buttons)
+  const accentColor = colors.accent || colors.primary || '#22c55e';
 
   // Get industry-specific header configuration
   const headerConfig = getIndustryHeaderConfig(industry);
 
-  // Industries that require authentication
-  const authRequiredIndustries = ['survey-rewards', 'saas', 'ecommerce', 'collectibles', 'healthcare', 'family'];
+  // Industries that require authentication (expanded to all industries with companion apps)
+  // Auth is needed for: user accounts, loyalty programs, order history, bookings, etc.
+  const authRequiredIndustries = [
+    // All food & beverage
+    'restaurant', 'pizza', 'pizzeria', 'steakhouse', 'cafe', 'bar', 'bakery', 'brewery', 'winery', 'coffee-shop',
+    // Healthcare & wellness
+    'healthcare', 'dental', 'chiropractic', 'veterinary', 'spa-salon', 'barbershop', 'fitness', 'yoga', 'yoga-studio', 'martial-arts',
+    // Professional services
+    'law-firm', 'accounting', 'consulting', 'real-estate', 'insurance', 'finance', 'financial-advisor',
+    // Tech & retail
+    'saas', 'startup', 'agency', 'ecommerce', 'subscription-box', 'collectibles',
+    // Creative & entertainment
+    'photography', 'wedding', 'portfolio', 'musician', 'podcast', 'gaming',
+    // Organizations & education
+    'nonprofit', 'church', 'school', 'online-course',
+    // Trade services
+    'construction', 'plumber', 'electrician', 'hvac', 'landscaping', 'roofing', 'cleaning', 'auto-repair', 'moving',
+    // Other
+    'pet-services', 'event-venue', 'hotel', 'travel', 'daycare', 'tutoring', 'music-school', 'florist',
+    // Legacy
+    'survey-rewards', 'family'
+  ];
   const needsAuth = authRequiredIndustries.includes(industry);
-  
+
+  // Industries that require cart functionality (product ordering, NOT service booking)
+  // Service businesses (spa-salon, barbershop) use booking systems, not carts
+  const cartRequiredIndustries = ['restaurant', 'ecommerce', 'retail', 'pizzeria', 'pizza', 'cafe', 'bakery', 'food-truck'];
+  const needsCart = cartRequiredIndustries.includes(industry) ||
+                   pages.some(p => ['menu', 'cart', 'checkout', 'order', 'products', 'services', 'booking'].includes(p.toLowerCase()));
+
   // Pages that require authentication (protected routes)
   const protectedPages = ['dashboard', 'earn', 'rewards', 'wallet', 'profile', 'settings', 'account'];
   
@@ -655,6 +945,11 @@ import { ProtectedRoute } from './modules/auth-pages/components/ProtectedRoute';
 import { LoginPage } from './modules/auth-pages/components/LoginPage';
 import { RegisterPage } from './modules/auth-pages/components/RegisterPage';
 import { useAuth } from './modules/auth-pages/components/AuthProvider';` : '';
+
+  // Cart imports
+  const cartImports = needsCart ? `
+// Cart context
+import { CartProvider } from './context/CartContext';` : '';
 
   const authRoutes = needsAuth ? `
               <Route path="/login" element={<LoginPage />} />
@@ -701,8 +996,8 @@ function AuthButtons() {
     transition: 'all 0.2s',
   },
   registerButton: {
-    background: '#22c55e',
-    color: '#000000',
+    background: '${accentColor}',
+    color: '#ffffff',
     textDecoration: 'none',
     fontSize: '14px',
     fontWeight: '600',
@@ -722,10 +1017,28 @@ function AuthButtons() {
     transition: 'all 0.2s',
   },` : '';
 
-  const appWrapper = needsAuth ? ['<AuthProvider>', '</AuthProvider>'] : ['', ''];
+  // Build app wrapper based on required providers
+  // Order: AuthProvider (outer) > CartProvider (inner) > App content
+  let appWrapperOpen = '';
+  let appWrapperClose = '';
+  if (needsAuth) {
+    appWrapperOpen += '<AuthProvider>';
+    appWrapperClose = '</AuthProvider>' + appWrapperClose;
+  }
+  if (needsCart) {
+    appWrapperOpen += '<CartProvider>';
+    appWrapperClose = '</CartProvider>' + appWrapperClose;
+  }
+  const appWrapper = [appWrapperOpen, appWrapperClose];
 
   // Build industry-specific header icons
-  const headerIcons = ['Menu', 'X'];
+  // Include common icons that AI pages might reference (MapPin, Phone, Mail, Star, Check, ArrowRight, etc.)
+  const headerIcons = [
+    'Menu', 'X',
+    // Common page icons - always included to prevent "not defined" errors from AI-generated pages
+    'MapPin', 'Phone', 'Mail', 'Star', 'Check', 'ArrowRight', 'ChevronRight', 'ChevronDown',
+    'Calendar', 'Users', 'Award', 'Heart', 'Target', 'Sparkles', 'Quote', 'ExternalLink'
+  ];
   if (headerConfig.primaryCta?.icon) headerIcons.push(headerConfig.primaryCta.icon);
   if (headerConfig.secondaryCta?.icon) headerIcons.push(headerConfig.secondaryCta.icon);
   if (headerConfig.showPhoneProminent) headerIcons.push('Phone');
@@ -829,6 +1142,7 @@ import './theme.css';
 // Page imports
 ${routeImports}
 ${authImports}
+${cartImports}
 ${authButtonsComponent}
 // Mobile menu wrapper component with industry-specific header
 function NavWrapper({ children }) {
@@ -997,7 +1311,7 @@ const styles = {
     background: '${['playful', 'edgy', 'bold'].includes(headerConfig.headerStyle) ? (headerConfig.headerStyle === 'edgy' ? 'linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%)' : headerConfig.headerStyle === 'bold' ? '#1a1a2e' : 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)') : '#ffffff'}',
     borderBottom: '${['playful', 'edgy', 'bold'].includes(headerConfig.headerStyle) ? 'none' : '1px solid rgba(10, 22, 40, 0.1)'}',
     position: 'fixed',
-    top: ${headerConfig.showEmergencyBanner ? '40px' : headerConfig.showPromoBanner ? '32px' : '0'},
+    top: '${headerConfig.showEmergencyBanner ? "40px" : headerConfig.showPromoBanner ? "32px" : "0"}',
     left: 0,
     right: 0,
     width: '100%',
@@ -1039,13 +1353,13 @@ const styles = {
     textTransform: 'uppercase',
     transition: 'color 0.2s',
   },
-  // Primary CTA button
+  // Primary CTA button - uses theme accent color
   primaryCta: {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
     padding: '10px 20px',
-    background: '${headerConfig.type === 'emergency' ? '#dc2626' : headerConfig.type === 'entertainment' ? 'linear-gradient(135deg, #9333ea 0%, #ec4899 100%)' : headerConfig.type === 'creative' ? 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)' : headerConfig.type === 'barbershop' ? '#1a1a2e' : '#22c55e'}',
+    background: '${headerConfig.type === 'emergency' ? '#dc2626' : headerConfig.type === 'entertainment' ? 'linear-gradient(135deg, #9333ea 0%, #ec4899 100%)' : headerConfig.type === 'creative' ? 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)' : headerConfig.type === 'barbershop' ? '#1a1a2e' : accentColor}',
     color: '#ffffff',
     textDecoration: 'none',
     borderRadius: '${headerConfig.headerStyle === 'edgy' ? '4px' : '8px'}',
@@ -1155,7 +1469,7 @@ const styles = {
     justifyContent: 'center',
     width: '44px',
     height: '44px',
-    background: '${headerConfig.type === 'emergency' ? '#dc2626' : '#22c55e'}',
+    background: '${headerConfig.type === 'emergency' ? '#dc2626' : accentColor}',
     color: '#ffffff',
     borderRadius: '50%',
     textDecoration: 'none',
@@ -1163,7 +1477,7 @@ const styles = {
   hamburger: {
     background: 'none',
     border: 'none',
-    color: '${['playful', 'edgy', 'bold'].includes(headerConfig.headerStyle) ? '#ffffff' : colors.text}',
+    color: '${['playful', 'edgy', 'bold'].includes(headerConfig.headerStyle) ? '#ffffff' : '#1a1a1a'}',
     cursor: 'pointer',
     padding: '12px',
     display: 'flex',
@@ -1199,7 +1513,7 @@ const styles = {
     overflowY: 'auto',
   },
   mobileNavLink: {
-    color: '${colors.text}',
+    color: '#1a1a1a',
     textDecoration: 'none',
     fontSize: '16px',
     fontWeight: '500',
@@ -1218,7 +1532,7 @@ const styles = {
   mobilePrimaryCta: {
     display: 'block',
     padding: '16px',
-    background: '${headerConfig.type === 'emergency' ? '#dc2626' : headerConfig.type === 'entertainment' ? 'linear-gradient(135deg, #9333ea 0%, #ec4899 100%)' : '#22c55e'}',
+    background: '${headerConfig.type === 'emergency' ? '#dc2626' : headerConfig.type === 'entertainment' ? 'linear-gradient(135deg, #9333ea 0%, #ec4899 100%)' : accentColor}',
     color: '#ffffff',
     textDecoration: 'none',
     textAlign: 'center',
@@ -1264,13 +1578,14 @@ export default App;
 // ============================================
 function validateGeneratedCode(code, componentName) {
   const errors = [];
+  const warnings = [];
   let fixedCode = code;
-  
+
   // Check for invalid Lucide icons and fix them
   const iconImportMatch = fixedCode.match(/import\s*\{([^}]+)\}\s*from\s*['"]lucide-react['"]/);
   if (iconImportMatch) {
     const importedIcons = iconImportMatch[1].split(',').map(i => i.trim()).filter(Boolean);
-    
+
     for (const icon of importedIcons) {
       if (!VALID_LUCIDE_ICONS.includes(icon)) {
         const replacement = ICON_REPLACEMENTS[icon] || 'Circle';
@@ -1280,7 +1595,7 @@ function validateGeneratedCode(code, componentName) {
         errors.push(`Invalid icon "${icon}" replaced with "${replacement}"`);
       }
     }
-    
+
     // Deduplicate icons in import statement
     const newImportMatch = fixedCode.match(/import\s*\{([^}]+)\}\s*from\s*['"]lucide-react['"]/);
     if (newImportMatch) {
@@ -1294,55 +1609,289 @@ function validateGeneratedCode(code, componentName) {
       }
     }
   }
-  
+
+  // ============================================
+  // UNTERMINATED STRING DETECTION
+  // Catches: opacity: 0.9' (trailing quote without opening)
+  // ============================================
+  const unterminatedStringPatterns = [
+    // Number followed by trailing quote: 0.9' or 16'
+    { pattern: /:\s*(\d+\.?\d*)'(?!\s*,|\s*\})/g, desc: 'number with trailing quote' },
+    // Property value with mismatched quotes: 'value" or "value'
+    { pattern: /:\s*'[^']*"(?=\s*[,}])/g, desc: 'mismatched quotes (single then double)' },
+    { pattern: /:\s*"[^"]*'(?=\s*[,}])/g, desc: 'mismatched quotes (double then single)' },
+    // Trailing quote after number in style object: opacity: 0.7'
+    { pattern: /(\w+):\s*(\d+\.?\d*)'(?=\s*[,}\n])/g, desc: 'style value with orphan quote' }
+  ];
+
+  for (const { pattern, desc } of unterminatedStringPatterns) {
+    const matches = fixedCode.match(pattern);
+    if (matches) {
+      for (const match of matches) {
+        // Skip font-family declarations - they legitimately have inner quotes like "'Inter', sans-serif"
+        const isFontDeclaration = /fontFamily|font-family/i.test(match) ||
+          /sans-serif|serif|monospace|Inter|Georgia|Arial|Helvetica|Roboto|Segoe/i.test(match);
+        if (isFontDeclaration) continue;
+
+        errors.push(`Unterminated string (${desc}): "${match.trim()}"`);
+        // Auto-fix: remove the orphan trailing quote after numbers
+        fixedCode = fixedCode.replace(/(\w+:\s*)(\d+\.?\d*)'(\s*[,}\n])/g, '$1$2$3');
+      }
+    }
+  }
+
+  // ============================================
+  // FONT FAMILY NESTED QUOTES FIX
+  // AI generates: fontFamily: "'Playfair Display'"
+  // Should be:    fontFamily: "Playfair Display"
+  // Note: Don't use .test() before .replace() with global regex - it advances state
+  // ============================================
+  const beforeFontFix = fixedCode;
+
+  // Fix fontFamily: "'Font Name'" -> fontFamily: "Font Name"
+  fixedCode = fixedCode.replace(/fontFamily:\s*["']'([^']+)'["']/g, 'fontFamily: "$1"');
+
+  // Fix fontFamily: "'Font Name', sans-serif" -> fontFamily: "Font Name, sans-serif"
+  fixedCode = fixedCode.replace(/fontFamily:\s*["']'([^']+)'([^"']*)["']/g, 'fontFamily: "$1$2"');
+
+  // Fix in THEME objects: heading: "'Font Name', fallback" -> heading: "Font Name, fallback"
+  fixedCode = fixedCode.replace(/(heading|body|primary|secondary|display|text|font):\s*["']'([^']+)'([^"']*)["']/g, '$1: "$2$3"');
+
+  // Generic fix: Any property with nested font quotes "'Font Name', fallback"
+  fixedCode = fixedCode.replace(/:\s*["']'([A-Z][a-zA-Z\s]+)'(,\s*[^"']+)?["']/g, ': "$1$2"');
+
+  // Fix backtick template literals with nested quotes: fontFamily: `'Font Name'`
+  fixedCode = fixedCode.replace(/fontFamily:\s*`'([^']+)'`/g, 'fontFamily: "$1"');
+
+  // Fix single quotes around font names in any fontFamily/font context
+  // Pattern: fontFamily: '\'Font Name\', fallback' -> fontFamily: "Font Name, fallback"
+  fixedCode = fixedCode.replace(/fontFamily:\s*'\\?'([^']+)\\?'([^']*)'/g, 'fontFamily: "$1$2"');
+
+  if (beforeFontFix !== fixedCode) {
+    errors.push('Fixed nested quotes in font declarations');
+  }
+
+  // ============================================
+  // JSX APOSTROPHE FIX
+  // AI generates: <h2>Let's go</h2>
+  // JSX parser sees the apostrophe as a quote delimiter
+  // Fix by wrapping text with apostrophes in curly braces
+  // ============================================
+  const beforeApostropheFix = fixedCode;
+
+  // Pattern 1: Text content with apostrophes between JSX tags
+  // Match: >text with apostrophe's< but NOT inside {} or quotes
+  // Replace apostrophes in JSX text with HTML entity &#39;
+  fixedCode = fixedCode.replace(/>([^<{]*)'([^<{]*)</g, (match, before, after) => {
+    // Skip if it looks like it's already escaped or in a code context
+    if (before.includes('&#') || after.includes('&#')) return match;
+    return `>${before}&#39;${after}<`;
+  });
+
+  // Pattern 2: Fix malformed quote props like suffix='""  or suffix='""
+  // AI sometimes generates: suffix='"" which is broken
+  // Should be: suffix={'"'}
+  fixedCode = fixedCode.replace(/(\w+)='""(\s)/g, '$1={\'"\'}$2');
+  fixedCode = fixedCode.replace(/(\w+)=""'(\s)/g, '$1={\'"\'}$2');
+  // Also handle: suffix='" (missing closing quote entirely)
+  fixedCode = fixedCode.replace(/(\w+)='"(\s+\w+=|\s*\/>|\s*>)/g, '$1={\'"\'}$2');
+
+  // Pattern 3: Fix props with just a quote mark that breaks parsing
+  // suffix="" " -> suffix={'"'}
+  fixedCode = fixedCode.replace(/(\w+)=""\s*"(\s)/g, '$1={\'"\'}$2');
+
+  if (beforeApostropheFix !== fixedCode) {
+    errors.push('Fixed apostrophes/quotes in JSX content');
+  }
+
+  // ============================================
+  // NUMBER LITERALS WITH COMMA SEPARATORS FIX
+  // AI generates: loyaltyPoints: 2,847,
+  // Should be:    loyaltyPoints: 2847,
+  // ============================================
+  // Match number literals with commas (not inside strings)
+  // Pattern: word: number,number (like 2,847 or 10,000)
+  const beforeNumberFix = fixedCode;
+  // Fix numbers like 2,847 (property value context)
+  fixedCode = fixedCode.replace(/:\s*(\d{1,3}),(\d{3})([,\s\n}])/g, ': $1$2$3');
+  // Fix numbers like 10,000,000 (multiple commas)
+  fixedCode = fixedCode.replace(/:\s*(\d{1,3}),(\d{3}),(\d{3})([,\s\n}])/g, ': $1$2$3$4');
+  // Fix numbers in array context [1,000, 2,000]
+  fixedCode = fixedCode.replace(/\[\s*(\d{1,3}),(\d{3})/g, '[$1$2');
+  fixedCode = fixedCode.replace(/,\s*(\d{1,3}),(\d{3})([,\]])/g, ', $1$2$3');
+
+  if (beforeNumberFix !== fixedCode) {
+    errors.push('Fixed number literals with comma separators');
+  }
+
   // Check for common AI mistakes
   if (fixedCode.includes('console log(')) {
     errors.push('Found "console log(" - should be "console.log("');
   }
-  
+
   // Check for required structure
   if (!code.includes('import React')) {
     errors.push('Missing React import');
   }
-  
+
   if (!code.includes('export default')) {
     errors.push('Missing export default');
   }
-  
+
   // Check for balanced braces (simple check)
   const openBraces = (code.match(/\{/g) || []).length;
   const closeBraces = (code.match(/\}/g) || []).length;
   if (openBraces !== closeBraces) {
     errors.push(`Unbalanced braces: ${openBraces} open, ${closeBraces} close`);
   }
-  
+
   // Check for balanced parentheses
   const openParens = (code.match(/\(/g) || []).length;
   const closeParens = (code.match(/\)/g) || []).length;
   if (openParens !== closeParens) {
     errors.push(`Unbalanced parentheses: ${openParens} open, ${closeParens} close`);
   }
-  
+
   // Check for common syntax issues
   if (code.includes('style={{') && !code.includes('}}')) {
     errors.push('Potentially unclosed style object');
   }
-  
+
+  // ============================================
+  // MINIMUM CONTENT CHECK
+  // Ensure pages have actual content, not just shells
+  // ============================================
+  const lines = code.split('\n').filter(l => l.trim() && !l.trim().startsWith('//')).length;
+  const MIN_LINES = 30; // Minimum for a real page
+  if (lines < MIN_LINES) {
+    warnings.push(`Page may be incomplete: only ${lines} lines of content (minimum: ${MIN_LINES})`);
+  }
+
+  // Check for actual JSX content (not just boilerplate)
+  const hasRealContent = code.includes('<section') ||
+                         code.includes('<div style') ||
+                         code.includes('<h1') ||
+                         code.includes('<main');
+  if (!hasRealContent && lines < 50) {
+    warnings.push(`Page appears to be a shell with no real content`);
+  }
+
   // Auto-fix common issues
   fixedCode = fixedCode.replace(/console log\(/g, 'console.log(');
-  
+
+  // ============================================
+  // HTML ENTITIES IN JAVASCRIPT EXPRESSIONS FIX
+  // AI sometimes generates HTML entities inside JS code
+  // e.g., handleInputChange('firstName&#39;, e.target.value)
+  // These need to be converted back to actual characters
+  // ============================================
+  const beforeEntityFix = fixedCode;
+
+  // AGGRESSIVE FIX: Replace ALL &#39; with ' globally
+  // The JSX apostrophe fix (above) will re-add entities to JSX text content
+  // But we run this BEFORE that fix re-adds them, so order matters
+  // Actually, we run this AFTER the apostrophe fix, so we need to preserve
+  // entities in JSX text content. Use a smarter approach:
+
+  // Step 1: Replace &#39; everywhere EXCEPT between > and <
+  // We do this by processing line by line
+  const codeLines = fixedCode.split('\n');
+  const fixedLines = codeLines.map(line => {
+    // If line contains &#39;, check if it's in JSX text context
+    if (line.includes('&#39;')) {
+      // Pattern: &#39; in JS context (inside quotes, parens, braces)
+      // Replace &#39; that appears inside JavaScript (not between > and <)
+
+      // Simple approach: if &#39; appears after ( or { or ' and before ) or } or '
+      // it's likely in JS context
+      let result = line;
+
+      // Fix: setActiveTab('value&#39;) -> setActiveTab('value')
+      result = result.replace(/\('([^']+)&#39;\)/g, "('$1')");
+
+      // Fix: handleInputChange('name&#39;, value) -> handleInputChange('name', value)
+      result = result.replace(/\('([^']+)&#39;,/g, "('$1',");
+
+      // Fix: ==='value&#39; or === 'value&#39;
+      result = result.replace(/===\s*'([^']+)&#39;/g, "=== '$1'");
+
+      // Fix: 'string&#39; in any context (JS string with entity at end)
+      result = result.replace(/'([^'>]+)&#39;/g, (match, content) => {
+        // Only fix if not followed by < (which would indicate JSX text)
+        return `'${content}'`;
+      });
+
+      // Fix: &#39; followed by ) or } or , (clearly JS context)
+      result = result.replace(/&#39;([\)\},])/g, "'$1");
+
+      return result;
+    }
+    return line;
+  });
+  fixedCode = fixedLines.join('\n');
+
+  // Fix &#34; (double quote) - less common but handle it
+  fixedCode = fixedCode.replace(/&#34;/g, '"');
+
+  if (beforeEntityFix !== fixedCode) {
+    errors.push('Fixed HTML entities in JavaScript expressions');
+  }
+
+  // ============================================
+  // BABEL SYNTAX CHECK (if available)
+  // ============================================
+  let parseError = null;
+  try {
+    const babel = require('@babel/core');
+    babel.parseSync(fixedCode, {
+      presets: ['@babel/preset-react'],
+      filename: `${componentName}.jsx`,
+      sourceType: 'module'
+    });
+  } catch (e) {
+    if (e.code === 'MODULE_NOT_FOUND') {
+      // Babel not available in production, skip
+    } else if (e.message) {
+      parseError = e.message;
+      // Extract line number if available
+      const lineMatch = e.message.match(/\((\d+):(\d+)\)/);
+      if (lineMatch) {
+        errors.push(`Syntax error at line ${lineMatch[1]}, column ${lineMatch[2]}: ${e.message.split('\n')[0]}`);
+      } else {
+        errors.push(`Syntax error: ${e.message.split('\n')[0]}`);
+      }
+    }
+  }
+
   return {
     isValid: errors.length === 0,
     errors,
-    fixedCode
+    warnings,
+    fixedCode,
+    parseError,
+    stats: {
+      lines,
+      hasRealContent
+    }
   };
 }
+
+// Companion app generator
+const { generateCompanionApp, QUICK_ACTION_CONFIG } = require('./companion-generator.cjs');
 
 module.exports = {
   generateBrainJson,
   generateToolHtml,
   generateBrainRoutes,
   generateHealthRoutes,
+  // API route generators for menu, loyalty, orders
+  generateMenuRoutes,
+  generateLoyaltyRoutes,
+  generateOrdersRoutes,
+  // App builder
   buildAppJsx,
-  validateGeneratedCode
+  validateGeneratedCode,
+  // Companion apps
+  generateCompanionApp,
+  QUICK_ACTION_CONFIG
 };

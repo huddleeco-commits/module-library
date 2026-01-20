@@ -18,8 +18,19 @@ import {
   Loader
 } from 'lucide-react';
 
-// API URL from environment variable
-const API_URL = import.meta.env.VITE_API_URL || '';
+// Get API URL - auto-detect production vs development
+function getApiUrl() {
+  if (import.meta.env?.VITE_API_URL) return import.meta.env.VITE_API_URL;
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:5000';
+    }
+  }
+  return ''; // Production: same origin
+}
+
+const API_URL = getApiUrl();
 
 export function AdminLayout() {
   const location = useLocation();

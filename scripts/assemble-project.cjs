@@ -66,6 +66,8 @@ const ROUTE_MAPPINGS = {
   'admin-api': { route: '/api/admin', routeFile: 'index.js', isModule: true },
   
   // Commerce
+  'menu': { route: '/api/menu', routeFile: 'routes/menu.js' },
+  'orders': { route: '/api/orders', routeFile: 'routes/orders.js' },
   'stripe-payments': { route: '/api/payments', routeFile: 'routes/payments.js' },
   'payments': { route: '/api/billing', routeFile: 'routes/billing.js' },
   'inventory': { route: '/api/inventory', routeFile: 'routes/inventory.js' },
@@ -167,7 +169,7 @@ const BUNDLES = {
     frontend: ['stat-cards', 'data-table', 'admin-panel']
   },
   'commerce': {
-    backend: ['stripe-payments', 'payments', 'inventory', 'marketplace', 'vendor-system', 'transfers'],
+    backend: ['menu', 'orders', 'stripe-payments', 'payments', 'inventory', 'marketplace', 'vendor-system', 'transfers'],
     frontend: ['checkout-flow', 'pricing-table', 'marketplace-ui', 'trading-hub']
   },
   'social': {
@@ -219,6 +221,36 @@ try {
 // Default bundle mappings for industries (used when JSON doesn't specify)
 const DEFAULT_BUNDLES = {
   'restaurant': { bundles: ['core', 'commerce'], additionalBackend: ['booking', 'inventory', 'notifications'], additionalFrontend: ['image-gallery', 'search-filter'] },
+  'pizza': { bundles: ['core', 'commerce'], additionalBackend: ['booking', 'inventory', 'notifications'], additionalFrontend: ['image-gallery', 'search-filter'] },
+  'pizzeria': { bundles: ['core', 'commerce'], additionalBackend: ['booking', 'inventory', 'notifications'], additionalFrontend: ['image-gallery', 'search-filter'] },
+  'steakhouse': {
+    bundles: ['core', 'commerce'],
+    additionalBackend: ['booking', 'payments', 'inventory', 'notifications'],
+    additionalFrontend: ['image-gallery', 'modal-system'],
+    // Luxury steakhouse defaults
+    layout: 'reservation-focus',
+    colorScheme: {
+      primary: '#1a1a1a',
+      secondary: '#0d0d0d',
+      accent: '#C9A962',
+      gold: '#D4AF37',
+      burgundy: '#722F37',
+      text: '#f5f5f5',
+      textMuted: '#a0a0a0'
+    },
+    typography: {
+      heading: 'Playfair Display, Georgia, serif',
+      body: 'Lato, system-ui, sans-serif'
+    },
+    sections: ['hero-video', 'menu-showcase', 'wine-cellar', 'chef-team', 'private-dining', 'reservations', 'gallery', 'location'],
+    vibe: 'luxury, refined, understated wealth, where tradition meets excellence'
+  },
+  // Steakhouse variations - all map to steakhouse preset
+  'luxury-steakhouse': { bundles: ['core', 'commerce'], additionalBackend: ['booking', 'payments', 'inventory', 'notifications'], additionalFrontend: ['image-gallery', 'modal-system'], aliasOf: 'steakhouse' },
+  'fine-dining-steakhouse': { bundles: ['core', 'commerce'], additionalBackend: ['booking', 'payments', 'inventory', 'notifications'], additionalFrontend: ['image-gallery', 'modal-system'], aliasOf: 'steakhouse' },
+  'chophouse': { bundles: ['core', 'commerce'], additionalBackend: ['booking', 'payments', 'inventory', 'notifications'], additionalFrontend: ['image-gallery', 'modal-system'], aliasOf: 'steakhouse' },
+  'prime-steakhouse': { bundles: ['core', 'commerce'], additionalBackend: ['booking', 'payments', 'inventory', 'notifications'], additionalFrontend: ['image-gallery', 'modal-system'], aliasOf: 'steakhouse' },
+  'steak-house': { bundles: ['core', 'commerce'], additionalBackend: ['booking', 'payments', 'inventory', 'notifications'], additionalFrontend: ['image-gallery', 'modal-system'], aliasOf: 'steakhouse' },
   'healthcare': { bundles: ['core', 'dashboard', 'healthcare'], additionalBackend: ['notifications', 'chat', 'documents'], additionalFrontend: [] },
   'dental': { bundles: ['core', 'dashboard', 'healthcare'], additionalBackend: ['booking', 'notifications'], additionalFrontend: [] },
   'ecommerce': { bundles: ['core', 'commerce', 'dashboard'], additionalBackend: ['notifications'], additionalFrontend: ['search-filter', 'image-gallery'] },
@@ -231,30 +263,31 @@ const DEFAULT_BUNDLES = {
   'accounting': { bundles: ['core', 'dashboard'], additionalBackend: ['documents', 'notifications'], additionalFrontend: [] },
   'real-estate': { bundles: ['core', 'commerce', 'dashboard'], additionalBackend: ['booking', 'notifications'], additionalFrontend: ['image-gallery', 'search-filter'] },
   'fitness': { bundles: ['core', 'commerce', 'dashboard'], additionalBackend: ['booking', 'notifications'], additionalFrontend: [] },
-  'photography': { bundles: ['core', 'commerce'], additionalBackend: ['booking', 'notifications'], additionalFrontend: ['image-gallery'] },
+  'photography': { bundles: ['core'], additionalBackend: ['booking', 'notifications', 'payments'], additionalFrontend: ['image-gallery', 'pricing-table'] },
   'coffee-shop': { bundles: ['core', 'commerce'], additionalBackend: ['inventory', 'notifications'], additionalFrontend: ['image-gallery'] },
   'agency': { bundles: ['core', 'dashboard'], additionalBackend: ['notifications'], additionalFrontend: [] },
   'consulting': { bundles: ['core', 'dashboard'], additionalBackend: ['booking', 'documents', 'notifications'], additionalFrontend: [] },
   'hotel': { bundles: ['core', 'commerce', 'dashboard'], additionalBackend: ['booking', 'notifications'], additionalFrontend: ['image-gallery'] },
-  'spa-salon': { bundles: ['core', 'commerce'], additionalBackend: ['booking', 'notifications'], additionalFrontend: ['image-gallery'] },
+  'barbershop': { bundles: ['core'], additionalBackend: ['booking', 'notifications', 'payments'], additionalFrontend: ['image-gallery', 'pricing-table'] },
+  'spa-salon': { bundles: ['core'], additionalBackend: ['booking', 'notifications', 'payments'], additionalFrontend: ['image-gallery', 'pricing-table'] },
   'construction': { bundles: ['core', 'dashboard'], additionalBackend: ['documents', 'notifications'], additionalFrontend: ['image-gallery'] },
   'plumber': { bundles: ['core'], additionalBackend: ['booking', 'notifications'], additionalFrontend: [] },
   'electrician': { bundles: ['core'], additionalBackend: ['booking', 'notifications'], additionalFrontend: [] },
   'hvac': { bundles: ['core'], additionalBackend: ['booking', 'notifications'], additionalFrontend: [] },
-  'cleaning': { bundles: ['core', 'commerce'], additionalBackend: ['booking', 'notifications'], additionalFrontend: [] },
+  'cleaning': { bundles: ['core'], additionalBackend: ['booking', 'notifications', 'payments'], additionalFrontend: ['pricing-table'] },
   'landscaping': { bundles: ['core'], additionalBackend: ['booking', 'notifications'], additionalFrontend: ['image-gallery'] },
   'roofing': { bundles: ['core'], additionalBackend: ['booking', 'notifications'], additionalFrontend: ['image-gallery'] },
-  'moving': { bundles: ['core', 'commerce'], additionalBackend: ['booking', 'notifications'], additionalFrontend: [] },
+  'moving': { bundles: ['core'], additionalBackend: ['booking', 'notifications', 'payments'], additionalFrontend: ['pricing-table'] },
   'auto-repair': { bundles: ['core'], additionalBackend: ['booking', 'inventory', 'notifications'], additionalFrontend: [] },
   'veterinary': { bundles: ['core', 'healthcare'], additionalBackend: ['booking', 'notifications'], additionalFrontend: [] },
   'daycare': { bundles: ['core', 'family'], additionalBackend: ['booking', 'notifications', 'documents'], additionalFrontend: [] },
   'tutoring': { bundles: ['core'], additionalBackend: ['booking', 'notifications'], additionalFrontend: [] },
   'music-school': { bundles: ['core'], additionalBackend: ['booking', 'notifications'], additionalFrontend: [] },
-  'yoga-studio': { bundles: ['core', 'commerce'], additionalBackend: ['booking', 'notifications'], additionalFrontend: [] },
-  'martial-arts': { bundles: ['core', 'commerce'], additionalBackend: ['booking', 'notifications'], additionalFrontend: [] },
+  'yoga-studio': { bundles: ['core'], additionalBackend: ['booking', 'notifications', 'payments'], additionalFrontend: ['pricing-table'] },
+  'martial-arts': { bundles: ['core'], additionalBackend: ['booking', 'notifications', 'payments'], additionalFrontend: ['pricing-table'] },
   'church': { bundles: ['core', 'social'], additionalBackend: ['calendar', 'notifications'], additionalFrontend: [] },
   'nonprofit': { bundles: ['core', 'social'], additionalBackend: ['notifications'], additionalFrontend: [] },
-  'event-venue': { bundles: ['core', 'commerce'], additionalBackend: ['booking', 'notifications'], additionalFrontend: ['image-gallery'] },
+  'event-venue': { bundles: ['core'], additionalBackend: ['booking', 'notifications', 'payments'], additionalFrontend: ['image-gallery', 'pricing-table'] },
   'florist': { bundles: ['core', 'commerce'], additionalBackend: ['inventory', 'notifications'], additionalFrontend: ['image-gallery'] },
   'bakery': { bundles: ['core', 'commerce'], additionalBackend: ['inventory', 'notifications'], additionalFrontend: ['image-gallery'] },
   'brewery': { bundles: ['core', 'commerce'], additionalBackend: ['inventory', 'notifications'], additionalFrontend: ['image-gallery'] },
@@ -598,6 +631,25 @@ const defaultBrain = {
   labels: { customers: 'Customers', orders: 'Orders', items: 'Items', revenue: 'Revenue' }
 };
 
+// Get API URL - auto-detect production vs development
+function getApiUrl() {
+  // Check for explicit overrides first
+  if (typeof window !== 'undefined' && window.__API_URL__) return window.__API_URL__;
+  if (import.meta.env?.VITE_API_URL) return import.meta.env.VITE_API_URL;
+
+  // Auto-detect: in production (be1st.io), API is at same origin
+  // In development (localhost), use backend port 5000
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:5000';
+    }
+  }
+
+  // Production: API is served from same origin
+  return '';
+}
+
 export function useBrain() {
   const [brain, setBrain] = useState(defaultBrain);
   const [business, setBusiness] = useState(defaultBrain.business);
@@ -608,7 +660,7 @@ export function useBrain() {
   useEffect(() => {
     const fetchBrain = async () => {
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        const apiUrl = getApiUrl();
         const response = await fetch(\`\${apiUrl}/api/brain\`);
         if (response.ok) {
           const data = await response.json();
@@ -631,7 +683,7 @@ export function useBrain() {
   const refreshBrain = async () => {
     setLoading(true);
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const apiUrl = getApiUrl();
       const response = await fetch(\`\${apiUrl}/api/brain\`);
       if (response.ok) {
         const data = await response.json();
@@ -655,14 +707,57 @@ export default useBrain;
 `;
 }
 
-// All models that modules might reference
-const COMMON_MODELS = [
-  'User', 'Card', 'Listing', 'Trade', 'PendingAction', 'SpendingLog',
-  'Family', 'Event', 'Document', 'Appointment', 'Patient', 'Provider', 
-  'Practice', 'Notification', 'FamCoin', 'Meal', 'ShoppingItem', 'Recipe',
-  'Inventory', 'Receipt', 'PriceHistory', 'Bet', 'Pick', 'SideBet',
-  'Leaderboard', 'Reputation', 'BetAgreement'
-];
+// Core models that ALL projects need
+const CORE_MODELS = ['User', 'Notification'];
+
+// Industry-specific models (only added when relevant)
+const SERVICE_MODELS = ['Appointment', 'Document'];
+const HEALTHCARE_MODELS = ['Patient', 'Provider', 'Practice'];
+const ECOMMERCE_MODELS = ['Inventory', 'Receipt', 'PriceHistory'];
+const COLLECTIBLES_MODELS = ['Card', 'Listing', 'Trade', 'PendingAction'];
+const FAMILY_MODELS = ['Family', 'FamCoin', 'Meal', 'ShoppingItem', 'Recipe', 'SpendingLog', 'Event'];
+const SPORTS_MODELS = ['Bet', 'Pick', 'SideBet', 'Leaderboard', 'Reputation', 'BetAgreement'];
+
+// Get models for a specific industry
+function getModelsForIndustry(industry) {
+  const models = [...CORE_MODELS];
+
+  // Service businesses (barbershop, spa, etc.)
+  const serviceIndustries = ['barbershop', 'spa-salon', 'dental', 'healthcare', 'chiropractic', 'cleaning', 'plumber', 'electrician', 'hvac', 'photography', 'yoga-studio', 'martial-arts', 'consulting', 'law-firm'];
+  if (serviceIndustries.includes(industry)) {
+    models.push(...SERVICE_MODELS);
+  }
+
+  // Healthcare
+  if (['healthcare', 'dental', 'chiropractic', 'veterinary'].includes(industry)) {
+    models.push(...HEALTHCARE_MODELS);
+  }
+
+  // E-commerce/retail
+  if (['ecommerce', 'retail', 'restaurant', 'steakhouse', 'pizza', 'pizzeria', 'cafe', 'bakery', 'florist'].includes(industry)) {
+    models.push(...ECOMMERCE_MODELS);
+  }
+
+  // Collectibles
+  if (['collectibles'].includes(industry)) {
+    models.push(...COLLECTIBLES_MODELS);
+  }
+
+  // Family apps
+  if (['family'].includes(industry)) {
+    models.push(...FAMILY_MODELS);
+  }
+
+  // Sports/betting
+  if (['sports', 'betting', 'fantasy'].includes(industry)) {
+    models.push(...SPORTS_MODELS);
+  }
+
+  return [...new Set(models)]; // Remove duplicates
+}
+
+// Legacy: All models (for backwards compatibility - do not use for new code)
+const COMMON_MODELS = [...CORE_MODELS, ...SERVICE_MODELS];
 
 // ============================================
 // GENERATE SERVICE STUBS
@@ -1143,6 +1238,11 @@ module.exports = {
       subject: 'Password Reset',
       html: \`<p>Reset your password with token: \${resetToken}</p>\`
     });
+  },
+
+  sendNewUserEmail: async ({ fullName, email, subscriptionTier }) => {
+    console.log('📧 New user registered:', email, '- Tier:', subscriptionTier);
+    return { success: true };
   }
 };
 `;
@@ -1156,28 +1256,170 @@ function generateDatabaseFile() {
   return `/**
  * Database Connection
  * Auto-generated by Module Library Assembler
+ *
+ * Uses PostgreSQL when DATABASE_URL is set (production)
+ * Falls back to local SQLite for test mode (no DATABASE_URL)
  */
 
-const { Pool } = require('pg');
+// Check if we have a PostgreSQL connection string
+if (process.env.DATABASE_URL) {
+  // Production mode - use PostgreSQL
+  const { Pool } = require('pg');
 
-// Create PostgreSQL connection pool
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
-});
-
-// Test connection on startup
-pool.query('SELECT NOW()')
-  .then(() => console.log('✅ Database connected'))
-  .catch(() => {
-    console.log('⚠️  Database not connected - some features may not work');
-    console.log('   Set DATABASE_URL in .env to enable database features');
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
   });
 
-module.exports = {
-  query: (text, params) => pool.query(text, params),
-  pool
-};
+  // Test connection on startup
+  pool.query('SELECT NOW()')
+    .then(() => console.log('✅ PostgreSQL database connected'))
+    .catch((err) => {
+      console.log('⚠️  PostgreSQL connection failed:', err.message);
+    });
+
+  module.exports = {
+    query: (text, params) => pool.query(text, params),
+    pool
+  };
+} else {
+  // Test mode - use local SQLite database
+  console.log('🧪 Test Mode: Using local SQLite database');
+
+  const Database = require('better-sqlite3');
+  const path = require('path');
+  const bcrypt = require('bcryptjs');
+
+  // Create database file in backend folder
+  const dbPath = path.join(__dirname, 'test-data.db');
+  const db = new Database(dbPath);
+
+  // Enable foreign keys
+  db.pragma('foreign_keys = ON');
+
+  /**
+   * Convert PostgreSQL parameterized query to SQLite
+   * PostgreSQL: SELECT * FROM users WHERE id = $1 AND email = $2
+   * SQLite:     SELECT * FROM users WHERE id = ? AND email = ?
+   */
+  function convertQuery(text) {
+    return text.replace(/\\$\\d+/g, '?');
+  }
+
+  /**
+   * Execute query with PostgreSQL-compatible interface
+   */
+  function query(text, params = []) {
+    const sqliteQuery = convertQuery(text);
+    const isSelect = sqliteQuery.trim().toUpperCase().startsWith('SELECT');
+    const isInsertReturning = sqliteQuery.toUpperCase().includes('RETURNING');
+
+    try {
+      if (isSelect) {
+        const stmt = db.prepare(sqliteQuery);
+        const rows = stmt.all(...params);
+        return Promise.resolve({ rows, rowCount: rows.length });
+      } else if (isInsertReturning) {
+        const baseQuery = sqliteQuery.replace(/\\s+RETURNING\\s+.*/i, '');
+        const stmt = db.prepare(baseQuery);
+        const result = stmt.run(...params);
+        return Promise.resolve({
+          rows: [{ id: result.lastInsertRowid }],
+          rowCount: result.changes
+        });
+      } else {
+        const stmt = db.prepare(sqliteQuery);
+        const result = stmt.run(...params);
+        return Promise.resolve({ rows: [], rowCount: result.changes });
+      }
+    } catch (error) {
+      console.error('SQLite query error:', error.message);
+      return Promise.reject(error);
+    }
+  }
+
+  // Initialize schema
+  db.exec(\`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      email TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      full_name TEXT,
+      subscription_tier TEXT DEFAULT 'free',
+      is_admin INTEGER DEFAULT 0,
+      scans_used INTEGER DEFAULT 0,
+      reset_token TEXT,
+      reset_token_expires TEXT,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  \`);
+
+  db.exec(\`
+    CREATE TABLE IF NOT EXISTS orders (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER,
+      items TEXT NOT NULL,
+      total REAL NOT NULL,
+      status TEXT DEFAULT 'pending',
+      source TEXT DEFAULT 'website',
+      payment_type TEXT DEFAULT 'cash',
+      customer_name TEXT DEFAULT 'Guest',
+      customer_email TEXT,
+      customer_phone TEXT,
+      notes TEXT,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT
+    )
+  \`);
+
+  db.exec(\`
+    CREATE TABLE IF NOT EXISTS menu_categories (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      description TEXT,
+      sort_order INTEGER DEFAULT 0,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  \`);
+
+  db.exec(\`
+    CREATE TABLE IF NOT EXISTS menu_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      category_id INTEGER,
+      name TEXT NOT NULL,
+      description TEXT,
+      price REAL NOT NULL,
+      image_url TEXT,
+      is_available INTEGER DEFAULT 1,
+      is_popular INTEGER DEFAULT 0,
+      sort_order INTEGER DEFAULT 0,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  \`);
+
+  // Seed default users if not exists
+  const adminCheck = db.prepare('SELECT id FROM users WHERE email = ?').get('admin@test.com');
+  if (!adminCheck) {
+    const adminHash = bcrypt.hashSync('admin123', 12);
+    db.prepare('INSERT INTO users (email, password_hash, full_name, is_admin) VALUES (?, ?, ?, ?)').run('admin@test.com', adminHash, 'Test Admin', 1);
+    console.log('   Created admin user: admin@test.com / admin123');
+  }
+
+  const demoCheck = db.prepare('SELECT id FROM users WHERE email = ?').get('demo@test.com');
+  if (!demoCheck) {
+    const demoHash = bcrypt.hashSync('demo123', 12);
+    db.prepare('INSERT INTO users (email, password_hash, full_name, is_admin) VALUES (?, ?, ?, ?)').run('demo@test.com', demoHash, 'Demo User', 0);
+    console.log('   Created demo user: demo@test.com / demo123');
+  }
+
+  console.log('✅ SQLite database ready:', dbPath);
+
+  module.exports = {
+    query,
+    db,
+    pool: null
+  };
+}
 `;
 }
 
@@ -1399,6 +1641,9 @@ const morgan = require('morgan');
 require('dotenv').config();
 
 const app = express();
+
+// Trust proxy (required for Railway/Heroku/etc behind load balancer)
+app.set('trust proxy', 1);
 
 // ============================================
 // MIDDLEWARE
@@ -1718,6 +1963,7 @@ function generateBackendPackageJson(projectName, backendModules) {
       
       // Database
       pg: '^8.11.3',
+      'better-sqlite3': '^9.2.2',
       mongoose: '^8.0.3',
       redis: '^4.6.12',
       
@@ -2017,6 +2263,9 @@ function generateBrainJson(projectName, industry, industryConfig) {
   // Industry-specific terminology
   const terminologyMap = {
     'restaurant': { product: 'Menu Item', products: 'Menu Items', customer: 'Guest', customers: 'Guests' },
+    'steakhouse': { product: 'Selection', products: 'Prime Cuts', customer: 'Guest', customers: 'Distinguished Guests' },
+    'luxury-steakhouse': { product: 'Selection', products: 'Prime Cuts', customer: 'Guest', customers: 'Distinguished Guests' },
+    'chophouse': { product: 'Selection', products: 'Prime Cuts', customer: 'Guest', customers: 'Distinguished Guests' },
     'healthcare': { product: 'Service', products: 'Services', customer: 'Patient', customers: 'Patients' },
     'dental': { product: 'Service', products: 'Services', customer: 'Patient', customers: 'Patients' },
     'ecommerce': { product: 'Product', products: 'Products', customer: 'Customer', customers: 'Customers' },
@@ -2024,6 +2273,7 @@ function generateBrainJson(projectName, industry, industryConfig) {
     'saas': { product: 'Plan', products: 'Plans', customer: 'User', customers: 'Users' },
     'law-firm': { product: 'Service', products: 'Services', customer: 'Client', customers: 'Clients' },
     'fitness': { product: 'Class', products: 'Classes', customer: 'Member', customers: 'Members' },
+    'barbershop': { product: 'Service', products: 'Services', customer: 'Client', customers: 'Clients' },
     'spa-salon': { product: 'Treatment', products: 'Treatments', customer: 'Client', customers: 'Clients' },
     'real-estate': { product: 'Listing', products: 'Listings', customer: 'Client', customers: 'Clients' },
     'default': { product: 'Product', products: 'Products', customer: 'Customer', customers: 'Customers' }
@@ -2070,7 +2320,7 @@ function generateBrainJson(projectName, industry, industryConfig) {
       },
       features: {
         onlineOrdering: true,
-        reservations: industry === 'restaurant' || industry === 'spa-salon',
+        reservations: industry === 'restaurant' || industry === 'spa-salon' || industry === 'barbershop',
         loyaltyProgram: false,
         giftCards: false
       }
@@ -2208,42 +2458,67 @@ function assembleProject(config) {
         fs.mkdirSync(servicesFolder, { recursive: true });
       }
       
-      // Create common service stubs if they don't exist
-      const serviceStubs = {
-        'stripe-service.js': generateStripeServiceStub(),
+      // Create CORE service stubs (minimal set for all industries)
+      const coreServiceStubs = {
         'email-service.js': generateEmailServiceStub(),
         'notificationService.js': generateNotificationServiceStub(),
-        'socketService.js': generateSocketServiceStub(),
-        'SyncService.js': generateSyncServiceStub(),
-        'cloudinary.js': generateCloudinaryServiceStub(),
-        'cardDatabaseLookup.js': generateCardDatabaseLookupStub(),
-        'parallel-matcher.js': generateParallelMatcherStub(),
-        'claude-scanner.js': generateClaudeScannerStub(),
-        'ebay-oauth.js': generateEbayOauthStub(),
-        'collageService.js': generateCollageServiceStub(),
-        'password-reset-email.js': generatePasswordResetEmailStub(),
-        'famcoinEngine.js': generateFamcoinEngineStub(),
-        'mealsEngine.js': generateMealsEngineStub(),
-        'calendarService.js': generateCalendarServiceStub(),
-        'FormationAnalyzer.js': generateFormationAnalyzerStub(),
-        'PlayerPropsAnalyzer.js': generatePlayerPropsAnalyzerStub()
+        'password-reset-email.js': generatePasswordResetEmailStub()
       };
-      
-      for (const [fileName, content] of Object.entries(serviceStubs)) {
+
+      // Add payment services if industry needs them
+      const paymentIndustries = ['restaurant', 'steakhouse', 'ecommerce', 'retail', 'barbershop', 'spa-salon', 'fitness', 'yoga-studio'];
+      if (paymentIndustries.includes(industry)) {
+        coreServiceStubs['stripe-service.js'] = generateStripeServiceStub();
+      }
+
+      // Add file upload services if needed
+      if (moduleName === 'file-upload' || ['photography', 'ecommerce', 'collectibles'].includes(industry)) {
+        coreServiceStubs['cloudinary.js'] = generateCloudinaryServiceStub();
+      }
+
+      // Add calendar services for booking-focused industries
+      const bookingIndustries = ['barbershop', 'spa-salon', 'dental', 'healthcare', 'consulting', 'law-firm'];
+      if (bookingIndustries.includes(industry)) {
+        coreServiceStubs['calendarService.js'] = generateCalendarServiceStub();
+      }
+
+      // Add collectibles-specific services
+      if (industry === 'collectibles') {
+        coreServiceStubs['cardDatabaseLookup.js'] = generateCardDatabaseLookupStub();
+        coreServiceStubs['parallel-matcher.js'] = generateParallelMatcherStub();
+        coreServiceStubs['claude-scanner.js'] = generateClaudeScannerStub();
+        coreServiceStubs['ebay-oauth.js'] = generateEbayOauthStub();
+        coreServiceStubs['collageService.js'] = generateCollageServiceStub();
+      }
+
+      // Add family-specific services
+      if (industry === 'family') {
+        coreServiceStubs['famcoinEngine.js'] = generateFamcoinEngineStub();
+        coreServiceStubs['mealsEngine.js'] = generateMealsEngineStub();
+      }
+
+      // Add sports/betting-specific services
+      if (['sports', 'betting', 'fantasy'].includes(industry)) {
+        coreServiceStubs['FormationAnalyzer.js'] = generateFormationAnalyzerStub();
+        coreServiceStubs['PlayerPropsAnalyzer.js'] = generatePlayerPropsAnalyzerStub();
+      }
+
+      for (const [fileName, content] of Object.entries(coreServiceStubs)) {
         const filePath = path.join(servicesFolder, fileName);
         if (!fs.existsSync(filePath)) {
           fs.writeFileSync(filePath, content);
         }
       }
-      
-      // Create models folder with common model stubs
+
+      // Create models folder with industry-specific model stubs
       const modelsFolder = path.join(destPath, 'models');
       if (!fs.existsSync(modelsFolder)) {
         fs.mkdirSync(modelsFolder, { recursive: true });
       }
-      
-      // Create all common model stubs
-      for (const modelName of COMMON_MODELS) {
+
+      // Create industry-appropriate model stubs
+      const industryModels = getModelsForIndustry(industry);
+      for (const modelName of industryModels) {
         const modelPath = path.join(modelsFolder, `${modelName}.js`);
         if (!fs.existsSync(modelPath)) {
           fs.writeFileSync(modelPath, generateModelStub(modelName));

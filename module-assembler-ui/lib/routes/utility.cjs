@@ -663,6 +663,293 @@ Return JSON with this structure:
     }
   });
 
+  // ============================================
+  // TEST GENERATION ENDPOINTS
+  // ============================================
+
+  // Get available test presets
+  router.get('/test-presets', (req, res) => {
+    try {
+      const { getAvailablePresets, testPresets } = require('../services/test-generator.cjs');
+      const { testCategories } = require('../configs/test-presets.cjs');
+
+      res.json({
+        success: true,
+        presets: getAvailablePresets(),
+        categories: testCategories,
+        total: Object.keys(testPresets).length
+      });
+    } catch (err) {
+      console.error('Error loading test presets:', err.message);
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // Run a test generation
+  router.post('/test-generate', async (req, res) => {
+    const { preset, options = {} } = req.body;
+
+    if (!preset) {
+      return res.status(400).json({ success: false, error: 'Preset ID required' });
+    }
+
+    console.log(`🧪 Running test generation: ${preset}`);
+
+    try {
+      const { runTestGeneration } = require('../services/test-generator.cjs');
+
+      // Get dependencies for test generation
+      const deps = {};
+
+      // Try to get the delete project function if cleanup is requested
+      if (options.cleanup) {
+        try {
+          const { deleteProject } = require('../services/project-deleter.cjs');
+          deps.deleteProject = deleteProject;
+        } catch (e) {
+          console.warn('Project deleter not available for cleanup');
+        }
+      }
+
+      const result = await runTestGeneration(preset, options, deps);
+
+      res.json({
+        success: result.success,
+        testId: result.id,
+        preset: result.presetId,
+        presetName: result.presetName,
+        mode: result.mode,
+        level: result.level,
+        duration: result.duration,
+        result: result.result,
+        error: result.error,
+        deployed: result.deployed,
+        cleanedUp: result.cleanedUp
+      });
+
+    } catch (err) {
+      console.error(`Test generation error: ${err.message}`);
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // Get test results
+  router.get('/test-results', (req, res) => {
+    try {
+      const { getTestResults, getTestSummary } = require('../services/test-generator.cjs');
+
+      res.json({
+        success: true,
+        summary: getTestSummary(),
+        results: getTestResults()
+      });
+    } catch (err) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // Clear test results
+  router.delete('/test-results', (req, res) => {
+    try {
+      const { clearTestResults } = require('../services/test-generator.cjs');
+      clearTestResults();
+
+      res.json({ success: true, message: 'Test results cleared' });
+    } catch (err) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // ============================================
+  // PROJECT DELETION ENDPOINTS
+  // ============================================
+
+  // Discover project resources (preview what would be deleted)
+  router.get('/projects/:name/resources', async (req, res) => {
+    const { name } = req.params;
+
+    if (!name) {
+      return res.status(400).json({ success: false, error: 'Project name required' });
+    }
+
+    console.log(`🔍 Discovering resources for project: ${name}`);
+
+    try {
+      const { discoverProjectResources } = require('../services/project-deleter.cjs');
+      const resources = await discoverProjectResources(name);
+
+      // Count what exists
+      const githubCount = resources.github.repos.filter(r => r.exists).length;
+      const hasRailway = !!resources.railway.project;
+      const cloudflareCount = resources.cloudflare.records.length;
+      const hasLocal = resources.local.exists;
+
+      res.json({
+        success: true,
+        projectName: name,
+        resources,
+        summary: {
+          totalResources: githubCount + (hasRailway ? 1 : 0) + cloudflareCount + (hasLocal ? 1 : 0),
+          github: githubCount,
+          railway: hasRailway ? 1 : 0,
+          railwayServices: resources.railway.services.length,
+          cloudflare: cloudflareCount,
+          local: hasLocal ? 1 : 0
+        }
+      });
+
+    } catch (err) {
+      console.error(`   ❌ Discovery error: ${err.message}`);
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // Delete a project and all its resources
+  router.delete('/projects/:name', async (req, res) => {
+    const { name } = req.params;
+    const { dryRun, localOnly, cloudOnly, skipVerification, force } = req.query;
+
+    if (!name) {
+      return res.status(400).json({ success: false, error: 'Project name required' });
+    }
+
+    // SECURITY: Validate project name - no path traversal, no special chars
+    const sanitizedName = name.replace(/[^a-zA-Z0-9-_]/g, '');
+    if (sanitizedName !== name) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid project name - only alphanumeric, dashes, and underscores allowed'
+      });
+    }
+
+    // SECURITY: Verify environment variables are set for cloud operations
+    if (!localOnly) {
+      const requiredEnvVars = ['GITHUB_TOKEN', 'RAILWAY_TOKEN', 'CLOUDFLARE_TOKEN', 'CLOUDFLARE_ZONE_ID'];
+      const missingVars = requiredEnvVars.filter(v => !process.env[v]);
+
+      if (missingVars.length > 0) {
+        return res.status(500).json({
+          success: false,
+          error: `Missing required environment variables for cloud deletion: ${missingVars.join(', ')}`
+        });
+      }
+    }
+
+    console.log(`🗑️  DELETE PROJECT: ${name}`);
+    console.log(`   Options: dryRun=${dryRun === 'true'}, localOnly=${localOnly === 'true'}, cloudOnly=${cloudOnly === 'true'}`);
+
+    try {
+      const { deleteProject, discoverProjectResources } = require('../services/project-deleter.cjs');
+
+      // First discover resources to confirm something exists
+      const resources = await discoverProjectResources(name);
+      const githubCount = resources.github.repos.filter(r => r.exists).length;
+      const hasRailway = !!resources.railway.project;
+      const cloudflareCount = resources.cloudflare.records.length;
+      const hasLocal = resources.local.exists;
+
+      if (githubCount === 0 && !hasRailway && cloudflareCount === 0 && !hasLocal) {
+        return res.json({
+          success: true,
+          projectName: name,
+          message: 'No resources found for this project - nothing to delete',
+          deleted: { github: [], railway: null, cloudflare: [], local: false }
+        });
+      }
+
+      // Perform deletion
+      const result = await deleteProject(name, {
+        dryRun: dryRun === 'true',
+        localOnly: localOnly === 'true',
+        cloudOnly: cloudOnly === 'true',
+        skipVerification: skipVerification === 'true'
+      });
+
+      res.json({
+        success: result.success,
+        projectName: name,
+        dryRun: dryRun === 'true',
+        result
+      });
+
+    } catch (err) {
+      console.error(`   ❌ Delete error: ${err.message}`);
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  /**
+   * GET /api/check-name
+   * Check if a project name is available (not already taken)
+   *
+   * Query: ?name=MyBusiness
+   * Response: { available: true/false, sanitizedName, suggestions: [...] }
+   */
+  router.get('/check-name', (req, res) => {
+    const { name } = req.query;
+
+    if (!name || name.trim().length < 2) {
+      return res.status(400).json({
+        success: false,
+        error: 'Name must be at least 2 characters'
+      });
+    }
+
+    // Sanitize the name the same way the orchestrator does
+    const sanitizedName = name
+      .replace(/&/g, ' and ')
+      .replace(/[^a-zA-Z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .trim()
+      .substring(0, 50);
+
+    if (!sanitizedName || sanitizedName.length < 2) {
+      return res.status(400).json({
+        success: false,
+        error: 'Name results in invalid project name after sanitization'
+      });
+    }
+
+    const projectPath = path.join(GENERATED_PROJECTS, sanitizedName);
+    const exists = fs.existsSync(projectPath);
+
+    // Generate suggestions if name is taken
+    let suggestions = [];
+    if (exists) {
+      const baseName = sanitizedName;
+      for (let i = 2; i <= 5; i++) {
+        const suggestion = `${baseName}-${i}`;
+        const suggestionPath = path.join(GENERATED_PROJECTS, suggestion);
+        if (!fs.existsSync(suggestionPath)) {
+          suggestions.push(suggestion);
+          if (suggestions.length >= 3) break;
+        }
+      }
+      // Also try with location-style suffix
+      const locationSuffixes = ['NYC', 'LA', 'Miami', 'Chicago'];
+      for (const suffix of locationSuffixes) {
+        if (suggestions.length >= 3) break;
+        const suggestion = `${baseName}-${suffix}`;
+        const suggestionPath = path.join(GENERATED_PROJECTS, suggestion);
+        if (!fs.existsSync(suggestionPath)) {
+          suggestions.push(suggestion);
+        }
+      }
+    }
+
+    res.json({
+      success: true,
+      available: !exists,
+      name: name.trim(),
+      sanitizedName,
+      subdomain: sanitizedName.toLowerCase(),
+      suggestions: exists ? suggestions : [],
+      message: exists
+        ? `"${sanitizedName}" is already taken. Try one of the suggestions.`
+        : `"${sanitizedName}" is available!`
+    });
+  });
+
   return router;
 }
 

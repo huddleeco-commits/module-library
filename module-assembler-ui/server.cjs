@@ -124,6 +124,17 @@ const {
 const deployService = require('./services/deploy-service.cjs');
 const deployReady = deployService.checkCredentials();
 
+// ===========================================
+// AUDIT SERVICE (pre-deployment validation)
+// ===========================================
+const auditService = require('./lib/services/audit-service.cjs');
+const ENABLE_PRE_DEPLOY_AUDIT = process.env.ENABLE_PRE_DEPLOY_AUDIT !== 'false'; // Default: enabled
+
+// ===========================================
+// MODULE VALIDATOR (icon imports, SQL syntax)
+// ===========================================
+const { validateProject, validateFrontendPages } = require('./lib/services/module-validator.cjs');
+
 // Validation error handler middleware
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
@@ -160,7 +171,7 @@ async function initializeServices() {
 }
 
 // Load prompt configs
-const PROMPTS_DIR = path.join(__dirname, '..', 'prompts');
+const PROMPTS_DIR = path.join(__dirname, 'prompts');
 const INDUSTRIES = JSON.parse(fs.readFileSync(path.join(PROMPTS_DIR, 'industries.json'), 'utf-8'));
 const LAYOUTS = JSON.parse(fs.readFileSync(path.join(PROMPTS_DIR, 'layouts.json'), 'utf-8'));
 const EFFECTS = JSON.parse(fs.readFileSync(path.join(PROMPTS_DIR, 'effects.json'), 'utf-8'));
@@ -262,6 +273,71 @@ if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
 }
 
+// AI Assist routes (must be before generic admin routes to avoid auth interception)
+const aiAssistRouter = require('./lib/routes/ai-assist.cjs');
+app.use('/api/admin/ai-assist', aiAssistRouter);
+
+// Retry Build endpoint - re-runs AUDIT 1 without regenerating
+app.post('/api/admin/retry-build/:projectId', async (req, res) => {
+  try {
+    const projectId = parseInt(req.params.projectId);
+
+    // Get project from database
+    const result = await db.query('SELECT * FROM generated_projects WHERE id = $1', [projectId]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'Project not found' });
+    }
+
+    const project = result.rows[0];
+    const projectPath = path.join(GENERATED_PROJECTS, project.name);
+
+    // Check if project directory exists
+    if (!fs.existsSync(projectPath)) {
+      return res.status(404).json({
+        success: false,
+        error: 'Project directory not found',
+        details: `Expected at: ${projectPath}`
+      });
+    }
+
+    console.log(`\n🔄 Retry build requested for: ${project.name} (ID: ${projectId})`);
+
+    // Run AUDIT 1 again
+    const auditResult = await auditService.audit1PostGeneration(projectPath, {
+      maxRetries: 2,
+      timeout: 120000
+    });
+
+    // Track build result in database
+    if (db && db.trackBuildResult) {
+      await db.trackBuildResult(projectId, auditResult);
+    }
+
+    // Return result
+    res.json({
+      success: true,
+      build_passed: auditResult.success,
+      audit: {
+        success: auditResult.success,
+        duration_ms: auditResult.durationMs,
+        error_count: auditResult.errors?.length || 0,
+        warning_count: auditResult.warnings?.length || 0,
+        errors: auditResult.errors || [],
+        warnings: auditResult.warnings || [],
+        auto_fixes: auditResult.autoFixesApplied || [],
+        retry_count: auditResult.retryCount || 0
+      }
+    });
+  } catch (err) {
+    console.error('Retry build error:', err);
+    res.status(500).json({
+      success: false,
+      error: 'Retry build failed',
+      details: err.message
+    });
+  }
+});
+
 // Admin routes (mounted after initialization)
 app.use('/api/admin', (req, res, next) => {
   if (adminRoutes) {
@@ -314,7 +390,8 @@ app.use('/api', configRouter);
 // Deploy routes (deploy, deploy/status, deploy/railway-status)
 const deployRouter = createDeployRoutes({
   deployService,
-  deployReady
+  deployReady,
+  db  // Pass db to check build status before allowing deployment
 });
 app.use('/api', deployRouter);
 
@@ -335,6 +412,7 @@ const orchestratorRouter = createOrchestratorRoutes({
   generateBrainRoutes,
   generateHealthRoutes,
   buildAppJsx,
+  validateGeneratedCode,
   toComponentName,
   toPageFileName,
   toRoutePath,
@@ -355,6 +433,65 @@ app.use('/api', orchestratorRouter);
 const adminTiersRouter = require('./lib/routes/admin-tiers.cjs');
 app.use('/api/admin/tiers', adminTiersRouter);
 
+// Health check routes (platform-wide health monitoring)
+const healthCheckRouter = require('./lib/routes/health-check.cjs');
+app.use('/api/health-check', healthCheckRouter);
+
+// Preview routes (site preview before deploy)
+const { createPreviewRoutes } = require('./lib/routes/preview.cjs');
+app.use('/api/preview', createPreviewRoutes());
+
+// Apps routes (focused applications like Expense Tracker, Habit Tracker)
+const appsRouter = require('./lib/routes/apps.cjs');
+app.use('/api/apps', appsRouter);
+
+// Companion App routes (mobile PWA that connects to existing website)
+const companionRouter = require('./lib/routes/companion.cjs');
+app.use('/api/companion', companionRouter);
+
+// Demo Batch Generation routes (investor demos)
+const { createDemoRoutes } = require('./lib/routes/demo.cjs');
+const demoRouter = createDemoRoutes({
+  INDUSTRIES,
+  generateBrainJson,
+  copyDirectorySync,
+  GENERATED_PROJECTS,
+  MODULE_LIBRARY,
+  ASSEMBLE_SCRIPT,
+  autoDeployProject,
+  deployCompanionApp: deployService.deployCompanionApp,
+  db,
+  buildOrchestratorPagePrompt,
+  buildAppJsx,
+  buildFallbackPage,
+  buildFallbackThemeCss,
+  validateGeneratedCode,
+  toComponentName
+});
+app.use('/api/demo', demoRouter);
+
+// Railway Status routes (live deployment status)
+const railwayStatusRouter = require('./lib/routes/railway-status.cjs');
+app.use('/api/railway', railwayStatusRouter);
+
+// Deployments routes (user-facing deployment management)
+const deploymentsRouter = require('./lib/routes/deployments.cjs');
+app.use('/api/deployments', deploymentsRouter);
+
+// Backup/Rollback routes
+const backupRouter = require('./lib/routes/backup.cjs');
+app.use('/api/backups', backupRouter);
+
+// Test Mode routes (for testing pipeline without AI costs)
+const { createTestModeRoutes } = require('./lib/routes/test-mode.cjs');
+const testModeRouter = createTestModeRoutes({
+  GENERATED_PROJECTS,
+  MODULE_LIBRARY,
+  ASSEMBLE_SCRIPT,
+  db
+});
+app.use('/api/test-mode', testModeRouter);
+
 // ============================================
 // API ENDPOINTS (remaining inline routes)
 // ============================================
@@ -364,7 +501,11 @@ app.use('/api/admin/tiers', adminTiersRouter);
 // ============================================
 
 app.post('/api/assemble', async (req, res) => {
-  const { name, industry, references, theme, description, autoDeploy, adminTier, adminModules } = req.body;
+  const { name, industry, references, theme, description, autoDeploy, adminTier, adminModules, testMode } = req.body;
+
+  // TEST MODE: When testMode is true, skip AI API calls and use deterministic fallback pages
+  // This allows testing the EXACT same pipeline as production without AI costs
+  const skipAI = testMode === true;
 
   if (!name) {
     return res.status(400).json({ success: false, error: 'Project name required' });
@@ -449,6 +590,7 @@ app.post('/api/assemble', async (req, res) => {
       'cafe': 'restaurant',
       'coffee-shop': 'restaurant',
       'bakery': 'restaurant',
+      'pizza': 'restaurant',
       'pizzeria': 'restaurant',
       'food-truck': 'restaurant',
       'catering': 'restaurant',
@@ -460,7 +602,17 @@ app.post('/api/assemble', async (req, res) => {
       'juice-bar': 'restaurant',
       'deli': 'restaurant',
       'fast-food': 'restaurant',
-      'fine-dining': 'restaurant',
+      'fine-dining': 'steakhouse',
+
+      // Steakhouse variations (map to steakhouse)
+      'luxury-steakhouse': 'steakhouse',
+      'steak-house': 'steakhouse',
+      'prime-steakhouse': 'steakhouse',
+      'fine-dining-steakhouse': 'steakhouse',
+      'upscale-steakhouse': 'steakhouse',
+      'grill': 'steakhouse',
+      'chophouse': 'steakhouse',
+      'beef-restaurant': 'steakhouse',
       
       // Healthcare/Wellness
       'medical-practice': 'healthcare',
@@ -719,6 +871,25 @@ app.post('/api/assemble', async (req, res) => {
   const ASSEMBLY_TIMEOUT = 5 * 60 * 1000; // 5 minute timeout
   let responded = false;
 
+  // ========================================
+  // TRACK GENERATION START
+  // ========================================
+  let generationId = null;
+  if (db && db.trackGenerationStart) {
+    try {
+      generationId = await db.trackGenerationStart({
+        siteName: sanitizedName,
+        industry: sanitizedIndustry,
+        templateUsed: 'blink-assembler',
+        modulesSelected: req.body.modules || [],
+        pagesGenerated: description?.pages?.length || 0
+      });
+      console.log(`   📊 Generation tracked: ID ${generationId}`);
+    } catch (trackErr) {
+      console.warn('   ⚠️ Generation tracking failed:', trackErr.message);
+    }
+  }
+
   console.log(`\n🚀 Assembling project: ${sanitizedName}`);
   console.log(`   Command: node ${ASSEMBLE_SCRIPT} ${args.join(' ')}`);
 
@@ -730,11 +901,21 @@ app.post('/api/assemble', async (req, res) => {
   });
 
   // Timeout handler - kill process if it takes too long
-  const timeoutId = setTimeout(() => {
+  const timeoutId = setTimeout(async () => {
     if (!responded) {
       responded = true;
       childProcess.kill('SIGTERM');
       console.error(`❌ Assembly timeout after ${ASSEMBLY_TIMEOUT / 1000}s`);
+
+      // Track generation failure (timeout)
+      if (generationId && db && db.trackGenerationFailed) {
+        try {
+          await db.trackGenerationFailed(generationId, { message: 'Assembly timeout - process took too long' });
+        } catch (trackErr) {
+          console.warn('   ⚠️ Generation failure tracking failed:', trackErr.message);
+        }
+      }
+
       res.status(504).json({
         success: false,
         error: 'Assembly timeout - process took too long',
@@ -757,11 +938,21 @@ app.post('/api/assemble', async (req, res) => {
   });
 
   // Handle spawn errors (e.g., ENOENT if node not found)
-  childProcess.on('error', (err) => {
+  childProcess.on('error', async (err) => {
     clearTimeout(timeoutId);
     if (!responded) {
       responded = true;
       console.error(`❌ Spawn error: ${err.message}`);
+
+      // Track generation failure (spawn error)
+      if (generationId && db && db.trackGenerationFailed) {
+        try {
+          await db.trackGenerationFailed(generationId, { message: `Spawn error: ${err.message}` });
+        } catch (trackErr) {
+          console.warn('   ⚠️ Generation failure tracking failed:', trackErr.message);
+        }
+      }
+
       res.status(500).json({ success: false, error: `Failed to start assembly: ${err.message}` });
     }
   });
@@ -769,6 +960,12 @@ app.post('/api/assemble', async (req, res) => {
   childProcess.on('close', async (code) => {
     clearTimeout(timeoutId);
     if (responded) return; // Already responded (timeout or error)
+
+    // Cost tracking variables for generation tracking (populated later if AI is used)
+    let totalInputTokens = 0;
+    let totalOutputTokens = 0;
+    let totalCost = 0;
+
     if (code === 0) {
       const projectPath = path.join(GENERATED_PROJECTS, sanitizedName);
       const manifestPath = path.join(projectPath, 'project-manifest.json');
@@ -905,31 +1102,47 @@ app.post('/api/assemble', async (req, res) => {
         // Load selected admin modules
         const moduleData = loadModulesForAssembly(resolvedAdminModules);
 
-        // Create admin directory
-        if (!fs.existsSync(businessAdminDest)) {
+        // STEP 1: Copy base business-admin for build infrastructure
+        // (includes index.html, package.json, vite.config.js, main.jsx, etc.)
+        const businessAdminSrc = path.join(MODULE_LIBRARY, 'frontend', 'business-admin');
+        if (fs.existsSync(businessAdminSrc)) {
+          copyDirectorySync(businessAdminSrc, businessAdminDest);
+          console.log('   📦 Admin base infrastructure copied');
+        } else if (!fs.existsSync(businessAdminDest)) {
           fs.mkdirSync(businessAdminDest, { recursive: true });
         }
 
-        // Copy each module
+        // STEP 2: Copy each selected module to src/modules/ (Vite requires imports from within src/)
+        const modulesDir = path.join(businessAdminDest, 'src', 'modules');
+        if (!fs.existsSync(modulesDir)) {
+          fs.mkdirSync(modulesDir, { recursive: true });
+        }
         for (const mod of moduleData.modules) {
-          const modDest = path.join(businessAdminDest, 'modules', mod.name);
-          if (fs.existsSync(mod.path)) {
-            copyDirectorySync(mod.path, modDest);
+          // Build path from module name - admin modules are in module-assembler-ui/backend/admin-modules/
+          const modSrc = path.join(__dirname, 'backend', 'admin-modules', mod.name);
+          const modDest = path.join(modulesDir, mod.name);
+          if (fs.existsSync(modSrc)) {
+            copyDirectorySync(modSrc, modDest);
+          } else {
+            console.warn(`   ⚠️ Admin module not found: ${mod.name} (looked in ${modSrc})`);
           }
         }
 
-        // Copy shared module
-        if (moduleData.shared && fs.existsSync(moduleData.shared)) {
-          copyDirectorySync(moduleData.shared, path.join(businessAdminDest, 'modules', '_shared'));
+        // STEP 3: Copy _shared module (shared styles and components) to src/modules/
+        const sharedModuleSrc = path.join(__dirname, 'backend', 'admin-modules', '_shared');
+        const sharedModuleDest = path.join(modulesDir, '_shared');
+        if (fs.existsSync(sharedModuleSrc)) {
+          copyDirectorySync(sharedModuleSrc, sharedModuleDest);
+          console.log('   📦 Admin shared module copied (_shared styles/components)');
         }
 
-        // Generate admin App.jsx
+        // STEP 4: Generate custom admin App.jsx (overwrites base)
         const adminAppJsx = generateAdminAppJsx(resolvedAdminModules, {
           businessName: name
         });
         fs.writeFileSync(path.join(businessAdminDest, 'src', 'App.jsx'), adminAppJsx);
 
-        // Save admin config
+        // STEP 5: Save admin config
         fs.writeFileSync(path.join(businessAdminDest, 'admin-config.json'), JSON.stringify({
           tier: resolvedAdminTier,
           modules: resolvedAdminModules,
@@ -938,7 +1151,7 @@ app.post('/api/assemble', async (req, res) => {
           routes: moduleData.routes
         }, null, 2));
 
-        // Copy brain.json to admin config folder
+        // STEP 6: Copy brain.json to admin config folder
         const adminConfigDir = path.join(businessAdminDest, 'src', 'config');
         if (!fs.existsSync(adminConfigDir)) {
           fs.mkdirSync(adminConfigDir, { recursive: true });
@@ -1002,15 +1215,28 @@ app.post('/api/assemble', async (req, res) => {
         console.log(`   🎨 Using layout style: ${layoutKey} for industry: ${industryKey}`);
       }
       
-      // Save theme if provided (or create from promptConfig)
-      const themeToUse = theme || (promptConfig ? {
-        colors: promptConfig.colors,
-        fonts: {
-          heading: promptConfig.typography?.heading || "'Inter', sans-serif",
-          body: promptConfig.typography?.body || "system-ui, sans-serif"
+      // Save theme: industry colors take priority, then user theme, then defaults
+      // This ensures barbershop gets dark/gold theme even if frontend sends default blue
+      const industryColors = promptConfig?.colors || {};
+      const userColors = theme?.colors || {};
+      const defaultColors = { primary: '#6366f1', accent: '#06b6d4', background: '#ffffff', text: '#1a1a2e' };
+
+      const themeToUse = {
+        colors: {
+          primary: industryColors.primary || userColors.primary || defaultColors.primary,
+          accent: industryColors.accent || userColors.accent || defaultColors.accent,
+          secondary: industryColors.secondary || userColors.secondary || defaultColors.primary,
+          background: industryColors.background || userColors.background || defaultColors.background,
+          text: industryColors.text || userColors.text || defaultColors.text,
+          textMuted: industryColors.textMuted || userColors.textMuted || '#64748b',
+          surface: industryColors.surface || userColors.surface || '#f8f9fa'
         },
-        borderRadius: '8px'
-      } : null);
+        fonts: {
+          heading: promptConfig?.typography?.heading || theme?.fonts?.heading || "'Inter', sans-serif",
+          body: promptConfig?.typography?.body || theme?.fonts?.body || "system-ui, sans-serif"
+        },
+        borderRadius: theme?.borderRadius || '8px'
+      };
       
       if (themeToUse) {
         try {
@@ -1104,6 +1330,13 @@ body {
       }
       
       // Generate AI pages if description provided
+      console.log('   🔍 AI Page Generation Check:');
+      console.log(`      - description exists: ${!!description}`);
+      console.log(`      - description.pages exists: ${!!(description && description.pages)}`);
+      console.log(`      - pages count: ${description?.pages?.length || 0}`);
+      console.log(`      - pages: ${JSON.stringify(description?.pages || [])}`);
+      console.log(`      - API key present: ${!!process.env.ANTHROPIC_API_KEY}`);
+
       if (description && description.pages && description.pages.length > 0) {
         try {
           console.log(`   🤖 Generating ${description.pages.length} AI pages...`);
@@ -1117,14 +1350,11 @@ body {
             fs.mkdirSync(pagesDir, { recursive: true });
           }
           
-          if (apiKey) {
+          if (apiKey && !skipAI) {
             const Anthropic = require('@anthropic-ai/sdk');
             const client = new Anthropic({ apiKey });
 
-            // Cost tracking for this generation
-            let totalInputTokens = 0;
-            let totalOutputTokens = 0;
-            let totalCost = 0;
+            // Cost tracking uses outer scope variables (totalInputTokens, totalOutputTokens, totalCost)
             const MODEL_NAME = 'claude-sonnet-4-20250514';
 
             // Generate all pages in parallel for speed
@@ -1170,13 +1400,20 @@ body {
                 // Validate and fix generated code
                 const validation = validateGeneratedCode(pageCode, componentName);
                 if (!validation.isValid) {
-                  console.log(`      ⚠️ ${pageId} has issues: ${validation.errors.join(', ')}`);
-                  pageCode = validation.fixedCode; // Use auto-fixed version
+                  console.log(`      ❌ ${pageId} ERRORS: ${validation.errors.join(', ')}`);
                 }
-                
+                // Always use fixedCode - it contains auto-fixes for apostrophes, quotes, fonts, etc.
+                pageCode = validation.fixedCode;
+                if (validation.warnings && validation.warnings.length > 0) {
+                  console.log(`      ⚠️ ${pageId} WARNINGS: ${validation.warnings.join(', ')}`);
+                }
+                if (validation.stats) {
+                  console.log(`      📊 ${pageId}: ${validation.stats.lines} lines, content: ${validation.stats.hasRealContent ? 'yes' : 'NO'}`);
+                }
+
                 if (!pageCode.includes('export default')) {
                   console.log(`      ⚠️ ${pageId} incomplete, using fallback`);
-                  pageCode = buildFallbackPage(componentName, pageId, promptConfig);
+                  pageCode = buildFallbackPage(componentName, pageId, promptConfig, sanitizedIndustry);
                 }
                 
                 const pagePath = path.join(pagesDir, `${componentName}Page.jsx`);
@@ -1189,7 +1426,7 @@ body {
                   
                   if (attempt === maxRetries) {
                     console.log(`      🔄 ${pageId}: Using fallback after ${maxRetries} attempts`);
-                    const fallbackCode = buildFallbackPage(componentName, pageId, promptConfig);
+                    const fallbackCode = buildFallbackPage(componentName, pageId, promptConfig, sanitizedIndustry);
                     fs.writeFileSync(path.join(pagesDir, `${componentName}Page.jsx`), fallbackCode);
                     return { pageId, componentName, success: false, fallback: true };
                   }
@@ -1242,26 +1479,226 @@ console.log(`   ⏱️ Total generation time: ${((Date.now() - startTime) / 1000
               fs.writeFileSync(themeCssPath, fallbackTheme);
               console.log('   🎨 Created theme.css from industry config');
             }
-            
+
+            // Copy CartContext if needed (for ecommerce/restaurant industries that sell products)
+            // Service businesses (spa-salon, barbershop) use booking, not carts
+            const cartRequiredIndustries = ['restaurant', 'ecommerce', 'retail', 'pizzeria', 'pizza', 'cafe', 'bakery', 'food-truck'];
+            const needsCart = cartRequiredIndustries.includes(sanitizedIndustry) ||
+                             description.pages.some(p => ['menu', 'cart', 'checkout', 'order', 'products', 'services', 'booking'].includes(p.toLowerCase()));
+            if (needsCart) {
+              const contextDir = path.join(frontendSrcPath, 'context');
+              if (!fs.existsSync(contextDir)) {
+                fs.mkdirSync(contextDir, { recursive: true });
+              }
+              const cartContextSrc = path.join(__dirname, 'lib/saas-templates/pizza-ordering/frontend/context/CartContext.jsx');
+              if (fs.existsSync(cartContextSrc)) {
+                fs.copyFileSync(cartContextSrc, path.join(contextDir, 'CartContext.jsx'));
+                console.log('   🛒 CartContext copied for cart functionality');
+              }
+            }
+
+            // Copy effects library (ScrollReveal, AnimatedCounter, ParallaxSection, etc.)
+            // AI-generated pages import from '../effects' - this folder MUST exist
+            const effectsSrc = path.join(__dirname, '..', 'frontend', 'effects');
+            const effectsDest = path.join(frontendSrcPath, 'effects');
+            if (fs.existsSync(effectsSrc)) {
+              copyDirectorySync(effectsSrc, effectsDest);
+              console.log('   ✨ Effects library copied (ScrollReveal, AnimatedCounter, etc.)');
+            } else {
+              console.log('   ⚠️ Effects library not found at:', effectsSrc);
+            }
+
           } else {
-            console.log('   ⚠️ No API key - skipping AI page generation');
+            // TEST MODE or NO API KEY: Generate deterministic fallback pages
+            if (skipAI) {
+              console.log('   🧪 TEST MODE: Using deterministic fallback pages (no AI cost)');
+            } else {
+              console.log('   ⚠️ No API key - using fallback pages');
+            }
+
+            // Generate fallback pages for each requested page
+            // Pass industry for industry-specific content (menu items, services, etc.)
+            for (const pageId of description.pages) {
+              const componentName = toComponentName(pageId);
+              const fallbackCode = buildFallbackPage(componentName, pageId, promptConfig, sanitizedIndustry);
+              fs.writeFileSync(path.join(pagesDir, `${componentName}Page.jsx`), fallbackCode);
+              console.log(`      ✅ ${componentName}Page.jsx (fallback)`);
+            }
+
+            // Generate App.jsx with routes
+            const appJsx = buildAppJsx(name, description.pages, promptConfig, sanitizedIndustry);
+            fs.writeFileSync(path.join(frontendSrcPath, 'App.jsx'), appJsx);
+            console.log('   ✅ App.jsx updated with routes');
+
+            // Copy effects library (needed for fallback pages too)
+            const effectsSrc = path.join(__dirname, '..', 'frontend', 'effects');
+            const effectsDest = path.join(frontendSrcPath, 'effects');
+            if (fs.existsSync(effectsSrc)) {
+              copyDirectorySync(effectsSrc, effectsDest);
+              console.log('   ✨ Effects library copied');
+            }
+
+            // Copy CartContext if needed (same logic as AI path)
+            const cartRequiredIndustries = ['restaurant', 'ecommerce', 'retail', 'pizzeria', 'pizza', 'cafe', 'bakery', 'food-truck'];
+            const needsCart = cartRequiredIndustries.includes(sanitizedIndustry) ||
+                             description.pages.some(p => ['menu', 'cart', 'checkout', 'order', 'products', 'services', 'booking'].includes(p.toLowerCase()));
+            if (needsCart) {
+              const contextDir = path.join(frontendSrcPath, 'context');
+              if (!fs.existsSync(contextDir)) {
+                fs.mkdirSync(contextDir, { recursive: true });
+              }
+              const cartContextSrc = path.join(__dirname, 'lib/saas-templates/pizza-ordering/frontend/context/CartContext.jsx');
+              if (fs.existsSync(cartContextSrc)) {
+                fs.copyFileSync(cartContextSrc, path.join(contextDir, 'CartContext.jsx'));
+                console.log('   🛒 CartContext copied for cart functionality');
+              }
+            }
           }
           
         } catch (pagesErr) {
           console.error('   ⚠️ Page generation error:', pagesErr.message);
         }
+      } else {
+        console.log('   ⏭️ Skipping AI page generation - no pages in description');
       }
-      
-      // Check if auto-deploy requested
+
+      // ========================================
+      // MODULE VALIDATION (auto-fix icon imports)
+      // ========================================
+      console.log('\n   ═══════════════════════════════════════════════════');
+      console.log('   🔍 Running module validation (icon imports, SQL)...');
+      console.log('   ═══════════════════════════════════════════════════');
+
+      try {
+        const validationResults = await validateProject(projectPath);
+
+        if (validationResults.summary.totalFixes > 0) {
+          console.log(`   ✅ Auto-fixed ${validationResults.summary.totalFixes} issue(s)`);
+        }
+        if (validationResults.summary.totalIssues > validationResults.summary.totalFixes) {
+          const unfixed = validationResults.summary.totalIssues - validationResults.summary.totalFixes;
+          console.log(`   ⚠️ ${unfixed} issue(s) require manual review`);
+        }
+        if (validationResults.summary.totalIssues === 0) {
+          console.log('   ✅ All module validations passed');
+        }
+      } catch (validationErr) {
+        console.warn('   ⚠️ Module validation error:', validationErr.message);
+        // Don't block on validation errors - just log and continue
+      }
+
+      // ========================================
+      // AUDIT 1: PRE-DEPLOYMENT BUILD VALIDATION
+      // ========================================
+      let auditResult = null;
+      let auditPassed = true;
+
+      if (ENABLE_PRE_DEPLOY_AUDIT) {
+        console.log('\n   ═══════════════════════════════════════════════════');
+        console.log('   🔍 Running pre-deployment build validation...');
+        console.log('   ═══════════════════════════════════════════════════');
+
+        try {
+          auditResult = await auditService.audit1PostGeneration(projectPath, {
+            maxRetries: 2,
+            timeout: 120000 // 2 min build timeout
+          });
+
+          auditPassed = auditResult.success;
+
+          // Track build result in database
+          if (generationId && db && db.trackBuildResult) {
+            await db.trackBuildResult(generationId, auditResult);
+          }
+
+          if (auditPassed) {
+            console.log('   ✅ Build validation passed - safe to deploy');
+          } else {
+            console.log(`   ❌ Build validation FAILED with ${auditResult.errors?.length || 0} error(s)`);
+            auditResult.errors?.slice(0, 3).forEach((err, i) => {
+              console.log(`      ${i + 1}. ${err.message || err.type}`);
+            });
+          }
+        } catch (auditErr) {
+          console.error('   ⚠️ Audit service error:', auditErr.message);
+          // Don't block on audit service errors - just log and continue
+          auditPassed = true;
+        }
+      }
+
+      // Check if auto-deploy requested (ONLY if audit passed)
       let deployResult = null;
-      if (autoDeploy && deployReady) {
+      if (autoDeploy && deployReady && auditPassed) {
         deployResult = await autoDeployProject(projectPath, name, 'admin@be1st.io');
+      } else if (autoDeploy && !auditPassed) {
+        console.log('   ⏭️ Skipping auto-deploy due to failed build validation');
+        deployResult = {
+          success: false,
+          error: 'Build validation failed - deployment blocked',
+          auditErrors: auditResult?.errors || []
+        };
+      }
+
+      // ========================================
+      // TRACK GENERATION COMPLETE
+      // ========================================
+      if (generationId && db && db.trackGenerationComplete) {
+        try {
+          await db.trackGenerationComplete(generationId, {
+            pagesGenerated: description?.pages?.length || 0,
+            totalCost: totalCost || 0,
+            totalTokens: totalInputTokens + totalOutputTokens,
+            inputTokens: totalInputTokens || 0,
+            outputTokens: totalOutputTokens || 0,
+            generationTimeMs: Date.now() - startTime
+          });
+          console.log(`   📊 Generation ${generationId} marked complete`);
+        } catch (trackErr) {
+          console.warn('   ⚠️ Generation complete tracking failed:', trackErr.message);
+        }
+      }
+
+      // ========================================
+      // TRACK DEPLOYMENT URLS (if deployed)
+      // ========================================
+      if (generationId && deployResult && deployResult.success && deployResult.urls && db && db.updateProjectDeploymentUrls) {
+        try {
+          const urls = deployResult.urls;
+          await db.updateProjectDeploymentUrls(generationId, {
+            domain: urls.frontend?.replace('https://', '').replace('http://', '') || null,
+            frontend: urls.frontend || null,
+            admin: urls.admin || null,
+            backend: urls.backend || null,
+            githubFrontend: urls.githubFrontend || urls.github || null,
+            githubBackend: urls.githubBackend || null,
+            githubAdmin: urls.githubAdmin || null,
+            railway: urls.railway || null,
+            railwayProjectId: deployResult.railwayProjectId || null
+          });
+          console.log(`   📊 Generation ${generationId} deployment URLs saved`);
+        } catch (trackErr) {
+          console.warn('   ⚠️ Deployment URL tracking failed:', trackErr.message);
+        }
+      } else if (generationId && deployResult && !deployResult.success && db && db.trackDeploymentFailed) {
+        // ========================================
+        // TRACK DEPLOYMENT FAILURE
+        // ========================================
+        try {
+          await db.trackDeploymentFailed(generationId, {
+            message: deployResult.error || 'Deployment failed - no URLs returned',
+            stage: deployResult.failedStage || 'unknown',
+            details: deployResult.errorDetails || null
+          });
+          console.log(`   ⚠️ Generation ${generationId} marked as deploy_failed`);
+        } catch (trackErr) {
+          console.warn('   ⚠️ Deployment failure tracking failed:', trackErr.message);
+        }
       }
 
       responded = true;
       res.json({
         success: true,
-        message: 'Project assembled successfully',
+        message: auditPassed ? 'Project assembled successfully' : 'Project assembled but build validation failed',
         project: {
           name: name,
           path: projectPath,
@@ -1281,11 +1718,33 @@ console.log(`   ⏱️ Total generation time: ${((Date.now() - startTime) / 1000
         },
         output: output,
         deployment: deployResult,
+        // Audit results (AUDIT 1: Pre-deployment build validation)
+        audit: auditResult ? {
+          passed: auditResult.success,
+          durationMs: auditResult.durationMs,
+          errorCount: auditResult.errors?.length || 0,
+          warningCount: auditResult.warnings?.length || 0,
+          autoFixesApplied: auditResult.autoFixesApplied?.length || 0,
+          errors: (auditResult.errors || []).slice(0, 5), // Top 5 errors
+          warnings: (auditResult.warnings || []).slice(0, 3) // Top 3 warnings
+        } : null,
         // Tier recommendation (L1-L4) - for frontend upsell/suggestion UI
         tierRecommendation: tierRecommendation,
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
+        generationId: generationId
       });
     } else {
+      // ========================================
+      // TRACK GENERATION FAILED
+      // ========================================
+      if (generationId && db && db.trackGenerationFailed) {
+        try {
+          await db.trackGenerationFailed(generationId, { message: 'Assembly failed', output: errorOutput });
+        } catch (trackErr) {
+          console.warn('   ⚠️ Generation failure tracking failed:', trackErr.message);
+        }
+      }
+
       responded = true;
       res.status(500).json({
         success: false,

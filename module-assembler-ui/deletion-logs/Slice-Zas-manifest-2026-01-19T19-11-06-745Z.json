@@ -1,0 +1,84 @@
+{
+  "projectName": "Slice-Zas",
+  "savedAt": "2026-01-19T19:11:06.745Z",
+  "resources": {
+    "name": "Slice-Zas",
+    "sanitizedName": "slice-zas",
+    "github": {
+      "repos": [
+        {
+          "name": "slice-zas-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "slice-zas-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "slice-zas-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "47731d73-3829-4d27-a4ad-ff97dee84222",
+        "name": "slice-zas",
+        "createdAt": "2026-01-19T18:26:26.002Z",
+        "environments": [
+          {
+            "id": "82a93be7-8800-46bd-adfd-da75efd5fcae",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "16144185-a8b0-44d6-b64e-2b9d980f7b46",
+          "name": "postgres"
+        },
+        {
+          "id": "1dbc02db-20d8-4591-848e-4120400e8021",
+          "name": "admin"
+        },
+        {
+          "id": "22e29103-47ef-4f6f-b724-5765e6a5146e",
+          "name": "backend"
+        },
+        {
+          "id": "89136781-a1e5-44bf-acc0-c075739a0efe",
+          "name": "frontend"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "fb1963ef0b37d8dd8852ce2cdabeb649",
+          "name": "slice-zas.be1st.io",
+          "type": "CNAME",
+          "content": "jfuvkb2t.up.railway.app"
+        },
+        {
+          "id": "25b0cf11c60916d67bb19f47bd6a71f3",
+          "name": "api.slice-zas.be1st.io",
+          "type": "CNAME",
+          "content": "vtstg8wj.up.railway.app"
+        },
+        {
+          "id": "9fc85bf073bdf190a6f0e80e49f3c580",
+          "name": "admin.slice-zas.be1st.io",
+          "type": "CNAME",
+          "content": "dxic2hrz.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Slice-Zas",
+      "exists": true
+    }
+  }
+}

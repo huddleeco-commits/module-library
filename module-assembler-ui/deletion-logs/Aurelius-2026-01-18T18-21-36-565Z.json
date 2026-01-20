@@ -1,0 +1,161 @@
+{
+  "projectName": "Aurelius",
+  "deletedAt": "2026-01-18T18:21:36.565Z",
+  "resourcesFound": {
+    "name": "Aurelius",
+    "sanitizedName": "aurelius",
+    "github": {
+      "repos": [
+        {
+          "name": "aurelius-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "aurelius-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "aurelius-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "e6a28920-53c5-4d99-8ae8-a3e81443de4c",
+        "name": "aurelius",
+        "createdAt": "2026-01-18T18:02:00.883Z",
+        "environments": [
+          {
+            "id": "7949ebec-813b-485d-af6f-8c9fd90f6934",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "12ffe6d2-425c-4021-b2a5-995e2749e031",
+          "name": "frontend"
+        },
+        {
+          "id": "50597be0-5367-443f-abb9-732b1412bd76",
+          "name": "admin"
+        },
+        {
+          "id": "8357c29e-49db-4169-93d4-f7c46127120a",
+          "name": "postgres"
+        },
+        {
+          "id": "fbbe130c-9ff6-4da4-81bc-f4e42e344ef1",
+          "name": "backend"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "3fc4ef7d7393c732033a5127766a7223",
+          "name": "aurelius.be1st.io",
+          "type": "CNAME",
+          "content": "6097v6dx.up.railway.app"
+        },
+        {
+          "id": "4ef9c72511058c271bf980be48794bde",
+          "name": "api.aurelius.be1st.io",
+          "type": "CNAME",
+          "content": "nejkk186.up.railway.app"
+        },
+        {
+          "id": "e1729ed4b53c05b6a2adb02caf6d6d5d",
+          "name": "admin.aurelius.be1st.io",
+          "type": "CNAME",
+          "content": "7be5a52g.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Aurelius",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/aurelius-backend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/aurelius-backend"
+      },
+      {
+        "repo": "huddleeco-commits/aurelius-frontend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/aurelius-frontend"
+      },
+      {
+        "repo": "huddleeco-commits/aurelius-admin",
+        "success": true,
+        "message": "Deleted huddleeco-commits/aurelius-admin"
+      }
+    ],
+    "railway": {
+      "success": true,
+      "message": "Deleted Railway project e6a28920-53c5-4d99-8ae8-a3e81443de4c"
+    },
+    "cloudflare": [
+      {
+        "record": "aurelius.be1st.io",
+        "success": true,
+        "message": "Deleted aurelius.be1st.io"
+      },
+      {
+        "record": "api.aurelius.be1st.io",
+        "success": true,
+        "message": "Deleted api.aurelius.be1st.io"
+      },
+      {
+        "record": "admin.aurelius.be1st.io",
+        "success": true,
+        "message": "Deleted admin.aurelius.be1st.io"
+      }
+    ],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Aurelius"
+    },
+    "errors": [],
+    "verification": {
+      "github": [
+        {
+          "repo": "huddleeco-commits/aurelius-backend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/aurelius-frontend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/aurelius-admin",
+          "verified": true
+        }
+      ],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "aurelius",
+          "verified": true
+        },
+        {
+          "subdomain": "api.aurelius",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.aurelius",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

@@ -282,13 +282,21 @@ router.get('/generations', async (req, res) => {
     if (userId) { paramCount++; conditions.push(`g.user_id = $${paramCount}`); params.push(parseInt(userId)); }
 
     const whereClause = conditions.length > 0 ? 'WHERE ' + conditions.join(' AND ') : '';
-    const validSorts = ['created_at', 'generation_time_ms', 'total_cost', 'pages_generated'];
+    const validSorts = ['created_at', 'api_cost', 'deployed_at'];
     const sortColumn = validSorts.includes(sort) ? sort : 'created_at';
     const sortOrder = order.toLowerCase() === 'asc' ? 'ASC' : 'DESC';
 
+    // Query from generated_projects table with URL columns
     const query = `
-      SELECT g.*, u.email as user_email, u.full_name as user_name, u.subscription_tier as user_tier
-      FROM generations g LEFT JOIN users u ON g.user_id = u.id
+      SELECT
+        g.id, g.name as site_name, g.industry, g.status,
+        g.user_email, g.domain,
+        g.frontend_url, g.admin_url, g.backend_url,
+        g.github_frontend, g.github_backend, g.github_admin,
+        g.railway_project_url, g.railway_project_id,
+        g.api_cost as total_cost, g.api_tokens_used as total_tokens,
+        g.created_at, g.deployed_at, g.metadata
+      FROM generated_projects g
       ${whereClause} ORDER BY g.${sortColumn} ${sortOrder}
       LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}
     `;
@@ -296,15 +304,46 @@ router.get('/generations', async (req, res) => {
     const generations = await db.query(query, params);
 
     const countParams = params.slice(0, paramCount);
-    const countResult = await db.query(`SELECT COUNT(*) FROM generations g ${whereClause}`, countParams);
+    const countResult = await db.query(`SELECT COUNT(*) FROM generated_projects g ${whereClause}`, countParams);
     const total = parseInt(countResult.rows[0].count);
 
-    const statusBreakdown = await db.query(`SELECT status, COUNT(*) as count FROM generations GROUP BY status`);
-    const industryBreakdown = await db.query(`SELECT industry, COUNT(*) as count FROM generations WHERE industry IS NOT NULL GROUP BY industry ORDER BY count DESC LIMIT 10`);
+    const statusBreakdown = await db.query(`SELECT status, COUNT(*) as count FROM generated_projects GROUP BY status`);
+    const industryBreakdown = await db.query(`SELECT industry, COUNT(*) as count FROM generated_projects WHERE industry IS NOT NULL GROUP BY industry ORDER BY count DESC LIMIT 10`);
+
+    // Parse metadata for each generation (including build results)
+    const processedGenerations = generations.rows.map(g => {
+      let meta = {};
+      try {
+        meta = typeof g.metadata === 'string' ? JSON.parse(g.metadata) : (g.metadata || {});
+      } catch (e) {}
+
+      const buildResult = meta.buildResult || null;
+
+      return {
+        ...g,
+        pages_generated: meta.pagesGenerated || 0,
+        generation_time_ms: meta.generationTimeMs || 0,
+        // Build validation results (AUDIT 1)
+        build_result: buildResult ? {
+          success: buildResult.success,
+          audit_type: buildResult.auditType,
+          duration_ms: buildResult.durationMs,
+          error_count: buildResult.errorCount || 0,
+          warning_count: buildResult.warningCount || 0,
+          timestamp: buildResult.timestamp
+        } : null,
+        build_errors: buildResult?.errors || [],
+        build_warnings: buildResult?.warnings || [],
+        auto_fixes: buildResult?.autoFixesApplied || [],
+        build_log: buildResult?.buildLog || null,
+        // Error info (for failed generations)
+        error_message: meta.error || meta.deployError || null
+      };
+    });
 
     res.json({
       success: true,
-      generations: generations.rows,
+      generations: processedGenerations,
       pagination: { page: parseInt(page), limit: parseInt(limit), total, pages: Math.ceil(total / parseInt(limit)) },
       statusBreakdown: statusBreakdown.rows.reduce((acc, row) => { acc[row.status] = parseInt(row.count); return acc; }, {}),
       industryBreakdown: industryBreakdown.rows
@@ -312,6 +351,59 @@ router.get('/generations', async (req, res) => {
   } catch (error) {
     console.error('Admin generations error:', error);
     res.status(500).json({ success: false, error: 'Failed to fetch generations', details: error.message });
+  }
+});
+
+// Delete a project and all associated resources
+router.delete('/projects/:id', async (req, res) => {
+  try {
+    const projectId = parseInt(req.params.id);
+
+    // Get project details first
+    const result = await db.query('SELECT * FROM generated_projects WHERE id = $1', [projectId]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'Project not found' });
+    }
+
+    const project = result.rows[0];
+    const projectName = project.name;
+
+    // Use project-deleter to remove all resources
+    let deleteResult = { success: true, results: {} };
+    try {
+      const projectDeleter = require('../../../module-assembler-ui/lib/services/project-deleter.cjs');
+      console.log(`🗑️ API: Deleting project ${projectName} (ID: ${projectId})`);
+      deleteResult = await projectDeleter.deleteProject(projectName, {
+        dryRun: false,
+        skipVerification: false
+      });
+    } catch (delErr) {
+      console.warn('Project deleter not available:', delErr.message);
+      deleteResult.results.errors = [delErr.message];
+    }
+
+    // Remove from database regardless of external deletion results
+    await db.query('DELETE FROM api_usage WHERE project_id = $1', [projectId]);
+    await db.query('DELETE FROM deployments WHERE project_id = $1', [projectId]);
+    await db.query('DELETE FROM generated_projects WHERE id = $1', [projectId]);
+
+    res.json({
+      success: true,
+      message: `Project "${projectName}" deleted`,
+      details: {
+        projectId,
+        projectName,
+        resourcesDeleted: deleteResult.results || {},
+        errors: deleteResult.results?.errors || []
+      }
+    });
+  } catch (err) {
+    console.error('Delete project error:', err);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to delete project',
+      details: err.message
+    });
   }
 });
 
@@ -809,8 +901,14 @@ router.get('/export/users', async (req, res) => {
 
 router.get('/export/generations', async (req, res) => {
   try {
-    const generations = await db.query(`SELECT id, user_email, site_name, industry, pages_generated, total_cost, generation_time_ms, status, created_at FROM generations ORDER BY created_at DESC`);
-    const csv = generateCSV(generations.rows, ['id', 'user_email', 'site_name', 'industry', 'pages_generated', 'total_cost', 'generation_time_ms', 'status', 'created_at']);
+    const generations = await db.query(`
+      SELECT id, user_email, name as site_name, industry, status,
+             frontend_url, admin_url, backend_url, github_frontend, github_backend,
+             api_cost as total_cost, api_tokens_used as total_tokens,
+             created_at, deployed_at
+      FROM generated_projects ORDER BY created_at DESC
+    `);
+    const csv = generateCSV(generations.rows, ['id', 'user_email', 'site_name', 'industry', 'status', 'total_cost', 'frontend_url', 'admin_url', 'github_frontend', 'created_at', 'deployed_at']);
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', `attachment; filename=generations-${new Date().toISOString().split('T')[0]}.csv`);
     res.send(csv);
@@ -848,5 +946,139 @@ function formatUptime(seconds) {
   if (minutes > 0) parts.push(`${minutes}m`);
   return parts.length > 0 ? parts.join(' ') : '< 1m';
 }
+
+// ============================================
+// DEMO TRACKER ROUTES
+// ============================================
+
+// Get all demo deployments
+router.get('/demos', async (req, res) => {
+  try {
+    const demos = await db.query(`
+      SELECT
+        id, name, industry, status, domain,
+        frontend_url, admin_url, backend_url, companion_app_url,
+        github_frontend, github_backend, github_admin,
+        railway_project_id, railway_project_url,
+        demo_batch_id, created_at, deployed_at, metadata
+      FROM generated_projects
+      WHERE is_demo = TRUE
+      ORDER BY created_at DESC
+      LIMIT 100
+    `);
+
+    const batches = await db.query(`
+      SELECT
+        demo_batch_id,
+        MIN(created_at) as created_at,
+        COUNT(*) as project_count,
+        array_agg(name ORDER BY name) as project_names
+      FROM generated_projects
+      WHERE is_demo = TRUE AND demo_batch_id IS NOT NULL
+      GROUP BY demo_batch_id
+      ORDER BY MIN(created_at) DESC
+    `);
+
+    res.json({
+      success: true,
+      demos: demos.rows,
+      batches: batches.rows,
+      count: demos.rows.length
+    });
+  } catch (err) {
+    console.error('Demo list error:', err);
+    res.status(500).json({ success: false, error: 'Failed to load demos' });
+  }
+});
+
+// Delete a single demo
+router.delete('/demos/:id', async (req, res) => {
+  try {
+    const demoId = parseInt(req.params.id);
+    const { name } = req.body;
+
+    if (!name) {
+      return res.status(400).json({ success: false, error: 'Project name required' });
+    }
+
+    console.log(`🗑️ API: Deleting demo "${name}" (ID: ${demoId})`);
+
+    // Use project-deleter to remove all cloud resources
+    let deleteResult = { success: true };
+    try {
+      const projectDeleter = require('../../../module-assembler-ui/lib/services/project-deleter.cjs');
+      deleteResult = await projectDeleter.deleteProject(name, {
+        dryRun: false,
+        skipVerification: true
+      });
+    } catch (delErr) {
+      console.warn('Project deleter error:', delErr.message);
+    }
+
+    // Remove from database
+    await db.query('DELETE FROM generated_projects WHERE id = $1 AND is_demo = TRUE', [demoId]);
+
+    res.json({
+      success: true,
+      message: `Demo "${name}" deleted`,
+      details: deleteResult
+    });
+  } catch (err) {
+    console.error('Demo delete error:', err);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to delete demo',
+      details: err.message
+    });
+  }
+});
+
+// Delete all demos
+router.delete('/demos/all', async (req, res) => {
+  try {
+    // Get all demos first
+    const demos = await db.query(`
+      SELECT id, name FROM generated_projects WHERE is_demo = TRUE LIMIT 500
+    `);
+
+    console.log(`🗑️ API: Deleting ALL ${demos.rows.length} demo deployments`);
+
+    const results = [];
+
+    // Delete each demo's cloud resources
+    try {
+      const projectDeleter = require('../../../module-assembler-ui/lib/services/project-deleter.cjs');
+      for (const demo of demos.rows) {
+        try {
+          await projectDeleter.deleteProject(demo.name, {
+            dryRun: false,
+            skipVerification: true
+          });
+          results.push({ name: demo.name, success: true });
+        } catch (err) {
+          results.push({ name: demo.name, success: false, error: err.message });
+        }
+      }
+    } catch (delErr) {
+      console.warn('Project deleter not available:', delErr.message);
+    }
+
+    // Clear all demo records from DB
+    const deleteResult = await db.query('DELETE FROM generated_projects WHERE is_demo = TRUE');
+
+    res.json({
+      success: true,
+      deleted: deleteResult.rowCount,
+      results
+    });
+  } catch (err) {
+    console.error('Delete all demos error:', err);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to delete all demos',
+      details: err.message
+    });
+  }
+});
 
 module.exports = router;

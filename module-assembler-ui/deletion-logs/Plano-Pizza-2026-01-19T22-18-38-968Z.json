@@ -1,0 +1,83 @@
+{
+  "projectName": "Plano-Pizza",
+  "deletedAt": "2026-01-19T22:18:38.968Z",
+  "resourcesFound": {
+    "name": "Plano-Pizza",
+    "sanitizedName": "plano-pizza",
+    "github": {
+      "repos": [
+        {
+          "name": "plano-pizza-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "plano-pizza-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "plano-pizza-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Plano-Pizza",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/plano-pizza-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/plano-pizza-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/plano-pizza-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Plano-Pizza"
+    },
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "plano-pizza",
+          "verified": true
+        },
+        {
+          "subdomain": "api.plano-pizza",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.plano-pizza",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

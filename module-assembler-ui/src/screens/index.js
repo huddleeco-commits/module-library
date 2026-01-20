@@ -20,6 +20,13 @@ export { DeployErrorStep } from './DeployErrorStep.jsx';
 export { GeneratingStep } from './GeneratingStep.jsx';
 export { DeployingStep } from './DeployingStep.jsx';
 export { DeployCompleteStep } from './DeployCompleteStep.jsx';
+export { CompanionDeployCompleteStep } from './CompanionDeployCompleteStep.jsx';
+
+// Dashboard screens
+export { MyDeploymentsPage } from './MyDeploymentsPage.jsx';
+
+// Preview screen
+export { PreviewStep } from './PreviewStep.jsx';
 
 // Complete screens
 export { CompleteStep } from './CompleteStep.jsx';
@@ -35,8 +42,22 @@ export { RecommendedToolsScreen } from './RecommendedToolsScreen.jsx';
 export { ToolSuiteBuilderScreen } from './ToolSuiteBuilderScreen.jsx';
 export { SuiteCompleteScreen } from './SuiteCompleteScreen.jsx';
 
+// Tool Suite Flow (new)
+export { ToolSuiteGuidedStep } from './ToolSuiteGuidedStep.jsx';
+export { ToolSuiteInstantStep } from './ToolSuiteInstantStep.jsx';
+export { ToolSuiteCustomStep } from './ToolSuiteCustomStep.jsx';
+
+// App Flow (new)
+export { AppGuidedStep } from './AppGuidedStep.jsx';
+export { AppAIBuilderStep } from './AppAIBuilderStep.jsx';
+export { AppAdvancedStep } from './AppAdvancedStep.jsx';
+export { CompanionAppStep } from './CompanionAppStep.jsx';
+
 // Full Control Mode
 export { FullControlFlow } from './FullControlFlow.jsx';
+
+// Demo Mode (Investor)
+export { DemoBatchStep } from './DemoBatchStep.jsx';
 
 // Landing Page
 export { default as LandingPage } from './LandingPage.jsx';

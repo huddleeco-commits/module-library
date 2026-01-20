@@ -1,0 +1,260 @@
+{
+  "id": "pizza-restaurant",
+  "name": "Pizza / Pizzeria",
+  "icon": "🍕",
+  "business": {
+    "name": "Test Pizza Co",
+    "location": "Austin, TX",
+    "tagline": "Artisan pizzas crafted with passion",
+    "industry": "pizza",
+    "teamSize": "5-10",
+    "priceRange": "$$",
+    "established": "2018",
+    "phone": "(555) 123-4567",
+    "email": "hello@testpizzaco.com",
+    "address": "123 Main Street, Austin, TX 78701",
+    "hours": {
+      "monday": "11:00 AM - 10:00 PM",
+      "tuesday": "11:00 AM - 10:00 PM",
+      "wednesday": "11:00 AM - 10:00 PM",
+      "thursday": "11:00 AM - 10:00 PM",
+      "friday": "11:00 AM - 11:00 PM",
+      "saturday": "11:00 AM - 11:00 PM",
+      "sunday": "12:00 PM - 9:00 PM"
+    }
+  },
+  "theme": {
+    "colors": {
+      "primary": "#E63946",
+      "secondary": "#F4A261",
+      "accent": "#2A9D8F",
+      "background": "#1D3557",
+      "text": "#F1FAEE"
+    },
+    "fonts": {
+      "heading": "Poppins",
+      "body": "Inter"
+    },
+    "style": "warm-casual"
+  },
+  "pages": {
+    "home": {
+      "hero": {
+        "headline": "Artisan Pizzas, Made Fresh Daily",
+        "subheadline": "Experience the authentic taste of Naples in every bite",
+        "cta": "Order Now",
+        "backgroundImage": "https://images.unsplash.com/photo-1579751626657-72bc17010498?w=1920"
+      },
+      "sections": [
+        {
+          "type": "features",
+          "title": "Why Choose Us",
+          "items": [
+            { "icon": "Flame", "title": "Wood-Fired Oven", "description": "Our pizzas are cooked in a traditional wood-fired oven at 900°F" },
+            { "icon": "Leaf", "title": "Fresh Ingredients", "description": "We source local, organic ingredients daily" },
+            { "icon": "Clock", "title": "Fast Delivery", "description": "Hot pizza at your door in 30 minutes or less" }
+          ]
+        },
+        {
+          "type": "menu-preview",
+          "title": "Fan Favorites",
+          "items": [
+            { "name": "Margherita", "price": 16, "description": "Fresh mozzarella, basil, San Marzano tomatoes" },
+            { "name": "Pepperoni Supreme", "price": 18, "description": "Cup & char pepperoni, mozzarella, oregano" },
+            { "name": "The Works", "price": 22, "description": "Pepperoni, sausage, mushrooms, peppers, onions" }
+          ]
+        },
+        {
+          "type": "testimonials",
+          "title": "What Our Customers Say",
+          "items": [
+            { "name": "Sarah M.", "text": "Best pizza in Austin, hands down!", "rating": 5 },
+            { "name": "Mike R.", "text": "The crust is absolutely perfect. Crispy yet chewy.", "rating": 5 },
+            { "name": "Jennifer L.", "text": "Great food, fast delivery, friendly staff!", "rating": 5 }
+          ]
+        }
+      ]
+    },
+    "menu": {
+      "categories": [
+        {
+          "name": "Classic Pizzas",
+          "items": [
+            { "name": "Margherita", "price": 16, "description": "Fresh mozzarella, basil, San Marzano tomatoes" },
+            { "name": "Pepperoni", "price": 17, "description": "Cup & char pepperoni, mozzarella" },
+            { "name": "Hawaiian", "price": 18, "description": "Ham, pineapple, mozzarella" },
+            { "name": "Meat Lovers", "price": 22, "description": "Pepperoni, sausage, bacon, ham" }
+          ]
+        },
+        {
+          "name": "Specialty Pizzas",
+          "items": [
+            { "name": "BBQ Chicken", "price": 20, "description": "Grilled chicken, BBQ sauce, red onions, cilantro" },
+            { "name": "White Pizza", "price": 19, "description": "Ricotta, mozzarella, garlic, olive oil" },
+            { "name": "Veggie Supreme", "price": 19, "description": "Mushrooms, peppers, onions, olives, tomatoes" }
+          ]
+        },
+        {
+          "name": "Sides",
+          "items": [
+            { "name": "Garlic Knots", "price": 6, "description": "6 fresh-baked knots with garlic butter" },
+            { "name": "Caesar Salad", "price": 9, "description": "Romaine, parmesan, croutons, Caesar dressing" },
+            { "name": "Wings", "price": 12, "description": "10 crispy wings, choice of sauce" }
+          ]
+        },
+        {
+          "name": "Drinks",
+          "items": [
+            { "name": "Soda", "price": 3, "description": "Coke, Sprite, Dr Pepper" },
+            { "name": "Craft Beer", "price": 6, "description": "Local Austin brews" },
+            { "name": "House Wine", "price": 8, "description": "Red or white, by the glass" }
+          ]
+        }
+      ]
+    },
+    "about": {
+      "story": "Test Pizza Co was founded in 2018 with a simple mission: to bring authentic, wood-fired pizzas to Austin. Our founder, Chef Marco, trained in Naples and brought his family recipes to Texas. Every pizza is made with love, using only the freshest ingredients.",
+      "team": [
+        { "name": "Marco Rossi", "role": "Founder & Head Chef", "image": "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=400", "bio": "20+ years of pizza-making experience" },
+        { "name": "Sarah Chen", "role": "General Manager", "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400", "bio": "Keeps everything running smoothly" },
+        { "name": "Jake Martinez", "role": "Head Baker", "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400", "bio": "Master of the perfect crust" }
+      ],
+      "values": [
+        "Quality ingredients, no shortcuts",
+        "Community first",
+        "Sustainability matters"
+      ]
+    },
+    "contact": {
+      "address": "123 Main Street, Austin, TX 78701",
+      "phone": "(555) 123-4567",
+      "email": "hello@testpizzaco.com",
+      "mapCoordinates": { "lat": 30.2672, "lng": -97.7431 }
+    },
+    "gallery": {
+      "images": [
+        { "url": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800", "caption": "Fresh from the oven" },
+        { "url": "https://images.unsplash.com/photo-1604382355076-af4b0eb60143?w=800", "caption": "Our signature Margherita" },
+        { "url": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800", "caption": "Pizza perfection" },
+        { "url": "https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=800", "caption": "Handcrafted with love" },
+        { "url": "https://images.unsplash.com/photo-1579751626657-72bc17010498?w=800", "caption": "Our cozy interior" },
+        { "url": "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800", "caption": "The wood-fired oven" }
+      ]
+    }
+  },
+  "companionApp": {
+    "dashboard": {
+      "greeting": "Welcome back!",
+      "widgets": [
+        { "type": "points", "label": "Reward Points", "value": 850 },
+        { "type": "tier", "label": "Member Tier", "value": "Gold" },
+        { "type": "orders", "label": "Total Orders", "value": 23 },
+        { "type": "savings", "label": "Total Savings", "value": "$47.50" }
+      ],
+      "quickActions": [
+        { "id": "order", "label": "Order Now", "icon": "ShoppingBag" },
+        { "id": "rewards", "label": "My Rewards", "icon": "Gift" },
+        { "id": "history", "label": "Order History", "icon": "Clock" },
+        { "id": "refer", "label": "Refer a Friend", "icon": "Users" }
+      ]
+    },
+    "rewards": {
+      "tiers": [
+        { "name": "Bronze", "minPoints": 0, "perks": ["10% off first order"] },
+        { "name": "Silver", "minPoints": 500, "perks": ["10% off all orders", "Free delivery"] },
+        { "name": "Gold", "minPoints": 1000, "perks": ["15% off all orders", "Free delivery", "Priority support"] },
+        { "name": "Platinum", "minPoints": 2500, "perks": ["20% off all orders", "Free delivery", "VIP events", "Monthly free pizza"] }
+      ],
+      "currentPoints": 850,
+      "currentTier": "Gold",
+      "pointsToNextTier": 150,
+      "availableRewards": [
+        { "id": "free-drink", "name": "Free 2L Soda", "cost": 100 },
+        { "id": "free-side", "name": "Free Garlic Knots", "cost": 200 },
+        { "id": "discount-10", "name": "$10 Off Order", "cost": 500 },
+        { "id": "free-pizza", "name": "Free Medium Pizza", "cost": 1000 }
+      ]
+    },
+    "profile": {
+      "fields": [
+        { "name": "fullName", "label": "Full Name", "type": "text", "value": "Demo User" },
+        { "name": "email", "label": "Email", "type": "email", "value": "demo@example.com" },
+        { "name": "phone", "label": "Phone", "type": "tel", "value": "(555) 987-6543" },
+        { "name": "birthday", "label": "Birthday", "type": "date", "value": "1990-05-15" },
+        { "name": "address", "label": "Delivery Address", "type": "text", "value": "456 Oak Lane, Austin, TX 78702" }
+      ],
+      "preferences": {
+        "notifications": true,
+        "emailDeals": true,
+        "smsAlerts": false
+      }
+    },
+    "wallet": {
+      "balance": 25.00,
+      "transactions": [
+        { "id": "t1", "type": "credit", "amount": 50.00, "description": "Gift card added", "date": "2024-01-15" },
+        { "id": "t2", "type": "debit", "amount": -18.50, "description": "Order #1234", "date": "2024-01-18" },
+        { "id": "t3", "type": "credit", "amount": 10.00, "description": "Referral bonus", "date": "2024-01-20" },
+        { "id": "t4", "type": "debit", "amount": -16.50, "description": "Order #1235", "date": "2024-01-22" }
+      ]
+    },
+    "earn": {
+      "methods": [
+        { "id": "order", "title": "Place an Order", "points": "1 point per $1", "icon": "ShoppingBag" },
+        { "id": "refer", "title": "Refer a Friend", "points": "500 bonus points", "icon": "Users" },
+        { "id": "review", "title": "Leave a Review", "points": "50 points", "icon": "Star" },
+        { "id": "birthday", "title": "Birthday Bonus", "points": "200 points", "icon": "Gift" },
+        { "id": "social", "title": "Follow on Social", "points": "25 points each", "icon": "Heart" }
+      ]
+    },
+    "leaderboard": {
+      "topCustomers": [
+        { "rank": 1, "name": "Alex T.", "points": 4520, "avatar": "A" },
+        { "rank": 2, "name": "Maria S.", "points": 3890, "avatar": "M" },
+        { "rank": 3, "name": "Demo User", "points": 850, "avatar": "D", "isCurrentUser": true },
+        { "rank": 4, "name": "Chris P.", "points": 720, "avatar": "C" },
+        { "rank": 5, "name": "Jordan K.", "points": 650, "avatar": "J" }
+      ],
+      "currentUserRank": 3
+    }
+  },
+  "sync": {
+    "sharedState": ["user", "rewards", "wallet", "orders", "profile"],
+    "endpoints": [
+      { "path": "/api/auth/me", "method": "GET", "description": "User profile" },
+      { "path": "/api/loyalty", "method": "GET", "description": "Rewards data" },
+      { "path": "/api/wallet", "method": "GET", "description": "Wallet balance" },
+      { "path": "/api/orders", "method": "GET", "description": "Order history" }
+    ]
+  },
+  "mockResponses": {
+    "/api/auth/me": {
+      "success": true,
+      "user": {
+        "id": 1,
+        "email": "demo@example.com",
+        "fullName": "Demo User",
+        "phone": "(555) 987-6543",
+        "loyaltyPoints": 850,
+        "tier": "Gold"
+      }
+    },
+    "/api/loyalty": {
+      "success": true,
+      "points": 850,
+      "tier": "Gold",
+      "pointsToNextTier": 150
+    },
+    "/api/wallet": {
+      "success": true,
+      "balance": 25.00
+    },
+    "/api/orders": {
+      "success": true,
+      "orders": [
+        { "id": 1234, "date": "2024-01-18", "total": 18.50, "status": "delivered" },
+        { "id": 1235, "date": "2024-01-22", "total": 16.50, "status": "delivered" }
+      ]
+    }
+  }
+}

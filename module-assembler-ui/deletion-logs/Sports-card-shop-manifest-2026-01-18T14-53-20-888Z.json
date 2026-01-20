@@ -1,0 +1,38 @@
+{
+  "projectName": "Sports-card-shop",
+  "savedAt": "2026-01-18T14:53:20.888Z",
+  "resources": {
+    "name": "Sports-card-shop",
+    "sanitizedName": "sports-card-shop",
+    "github": {
+      "repos": [
+        {
+          "name": "sports-card-shop-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "sports-card-shop-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "sports-card-shop-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "projectName": "Sports-card-shop",
+  "deletedAt": "2026-01-18T14:49:36.458Z",
+  "resourcesFound": {
+    "name": "Sports-card-shop",
+    "sanitizedName": "sports-card-shop",
+    "github": {
+      "repos": [
+        {
+          "name": "sports-card-shop-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "sports-card-shop-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "sports-card-shop-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "f133518795d8797c48514f1a4d6e81c1",
+          "name": "sports-card-shop.be1st.io",
+          "type": "CNAME",
+          "content": "946pc77d.up.railway.app"
+        },
+        {
+          "id": "2f096ee738eb27350ae9034db88a1c1b",
+          "name": "api.sports-card-shop.be1st.io",
+          "type": "CNAME",
+          "content": "zbvxggry.up.railway.app"
+        },
+        {
+          "id": "0f7edc4d2a009482165ca72c987a7654",
+          "name": "admin.sports-card-shop.be1st.io",
+          "type": "CNAME",
+          "content": "vm0rt8pt.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Sports-card-shop",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/sports-card-shop-backend",
+        "success": false,
+        "message": "Failed to delete huddleeco-commits/sports-card-shop-backend: HTTP 403"
+      },
+      {
+        "repo": "huddleeco-commits/sports-card-shop-frontend",
+        "success": false,
+        "message": "Failed to delete huddleeco-commits/sports-card-shop-frontend: HTTP 403"
+      },
+      {
+        "repo": "huddleeco-commits/sports-card-shop-admin",
+        "success": false,
+        "message": "Failed to delete huddleeco-commits/sports-card-shop-admin: HTTP 403"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [
+      {
+        "record": "sports-card-shop.be1st.io",
+        "success": true,
+        "message": "Deleted sports-card-shop.be1st.io"
+      },
+      {
+        "record": "api.sports-card-shop.be1st.io",
+        "success": true,
+        "message": "Deleted api.sports-card-shop.be1st.io"
+      },
+      {
+        "record": "admin.sports-card-shop.be1st.io",
+        "success": true,
+        "message": "Deleted admin.sports-card-shop.be1st.io"
+      }
+    ],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Sports-card-shop"
+    },
+    "errors": [
+      "Failed to delete huddleeco-commits/sports-card-shop-backend: HTTP 403",
+      "Failed to delete huddleeco-commits/sports-card-shop-frontend: HTTP 403",
+      "Failed to delete huddleeco-commits/sports-card-shop-admin: HTTP 403"
+    ],
+    "verification": {
+      "github": [
+        {
+          "repo": "huddleeco-commits/sports-card-shop-backend",
+          "verified": false
+        },
+        {
+          "repo": "huddleeco-commits/sports-card-shop-frontend",
+          "verified": false
+        },
+        {
+          "repo": "huddleeco-commits/sports-card-shop-admin",
+          "verified": false
+        }
+      ],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "sports-card-shop",
+          "verified": true
+        },
+        {
+          "subdomain": "api.sports-card-shop",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.sports-card-shop",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

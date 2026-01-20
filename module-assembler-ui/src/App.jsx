@@ -31,6 +31,7 @@ import {
   IndustryBanner,
   LayoutStyleSelector,
   LivePreviewRenderer,
+  TestGenerator,
   wizardStyles,
   collapsibleStyles,
   tooltipStyles,
@@ -55,6 +56,8 @@ import {
   GeneratingStep,
   DeployingStep,
   DeployCompleteStep,
+  CompanionDeployCompleteStep,
+  PreviewStep,
   CompleteStep,
   ToolCompleteScreen,
   ChoiceScreen,
@@ -63,9 +66,21 @@ import {
   RecommendedToolsScreen,
   ToolSuiteBuilderScreen,
   SuiteCompleteScreen,
+  ToolSuiteGuidedStep,
+  ToolSuiteInstantStep,
+  ToolSuiteCustomStep,
+  AppGuidedStep,
+  AppAIBuilderStep,
+  AppAdvancedStep,
+  CompanionAppStep,
   FullControlFlow,
-  LandingPage
+  DemoBatchStep,
+  LandingPage,
+  MyDeploymentsPage
 } from './screens';
+
+// Admin Dashboard import
+import AdminApp from './admin/AdminApp';
 import { ModeSelector } from './components';
 
 // ============================================
@@ -81,14 +96,27 @@ export default function App() {
   const [showDevModal, setShowDevModal] = useState(false);
   const [pendingDevPath, setPendingDevPath] = useState(null);
   const [taglineIndex, setTaglineIndex] = useState(0);
+
+  // Dev tools state
+  const [showDevPanel, setShowDevPanel] = useState(false);
+  const [showAdminDashboard, setShowAdminDashboard] = useState(false);
+  const [adminStartPage, setAdminStartPage] = useState('overview'); // Which admin page to start on
+  const [showTestGenerator, setShowTestGenerator] = useState(false); // L1-L4 quick test modes
   
   // Flow state
-  const [step, setStep] = useState('choose-path'); // choose-path, rebuild, quick, reference, orchestrator, full-control, upload-assets, customize, generating, complete, deploying, deploy-complete, deploy-error, error
-  
+  const [step, setStep] = useState('choose-path'); // choose-path, rebuild, quick, reference, orchestrator, full-control, upload-assets, customize, generating, preview, complete, deploying, deploy-complete, deploy-error, error, companion
+
   // Deploy state
   const [deployStatus, setDeployStatus] = useState(null);
   const [deployResult, setDeployResult] = useState(null);
   const [deployError, setDeployError] = useState(null);
+
+  // Companion app state
+  const [companionParentSite, setCompanionParentSite] = useState(null);
+  const [companionProject, setCompanionProject] = useState(null);
+  const [companionDeployResult, setCompanionDeployResult] = useState(null);
+  const [companionDeployProgress, setCompanionDeployProgress] = useState(null);
+  const [shouldAutoGenerateCompanion, setShouldAutoGenerateCompanion] = useState(false);
   const [path, setPath] = useState(null); // 'rebuild', 'quick', 'reference', 'orchestrator'
 
   // Orchestrator state
@@ -104,10 +132,13 @@ export default function App() {
   // Tool suite state
   const [selectedToolsForSuite, setSelectedToolsForSuite] = useState([]);
   const [suiteResult, setSuiteResult] = useState(null);
+  const [preselectedBundle, setPreselectedBundle] = useState(null); // For direct bundle selection
+  const [preselectedApp, setPreselectedApp] = useState(null); // For direct app template selection
 
   // Choice screen state (for ambiguous inputs)
   const [choiceData, setChoiceData] = useState(null);
   const [pendingOrchestratorInput, setPendingOrchestratorInput] = useState(null);
+  const [pendingIndustryKey, setPendingIndustryKey] = useState(null); // Explicit industry override
 
   // Shared context state (persists across site/tools flows)
   const [sharedContext, setSharedContext] = useState({
@@ -200,7 +231,10 @@ export default function App() {
 
     // Admin tier configuration
     adminTier: null, // null = auto-detect, or 'lite', 'standard', 'pro', 'enterprise'
-    adminModules: [] // Selected admin modules
+    adminModules: [], // Selected admin modules
+
+    // Companion app toggle (Quick Start flow)
+    includeCompanionApp: false
   });
 
   // NEW: Generation state with real steps
@@ -226,7 +260,26 @@ export default function App() {
     const access = localStorage.getItem('blink_access');
     if (access === 'granted') setIsUnlocked(true);
     const devAccess = localStorage.getItem('blink_dev_access');
-    if (devAccess === 'granted') setIsDevUnlocked(true);
+    if (devAccess === 'granted') {
+      setIsDevUnlocked(true);
+      // Ensure dev token exists for admin API access (handles migration from old sessions)
+      const adminToken = localStorage.getItem('blink_admin_token');
+      if (!adminToken) {
+        // Fetch a new dev token - the password was already validated to get dev access
+        fetch('/api/auth/validate-dev', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: 'abc123' })
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.devToken) {
+              localStorage.setItem('blink_admin_token', data.devToken);
+            }
+          })
+          .catch(err => console.warn('Could not refresh dev token:', err));
+      }
+    }
   }, []);
   
   // Rotate taglines in header
@@ -237,6 +290,20 @@ export default function App() {
     }, 4000);
     return () => clearInterval(interval);
   }, [isUnlocked]);
+
+  // Keyboard shortcut: Ctrl+Shift+T to toggle Test Generator
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'T') {
+        e.preventDefault();
+        if (isDevUnlocked) {
+          setShowTestGenerator(prev => !prev);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isDevUnlocked]);
 
   // Load configs on mount
   useEffect(() => {
@@ -260,6 +327,50 @@ export default function App() {
     };
     loadConfigs();
   }, [isUnlocked]);
+
+  // Auto-generate companion app after deployment if user opted in
+  // This handles BOTH flows:
+  // 1. OrchestratorStep: uses shouldAutoGenerateCompanion state
+  // 2. Quick Start (CustomizeStep): uses projectData.includeCompanionApp
+  useEffect(() => {
+    const wantsCompanion = shouldAutoGenerateCompanion || projectData.includeCompanionApp;
+
+    // Debug logging
+    console.log('[COMPANION AUTO] Effect triggered:', {
+      step,
+      shouldAutoGenerateCompanion,
+      includeCompanionApp: projectData.includeCompanionApp,
+      wantsCompanion,
+      deployResultSuccess: deployResult?.success,
+      deployResultUrls: deployResult?.urls
+    });
+
+    if (step === 'deploy-complete' && wantsCompanion && deployResult?.success) {
+      console.log('[COMPANION AUTO] All conditions met! Triggering companion flow...');
+
+      // Reset both flags so it doesn't trigger again
+      setShouldAutoGenerateCompanion(false);
+      if (projectData.includeCompanionApp) {
+        updateProject({ includeCompanionApp: false });
+      }
+
+      // Extract subdomain and trigger companion flow automatically
+      const subdomain = deployResult?.urls?.frontend?.replace('https://', '').split('.')[0];
+      console.log('[COMPANION AUTO] Extracted subdomain:', subdomain);
+
+      setCompanionParentSite({
+        name: projectData?.businessName || subdomain,
+        subdomain: subdomain,
+        url: deployResult?.urls?.frontend
+      });
+
+      // Small delay for UX - show deploy complete briefly then move to companion
+      setTimeout(() => {
+        console.log('[COMPANION AUTO] Navigating to companion step');
+        setStep('companion');
+      }, 1500);
+    }
+  }, [step, shouldAutoGenerateCompanion, projectData.includeCompanionApp, deployResult, projectData?.businessName]);
 
   // Update project data helper
   const updateProject = (updates) => {
@@ -318,6 +429,48 @@ export default function App() {
     } else if (selectedPath === 'full-control') {
       setIsToolMode(false);
       setStep('full-control');
+    }
+    // ═══ TOOL SUITE MODES ═══
+    else if (selectedPath === 'tool-suite-guided') {
+      // Pick from pre-made bundles
+      setPreselectedBundle(null);
+      setStep('tool-suite-guided');
+    } else if (selectedPath === 'tool-suite-instant') {
+      // AI picks tools based on description
+      setStep('tool-suite-instant');
+    } else if (selectedPath === 'tool-suite-custom') {
+      // Mix and match individual tools
+      setStep('tool-suite-custom');
+    } else if (selectedPath === 'tool-suite-bundle' && toolId) {
+      // Direct bundle selection (from quick-select grid)
+      setPreselectedBundle(toolId);
+      setStep('tool-suite-guided');
+    }
+    // ═══ APP MODES ═══
+    else if (selectedPath === 'app-guided') {
+      // Browse app templates
+      setPreselectedApp(null);
+      setStep('app-guided');
+    } else if (selectedPath === 'app-ai-builder') {
+      // AI-powered app building (Phase 2)
+      setStep('app-ai-builder');
+    } else if (selectedPath === 'app-template' && toolId) {
+      // Direct app template selection (from quick-select grid)
+      setPreselectedApp(toolId);
+      setStep('app-guided');
+    }
+    // ═══ ADVANCED APPS (Full Stack) ═══
+    else if (selectedPath === 'app-advanced') {
+      // Browse advanced app templates
+      setStep('app-advanced');
+    } else if (selectedPath === 'app-advanced-template' && toolId) {
+      // Direct advanced app template selection (from quick-select grid)
+      setPreselectedApp(toolId); // Reuse preselectedApp for template ID
+      setStep('app-advanced');
+    }
+    // ═══ DEMO MODE (Investor) ═══
+    else if (selectedPath === 'demo-batch') {
+      setStep('demo-batch');
     }
   };
   
@@ -395,7 +548,7 @@ export default function App() {
                         projectData.tone > 66 ? 'friendly and casual' : 'balanced';
 
       // Compute effective video hero setting
-      const videoSupportedIndustries = ['tattoo', 'barbershop', 'barber', 'restaurant', 'pizza', 'pizzeria', 'fitness', 'gym', 'spa', 'salon', 'wellness'];
+      const videoSupportedIndustries = ['tattoo', 'barbershop', 'barber', 'restaurant', 'pizza', 'pizzeria', 'fitness', 'gym', 'spa', 'salon', 'wellness', 'steakhouse', 'fine-dining', 'chophouse'];
       const industryLower = (projectData.industryKey || '').toLowerCase();
       const industrySupportsVideo = videoSupportedIndustries.some(v => industryLower.includes(v));
       const effectiveEnableVideoHero = projectData.enableVideoHero !== null
@@ -682,7 +835,8 @@ export default function App() {
       existingSite: null,
       uploadedAssets: { logo: null, photos: [], menu: null },
       imageDescription: '',
-      extraDetails: ''
+      extraDetails: '',
+      includeCompanionApp: false
     });
     setResult(null);
     setError(null);
@@ -693,6 +847,18 @@ export default function App() {
     setDeployResult(null);
     setDeployError(null);
     setDeployStartTime(null);
+    // Reset tool suite state
+    setSuiteResult(null);
+    setSelectedToolsForSuite([]);
+    setPreselectedBundle(null);
+    // Reset app state
+    setPreselectedApp(null);
+    // Reset companion app state
+    setCompanionParentSite(null);
+    setCompanionProject(null);
+    setCompanionDeployResult(null);
+    setCompanionDeployProgress(null);
+    setShouldAutoGenerateCompanion(false);
   };
 
   // ============================================
@@ -709,15 +875,313 @@ export default function App() {
     return <PasswordGate onUnlock={() => setIsUnlocked(true)} />;
   }
   
+  // If showing admin dashboard, render it fullscreen (skip auth since dev mode is already verified)
+  if (showAdminDashboard) {
+    return (
+      <div style={{ position: 'relative' }}>
+        {/* Back to App button */}
+        <button
+          onClick={() => setShowAdminDashboard(false)}
+          style={{
+            position: 'fixed',
+            top: '20px',
+            right: '20px',
+            zIndex: 10000,
+            padding: '10px 20px',
+            background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+            border: 'none',
+            borderRadius: '8px',
+            color: '#fff',
+            fontSize: '14px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)'
+          }}
+        >
+          ← Back to App
+        </button>
+        <AdminApp skipAuth={true} startPage={adminStartPage} />
+      </div>
+    );
+  }
+
   return (
     <div style={styles.container}>
       {showDevModal && (
-        <DevPasswordModal 
+        <DevPasswordModal
           onSuccess={handleDevUnlock}
           onCancel={() => { setShowDevModal(false); setPendingDevPath(null); }}
         />
       )}
-      
+
+      {/* Floating Dev Tools Button (always visible, requires password) */}
+      <button
+        onClick={() => {
+          if (isDevUnlocked) {
+            setShowDevPanel(!showDevPanel);
+          } else {
+            setShowDevModal(true);
+          }
+        }}
+        style={{
+          position: 'fixed',
+          bottom: '20px',
+          right: '20px',
+          zIndex: 9999,
+          width: '50px',
+          height: '50px',
+          borderRadius: '50%',
+          background: isDevUnlocked
+            ? 'linear-gradient(135deg, #f59e0b, #d97706)'
+            : 'rgba(255,255,255,0.1)',
+          border: isDevUnlocked ? 'none' : '1px solid rgba(255,255,255,0.2)',
+          color: '#fff',
+          fontSize: '20px',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: isDevUnlocked ? '0 4px 12px rgba(245, 158, 11, 0.4)' : 'none',
+          opacity: isDevUnlocked ? 1 : 0.5,
+          transition: 'all 0.2s'
+        }}
+        title={isDevUnlocked ? "Developer Tools" : "Unlock Dev Tools"}
+      >
+        🛠️
+      </button>
+
+      {/* Unified Dev Tools Panel */}
+      {showDevPanel && isDevUnlocked && (
+        <div style={{
+          position: 'fixed',
+          bottom: '80px',
+          right: '20px',
+          zIndex: 9998,
+          background: '#1a1a1f',
+          border: '1px solid rgba(255,255,255,0.15)',
+          borderRadius: '16px',
+          padding: '20px',
+          minWidth: '280px',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.5)'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <div style={{ fontSize: '14px', fontWeight: '700', color: '#fff' }}>🔧 Dev Toolbox</div>
+            <button
+              onClick={() => setShowDevPanel(false)}
+              style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer', fontSize: '18px' }}
+            >×</button>
+          </div>
+
+          {/* Generation Modes Section */}
+          <div style={{ fontSize: '10px', color: '#666', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+            Generation Modes
+          </div>
+
+          <button
+            onClick={() => { selectPath('quick'); setShowDevPanel(false); }}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '8px',
+              color: '#fff',
+              fontSize: '14px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              marginBottom: '8px',
+              textAlign: 'left'
+            }}
+          >
+            <span>⚡</span>
+            <div>
+              <div style={{ fontWeight: '600' }}>Quick Start</div>
+              <div style={{ fontSize: '11px', color: '#888' }}>Original tested flow</div>
+            </div>
+          </button>
+
+          {/* Experimental Modes Section */}
+          <div style={{ fontSize: '10px', color: '#666', marginBottom: '8px', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+            Experimental Modes
+          </div>
+
+          <button
+            onClick={() => { selectPath('rebuild'); setShowDevPanel(false); }}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '8px',
+              color: '#fff',
+              fontSize: '14px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              marginBottom: '8px',
+              textAlign: 'left'
+            }}
+          >
+            <span>🔄</span>
+            <div>
+              <div style={{ fontWeight: '600' }}>Rebuild Mode</div>
+              <div style={{ fontSize: '11px', color: '#888' }}>Analyze & update existing site</div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => { selectPath('reference'); setShowDevPanel(false); }}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '8px',
+              color: '#fff',
+              fontSize: '14px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              marginBottom: '12px',
+              textAlign: 'left'
+            }}
+          >
+            <span>🎨</span>
+            <div>
+              <div style={{ fontWeight: '600' }}>Inspired Mode</div>
+              <div style={{ fontSize: '11px', color: '#888' }}>Build from inspiration URLs</div>
+            </div>
+          </button>
+
+          {/* Admin Section */}
+          <div style={{ fontSize: '10px', color: '#666', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+            Admin & Testing
+          </div>
+
+          <button
+            onClick={() => { setAdminStartPage('overview'); setShowAdminDashboard(true); setShowDevPanel(false); }}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+              border: 'none',
+              borderRadius: '8px',
+              color: '#fff',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              marginBottom: '8px'
+            }}
+          >
+            <span>📊</span> Admin Dashboard
+          </button>
+
+          <button
+            onClick={() => { setAdminStartPage('platform-health'); setShowAdminDashboard(true); setShowDevPanel(false); }}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              background: 'linear-gradient(135deg, #10b981, #059669)',
+              border: 'none',
+              borderRadius: '8px',
+              color: '#fff',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              marginBottom: '8px'
+            }}
+          >
+            <span>🧪</span> Test Center
+          </button>
+
+          <button
+            onClick={() => { setShowTestGenerator(true); setShowDevPanel(false); }}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+              border: 'none',
+              borderRadius: '8px',
+              color: '#fff',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              marginBottom: '8px'
+            }}
+          >
+            <span>⚡</span> Quick Test (L1-L4)
+            <span style={{ marginLeft: 'auto', fontSize: '10px', opacity: 0.7 }}>Ctrl+Shift+T</span>
+          </button>
+
+          <button
+            onClick={() => { window.open('/api/health-check/full', '_blank'); }}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '8px',
+              color: '#ccc',
+              fontSize: '14px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              marginBottom: '8px'
+            }}
+          >
+            <span>💚</span> Health Check API (JSON)
+          </button>
+
+          {/* Investor Demo Mode */}
+          <button
+            onClick={() => { setStep('demo-batch'); setShowDevPanel(false); }}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              background: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
+              border: 'none',
+              borderRadius: '8px',
+              color: '#fff',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              marginBottom: '12px',
+              boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)'
+            }}
+          >
+            <span>🚀</span> Investor Demo
+            <span style={{ marginLeft: 'auto', fontSize: '10px', background: 'rgba(255,255,255,0.2)', padding: '2px 6px', borderRadius: '4px' }}>4 sites</span>
+          </button>
+
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '12px' }}>
+            <div style={{ fontSize: '11px', color: '#666', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ width: '8px', height: '8px', background: '#10b981', borderRadius: '50%' }}></span>
+              Dev Mode Active
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header style={styles.header}>
         <div style={styles.logo}>
@@ -726,6 +1190,17 @@ export default function App() {
         </div>
         <div style={styles.headerRight}>
           <p style={styles.headerTagline} key={taglineIndex}>{TAGLINES[taglineIndex]}</p>
+          <button
+            onClick={() => setStep('my-deployments')}
+            style={{
+              ...styles.logoutBtn,
+              background: 'rgba(99, 102, 241, 0.2)',
+              color: '#6366f1',
+              marginRight: '8px'
+            }}
+          >
+            My Sites
+          </button>
           <button onClick={handleLogout} style={styles.logoutBtn}>Logout</button>
         </div>
       </header>
@@ -734,6 +1209,13 @@ export default function App() {
       <main style={styles.main}>
         {step === 'choose-path' && (
           <ChoosePathStep onSelect={selectPath} isDevUnlocked={isDevUnlocked} />
+        )}
+
+        {step === 'my-deployments' && (
+          <MyDeploymentsPage
+            onBack={() => setStep('choose-path')}
+            onCreateNew={() => setStep('choose-path')}
+          />
         )}
         
         {step === 'rebuild' && (
@@ -791,13 +1273,26 @@ export default function App() {
             isToolMode={isToolMode}
             preselectedTool={selectedTool}
             pendingInput={pendingOrchestratorInput}
-            onPendingInputUsed={() => setPendingOrchestratorInput(null)}
+            pendingIndustryKey={pendingIndustryKey}
+            onPendingInputUsed={() => {
+              setPendingOrchestratorInput(null);
+              setPendingIndustryKey(null);
+            }}
             onComplete={(result) => {
               setOrchestratorResult(result);
               // Extract project object to match what CompleteStep expects (path, name)
               setResult(result.project);
               updateProject({ businessName: result.orchestrator?.decisions?.businessName || result.tool?.template || result.project?.name });
-              setStep('complete');
+              // Track if user wants auto companion app generation after deploy
+              if (result.includeCompanionApp) {
+                setShouldAutoGenerateCompanion(true);
+              }
+              // For tools, go directly to complete. For websites, show preview first.
+              if (result.type === 'tool') {
+                setStep('complete');
+              } else {
+                setStep('preview');
+              }
             }}
             onBack={() => {
               setSelectedTool(null);
@@ -878,6 +1373,13 @@ export default function App() {
               setPendingOrchestratorInput(inputDescription);
               setStep('orchestrator');
             }}
+            onBack={() => setStep('choose-path')}
+          />
+        )}
+
+        {/* Demo Batch Mode (Investor Demo) */}
+        {step === 'demo-batch' && (
+          <DemoBatchStep
             onBack={() => setStep('choose-path')}
           />
         )}
@@ -969,11 +1471,18 @@ export default function App() {
                 colors: {
                   ...projectData.colors,
                   primary: config.brandColor
-                }
+                },
+                includeCompanionApp: config.includeCompanionApp || false
               });
+              // Set flag for auto companion app generation after deploy
+              if (config.includeCompanionApp) {
+                setShouldAutoGenerateCompanion(true);
+              }
               // Build input for orchestrator
               const inputDescription = `Build a ${config.industryDisplay} website for ${config.businessName}${config.location ? ` in ${config.location}` : ''}. ${config.tagline ? `Tagline: "${config.tagline}". ` : ''}Style: ${config.style}. Pages: ${config.selectedPages.join(', ')}. Admin level: ${config.adminLevel}.`;
               setPendingOrchestratorInput(inputDescription);
+              // Pass explicit industry key to prevent re-detection
+              setPendingIndustryKey(config.industry);
               setSiteCustomization(null);
               setStep('orchestrator');
             }}
@@ -1039,7 +1548,25 @@ export default function App() {
             onCancel={handleCancelGeneration}
           />
         )}
-        
+
+        {step === 'preview' && (
+          <PreviewStep
+            projectData={projectData}
+            generationResult={orchestratorResult}
+            onDeploy={handleDeploy}
+            onRegenerate={() => {
+              // Go back to orchestrator to regenerate
+              setResult(null);
+              setOrchestratorResult(null);
+              setStep('orchestrator');
+            }}
+            onBack={() => {
+              // Go to complete step (skip preview)
+              setStep('complete');
+            }}
+          />
+        )}
+
         {step === 'complete' && (
           orchestratorResult?.type === 'tool' ? (
             <ToolCompleteScreen
@@ -1063,6 +1590,25 @@ export default function App() {
                   industryIcon: '🌐'
                 });
                 setStep('site-customize');
+              }}
+            />
+          ) : orchestratorResult?.type === 'app' ? (
+            <ToolCompleteScreen
+              toolResult={{
+                ...orchestratorResult,
+                tool: orchestratorResult.app?.project || orchestratorResult.app,
+                html: orchestratorResult.app?.html
+              }}
+              onReset={handleReset}
+              onBuildAnother={() => {
+                setOrchestratorResult(null);
+                setPreselectedApp(null);
+                setStep('choose-path');
+              }}
+              industry={null}
+              onBuildSite={() => {
+                setOrchestratorResult(null);
+                setStep('choose-path');
               }}
             />
           ) : (
@@ -1163,11 +1709,112 @@ export default function App() {
               setSelectedToolsForSuite([]);
               setRecommendations([]);
               setRecommendationIndustry(null);
+              setPreselectedBundle(null);
               setStep('choose-path');
             }}
             onBuildAnother={() => {
               setSuiteResult(null);
-              setStep('recommendations');
+              setPreselectedBundle(null);
+              setStep('choose-path');
+            }}
+          />
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════
+            TOOL SUITE MODES
+            ═══════════════════════════════════════════════════════════════ */}
+
+        {step === 'tool-suite-guided' && (
+          <ToolSuiteGuidedStep
+            preselectedBundle={preselectedBundle}
+            onComplete={(result) => {
+              setSuiteResult(result);
+              setPreselectedBundle(null);
+              setStep('suite-complete');
+            }}
+            onBack={() => {
+              setPreselectedBundle(null);
+              setStep('choose-path');
+            }}
+          />
+        )}
+
+        {step === 'tool-suite-instant' && (
+          <ToolSuiteInstantStep
+            onComplete={(result) => {
+              setSuiteResult(result);
+              setStep('suite-complete');
+            }}
+            onBack={() => setStep('choose-path')}
+          />
+        )}
+
+        {step === 'tool-suite-custom' && (
+          <ToolSuiteCustomStep
+            onComplete={(result) => {
+              setSuiteResult(result);
+              setStep('suite-complete');
+            }}
+            onBack={() => setStep('choose-path')}
+          />
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════
+            APP MODES
+            ═══════════════════════════════════════════════════════════════ */}
+
+        {step === 'app-guided' && (
+          <AppGuidedStep
+            preselectedApp={preselectedApp}
+            onComplete={(result) => {
+              // For apps, we get back HTML content directly
+              // Store it similar to tool results
+              setOrchestratorResult({
+                type: 'app',
+                app: result
+              });
+              setResult(result.project);
+              setPreselectedApp(null);
+              setStep('complete');
+            }}
+            onBack={() => {
+              setPreselectedApp(null);
+              setStep('choose-path');
+            }}
+          />
+        )}
+
+        {step === 'app-ai-builder' && (
+          <AppAIBuilderStep
+            onComplete={(result) => {
+              // AI-generated apps also get stored like other apps
+              setOrchestratorResult({
+                type: 'app',
+                app: result
+              });
+              setResult(result.project);
+              setStep('complete');
+            }}
+            onBack={() => setStep('choose-path')}
+          />
+        )}
+
+        {step === 'app-advanced' && (
+          <AppAdvancedStep
+            templateId={preselectedApp || 'loyalty-program'}
+            onBack={() => {
+              setPreselectedApp(null);
+              setStep('choose-path');
+            }}
+            onGenerate={(result) => {
+              // Full stack apps get stored with their download URL
+              setOrchestratorResult({
+                type: 'advanced-app',
+                app: result
+              });
+              setResult(result.project);
+              setPreselectedApp(null);
+              // Note: AppAdvancedStep handles its own success state with download
             }}
           />
         )}
@@ -1187,7 +1834,124 @@ export default function App() {
         )}
         
         {step === 'deploy-complete' && (
-          <DeployCompleteStep result={deployResult} onReset={handleReset} />
+          <DeployCompleteStep
+            result={deployResult}
+            onReset={handleReset}
+            onGenerateCompanion={() => {
+              // Extract subdomain from deployed URL
+              const subdomain = deployResult?.urls?.frontend?.replace('https://', '').split('.')[0];
+              setCompanionParentSite({
+                name: projectData?.businessName || subdomain,
+                subdomain: subdomain,
+                url: deployResult?.urls?.frontend
+              });
+              setStep('companion');
+            }}
+          />
+        )}
+
+        {step === 'companion' && companionParentSite && (
+          <CompanionAppStep
+            parentSite={companionParentSite}
+            onGenerate={async (config) => {
+              // Generate companion app
+              setStep('generating');
+
+              try {
+                // Add parent project ID if we have it from the website deploy
+                const generateConfig = {
+                  ...config,
+                  parentProjectId: deployResult?.projectId || null
+                };
+
+                const response = await fetch(`${API_BASE}/api/companion/generate`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(generateConfig)
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                  // Store companion project info
+                  setCompanionProject(data.project);
+
+                  // Now deploy the companion app
+                  setStep('companion-deploying');
+                  setCompanionDeployProgress({ step: 'starting', status: 'Starting deployment...', progress: 0 });
+
+                  const deployResponse = await fetch(`${API_BASE}/api/companion/deploy`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      projectPath: data.project.path,
+                      projectName: data.project.name,
+                      parentSiteSubdomain: companionParentSite.subdomain,
+                      projectId: data.project.id
+                    })
+                  });
+
+                  // Handle SSE response
+                  const reader = deployResponse.body.getReader();
+                  const decoder = new TextDecoder();
+
+                  while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const text = decoder.decode(value);
+                    const lines = text.split('\n').filter(line => line.startsWith('data: '));
+
+                    for (const line of lines) {
+                      try {
+                        const eventData = JSON.parse(line.slice(6));
+                        setCompanionDeployProgress(eventData);
+
+                        if (eventData.step === 'complete' && eventData.result?.success) {
+                          setCompanionDeployResult(eventData.result);
+                          setStep('companion-deploy-complete');
+                        } else if (eventData.step === 'error') {
+                          setError(eventData.status || 'Companion deployment failed');
+                          setStep('error');
+                        }
+                      } catch (e) {
+                        // Ignore parse errors for partial data
+                      }
+                    }
+                  }
+                } else {
+                  setError(data.error || 'Companion app generation failed');
+                  setStep('error');
+                }
+              } catch (err) {
+                setError(err.message);
+                setStep('error');
+              }
+            }}
+            onCancel={() => {
+              setCompanionParentSite(null);
+              setStep('deploy-complete');
+            }}
+          />
+        )}
+
+        {step === 'companion-deploying' && (
+          <DeployingStep
+            status={companionDeployProgress?.status || 'Deploying companion app...'}
+            projectName={companionProject?.name || 'Companion App'}
+          />
+        )}
+
+        {step === 'companion-deploy-complete' && companionDeployResult && (
+          <CompanionDeployCompleteStep
+            result={companionDeployResult}
+            parentSite={companionParentSite}
+            onReset={handleReset}
+            onBackToWebsite={() => {
+              setCompanionDeployResult(null);
+              setCompanionProject(null);
+              setStep('deploy-complete');
+            }}
+          />
         )}
         
         {step === 'deploy-error' && (
@@ -1203,6 +1967,15 @@ export default function App() {
         <span>•</span>
         <span>{Object.keys(layouts).length} Layouts</span>
       </footer>
+
+      {/* Test Generator Modal (L1-L4 Quick Tests) */}
+      <TestGenerator
+        isOpen={showTestGenerator}
+        onClose={() => setShowTestGenerator(false)}
+        onRunTest={(result) => {
+          console.log('Test result:', result);
+        }}
+      />
     </div>
   );
 }

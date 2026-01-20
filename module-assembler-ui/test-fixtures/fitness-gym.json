@@ -1,0 +1,149 @@
+{
+  "id": "fitness-gym",
+  "name": "Fitness / Gym",
+  "icon": "💪",
+  "business": {
+    "name": "Test FitZone",
+    "location": "Austin, TX",
+    "tagline": "Transform your limits",
+    "industry": "fitness",
+    "teamSize": "10-20",
+    "priceRange": "$$",
+    "established": "2019",
+    "phone": "(512) 555-4567",
+    "email": "info@testfitzone.com",
+    "address": "789 Fitness Blvd, Austin, TX 78704",
+    "hours": {
+      "monday": "5:00 AM - 11:00 PM",
+      "tuesday": "5:00 AM - 11:00 PM",
+      "wednesday": "5:00 AM - 11:00 PM",
+      "thursday": "5:00 AM - 11:00 PM",
+      "friday": "5:00 AM - 10:00 PM",
+      "saturday": "7:00 AM - 8:00 PM",
+      "sunday": "7:00 AM - 8:00 PM"
+    }
+  },
+  "theme": {
+    "colors": {
+      "primary": "#00B4D8",
+      "secondary": "#90E0EF",
+      "accent": "#023E8A",
+      "background": "#0A0A0A",
+      "text": "#FFFFFF"
+    },
+    "fonts": {
+      "heading": "Montserrat",
+      "body": "Open Sans"
+    },
+    "style": "energetic-modern"
+  },
+  "pages": {
+    "home": {
+      "hero": {
+        "headline": "Transform Your Limits",
+        "subheadline": "State-of-the-art equipment, expert trainers, and a community that pushes you to be your best",
+        "cta": "Start Your Journey",
+        "backgroundImage": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920"
+      },
+      "sections": [
+        {
+          "type": "features",
+          "title": "Why FitZone",
+          "items": [
+            { "icon": "Dumbbell", "title": "Top Equipment", "description": "Brand new Rogue and Hammer Strength equipment" },
+            { "icon": "Users", "title": "Expert Trainers", "description": "Certified personal trainers with proven results" },
+            { "icon": "Clock", "title": "24/7 Access", "description": "Work out on your schedule, not ours" }
+          ]
+        },
+        {
+          "type": "classes-preview",
+          "title": "Popular Classes",
+          "items": [
+            { "name": "HIIT Blast", "time": "6:00 AM", "trainer": "Coach Mike" },
+            { "name": "Spin Cycle", "time": "7:00 AM", "trainer": "Sarah K." },
+            { "name": "Power Yoga", "time": "12:00 PM", "trainer": "Jen L." }
+          ]
+        }
+      ]
+    },
+    "menu": {
+      "categories": [
+        {
+          "name": "Membership Plans",
+          "items": [
+            { "name": "Basic", "price": 29, "description": "Gym access during staffed hours" },
+            { "name": "Premium", "price": 49, "description": "24/7 access + unlimited classes" },
+            { "name": "VIP", "price": 79, "description": "Everything + 2 PT sessions/month" }
+          ]
+        },
+        {
+          "name": "Personal Training",
+          "items": [
+            { "name": "Single Session", "price": 75, "description": "1-hour one-on-one training" },
+            { "name": "5-Pack", "price": 325, "description": "5 sessions, save $50" },
+            { "name": "10-Pack", "price": 600, "description": "10 sessions, save $150" }
+          ]
+        },
+        {
+          "name": "Add-Ons",
+          "items": [
+            { "name": "Locker Rental", "price": 15, "description": "Monthly locker access" },
+            { "name": "Towel Service", "price": 10, "description": "Fresh towels every visit" }
+          ]
+        }
+      ]
+    },
+    "about": {
+      "story": "Test FitZone was founded in 2019 with a simple mission: create a gym where everyone feels welcome and empowered. Our team of certified trainers and state-of-the-art facility make fitness accessible and enjoyable for all levels.",
+      "team": [
+        { "name": "Marcus Chen", "role": "Owner & Head Trainer", "image": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400", "bio": "NASM-CPT, 15 years experience" },
+        { "name": "Sarah Mitchell", "role": "Spin Instructor", "image": "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=400", "bio": "Certified spin and HIIT coach" },
+        { "name": "James Rodriguez", "role": "Strength Coach", "image": "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400", "bio": "Former competitive powerlifter" }
+      ]
+    },
+    "contact": {
+      "address": "789 Fitness Blvd, Austin, TX 78704",
+      "phone": "(512) 555-4567",
+      "email": "info@testfitzone.com"
+    }
+  },
+  "companionApp": {
+    "dashboard": {
+      "greeting": "Let's crush it today!",
+      "widgets": [
+        { "type": "workouts", "label": "Workouts This Month", "value": 12 },
+        { "type": "streak", "label": "Current Streak", "value": "5 days" },
+        { "type": "classes", "label": "Classes Booked", "value": 3 },
+        { "type": "points", "label": "Fit Points", "value": 2450 }
+      ]
+    },
+    "rewards": {
+      "tiers": [
+        { "name": "Starter", "minPoints": 0, "perks": ["Free water bottle"] },
+        { "name": "Fit", "minPoints": 1000, "perks": ["10% off merchandise", "Free guest pass"] },
+        { "name": "Elite", "minPoints": 2500, "perks": ["Free PT session", "Priority class booking"] }
+      ],
+      "currentPoints": 2450,
+      "currentTier": "Fit"
+    },
+    "profile": {
+      "fields": [
+        { "name": "fullName", "label": "Full Name", "type": "text", "value": "Demo Member" },
+        { "name": "email", "label": "Email", "type": "email", "value": "demo@example.com" }
+      ]
+    },
+    "wallet": {
+      "balance": 0,
+      "transactions": []
+    }
+  },
+  "sync": {
+    "sharedState": ["user", "rewards", "workouts", "classes", "profile"],
+    "endpoints": [
+      { "path": "/api/auth/me", "method": "GET", "description": "User profile" },
+      { "path": "/api/loyalty", "method": "GET", "description": "Fit Points" },
+      { "path": "/api/workouts", "method": "GET", "description": "Workout history" },
+      { "path": "/api/classes", "method": "GET", "description": "Booked classes" }
+    ]
+  }
+}

@@ -852,6 +852,15 @@ function detectIntentType(input) {
     }
   }
 
+  // Check for explicit website request BEFORE tool patterns
+  // This ensures "Build a Healthcare website" is detected as website, not tool
+  for (const pattern of EXPLICIT_WEBSITE_PATTERNS) {
+    if (pattern.test(lowerInput)) {
+      console.log(`[orchestrator] Explicit website request detected`);
+      return { type: 'business', toolKey: null, confidence: 'high', detectedIndustry: null };
+    }
+  }
+
   // Check for explicit tool patterns (specific tool requested)
   for (const pattern of TOOL_PATTERNS) {
     if (pattern.test(lowerInput)) {
@@ -878,14 +887,6 @@ function detectIntentType(input) {
         console.log(`[orchestrator] Tool detected: "${toolKey}" (keyword match)`);
         return { type: 'tool', toolKey, confidence: 'medium', detectedIndustry: null };
       }
-    }
-  }
-
-  // Check for explicit website request
-  for (const pattern of EXPLICIT_WEBSITE_PATTERNS) {
-    if (pattern.test(lowerInput)) {
-      console.log(`[orchestrator] Explicit website request detected`);
-      return { type: 'business', toolKey: null, confidence: 'high', detectedIndustry: null };
     }
   }
 
@@ -1191,11 +1192,20 @@ Return ONLY valid JSON with these fields:
 
 /**
  * Orchestrate a business website creation
+ * @param {string} input - User's request
+ * @param {Object} options - Configuration options
+ * @param {string} options.deviceTarget - 'mobile', 'desktop', or 'both'
  */
-async function orchestrateBusiness(input) {
+async function orchestrateBusiness(input, options = {}) {
+  const { deviceTarget = 'both', industryKey = null } = options;
   // Quick local inference first
   const quickBusinessName = extractBusinessName(input);
-  const quickIndustry = detectIndustryFromKeywords(input);
+  const quickIndustry = industryKey || detectIndustryFromKeywords(input);
+
+  // Log if using explicit industry override
+  if (industryKey) {
+    console.log(`[orchestrator] Using explicit industry override: "${industryKey}" (ignoring AI detection)`);
+  }
 
   // Build context for Claude
   const availableModules = getAvailableModules();
@@ -1305,9 +1315,16 @@ Return ONLY this JSON structure (no other text):
     console.log(`[orchestrator] Inferred: ${aiConfig.businessName} (${aiConfig.industry})`);
 
     // Validate and fill in any missing pieces
-    const industry = VALID_INDUSTRIES.includes(aiConfig.industry)
-      ? aiConfig.industry
-      : (quickIndustry || 'consulting');
+    // Priority: explicit industryKey > AI detection > quick keyword detection > fallback
+    const industry = industryKey && VALID_INDUSTRIES.includes(industryKey)
+      ? industryKey  // Use explicit override if provided and valid
+      : VALID_INDUSTRIES.includes(aiConfig.industry)
+        ? aiConfig.industry  // Use AI detection if valid
+        : (quickIndustry || 'consulting');  // Fall back to keyword detection or default
+
+    if (industryKey && industry !== industryKey) {
+      console.log(`[orchestrator] Warning: Requested industry "${industryKey}" not in VALID_INDUSTRIES, using "${industry}"`);
+    }
 
     const industryConfig = INDUSTRIES[industry] || INDUSTRIES['consulting'];
     const category = getIndustryCategory(industry);
@@ -1406,6 +1423,9 @@ Return ONLY this JSON structure (no other text):
       // Auto-deploy setting (can be overridden by caller)
       autoDeploy: false,
 
+      // Device target for responsive design
+      deviceTarget: deviceTarget,
+
       // Reference the industry config for the generator
       industryConfig: {
         name: industryConfig.name,
@@ -1489,6 +1509,7 @@ Return ONLY this JSON structure (no other text):
           pages: PAGE_RECOMMENDATIONS[category] || PAGE_RECOMMENDATIONS.default,
           modules: MODULE_RECOMMENDATIONS[industry] || MODULE_RECOMMENDATIONS.default,
           autoDeploy: false,
+          deviceTarget: deviceTarget,
           // Output tier (L1-L4) configuration
           outputTier: fallbackTier.recommended,
           outputTierName: fallbackTier.tier?.name || 'Presence',
@@ -1547,15 +1568,21 @@ Return ONLY this JSON structure (no other text):
  * Takes a single sentence and returns a complete payload
  *
  * @param {string} userInput - Single sentence describing what to create
+ * @param {Object} options - Optional configuration
+ * @param {string} options.deviceTarget - 'mobile', 'desktop', or 'both'
  * @returns {Promise<Object>} Complete payload for /api/assemble or /api/tool
  */
-async function orchestrate(userInput) {
+async function orchestrate(userInput, options = {}) {
   if (!userInput || typeof userInput !== 'string' || userInput.trim().length < 3) {
     throw new Error('Please provide a description of what you want to create');
   }
 
   const input = userInput.trim();
-  console.log(`[orchestrator] Processing: "${input}"`);
+  const { deviceTarget = 'both', industryKey = null } = options;
+  console.log(`[orchestrator] Processing: "${input}" (device: ${deviceTarget})`);
+  if (industryKey) {
+    console.log(`[orchestrator] Explicit industry override: "${industryKey}"`);
+  }
 
   // Detect intent type (tool vs business)
   const intent = detectIntentType(input);
@@ -1564,7 +1591,7 @@ async function orchestrate(userInput) {
   if (intent.type === 'tool') {
     return orchestrateTool(input, intent.toolKey);
   } else {
-    return orchestrateBusiness(input);
+    return orchestrateBusiness(input, { deviceTarget, industryKey });
   }
 }
 

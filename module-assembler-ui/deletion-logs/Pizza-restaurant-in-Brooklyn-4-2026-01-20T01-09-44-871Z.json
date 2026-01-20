@@ -1,0 +1,161 @@
+{
+  "projectName": "Pizza-restaurant-in-Brooklyn-4",
+  "deletedAt": "2026-01-20T01:09:44.871Z",
+  "resourcesFound": {
+    "name": "Pizza-restaurant-in-Brooklyn-4",
+    "sanitizedName": "pizza-restaurant-in-brooklyn-4",
+    "github": {
+      "repos": [
+        {
+          "name": "pizza-restaurant-in-brooklyn-4-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "pizza-restaurant-in-brooklyn-4-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "pizza-restaurant-in-brooklyn-4-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "78d06a18-576f-4460-a1a9-94e2548cbaee",
+        "name": "pizza-restaurant-in-brooklyn-4",
+        "createdAt": "2026-01-20T00:21:22.092Z",
+        "environments": [
+          {
+            "id": "f7d2791d-e416-45e6-b32e-298102332faf",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "38cd5cf1-b655-45d8-bcad-954a563e010b",
+          "name": "backend"
+        },
+        {
+          "id": "44cdb162-890c-4f38-b2de-6a57566f4f32",
+          "name": "admin"
+        },
+        {
+          "id": "6b211024-7b33-4af0-b46b-353d5b0e7c28",
+          "name": "postgres"
+        },
+        {
+          "id": "a2ecd48f-3749-4a8f-b537-6b9b581d2bd2",
+          "name": "frontend"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "1549572a867b6177894cccb459e72ae2",
+          "name": "pizza-restaurant-in-brooklyn-4.be1st.io",
+          "type": "CNAME",
+          "content": "qglvralu.up.railway.app"
+        },
+        {
+          "id": "eb82d4f032eccf859a4a668bc30a77a5",
+          "name": "api.pizza-restaurant-in-brooklyn-4.be1st.io",
+          "type": "CNAME",
+          "content": "fjuqbwl7.up.railway.app"
+        },
+        {
+          "id": "09b1e74c9ad390ce31f9a44b0706ae35",
+          "name": "admin.pizza-restaurant-in-brooklyn-4.be1st.io",
+          "type": "CNAME",
+          "content": "l5qvrtts.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Pizza-restaurant-in-Brooklyn-4",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/pizza-restaurant-in-brooklyn-4-backend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/pizza-restaurant-in-brooklyn-4-backend"
+      },
+      {
+        "repo": "huddleeco-commits/pizza-restaurant-in-brooklyn-4-frontend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/pizza-restaurant-in-brooklyn-4-frontend"
+      },
+      {
+        "repo": "huddleeco-commits/pizza-restaurant-in-brooklyn-4-admin",
+        "success": true,
+        "message": "Deleted huddleeco-commits/pizza-restaurant-in-brooklyn-4-admin"
+      }
+    ],
+    "railway": {
+      "success": true,
+      "message": "Deleted Railway project 78d06a18-576f-4460-a1a9-94e2548cbaee"
+    },
+    "cloudflare": [
+      {
+        "record": "pizza-restaurant-in-brooklyn-4.be1st.io",
+        "success": true,
+        "message": "Deleted pizza-restaurant-in-brooklyn-4.be1st.io"
+      },
+      {
+        "record": "api.pizza-restaurant-in-brooklyn-4.be1st.io",
+        "success": true,
+        "message": "Deleted api.pizza-restaurant-in-brooklyn-4.be1st.io"
+      },
+      {
+        "record": "admin.pizza-restaurant-in-brooklyn-4.be1st.io",
+        "success": true,
+        "message": "Deleted admin.pizza-restaurant-in-brooklyn-4.be1st.io"
+      }
+    ],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Pizza-restaurant-in-Brooklyn-4"
+    },
+    "errors": [],
+    "verification": {
+      "github": [
+        {
+          "repo": "huddleeco-commits/pizza-restaurant-in-brooklyn-4-backend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/pizza-restaurant-in-brooklyn-4-frontend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/pizza-restaurant-in-brooklyn-4-admin",
+          "verified": true
+        }
+      ],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "pizza-restaurant-in-brooklyn-4",
+          "verified": true
+        },
+        {
+          "subdomain": "api.pizza-restaurant-in-brooklyn-4",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.pizza-restaurant-in-brooklyn-4",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

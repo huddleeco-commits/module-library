@@ -1,0 +1,161 @@
+{
+  "projectName": "Aurelius-Steakhouse",
+  "deletedAt": "2026-01-18T19:44:29.501Z",
+  "resourcesFound": {
+    "name": "Aurelius-Steakhouse",
+    "sanitizedName": "aurelius-steakhouse",
+    "github": {
+      "repos": [
+        {
+          "name": "aurelius-steakhouse-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "aurelius-steakhouse-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "aurelius-steakhouse-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "b43bdba0-4157-42bc-96d4-4b1c28046ad9",
+        "name": "aurelius-steakhouse",
+        "createdAt": "2026-01-18T19:40:32.604Z",
+        "environments": [
+          {
+            "id": "2572bdb4-cd2b-44d3-af27-7c45f9c1d409",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "352abcc3-4e41-43ee-91d1-191f8211bfbf",
+          "name": "postgres"
+        },
+        {
+          "id": "53d4e0a3-737e-4b0b-b484-ae5772988c5e",
+          "name": "admin"
+        },
+        {
+          "id": "558b16ca-ad6e-4372-9bb9-ef5bd33b9e7d",
+          "name": "backend"
+        },
+        {
+          "id": "6e921fdd-1c92-4893-b3a0-62fc729aecf7",
+          "name": "frontend"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "b0aad1ab36a1aca630237cbf9946b442",
+          "name": "aurelius-steakhouse.be1st.io",
+          "type": "CNAME",
+          "content": "ckgk5mml.up.railway.app"
+        },
+        {
+          "id": "c7f03b5fea3bdd578f5e66a7f999be8a",
+          "name": "api.aurelius-steakhouse.be1st.io",
+          "type": "CNAME",
+          "content": "ywyq4t62.up.railway.app"
+        },
+        {
+          "id": "ffeef6d9c3163a16951a09330de9821a",
+          "name": "admin.aurelius-steakhouse.be1st.io",
+          "type": "CNAME",
+          "content": "je8sh0j4.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Aurelius-Steakhouse",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/aurelius-steakhouse-backend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/aurelius-steakhouse-backend"
+      },
+      {
+        "repo": "huddleeco-commits/aurelius-steakhouse-frontend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/aurelius-steakhouse-frontend"
+      },
+      {
+        "repo": "huddleeco-commits/aurelius-steakhouse-admin",
+        "success": true,
+        "message": "Deleted huddleeco-commits/aurelius-steakhouse-admin"
+      }
+    ],
+    "railway": {
+      "success": true,
+      "message": "Deleted Railway project b43bdba0-4157-42bc-96d4-4b1c28046ad9"
+    },
+    "cloudflare": [
+      {
+        "record": "aurelius-steakhouse.be1st.io",
+        "success": true,
+        "message": "Deleted aurelius-steakhouse.be1st.io"
+      },
+      {
+        "record": "api.aurelius-steakhouse.be1st.io",
+        "success": true,
+        "message": "Deleted api.aurelius-steakhouse.be1st.io"
+      },
+      {
+        "record": "admin.aurelius-steakhouse.be1st.io",
+        "success": true,
+        "message": "Deleted admin.aurelius-steakhouse.be1st.io"
+      }
+    ],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Aurelius-Steakhouse"
+    },
+    "errors": [],
+    "verification": {
+      "github": [
+        {
+          "repo": "huddleeco-commits/aurelius-steakhouse-backend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/aurelius-steakhouse-frontend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/aurelius-steakhouse-admin",
+          "verified": true
+        }
+      ],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "aurelius-steakhouse",
+          "verified": true
+        },
+        {
+          "subdomain": "api.aurelius-steakhouse",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.aurelius-steakhouse",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

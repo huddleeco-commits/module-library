@@ -1,0 +1,83 @@
+{
+  "projectName": "Gilani-s",
+  "deletedAt": "2026-01-19T01:40:40.637Z",
+  "resourcesFound": {
+    "name": "Gilani-s",
+    "sanitizedName": "gilani-s",
+    "github": {
+      "repos": [
+        {
+          "name": "gilani-s-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "gilani-s-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "gilani-s-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Gilani-s",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/gilani-s-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/gilani-s-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/gilani-s-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Gilani-s"
+    },
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "gilani-s",
+          "verified": true
+        },
+        {
+          "subdomain": "api.gilani-s",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.gilani-s",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

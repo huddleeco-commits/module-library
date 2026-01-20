@@ -1,0 +1,38 @@
+{
+  "projectName": "Gilani-s",
+  "savedAt": "2026-01-19T01:11:58.923Z",
+  "resources": {
+    "name": "Gilani-s",
+    "sanitizedName": "gilani-s",
+    "github": {
+      "repos": [
+        {
+          "name": "gilani-s-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "gilani-s-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "gilani-s-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Gilani-s",
+      "exists": true
+    }
+  }
+}

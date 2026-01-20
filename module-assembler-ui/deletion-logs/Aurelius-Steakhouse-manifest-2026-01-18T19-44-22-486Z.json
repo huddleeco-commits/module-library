@@ -1,0 +1,84 @@
+{
+  "projectName": "Aurelius-Steakhouse",
+  "savedAt": "2026-01-18T19:44:22.486Z",
+  "resources": {
+    "name": "Aurelius-Steakhouse",
+    "sanitizedName": "aurelius-steakhouse",
+    "github": {
+      "repos": [
+        {
+          "name": "aurelius-steakhouse-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "aurelius-steakhouse-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "aurelius-steakhouse-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "b43bdba0-4157-42bc-96d4-4b1c28046ad9",
+        "name": "aurelius-steakhouse",
+        "createdAt": "2026-01-18T19:40:32.604Z",
+        "environments": [
+          {
+            "id": "2572bdb4-cd2b-44d3-af27-7c45f9c1d409",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "352abcc3-4e41-43ee-91d1-191f8211bfbf",
+          "name": "postgres"
+        },
+        {
+          "id": "53d4e0a3-737e-4b0b-b484-ae5772988c5e",
+          "name": "admin"
+        },
+        {
+          "id": "558b16ca-ad6e-4372-9bb9-ef5bd33b9e7d",
+          "name": "backend"
+        },
+        {
+          "id": "6e921fdd-1c92-4893-b3a0-62fc729aecf7",
+          "name": "frontend"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "b0aad1ab36a1aca630237cbf9946b442",
+          "name": "aurelius-steakhouse.be1st.io",
+          "type": "CNAME",
+          "content": "ckgk5mml.up.railway.app"
+        },
+        {
+          "id": "c7f03b5fea3bdd578f5e66a7f999be8a",
+          "name": "api.aurelius-steakhouse.be1st.io",
+          "type": "CNAME",
+          "content": "ywyq4t62.up.railway.app"
+        },
+        {
+          "id": "ffeef6d9c3163a16951a09330de9821a",
+          "name": "admin.aurelius-steakhouse.be1st.io",
+          "type": "CNAME",
+          "content": "je8sh0j4.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Aurelius-Steakhouse",
+      "exists": true
+    }
+  }
+}

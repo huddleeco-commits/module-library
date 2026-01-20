@@ -1,0 +1,161 @@
+{
+  "projectName": "PlanoPizza",
+  "deletedAt": "2026-01-20T01:10:15.689Z",
+  "resourcesFound": {
+    "name": "PlanoPizza",
+    "sanitizedName": "planopizza",
+    "github": {
+      "repos": [
+        {
+          "name": "planopizza-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "planopizza-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "planopizza-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "1b970ded-8f0c-4f16-a397-c9399570bab4",
+        "name": "planopizza",
+        "createdAt": "2026-01-20T01:00:41.438Z",
+        "environments": [
+          {
+            "id": "5f2b96fe-0dc3-4e5e-b863-7f0532f529ae",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "595419b2-68b9-46a4-bf23-470db09d7556",
+          "name": "admin"
+        },
+        {
+          "id": "5f917a90-6624-4405-bb9e-6053d479d719",
+          "name": "postgres"
+        },
+        {
+          "id": "baf51f6c-2d8b-493b-ba64-5759402d0c01",
+          "name": "frontend"
+        },
+        {
+          "id": "d84e5505-57cb-45d3-b862-57919cb06f03",
+          "name": "backend"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "fe0019c0ab8ba1e3d7a68589de7bccd0",
+          "name": "planopizza.be1st.io",
+          "type": "CNAME",
+          "content": "xudbdlcj.up.railway.app"
+        },
+        {
+          "id": "5b5a190b88e50c7a33f69a3d23d27684",
+          "name": "api.planopizza.be1st.io",
+          "type": "CNAME",
+          "content": "wp75rb2s.up.railway.app"
+        },
+        {
+          "id": "2a8209dbbcef4eb86bb86520799a537c",
+          "name": "admin.planopizza.be1st.io",
+          "type": "CNAME",
+          "content": "h5d1yvyo.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\PlanoPizza",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/planopizza-backend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/planopizza-backend"
+      },
+      {
+        "repo": "huddleeco-commits/planopizza-frontend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/planopizza-frontend"
+      },
+      {
+        "repo": "huddleeco-commits/planopizza-admin",
+        "success": true,
+        "message": "Deleted huddleeco-commits/planopizza-admin"
+      }
+    ],
+    "railway": {
+      "success": true,
+      "message": "Deleted Railway project 1b970ded-8f0c-4f16-a397-c9399570bab4"
+    },
+    "cloudflare": [
+      {
+        "record": "planopizza.be1st.io",
+        "success": true,
+        "message": "Deleted planopizza.be1st.io"
+      },
+      {
+        "record": "api.planopizza.be1st.io",
+        "success": true,
+        "message": "Deleted api.planopizza.be1st.io"
+      },
+      {
+        "record": "admin.planopizza.be1st.io",
+        "success": true,
+        "message": "Deleted admin.planopizza.be1st.io"
+      }
+    ],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\PlanoPizza"
+    },
+    "errors": [],
+    "verification": {
+      "github": [
+        {
+          "repo": "huddleeco-commits/planopizza-backend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/planopizza-frontend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/planopizza-admin",
+          "verified": true
+        }
+      ],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "planopizza",
+          "verified": true
+        },
+        {
+          "subdomain": "api.planopizza",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.planopizza",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

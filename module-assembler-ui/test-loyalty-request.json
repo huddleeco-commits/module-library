@@ -1,0 +1,16 @@
+{
+  "templateId": "loyalty-program",
+  "config": {
+    "businessName": "Test Coffee Shop",
+    "currency": "stars",
+    "tiers": [
+      { "name": "Bronze", "minPoints": 0, "multiplier": 1 },
+      { "name": "Silver", "minPoints": 100, "multiplier": 1.5 },
+      { "name": "Gold", "minPoints": 500, "multiplier": 2 }
+    ],
+    "rewards": [
+      { "name": "Free Coffee", "cost": 50 },
+      { "name": "Free Pastry", "cost": 75 }
+    ]
+  }
+}

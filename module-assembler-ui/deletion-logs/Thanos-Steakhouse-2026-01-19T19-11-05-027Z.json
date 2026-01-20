@@ -1,0 +1,161 @@
+{
+  "projectName": "Thanos-Steakhouse",
+  "deletedAt": "2026-01-19T19:11:05.027Z",
+  "resourcesFound": {
+    "name": "Thanos-Steakhouse",
+    "sanitizedName": "thanos-steakhouse",
+    "github": {
+      "repos": [
+        {
+          "name": "thanos-steakhouse-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "thanos-steakhouse-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "thanos-steakhouse-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "4cc3051c-a09d-483c-b96c-27ad5aa75399",
+        "name": "thanos-steakhouse",
+        "createdAt": "2026-01-19T18:26:26.024Z",
+        "environments": [
+          {
+            "id": "03802f3c-b706-4826-bee4-af1446dce2ed",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "3b70aa2b-0154-4188-a028-ea25108389c4",
+          "name": "admin"
+        },
+        {
+          "id": "48135af9-fd0c-4e53-9e9a-1d4ee818861b",
+          "name": "backend"
+        },
+        {
+          "id": "4ebccb4d-cc21-40a6-9ea3-e6645ee64f3f",
+          "name": "postgres"
+        },
+        {
+          "id": "a3d8c188-256d-44cc-9cd3-bc755a4e6e87",
+          "name": "frontend"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "39b1660e0491a40357cca8262a7ca59d",
+          "name": "thanos-steakhouse.be1st.io",
+          "type": "CNAME",
+          "content": "vn8xemxm.up.railway.app"
+        },
+        {
+          "id": "c763847142bfbb953d4d7c21f4a58a79",
+          "name": "api.thanos-steakhouse.be1st.io",
+          "type": "CNAME",
+          "content": "lj75o4mr.up.railway.app"
+        },
+        {
+          "id": "2255163ec70c35a7dc52c37b4bfb466c",
+          "name": "admin.thanos-steakhouse.be1st.io",
+          "type": "CNAME",
+          "content": "e5a0ndoh.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Thanos-Steakhouse",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/thanos-steakhouse-backend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/thanos-steakhouse-backend"
+      },
+      {
+        "repo": "huddleeco-commits/thanos-steakhouse-frontend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/thanos-steakhouse-frontend"
+      },
+      {
+        "repo": "huddleeco-commits/thanos-steakhouse-admin",
+        "success": true,
+        "message": "Deleted huddleeco-commits/thanos-steakhouse-admin"
+      }
+    ],
+    "railway": {
+      "success": true,
+      "message": "Deleted Railway project 4cc3051c-a09d-483c-b96c-27ad5aa75399"
+    },
+    "cloudflare": [
+      {
+        "record": "thanos-steakhouse.be1st.io",
+        "success": true,
+        "message": "Deleted thanos-steakhouse.be1st.io"
+      },
+      {
+        "record": "api.thanos-steakhouse.be1st.io",
+        "success": true,
+        "message": "Deleted api.thanos-steakhouse.be1st.io"
+      },
+      {
+        "record": "admin.thanos-steakhouse.be1st.io",
+        "success": true,
+        "message": "Deleted admin.thanos-steakhouse.be1st.io"
+      }
+    ],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Thanos-Steakhouse"
+    },
+    "errors": [],
+    "verification": {
+      "github": [
+        {
+          "repo": "huddleeco-commits/thanos-steakhouse-backend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/thanos-steakhouse-frontend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/thanos-steakhouse-admin",
+          "verified": true
+        }
+      ],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "thanos-steakhouse",
+          "verified": true
+        },
+        {
+          "subdomain": "api.thanos-steakhouse",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.thanos-steakhouse",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

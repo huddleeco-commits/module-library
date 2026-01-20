@@ -1,0 +1,84 @@
+{
+  "projectName": "Vortex-Creative-Studio",
+  "savedAt": "2026-01-18T17:24:45.406Z",
+  "resources": {
+    "name": "Vortex-Creative-Studio",
+    "sanitizedName": "vortex-creative-studio",
+    "github": {
+      "repos": [
+        {
+          "name": "vortex-creative-studio-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "vortex-creative-studio-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "vortex-creative-studio-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "7592724b-f21a-43ca-bdbc-056869a55281",
+        "name": "vortex-creative-studio",
+        "createdAt": "2026-01-14T22:21:20.609Z",
+        "environments": [
+          {
+            "id": "25059c8c-3703-41c9-b21b-19fd14bd647c",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "a55cb863-ad91-4e6d-956c-1524fd867a50",
+          "name": "backend"
+        },
+        {
+          "id": "aa3b794e-d4ff-4e7b-ac0f-302e48a27db3",
+          "name": "admin"
+        },
+        {
+          "id": "b8c9121f-094c-46da-9127-827aac687482",
+          "name": "postgres"
+        },
+        {
+          "id": "e92af2f9-bcfe-46fd-ae34-bf4ff26e3221",
+          "name": "frontend"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "8332266c526c24c3ab352d93bf25da24",
+          "name": "vortex-creative-studio.be1st.io",
+          "type": "CNAME",
+          "content": "h1qd7qv0.up.railway.app"
+        },
+        {
+          "id": "6a6a938ba8f63d82afa1bdf60cf6ab95",
+          "name": "api.vortex-creative-studio.be1st.io",
+          "type": "CNAME",
+          "content": "15z5xnxg.up.railway.app"
+        },
+        {
+          "id": "38d4792fc1fd05bfc42d82fa5921cc19",
+          "name": "admin.vortex-creative-studio.be1st.io",
+          "type": "CNAME",
+          "content": "qitirlue.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Vortex-Creative-Studio",
+      "exists": true
+    }
+  }
+}

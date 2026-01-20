@@ -13,14 +13,15 @@ const fs = require('fs');
  * @param {Object} deps - Dependencies
  * @param {Object} deps.deployService - Deploy service module
  * @param {boolean} deps.deployReady - Whether deploy is configured
+ * @param {Object} deps.db - Database module for checking build status
  */
 function createDeployRoutes(deps) {
   const router = express.Router();
-  const { deployService, deployReady } = deps;
+  const { deployService, deployReady, db } = deps;
 
   // Deploy a generated project with optional SSE streaming
   router.post('/deploy', async (req, res) => {
-    const { projectPath, projectName, adminEmail, stream } = req.body;
+    const { projectPath, projectName, adminEmail, appType, stream, skipBuildCheck } = req.body;
 
     if (!deployReady) {
       return res.status(500).json({
@@ -44,6 +45,45 @@ function createDeployRoutes(deps) {
       });
     }
 
+    // ========================================
+    // BUILD STATUS CHECK - Block failed builds from deploying
+    // ========================================
+    if (db && !skipBuildCheck) {
+      try {
+        // Look up project by path to check build status
+        const projectResult = await db.query(
+          `SELECT id, name, status, metadata FROM generated_projects
+           WHERE project_path = $1 OR name = $2
+           ORDER BY created_at DESC LIMIT 1`,
+          [projectPath, projectName]
+        );
+
+        if (projectResult.rows.length > 0) {
+          const project = projectResult.rows[0];
+          const buildResult = project.metadata?.build_result;
+
+          // Block deployment if build explicitly failed
+          if (project.status === 'build_failed') {
+            console.log(`\n🚫 Deploy BLOCKED for ${projectName}: Build validation failed`);
+            return res.status(400).json({
+              success: false,
+              error: 'Deployment blocked: Build validation failed. Fix errors and retry build first.',
+              buildErrors: buildResult?.errors || [],
+              buildResult: buildResult
+            });
+          }
+
+          // Warn if no build validation was run (but allow deployment)
+          if (!buildResult && project.status !== 'build_passed') {
+            console.log(`\n⚠️ Deploy WARNING for ${projectName}: No build validation found`);
+          }
+        }
+      } catch (dbError) {
+        // Log but don't block on DB errors - fail open for resilience
+        console.error('Build status check failed:', dbError.message);
+      }
+    }
+
     console.log(`\n🚀 Deploy request received for: ${projectName}`);
 
     // If streaming requested, use SSE
@@ -56,10 +96,41 @@ function createDeployRoutes(deps) {
       try {
         const result = await deployService.deployProject(projectPath, projectName, {
           adminEmail: adminEmail || 'admin@be1st.io',
+          appType: appType,
           onProgress: (progress) => {
             res.write(`data: ${JSON.stringify(progress)}\n\n`);
           }
         });
+
+        // Save deployment URLs to database (streaming mode)
+        if (result.success && result.urls && db && db.updateProjectDeploymentUrls) {
+          try {
+            const projectResult = await db.query(
+              `SELECT id FROM generated_projects
+               WHERE name = $1 OR project_path = $2
+               ORDER BY created_at DESC LIMIT 1`,
+              [projectName, projectPath]
+            );
+
+            if (projectResult.rows.length > 0) {
+              const projectId = projectResult.rows[0].id;
+              await db.updateProjectDeploymentUrls(projectId, {
+                domain: result.urls.frontend?.replace('https://', '').replace('http://', '') || null,
+                frontend: result.urls.frontend || null,
+                admin: result.urls.admin || null,
+                backend: result.urls.backend || null,
+                githubFrontend: result.urls.githubFrontend || null,
+                githubBackend: result.urls.githubBackend || null,
+                githubAdmin: result.urls.githubAdmin || null,
+                railway: result.urls.railway || null,
+                railwayProjectId: result.railwayProjectId || null
+              });
+              console.log(`   📊 Deployment URLs saved for project ${projectName} (ID: ${projectId})`);
+            }
+          } catch (dbError) {
+            console.warn('   ⚠️ Failed to save deployment URLs:', dbError.message);
+          }
+        }
 
         // Send final result
         res.write(`data: ${JSON.stringify({ type: 'complete', result })}\n\n`);
@@ -73,8 +144,42 @@ function createDeployRoutes(deps) {
       // Non-streaming mode (original behavior)
       try {
         const result = await deployService.deployProject(projectPath, projectName, {
-          adminEmail: adminEmail || 'admin@be1st.io'
+          adminEmail: adminEmail || 'admin@be1st.io',
+          appType: appType
         });
+
+        // ========================================
+        // SAVE DEPLOYMENT URLS TO DATABASE
+        // ========================================
+        if (result.success && result.urls && db && db.updateProjectDeploymentUrls) {
+          try {
+            // Find the project by name or path
+            const projectResult = await db.query(
+              `SELECT id FROM generated_projects
+               WHERE name = $1 OR project_path = $2
+               ORDER BY created_at DESC LIMIT 1`,
+              [projectName, projectPath]
+            );
+
+            if (projectResult.rows.length > 0) {
+              const projectId = projectResult.rows[0].id;
+              await db.updateProjectDeploymentUrls(projectId, {
+                domain: result.urls.frontend?.replace('https://', '').replace('http://', '') || null,
+                frontend: result.urls.frontend || null,
+                admin: result.urls.admin || null,
+                backend: result.urls.backend || null,
+                githubFrontend: result.urls.githubFrontend || null,
+                githubBackend: result.urls.githubBackend || null,
+                githubAdmin: result.urls.githubAdmin || null,
+                railway: result.urls.railway || null,
+                railwayProjectId: result.railwayProjectId || null
+              });
+              console.log(`   📊 Deployment URLs saved for project ${projectName} (ID: ${projectId})`);
+            }
+          } catch (dbError) {
+            console.warn('   ⚠️ Failed to save deployment URLs:', dbError.message);
+          }
+        }
 
         res.json(result);
       } catch (error) {

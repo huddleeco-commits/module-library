@@ -128,8 +128,10 @@ function prepareProjectForDeployment(projectPath, subdomain) {
   console.log(`📋 Preparing project for deployment...`);
 
   // FIX #1: Create frontend/.env.production with correct API URL
+  // Use Railway URL directly for reliability (custom domains may have DNS/SSL delays)
+  const railwayBackendUrl = `https://${subdomain}-backend.up.railway.app`;
   const frontendEnvPath = path.join(projectPath, 'frontend', '.env.production');
-  const frontendEnvContent = `VITE_API_URL=https://api.${subdomain}.be1st.io\n`;
+  const frontendEnvContent = `VITE_API_URL=${railwayBackendUrl}\n`;
 
   if (fs.existsSync(path.join(projectPath, 'frontend'))) {
     fs.writeFileSync(frontendEnvPath, frontendEnvContent);
@@ -202,9 +204,9 @@ function prepareProjectForDeployment(projectPath, subdomain) {
     );
     console.log(`   ✅ Created admin/railway.json`);
     
-    // Create admin/.env.production with API URL
+    // Create admin/.env.production with API URL (use Railway URL for reliability)
     const adminEnvPath = path.join(projectPath, 'admin', '.env.production');
-    const adminEnvContent = `VITE_API_URL=https://api.${subdomain}.be1st.io\n`;
+    const adminEnvContent = `VITE_API_URL=${railwayBackendUrl}\n`;
     fs.writeFileSync(adminEnvPath, adminEnvContent);
     console.log(`   ✅ Created admin/.env.production`);
   }
@@ -642,8 +644,20 @@ async function railwayGraphQL(query, variables = {}, maxRetries = 3) {
 }
 
 async function createRailwayProject(name) {
-  console.log(`🚂 Creating Railway project: ${name}`);
-  
+  // Railway project names: alphanumeric + hyphens, max 39 characters
+  let sanitizedName = name
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+
+  // Truncate to 39 characters max, ensuring we don't cut mid-hyphen
+  if (sanitizedName.length > 39) {
+    sanitizedName = sanitizedName.substring(0, 39).replace(/-$/, '');
+  }
+
+  console.log(`🚂 Creating Railway project: ${sanitizedName}${name !== sanitizedName ? ` (from: ${name})` : ''}`);
+
   const query = `
     mutation projectCreate($input: ProjectCreateInput!) {
       projectCreate(input: $input) {
@@ -660,8 +674,8 @@ async function createRailwayProject(name) {
       }
     }
   `;
-  
-  const input = { name: name };
+
+  const input = { name: sanitizedName };
   if (RAILWAY_TEAM_ID) {
     input.workspaceId = RAILWAY_TEAM_ID;
   }
@@ -1504,16 +1518,19 @@ async function deployProject(projectPath, projectName, options = {}) {
       FRONTEND_URL: `https://${subdomain}.be1st.io`
     });
 
+    // Use Railway URL directly for API (more reliable than custom domain which may have DNS/SSL delays)
+    const railwayBackendUrl = `https://${subdomain}-backend.up.railway.app`;
+
     await setRailwayVariables(railwayProject.id, environmentId, frontendService.id, {
       NODE_ENV: 'production',
-      VITE_API_URL: `https://api.${subdomain}.be1st.io`
+      VITE_API_URL: railwayBackendUrl
     });
 
     // Set admin environment variables if admin service exists
     if (adminService) {
       await setRailwayVariables(railwayProject.id, environmentId, adminService.id, {
         NODE_ENV: 'production',
-        VITE_API_URL: `https://api.${subdomain}.be1st.io`
+        VITE_API_URL: railwayBackendUrl
       });
     }
 

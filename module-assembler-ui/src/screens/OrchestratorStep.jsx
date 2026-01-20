@@ -6,6 +6,13 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE } from '../constants';
 
+// Device target options
+const DEVICE_OPTIONS = [
+  { id: 'mobile', name: 'Mobile-First', icon: '📱', desc: 'Phone optimized' },
+  { id: 'desktop', name: 'Desktop-First', icon: '🖥️', desc: 'Desktop optimized' },
+  { id: 'both', name: 'Responsive', icon: '📱🖥️', desc: 'All devices equally' },
+];
+
 const orchestratorStyles = {
   container: {
     display: 'flex',
@@ -130,6 +137,132 @@ const orchestratorStyles = {
     height: '24px',
     borderRadius: '4px',
     border: '1px solid rgba(0,0,0,0.1)'
+  },
+  // New progress step styles
+  stepList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+    marginBottom: '24px',
+    width: '100%',
+    textAlign: 'left'
+  },
+  stepItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '12px 16px',
+    borderRadius: '8px',
+    transition: 'all 0.3s ease',
+    background: 'white'
+  },
+  stepIcon: {
+    fontSize: '18px',
+    width: '28px',
+    textAlign: 'center'
+  },
+  stepLabel: {
+    fontSize: '0.95rem',
+    flex: 1
+  },
+  activeDot: {
+    width: '8px',
+    height: '8px',
+    borderRadius: '50%',
+    background: '#667eea',
+    animation: 'pulse 1.5s infinite'
+  },
+  progressBar: {
+    width: '100%',
+    height: '6px',
+    background: '#e2e8f0',
+    borderRadius: '3px',
+    overflow: 'hidden',
+    marginBottom: '16px'
+  },
+  progressFill: {
+    height: '100%',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    borderRadius: '3px',
+    transition: 'width 0.5s ease'
+  },
+  timeRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    width: '100%',
+    fontSize: '0.85rem',
+    color: '#666',
+    marginTop: '8px'
+  },
+  // Device target styles
+  deviceSection: {
+    display: 'flex',
+    gap: '8px',
+    marginBottom: '20px',
+    marginTop: '8px',
+  },
+  deviceButton: {
+    padding: '8px 16px',
+    borderRadius: '20px',
+    border: '2px solid #e2e8f0',
+    background: 'white',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    fontSize: '0.85rem',
+    transition: 'all 0.2s',
+  },
+  deviceButtonActive: {
+    borderColor: '#667eea',
+    background: 'rgba(102, 126, 234, 0.1)',
+    color: '#667eea',
+    fontWeight: '600'
+  },
+  // Companion app toggle styles
+  companionToggle: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    marginBottom: '20px',
+    padding: '12px 16px',
+    background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(102, 126, 234, 0.1) 100%)',
+    borderRadius: '12px',
+    border: '1px solid rgba(139, 92, 246, 0.2)',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease'
+  },
+  companionToggleActive: {
+    background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(102, 126, 234, 0.2) 100%)',
+    border: '2px solid #8b5cf6'
+  },
+  companionCheckbox: {
+    width: '20px',
+    height: '20px',
+    borderRadius: '6px',
+    border: '2px solid #8b5cf6',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'white',
+    flexShrink: 0
+  },
+  companionCheckboxActive: {
+    background: '#8b5cf6'
+  },
+  companionText: {
+    flex: 1,
+    textAlign: 'left'
+  },
+  companionLabel: {
+    fontSize: '0.95rem',
+    fontWeight: '600',
+    color: '#1a1a2e'
+  },
+  companionDesc: {
+    fontSize: '0.8rem',
+    color: '#666',
+    marginTop: '2px'
   }
 };
 
@@ -169,11 +302,38 @@ const toolPlaceholders = [
   "Countdown timer for events"
 ];
 
-export function OrchestratorStep({ onComplete, onBack, isToolMode = false, preselectedTool = null, onSuggestTools, onAmbiguousInput, onToolRecommendations, skipIntentDetection = false, pendingInput = null, onPendingInputUsed }) {
+// Generation steps for business websites
+const BUSINESS_GENERATION_STEPS = [
+  { id: 'analyzing', label: 'Analyzing your request', icon: '🔍' },
+  { id: 'planning', label: 'Planning website structure', icon: '📋' },
+  { id: 'selecting', label: 'Selecting industry template', icon: '🏭' },
+  { id: 'generating-home', label: 'Generating Home page', icon: '🏠' },
+  { id: 'generating-about', label: 'Generating About page', icon: '📝' },
+  { id: 'generating-services', label: 'Generating Services page', icon: '⚙️' },
+  { id: 'generating-contact', label: 'Generating Contact page', icon: '📬' },
+  { id: 'styling', label: 'Applying theme & colors', icon: '🎨' },
+  { id: 'wiring', label: 'Wiring up components', icon: '🔧' },
+  { id: 'finalizing', label: 'Finalizing project', icon: '✨' }
+];
+
+// Generation steps for tools
+const TOOL_GENERATION_STEPS = [
+  { id: 'analyzing', label: 'Analyzing your request', icon: '🔍' },
+  { id: 'designing', label: 'Designing tool layout', icon: '📐' },
+  { id: 'building', label: 'Building functionality', icon: '🛠️' },
+  { id: 'styling', label: 'Applying styles', icon: '🎨' },
+  { id: 'testing', label: 'Running validation tests', icon: '🧪' },
+  { id: 'finalizing', label: 'Finalizing tool', icon: '✨' }
+];
+
+export function OrchestratorStep({ onComplete, onBack, isToolMode = false, preselectedTool = null, onSuggestTools, onAmbiguousInput, onToolRecommendations, skipIntentDetection = false, pendingInput = null, pendingIndustryKey = null, onPendingInputUsed }) {
   const [input, setInput] = useState(pendingInput || '');
+  const [selectedDevice, setSelectedDevice] = useState('both');
+  const [includeCompanionApp, setIncludeCompanionApp] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [progress, setProgress] = useState(null);
   const [aiDecisions, setAiDecisions] = useState(null);
+  const [nameAvailability, setNameAvailability] = useState(null); // { available, suggestions, message }
   const [error, setError] = useState(null);
   const [autoStarted, setAutoStarted] = useState(false);
   const [showSuggestInput, setShowSuggestInput] = useState(false);
@@ -181,11 +341,50 @@ export function OrchestratorStep({ onComplete, onBack, isToolMode = false, prese
   const [detectingIntent, setDetectingIntent] = useState(false);
   const [pendingTriggered, setPendingTriggered] = useState(false);
 
+  // New: Step-based progress tracking
+  const [generationSteps, setGenerationSteps] = useState([]);
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [startTime, setStartTime] = useState(null);
+  const [elapsed, setElapsed] = useState(0);
+  const [pendingResult, setPendingResult] = useState(null); // Hold result until user confirms
+
   const placeholders = isToolMode ? toolPlaceholders : businessPlaceholders;
 
   const [placeholder] = useState(() =>
     placeholders[Math.floor(Math.random() * placeholders.length)]
   );
+
+  // Update elapsed time every second during generation
+  useEffect(() => {
+    if (!startTime || !generating) return;
+    const interval = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - startTime) / 1000));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [startTime, generating]);
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+  };
+
+  // Check name availability when AI detects a business name
+  useEffect(() => {
+    if (aiDecisions?.businessName) {
+      setNameAvailability(null); // Reset while checking
+      fetch(`/api/check-name?name=${encodeURIComponent(aiDecisions.businessName)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            setNameAvailability(data);
+          }
+        })
+        .catch(err => {
+          console.error('Name check failed:', err);
+        });
+    }
+  }, [aiDecisions?.businessName]);
 
   // Auto-trigger if there's a pending input from choice screen
   useEffect(() => {
@@ -259,18 +458,49 @@ export function OrchestratorStep({ onComplete, onBack, isToolMode = false, prese
     setError(null);
     setProgress(isToolMode ? '🛠️ Building your tool...' : '🤖 AI is analyzing your request...');
 
+    // Initialize step-based progress
+    const steps = isToolMode ? TOOL_GENERATION_STEPS : BUSINESS_GENERATION_STEPS;
+    setGenerationSteps(steps);
+    setCurrentStepIndex(0);
+    setStartTime(Date.now());
+    setElapsed(0);
+
+    // Start step simulation - advance steps every 3 seconds
+    const stepInterval = setInterval(() => {
+      setCurrentStepIndex(prev => {
+        const next = prev + 1;
+        if (next >= steps.length - 1) {
+          // Stay at second-to-last step until done
+          return steps.length - 2;
+        }
+        return next;
+      });
+    }, 3000);
+
     try {
       const response = await fetch(`${API_BASE}/api/orchestrate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ input: inputToUse })
+        body: JSON.stringify({
+          input: inputToUse,
+          deviceTarget: selectedDevice,
+          includeCompanionApp: includeCompanionApp,
+          // Pass explicit industry key to override AI detection (from SiteCustomizationScreen)
+          industryKey: pendingIndustryKey || null
+        })
       });
+
+      // Stop step simulation
+      clearInterval(stepInterval);
 
       const data = await response.json();
 
       if (!response.ok || !data.success) {
         throw new Error(data.error || 'Generation failed');
       }
+
+      // Jump to final step
+      setCurrentStepIndex(steps.length - 1);
 
       // Show AI decisions (different for tools vs business)
       if (data.type === 'tool') {
@@ -279,20 +509,26 @@ export function OrchestratorStep({ onComplete, onBack, isToolMode = false, prese
           category: data.tool?.category,
           features: data.tool?.features?.join(', ')
         });
+        // Tools auto-complete (no name collision issue)
+        setProgress('✅ Complete!');
+        setTimeout(() => {
+          onComplete(data);
+        }, 2000);
       } else {
         setAiDecisions(data.orchestrator?.decisions);
+        setProgress('✅ Generation complete!');
+        // Hold the result - user must confirm (especially if name taken)
+        setPendingResult(data);
       }
-      setProgress('✅ Complete!');
-
-      // Wait a moment to show the decisions, then complete
-      setTimeout(() => {
-        onComplete(data);
-      }, 2000);
 
     } catch (err) {
+      clearInterval(stepInterval);
       setError(err.message || 'Something went wrong');
       setGenerating(false);
       setProgress(null);
+      setGenerationSteps([]);
+      setCurrentStepIndex(0);
+      setStartTime(null);
     }
   };
 
@@ -326,6 +562,54 @@ export function OrchestratorStep({ onComplete, onBack, isToolMode = false, prese
               disabled={detectingIntent}
             />
           </div>
+
+          {/* Device Target Selector - show for websites, not tools */}
+          {!isToolMode && (
+            <>
+              <div style={orchestratorStyles.deviceSection}>
+                {DEVICE_OPTIONS.map((device) => (
+                  <button
+                    key={device.id}
+                    onClick={() => setSelectedDevice(device.id)}
+                    style={{
+                      ...orchestratorStyles.deviceButton,
+                      ...(selectedDevice === device.id ? orchestratorStyles.deviceButtonActive : {})
+                    }}
+                    title={device.desc}
+                  >
+                    <span>{device.icon}</span>
+                    <span>{device.name}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Companion App Toggle */}
+              <div
+                style={{
+                  ...orchestratorStyles.companionToggle,
+                  ...(includeCompanionApp ? orchestratorStyles.companionToggleActive : {})
+                }}
+                onClick={() => setIncludeCompanionApp(!includeCompanionApp)}
+              >
+                <div
+                  style={{
+                    ...orchestratorStyles.companionCheckbox,
+                    ...(includeCompanionApp ? orchestratorStyles.companionCheckboxActive : {})
+                  }}
+                >
+                  {includeCompanionApp && <span style={{ color: 'white', fontSize: '14px' }}>✓</span>}
+                </div>
+                <div style={orchestratorStyles.companionText}>
+                  <div style={orchestratorStyles.companionLabel}>
+                    📱 Also generate companion app
+                  </div>
+                  <div style={orchestratorStyles.companionDesc}>
+                    PWA mobile app at yoursite.be1st.app with loyalty, bookings & push notifications
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
 
           <button
             style={{
@@ -438,60 +722,116 @@ export function OrchestratorStep({ onComplete, onBack, isToolMode = false, prese
 
       {generating && (
         <div style={orchestratorStyles.progressContainer}>
-          <div style={orchestratorStyles.progressText}>{progress}</div>
+          {/* Step list */}
+          {generationSteps.length > 0 && !aiDecisions && (
+            <>
+              <div style={orchestratorStyles.stepList}>
+                {generationSteps.map((step, idx) => (
+                  <div
+                    key={step.id}
+                    style={{
+                      ...orchestratorStyles.stepItem,
+                      opacity: idx <= currentStepIndex ? 1 : 0.4,
+                      background: idx === currentStepIndex ? 'rgba(102, 126, 234, 0.1)' : 'white',
+                      borderLeft: idx === currentStepIndex ? '3px solid #667eea' : '3px solid transparent'
+                    }}
+                  >
+                    <span style={orchestratorStyles.stepIcon}>
+                      {idx < currentStepIndex ? '✓' : step.icon}
+                    </span>
+                    <span style={{
+                      ...orchestratorStyles.stepLabel,
+                      color: idx < currentStepIndex ? '#22c55e' : idx === currentStepIndex ? '#1a1a2e' : '#888'
+                    }}>
+                      {step.label}
+                    </span>
+                    {idx === currentStepIndex && (
+                      <span style={orchestratorStyles.activeDot} />
+                    )}
+                  </div>
+                ))}
+              </div>
 
+              {/* Progress bar */}
+              <div style={orchestratorStyles.progressBar}>
+                <div style={{
+                  ...orchestratorStyles.progressFill,
+                  width: `${Math.min(((currentStepIndex + 1) / generationSteps.length) * 100, 100)}%`
+                }} />
+              </div>
+
+              {/* Time display */}
+              <div style={orchestratorStyles.timeRow}>
+                <span>Elapsed: {formatTime(elapsed)}</span>
+                <span style={{ color: '#667eea' }}>
+                  {currentStepIndex < generationSteps.length - 1 ? 'Building your site...' : 'Almost done!'}
+                </span>
+              </div>
+            </>
+          )}
+
+          {/* Show completion message and decisions */}
           {aiDecisions && (
-            <div style={orchestratorStyles.decisionsGrid}>
-              {/* Tool-specific decisions */}
-              {aiDecisions.toolName && (
-                <>
-                  <div style={orchestratorStyles.decisionItem}>
-                    <div style={orchestratorStyles.decisionLabel}>Tool Type</div>
-                    <div style={orchestratorStyles.decisionValue}>{aiDecisions.toolName}</div>
-                  </div>
-                  <div style={orchestratorStyles.decisionItem}>
-                    <div style={orchestratorStyles.decisionLabel}>Category</div>
-                    <div style={orchestratorStyles.decisionValue}>{aiDecisions.category}</div>
-                  </div>
-                  {aiDecisions.features && (
-                    <div style={{...orchestratorStyles.decisionItem, gridColumn: '1 / -1'}}>
-                      <div style={orchestratorStyles.decisionLabel}>Features</div>
-                      <div style={orchestratorStyles.decisionValue}>{aiDecisions.features}</div>
-                    </div>
-                  )}
-                </>
-              )}
-
-              {/* Business-specific decisions */}
-              {aiDecisions.businessName && (
-                <>
-                  <div style={orchestratorStyles.decisionItem}>
-                    <div style={orchestratorStyles.decisionLabel}>Business Name</div>
-                    <div style={orchestratorStyles.decisionValue}>{aiDecisions.businessName}</div>
-                  </div>
-                  <div style={orchestratorStyles.decisionItem}>
-                    <div style={orchestratorStyles.decisionLabel}>Industry</div>
-                    <div style={orchestratorStyles.decisionValue}>{aiDecisions.industryName}</div>
-                  </div>
-                  <div style={orchestratorStyles.decisionItem}>
-                    <div style={orchestratorStyles.decisionLabel}>Location</div>
-                    <div style={orchestratorStyles.decisionValue}>{aiDecisions.location || 'Not specified'}</div>
-                  </div>
-                  <div style={orchestratorStyles.decisionItem}>
-                    <div style={orchestratorStyles.decisionLabel}>Pages</div>
-                    <div style={orchestratorStyles.decisionValue}>{aiDecisions.pages?.length || 0} pages</div>
-                  </div>
-                  <div style={orchestratorStyles.decisionItem}>
-                    <div style={orchestratorStyles.decisionLabel}>Modules</div>
-                    <div style={orchestratorStyles.decisionValue}>{aiDecisions.modules?.length || 0} modules</div>
-                  </div>
-                  {aiDecisions.adminTier && (
+            <>
+              <div style={orchestratorStyles.progressText}>{progress}</div>
+              <div style={orchestratorStyles.decisionsGrid}>
+                {/* Tool-specific decisions */}
+                {aiDecisions.toolName && (
+                  <>
                     <div style={orchestratorStyles.decisionItem}>
-                      <div style={orchestratorStyles.decisionLabel}>Admin Dashboard</div>
-                      <div style={orchestratorStyles.decisionValue}>
-                        {aiDecisions.adminTier.charAt(0).toUpperCase() + aiDecisions.adminTier.slice(1)}
-                        {aiDecisions.adminModuleCount ? ` (${aiDecisions.adminModuleCount} modules)` : ''}
+                      <div style={orchestratorStyles.decisionLabel}>Tool Type</div>
+                      <div style={orchestratorStyles.decisionValue}>{aiDecisions.toolName}</div>
+                    </div>
+                    <div style={orchestratorStyles.decisionItem}>
+                      <div style={orchestratorStyles.decisionLabel}>Category</div>
+                      <div style={orchestratorStyles.decisionValue}>{aiDecisions.category}</div>
+                    </div>
+                    {aiDecisions.features && (
+                      <div style={{...orchestratorStyles.decisionItem, gridColumn: '1 / -1'}}>
+                        <div style={orchestratorStyles.decisionLabel}>Features</div>
+                        <div style={orchestratorStyles.decisionValue}>{aiDecisions.features}</div>
                       </div>
+                    )}
+                  </>
+                )}
+
+                {/* Business-specific decisions */}
+                {aiDecisions.businessName && (
+                  <>
+                    <div style={orchestratorStyles.decisionItem}>
+                      <div style={orchestratorStyles.decisionLabel}>Business Name</div>
+                      <div style={{...orchestratorStyles.decisionValue, display: 'flex', alignItems: 'center', gap: '8px'}}>
+                        {aiDecisions.businessName}
+                        {nameAvailability && (
+                          nameAvailability.available
+                            ? <span style={{ color: '#10b981', fontSize: '14px' }}>✓ Available</span>
+                            : <span style={{ color: '#ef4444', fontSize: '14px' }}>✗ Already exists</span>
+                        )}
+                      </div>
+                    </div>
+                    <div style={orchestratorStyles.decisionItem}>
+                      <div style={orchestratorStyles.decisionLabel}>Industry</div>
+                      <div style={orchestratorStyles.decisionValue}>{aiDecisions.industryName}</div>
+                    </div>
+                    <div style={orchestratorStyles.decisionItem}>
+                      <div style={orchestratorStyles.decisionLabel}>Location</div>
+                      <div style={orchestratorStyles.decisionValue}>{aiDecisions.location || 'Not specified'}</div>
+                    </div>
+                    <div style={orchestratorStyles.decisionItem}>
+                      <div style={orchestratorStyles.decisionLabel}>Pages</div>
+                      <div style={orchestratorStyles.decisionValue}>{aiDecisions.pages?.length || 0} pages</div>
+                    </div>
+                    <div style={orchestratorStyles.decisionItem}>
+                      <div style={orchestratorStyles.decisionLabel}>Modules</div>
+                      <div style={orchestratorStyles.decisionValue}>{aiDecisions.modules?.length || 0} modules</div>
+                    </div>
+                    {aiDecisions.adminTier && (
+                      <div style={orchestratorStyles.decisionItem}>
+                        <div style={orchestratorStyles.decisionLabel}>Admin Dashboard</div>
+                        <div style={orchestratorStyles.decisionValue}>
+                          {aiDecisions.adminTier.charAt(0).toUpperCase() + aiDecisions.adminTier.slice(1)}
+                          {aiDecisions.adminModuleCount ? ` (${aiDecisions.adminModuleCount} modules)` : ''}
+                        </div>
                     </div>
                   )}
                   {aiDecisions.colors && (
@@ -516,9 +856,106 @@ export function OrchestratorStep({ onComplete, onBack, isToolMode = false, prese
                        aiDecisions.confidence === 'medium' ? '🟡 Medium' : '🟠 Low'}
                     </div>
                   </div>
+                  {includeCompanionApp && (
+                    <div style={{...orchestratorStyles.decisionItem, background: 'rgba(139, 92, 246, 0.1)', border: '1px solid rgba(139, 92, 246, 0.3)'}}>
+                      <div style={orchestratorStyles.decisionLabel}>Companion App</div>
+                      <div style={orchestratorStyles.decisionValue}>📱 Will deploy to .be1st.app</div>
+                    </div>
+                  )}
                 </>
               )}
-            </div>
+              </div>
+
+              {/* Launch / Confirmation Section */}
+              {pendingResult && (
+                <div style={{ marginTop: '24px', textAlign: 'center' }}>
+                  {/* Name collision - block and require different name */}
+                  {nameAvailability && !nameAvailability.available && (
+                    <div style={{
+                      padding: '20px',
+                      background: '#fef2f2',
+                      border: '2px solid #fecaca',
+                      borderRadius: '12px',
+                      marginBottom: '16px'
+                    }}>
+                      <p style={{ color: '#dc2626', fontWeight: '700', fontSize: '1.1rem', marginBottom: '12px' }}>
+                        This name is already taken
+                      </p>
+                      <p style={{ color: '#7f1d1d', fontSize: '0.95rem', marginBottom: '16px' }}>
+                        Please choose a different name for your business:
+                      </p>
+                      <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                        {nameAvailability.suggestions?.map(s => (
+                          <button
+                            key={s}
+                            onClick={() => {
+                              setInput(s);
+                              setGenerating(false);
+                              setAiDecisions(null);
+                              setPendingResult(null);
+                              setNameAvailability(null);
+                              setProgress(null);
+                            }}
+                            style={{
+                              padding: '10px 20px',
+                              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                              border: 'none',
+                              borderRadius: '8px',
+                              color: 'white',
+                              fontWeight: '600',
+                              cursor: 'pointer',
+                              fontSize: '0.95rem'
+                            }}
+                          >
+                            Try "{s}"
+                          </button>
+                        ))}
+                      </div>
+                      <button
+                        onClick={() => {
+                          setGenerating(false);
+                          setAiDecisions(null);
+                          setPendingResult(null);
+                          setNameAvailability(null);
+                          setProgress(null);
+                        }}
+                        style={{
+                          marginTop: '16px',
+                          padding: '8px 16px',
+                          background: 'transparent',
+                          border: '1px solid #dc2626',
+                          borderRadius: '6px',
+                          color: '#dc2626',
+                          cursor: 'pointer',
+                          fontSize: '0.9rem'
+                        }}
+                      >
+                        Enter a different name
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Launch button - only if name is available */}
+                  {nameAvailability?.available && (
+                    <button
+                      onClick={() => onComplete(pendingResult)}
+                      style={{
+                        ...orchestratorStyles.blinkButton,
+                        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                        boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)'
+                      }}
+                    >
+                      🚀 Launch Site
+                    </button>
+                  )}
+
+                  {/* Loading state while checking */}
+                  {!nameAvailability && (
+                    <div style={{ color: '#666' }}>Checking name availability...</div>
+                  )}
+                </div>
+              )}
+            </>
           )}
         </div>
       )}

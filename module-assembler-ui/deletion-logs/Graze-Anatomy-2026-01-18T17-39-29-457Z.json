@@ -1,0 +1,80 @@
+{
+  "projectName": "Graze-Anatomy",
+  "deletedAt": "2026-01-18T17:39:29.457Z",
+  "resourcesFound": {
+    "name": "Graze-Anatomy",
+    "sanitizedName": "graze-anatomy",
+    "github": {
+      "repos": [
+        {
+          "name": "graze-anatomy-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "graze-anatomy-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "graze-anatomy-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/graze-anatomy-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/graze-anatomy-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/graze-anatomy-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "graze-anatomy",
+          "verified": true
+        },
+        {
+          "subdomain": "api.graze-anatomy",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.graze-anatomy",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

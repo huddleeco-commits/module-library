@@ -31,8 +31,17 @@ import {
   Filter,
   Zap,
   Activity,
-  Clock
+  Clock,
+  FlaskConical,
+  Archive,
+  Rocket
 } from 'lucide-react';
+
+// Import Platform Health Page
+import PlatformHealthPage from './PlatformHealthPage';
+import BackupManager from './BackupManager';
+import DemoTrackerPage from './DemoTrackerPage';
+import TestLabPage from './TestLabPage';
 
 // ============================================
 // CONTEXT & API
@@ -86,11 +95,23 @@ function StatCard({ title, value, subtitle, icon, color, trend }) {
 
 function StatusBadge({ status }) {
   const colors = {
-    completed: { bg: '#10b98120', text: '#10b981' },
+    // Generation states
+    building: { bg: '#f59e0b20', text: '#f59e0b' }, // Yellow - in progress
+    completed: { bg: '#10b98120', text: '#10b981' }, // Green - code gen done
+    failed: { bg: '#ef444420', text: '#ef4444' }, // Red - code gen failed
+
+    // Build validation states (AUDIT 1)
+    build_passed: { bg: '#22c55e20', text: '#22c55e' }, // Bright green - ready to deploy
+    build_failed: { bg: '#dc262620', text: '#dc2626' }, // Dark red - build errors
+
+    // Deployment states
+    deployed: { bg: '#06b6d420', text: '#06b6d4' }, // Cyan - live
+    deploy_failed: { bg: '#f9731620', text: '#f97316' }, // Orange - deploy failed
+
+    // Generic states
     active: { bg: '#10b98120', text: '#10b981' },
     generating: { bg: '#f59e0b20', text: '#f59e0b' },
     pending: { bg: '#6366f120', text: '#6366f1' },
-    failed: { bg: '#ef444420', text: '#ef4444' },
     cancelled: { bg: '#6b728020', text: '#6b7280' },
     warning: { bg: '#f59e0b20', text: '#f59e0b' },
     critical: { bg: '#ef444420', text: '#ef4444' },
@@ -117,6 +138,72 @@ function TierBadge({ tier }) {
     <span style={{ ...styles.badge, backgroundColor: c.bg, color: c.text }}>
       {tier}
     </span>
+  );
+}
+
+function AppTypeBadge({ appType, parentProjectId }) {
+  const types = {
+    'website': { bg: '#10b98120', text: '#10b981', icon: '🌐', label: 'Website' },
+    'companion-app': { bg: '#8b5cf620', text: '#8b5cf6', icon: '📱', label: 'Companion' },
+    'advanced-app': { bg: '#f5990e20', text: '#f59e0b', icon: '⚡', label: 'App' }
+  };
+  const t = types[appType] || types['website'];
+  return (
+    <span style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '4px',
+      padding: '2px 8px',
+      borderRadius: '4px',
+      fontSize: '11px',
+      fontWeight: '500',
+      backgroundColor: t.bg,
+      color: t.text
+    }}>
+      <span style={{ fontSize: '10px' }}>{t.icon}</span>
+      {t.label}
+      {parentProjectId && (
+        <span title={`Child of project #${parentProjectId}`} style={{ marginLeft: '2px', opacity: 0.7 }}>
+          ↗
+        </span>
+      )}
+    </span>
+  );
+}
+
+function RailwayStatusBadge({ status, onClick, loading }) {
+  const statusConfig = {
+    'healthy': { bg: '#10b98120', text: '#10b981', icon: '🟢' },
+    'building': { bg: '#f59e0b20', text: '#f59e0b', icon: '🟡' },
+    'down': { bg: '#ef444420', text: '#ef4444', icon: '🔴' },
+    'sleeping': { bg: '#6b728020', text: '#6b7280', icon: '😴' },
+    'unknown': { bg: '#6b728020', text: '#6b7280', icon: '⚪' }
+  };
+  const s = statusConfig[status] || statusConfig['unknown'];
+
+  return (
+    <button
+      onClick={onClick}
+      disabled={loading}
+      title={loading ? 'Checking...' : `Status: ${status || 'unknown'}. Click to refresh`}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '4px',
+        padding: '2px 6px',
+        borderRadius: '4px',
+        fontSize: '11px',
+        fontWeight: '500',
+        backgroundColor: s.bg,
+        color: s.text,
+        border: 'none',
+        cursor: loading ? 'wait' : 'pointer',
+        opacity: loading ? 0.6 : 1,
+        transition: 'opacity 0.2s'
+      }}
+    >
+      <span style={{ fontSize: '10px' }}>{loading ? '⏳' : s.icon}</span>
+    </button>
   );
 }
 
@@ -437,68 +524,719 @@ function GenerationsPage() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [deleteModal, setDeleteModal] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+  const [expandedRow, setExpandedRow] = useState(null);
+  const [buildLogModal, setBuildLogModal] = useState(null);
+  const [retrying, setRetrying] = useState(null);
+  const [railwayStatus, setRailwayStatus] = useState({}); // { projectId: { status, loading } }
 
-  useEffect(() => {
+  const loadGenerations = () => {
     setLoading(true);
     adminFetch(`/generations?page=${page}&limit=25`)
       .then(data => {
+        console.log('Generations response:', data);
         setGenerations(data.generations || []);
-        setTotal(data.total || 0);
+        // Backend returns total in pagination object
+        setTotal(data.pagination?.total || data.total || 0);
+      })
+      .catch(err => {
+        console.error('Failed to load generations:', err);
+        setGenerations([]);
+        setTotal(0);
       })
       .finally(() => setLoading(false));
+  };
+
+  // Fetch Railway status for a single project
+  const checkRailwayStatus = async (projectId) => {
+    if (!projectId) return;
+
+    setRailwayStatus(prev => ({
+      ...prev,
+      [projectId]: { ...prev[projectId], loading: true }
+    }));
+
+    try {
+      const res = await fetch(`${API_URL}/api/railway/status/${projectId}`);
+      const data = await res.json();
+
+      setRailwayStatus(prev => ({
+        ...prev,
+        [projectId]: {
+          status: data.success ? data.overallStatus?.status : 'unknown',
+          loading: false,
+          lastChecked: new Date().toISOString()
+        }
+      }));
+    } catch (err) {
+      console.error('Railway status check failed:', err);
+      setRailwayStatus(prev => ({
+        ...prev,
+        [projectId]: { status: 'unknown', loading: false }
+      }));
+    }
+  };
+
+  // Refresh all Railway statuses for deployed projects
+  const refreshAllStatuses = async () => {
+    const deployedProjects = generations.filter(g =>
+      g.status === 'deployed' && g.railway_project_id
+    );
+
+    if (deployedProjects.length === 0) return;
+
+    // Mark all as loading
+    const loadingState = {};
+    deployedProjects.forEach(p => {
+      loadingState[p.railway_project_id] = { loading: true };
+    });
+    setRailwayStatus(prev => ({ ...prev, ...loadingState }));
+
+    try {
+      const res = await fetch(`${API_URL}/api/railway/status/batch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectIds: deployedProjects.map(p => p.railway_project_id)
+        })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        const newStatus = {};
+        Object.entries(data.results || {}).forEach(([id, result]) => {
+          newStatus[id] = {
+            status: result.status,
+            loading: false,
+            lastChecked: data.checkedAt
+          };
+        });
+        setRailwayStatus(prev => ({ ...prev, ...newStatus }));
+      }
+    } catch (err) {
+      console.error('Batch status check failed:', err);
+    }
+  };
+
+  useEffect(() => {
+    loadGenerations();
   }, [page]);
 
   const handleExport = () => {
     window.open(`${API_URL}/api/admin/export/generations`, '_blank');
   };
 
+  const handleDelete = async (project) => {
+    setDeleting(true);
+    try {
+      const result = await adminFetch(`/projects/${project.id}`, { method: 'DELETE' });
+      if (result.success) {
+        setDeleteModal(null);
+        loadGenerations();
+      } else {
+        alert(`Delete failed: ${result.error || 'Unknown error'}`);
+      }
+    } catch (err) {
+      alert(`Delete failed: ${err.message}`);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleRetryBuild = async (project) => {
+    setRetrying(project.id);
+    try {
+      const result = await fetch(`${API_URL}/api/admin/retry-build/${project.id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      }).then(r => r.json());
+
+      if (result.success) {
+        loadGenerations(); // Refresh to show new status
+        if (result.build_passed) {
+          alert(`Build passed! Project is ready for deployment.`);
+        } else {
+          alert(`Build still failing with ${result.audit?.error_count || 0} error(s).`);
+        }
+      } else {
+        alert(`Retry failed: ${result.error || 'Unknown error'}`);
+      }
+    } catch (err) {
+      alert(`Retry failed: ${err.message}`);
+    } finally {
+      setRetrying(null);
+    }
+  };
+
+  // Link button component
+  const LinkIcon = ({ url, icon, title }) => {
+    if (!url) return null;
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        title={title}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '24px',
+          height: '24px',
+          fontSize: '14px',
+          textDecoration: 'none',
+          borderRadius: '4px',
+          background: '#f3f4f6',
+          cursor: 'pointer'
+        }}
+      >
+        {icon}
+      </a>
+    );
+  };
+
+  // Check if row has build errors to show expand button
+  const hasBuildInfo = (row) => {
+    return row.build_errors?.length > 0 ||
+           row.build_warnings?.length > 0 ||
+           row.auto_fixes?.length > 0 ||
+           row.status === 'build_failed' ||
+           row.error_message;
+  };
+
+  // Expanded row content for build details
+  const BuildDetails = ({ row }) => {
+    const errors = row.build_errors || [];
+    const warnings = row.build_warnings || [];
+    const fixes = row.auto_fixes || [];
+    const errorMsg = row.error_message;
+
+    return (
+      <div style={{
+        background: '#f9fafb',
+        borderTop: '1px solid #e5e7eb',
+        padding: '16px 20px',
+        fontSize: '13px'
+      }}>
+        {/* Error message for failed generations */}
+        {errorMsg && (
+          <div style={{ marginBottom: '16px' }}>
+            <div style={{ fontWeight: '600', color: '#dc2626', marginBottom: '8px' }}>
+              Error Message
+            </div>
+            <div style={{
+              background: '#fef2f2',
+              border: '1px solid #fecaca',
+              borderRadius: '6px',
+              padding: '12px',
+              color: '#991b1b',
+              fontFamily: 'monospace',
+              fontSize: '12px',
+              whiteSpace: 'pre-wrap'
+            }}>
+              {errorMsg}
+            </div>
+          </div>
+        )}
+
+        {/* Build Errors */}
+        {errors.length > 0 && (
+          <div style={{ marginBottom: '16px' }}>
+            <div style={{ fontWeight: '600', color: '#dc2626', marginBottom: '8px' }}>
+              Build Errors ({errors.length})
+            </div>
+            {errors.map((err, i) => (
+              <div key={i} style={{
+                background: '#fef2f2',
+                border: '1px solid #fecaca',
+                borderRadius: '6px',
+                padding: '10px 12px',
+                marginBottom: '8px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                  <span style={{ color: '#dc2626' }}>❌</span>
+                  <div style={{ flex: 1 }}>
+                    {err.file && (
+                      <div style={{
+                        fontFamily: 'monospace',
+                        fontSize: '11px',
+                        color: '#6b7280',
+                        marginBottom: '4px'
+                      }}>
+                        {err.file}{err.line ? `:${err.line}` : ''}{err.column ? `:${err.column}` : ''}
+                      </div>
+                    )}
+                    <div style={{ color: '#991b1b' }}>{err.message || err.type}</div>
+                    {err.suggestion && (
+                      <div style={{ color: '#6b7280', fontSize: '12px', marginTop: '4px' }}>
+                        💡 {err.suggestion}
+                      </div>
+                    )}
+                  </div>
+                  {err.autoFixable && (
+                    <span style={{
+                      background: '#dbeafe',
+                      color: '#1d4ed8',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      fontSize: '10px',
+                      fontWeight: '500'
+                    }}>
+                      Auto-fixable
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Warnings */}
+        {warnings.length > 0 && (
+          <div style={{ marginBottom: '16px' }}>
+            <div style={{ fontWeight: '600', color: '#d97706', marginBottom: '8px' }}>
+              Warnings ({warnings.length})
+            </div>
+            {warnings.map((warn, i) => (
+              <div key={i} style={{
+                background: '#fffbeb',
+                border: '1px solid #fcd34d',
+                borderRadius: '6px',
+                padding: '10px 12px',
+                marginBottom: '8px',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '8px'
+              }}>
+                <span style={{ color: '#d97706' }}>⚠️</span>
+                <div style={{ color: '#92400e' }}>{warn.message || warn.type}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Auto-fixes applied */}
+        {fixes.length > 0 && (
+          <div style={{ marginBottom: '16px' }}>
+            <div style={{ fontWeight: '600', color: '#059669', marginBottom: '8px' }}>
+              Auto-Fixes Applied ({fixes.length})
+            </div>
+            {fixes.map((fix, i) => (
+              <div key={i} style={{
+                background: '#ecfdf5',
+                border: '1px solid #a7f3d0',
+                borderRadius: '6px',
+                padding: '10px 12px',
+                marginBottom: '8px',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '8px'
+              }}>
+                <span style={{ color: '#059669' }}>🔧</span>
+                <div>
+                  <div style={{ color: '#065f46' }}>{fix.description || fix.type}</div>
+                  {fix.file && (
+                    <div style={{ fontFamily: 'monospace', fontSize: '11px', color: '#6b7280' }}>
+                      {fix.file}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Build info summary */}
+        {row.build_result && (
+          <div style={{
+            display: 'flex',
+            gap: '24px',
+            fontSize: '12px',
+            color: '#6b7280',
+            marginBottom: '12px'
+          }}>
+            <span>Duration: {((row.build_result.duration_ms || 0) / 1000).toFixed(1)}s</span>
+            {row.build_result.timestamp && (
+              <span>Tested: {new Date(row.build_result.timestamp).toLocaleString()}</span>
+            )}
+          </div>
+        )}
+
+        {/* Action buttons */}
+        <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
+          {(row.status === 'build_failed' || row.status === 'failed') && (
+            <button
+              onClick={() => handleRetryBuild(row)}
+              disabled={retrying === row.id}
+              style={{
+                background: '#3b82f6',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '8px 16px',
+                fontSize: '13px',
+                cursor: retrying === row.id ? 'wait' : 'pointer',
+                fontWeight: '500',
+                opacity: retrying === row.id ? 0.7 : 1,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              {retrying === row.id ? '⏳ Retrying...' : '🔄 Retry Build'}
+            </button>
+          )}
+          {row.build_log && (
+            <button
+              onClick={() => setBuildLogModal(row)}
+              style={{
+                background: '#f3f4f6',
+                color: '#374151',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
+                padding: '8px 16px',
+                fontSize: '13px',
+                cursor: 'pointer',
+                fontWeight: '500'
+              }}
+            >
+              📄 View Build Log
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div>
       <div style={styles.pageHeader}>
         <h1 style={styles.pageTitle}>Generations ({total})</h1>
-        <ExportButton onClick={handleExport} />
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button
+            onClick={refreshAllStatuses}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 12px',
+              background: '#10b98120',
+              border: '1px solid #10b981',
+              borderRadius: '6px',
+              color: '#10b981',
+              fontSize: '13px',
+              cursor: 'pointer'
+            }}
+            title="Check Railway status for all deployed projects"
+          >
+            🔄 Check Status
+          </button>
+          <ExportButton onClick={handleExport} />
+        </div>
       </div>
 
-      <DataTable
-        loading={loading}
-        data={generations}
-        columns={[
-          { header: 'ID', key: 'id' },
-          { header: 'Site Name', key: 'site_name', render: (v, row) => (
-            row.deployed_url ? (
-              <a href={row.deployed_url} target="_blank" rel="noopener noreferrer" style={styles.link}>
-                <strong>{v || 'Unnamed'}</strong>
-              </a>
-            ) : (
-              <strong>{v || 'Unnamed'}</strong>
-            )
-          )},
-          { header: 'Industry', key: 'industry' },
-          { header: 'User', key: 'user_email', render: v => v || '-' },
-          { header: 'Status', key: 'status', render: v => <StatusBadge status={v} /> },
-          { header: 'Pages', key: 'pages_generated', render: v => v || 0 },
-          { header: 'Cost', key: 'total_cost', render: v => `$${parseFloat(v || 0).toFixed(4)}` },
-          { header: 'Time', key: 'generation_time_ms', render: v => v ? `${(v / 1000).toFixed(1)}s` : '-' },
-          { header: 'Links', key: 'deployed_url', render: (v, row) => (
-            <div style={{ display: 'flex', gap: '8px' }}>
-              {v && (
-                <a href={v} target="_blank" rel="noopener noreferrer" style={styles.linkBtn} title="View Live Site">
-                  Live
-                </a>
-              )}
-              {row.download_url && (
-                <a href={row.download_url} target="_blank" rel="noopener noreferrer" style={styles.downloadBtn} title="Download">
-                  DL
-                </a>
-              )}
-              {!v && !row.download_url && '-'}
-            </div>
-          )},
-          { header: 'Created', key: 'created_at', render: v => new Date(v).toLocaleDateString() }
-        ]}
-      />
+      {/* Custom table with expandable rows */}
+      <div style={styles.card}>
+        {loading ? (
+          <div style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>Loading...</div>
+        ) : generations.length === 0 ? (
+          <div style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>No generations found</div>
+        ) : (
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: '600', color: '#374151', fontSize: '12px' }}></th>
+                <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: '600', color: '#374151', fontSize: '12px' }}>ID</th>
+                <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: '600', color: '#374151', fontSize: '12px' }}>Type</th>
+                <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: '600', color: '#374151', fontSize: '12px' }}>Site Name</th>
+                <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: '600', color: '#374151', fontSize: '12px' }}>Industry</th>
+                <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: '600', color: '#374151', fontSize: '12px' }}>Status</th>
+                <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: '600', color: '#374151', fontSize: '12px' }}>Cost</th>
+                <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: '600', color: '#374151', fontSize: '12px' }}>Links</th>
+                <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: '600', color: '#374151', fontSize: '12px' }}>Created</th>
+                <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: '600', color: '#374151', fontSize: '12px' }}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {generations.map(row => (
+                <React.Fragment key={row.id}>
+                  <tr style={{
+                    borderBottom: expandedRow === row.id ? 'none' : '1px solid #e5e7eb',
+                    background: expandedRow === row.id ? '#f9fafb' : 'transparent'
+                  }}>
+                    <td style={{ padding: '12px 16px', width: '40px' }}>
+                      {hasBuildInfo(row) && (
+                        <button
+                          onClick={() => setExpandedRow(expandedRow === row.id ? null : row.id)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontSize: '12px',
+                            color: '#6b7280',
+                            padding: '4px'
+                          }}
+                          title={expandedRow === row.id ? 'Collapse' : 'Expand build details'}
+                        >
+                          {expandedRow === row.id ? '▼' : '▶'}
+                        </button>
+                      )}
+                    </td>
+                    <td style={{ padding: '12px 16px', fontSize: '13px', color: '#9ca3af' }}>{row.id}</td>
+                    <td style={{ padding: '12px 16px' }}>
+                      <AppTypeBadge appType={row.app_type} parentProjectId={row.parent_project_id} />
+                    </td>
+                    <td style={{ padding: '12px 16px' }}>
+                      {row.frontend_url ? (
+                        <a href={row.frontend_url} target="_blank" rel="noopener noreferrer" style={{ ...styles.link, fontWeight: 600 }}>
+                          {row.site_name || 'Unnamed'}
+                        </a>
+                      ) : (
+                        <span style={{ color: '#f3f4f6', fontWeight: 600 }}>{row.site_name || 'Unnamed'}</span>
+                      )}
+                      {row.parent_project_id && row.app_type === 'companion-app' && (
+                        <div style={{ fontSize: '11px', color: '#8b5cf6', marginTop: '2px' }}>
+                          ↳ Parent: #{row.parent_project_id}
+                        </div>
+                      )}
+                    </td>
+                    <td style={{ padding: '12px 16px', fontSize: '13px', color: '#d1d5db' }}>{row.industry}</td>
+                    <td style={{ padding: '12px 16px' }}>
+                      <StatusBadge status={row.status} />
+                      {row.build_errors?.length > 0 && (
+                        <span style={{
+                          marginLeft: '6px',
+                          background: '#fef2f2',
+                          color: '#dc2626',
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          fontSize: '10px',
+                          fontWeight: '500'
+                        }}>
+                          {row.build_errors.length} error{row.build_errors.length !== 1 ? 's' : ''}
+                        </span>
+                      )}
+                    </td>
+                    <td style={{ padding: '12px 16px', fontSize: '13px', color: '#d1d5db', fontWeight: 500 }}>
+                      ${parseFloat(row.total_cost || 0).toFixed(4)}
+                    </td>
+                    <td style={{ padding: '12px 16px' }}>
+                      <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
+                        {row.status === 'deployed' && row.railway_project_id && (
+                          <RailwayStatusBadge
+                            status={railwayStatus[row.railway_project_id]?.status}
+                            loading={railwayStatus[row.railway_project_id]?.loading}
+                            onClick={() => checkRailwayStatus(row.railway_project_id)}
+                          />
+                        )}
+                        <LinkIcon url={row.frontend_url} icon="🌐" title="Frontend" />
+                        <LinkIcon url={row.admin_url} icon="📊" title="Admin Panel" />
+                        <LinkIcon url={row.backend_url} icon="⚙️" title="Backend API" />
+                        <LinkIcon url={row.github_frontend} icon="🐙" title="GitHub Frontend" />
+                        <LinkIcon url={row.github_backend} icon="🐙" title="GitHub Backend" />
+                        <LinkIcon url={row.railway_project_url} icon="🚂" title="Railway Project" />
+                        {!row.frontend_url && !row.admin_url && !row.github_frontend && (
+                          <span style={{ color: '#9ca3af', fontSize: '12px' }}>-</span>
+                        )}
+                      </div>
+                    </td>
+                    <td style={{ padding: '12px 16px', fontSize: '13px', color: '#9ca3af' }}>
+                      {new Date(row.created_at).toLocaleDateString()}
+                    </td>
+                    <td style={{ padding: '12px 16px' }}>
+                      <button
+                        onClick={() => setDeleteModal(row)}
+                        style={{
+                          background: '#fee2e2',
+                          color: '#dc2626',
+                          border: 'none',
+                          borderRadius: '4px',
+                          padding: '4px 8px',
+                          fontSize: '12px',
+                          cursor: 'pointer',
+                          fontWeight: '500'
+                        }}
+                        title="Delete project"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                  {/* Expanded row */}
+                  {expandedRow === row.id && hasBuildInfo(row) && (
+                    <tr>
+                      <td colSpan="10" style={{ padding: 0 }}>
+                        <BuildDetails row={row} />
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
 
       <Pagination page={page} setPage={setPage} total={total} limit={25} />
+
+      {/* Delete Confirmation Modal */}
+      {deleteModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: '#fff',
+            borderRadius: '12px',
+            padding: '24px',
+            maxWidth: '450px',
+            width: '90%',
+            boxShadow: '0 25px 50px rgba(0,0,0,0.25)'
+          }}>
+            <h3 style={{ margin: '0 0 16px', color: '#dc2626' }}>Delete Project</h3>
+            <p style={{ margin: '0 0 8px', color: '#374151' }}>
+              Are you sure you want to delete <strong>{deleteModal.site_name}</strong>?
+            </p>
+            <p style={{ margin: '0 0 20px', color: '#6b7280', fontSize: '14px' }}>
+              This will permanently remove:
+            </p>
+            <ul style={{ margin: '0 0 20px', paddingLeft: '20px', color: '#6b7280', fontSize: '14px' }}>
+              <li>GitHub repositories (frontend, backend, admin)</li>
+              <li>Railway project and all services</li>
+              <li>Cloudflare DNS records</li>
+              <li>Local project files</li>
+              <li>Database records</li>
+            </ul>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setDeleteModal(null)}
+                disabled={deleting}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  border: '1px solid #d1d5db',
+                  background: '#fff',
+                  cursor: 'pointer',
+                  fontWeight: '500'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDelete(deleteModal)}
+                disabled={deleting}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  background: '#dc2626',
+                  color: '#fff',
+                  cursor: deleting ? 'wait' : 'pointer',
+                  fontWeight: '500',
+                  opacity: deleting ? 0.7 : 1
+                }}
+              >
+                {deleting ? 'Deleting...' : 'Delete Forever'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Build Log Modal */}
+      {buildLogModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: '#fff',
+            borderRadius: '12px',
+            padding: '24px',
+            maxWidth: '800px',
+            width: '90%',
+            maxHeight: '80vh',
+            display: 'flex',
+            flexDirection: 'column',
+            boxShadow: '0 25px 50px rgba(0,0,0,0.25)'
+          }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '16px'
+            }}>
+              <h3 style={{ margin: 0, color: '#111827' }}>
+                Build Log - {buildLogModal.site_name}
+              </h3>
+              <button
+                onClick={() => setBuildLogModal(null)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  color: '#6b7280',
+                  padding: '4px'
+                }}
+              >
+                ×
+              </button>
+            </div>
+            <div style={{
+              flex: 1,
+              overflow: 'auto',
+              background: '#1f2937',
+              borderRadius: '8px',
+              padding: '16px'
+            }}>
+              <pre style={{
+                margin: 0,
+                color: '#e5e7eb',
+                fontFamily: 'Menlo, Monaco, Consolas, monospace',
+                fontSize: '12px',
+                lineHeight: '1.5',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word'
+              }}>
+                {buildLogModal.build_log || 'No build log available'}
+              </pre>
+            </div>
+            <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setBuildLogModal(null)}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  border: '1px solid #d1d5db',
+                  background: '#fff',
+                  cursor: 'pointer',
+                  fontWeight: '500'
+                }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -1496,6 +2234,9 @@ function LoginPage({ onLogin }) {
 function Sidebar({ currentPage, setPage, onLogout }) {
   const navItems = [
     { id: 'overview', label: 'Overview', icon: <LayoutDashboard size={20} /> },
+    { id: 'test-lab', label: 'Test Lab', icon: <FlaskConical size={20} />, highlight: true },
+    { id: 'platform-health', label: 'Health Check', icon: <Activity size={20} /> },
+    { id: 'demo-tracker', label: 'Demo Tracker', icon: <Rocket size={20} /> },
     { id: 'users', label: 'Users', icon: <Users size={20} /> },
     { id: 'generations', label: 'Generations', icon: <Layers size={20} /> },
     { id: 'costs', label: 'API Costs', icon: <DollarSign size={20} /> },
@@ -1510,7 +2251,8 @@ function Sidebar({ currentPage, setPage, onLogout }) {
     { id: 'alerts', label: 'Alerts', icon: <Bell size={20} /> },
     { id: 'data-quality', label: 'Data Quality', icon: <CheckCircle2 size={20} /> },
     { id: 'config', label: 'Config', icon: <Settings size={20} /> },
-    { id: 'system', label: 'System', icon: <Server size={20} /> }
+    { id: 'system', label: 'System', icon: <Server size={20} /> },
+    { id: 'backups', label: 'Backups', icon: <Archive size={20} /> }
   ];
 
   return (
@@ -1550,12 +2292,19 @@ function Sidebar({ currentPage, setPage, onLogout }) {
 // MAIN APP
 // ============================================
 
-export default function AdminApp() {
-  const [admin, setAdmin] = useState(null);
-  const [currentPage, setCurrentPage] = useState('overview');
-  const [loading, setLoading] = useState(true);
+export default function AdminApp({ skipAuth = false, startPage = 'overview' }) {
+  const [admin, setAdmin] = useState(skipAuth ? { email: 'dev@blink.local', is_admin: true } : null);
+  const [currentPage, setCurrentPage] = useState(startPage);
+  const [loading, setLoading] = useState(!skipAuth);
 
   useEffect(() => {
+    // Skip auth check if accessed from dev tools
+    if (skipAuth) {
+      setAdmin({ email: 'dev@blink.local', is_admin: true });
+      setLoading(false);
+      return;
+    }
+
     const token = localStorage.getItem('blink_admin_token');
     if (token) {
       adminFetch('/me')
@@ -1565,7 +2314,7 @@ export default function AdminApp() {
     } else {
       setLoading(false);
     }
-  }, []);
+  }, [skipAuth]);
 
   const handleLogout = () => {
     localStorage.removeItem('blink_admin_token');
@@ -1581,6 +2330,9 @@ export default function AdminApp() {
   const renderPage = () => {
     switch (currentPage) {
       case 'overview': return <OverviewPage />;
+      case 'test-lab': return <TestLabPage />;
+      case 'platform-health': return <PlatformHealthPage />;
+      case 'demo-tracker': return <DemoTrackerPage />;
       case 'users': return <UsersPage />;
       case 'generations': return <GenerationsPage />;
       case 'costs': return <CostAnalyticsPage />;
@@ -1596,6 +2348,7 @@ export default function AdminApp() {
       case 'data-quality': return <DataQualityPage />;
       case 'config': return <ConfigPage />;
       case 'system': return <SystemPage />;
+      case 'backups': return <BackupManager />;
       default: return <OverviewPage />;
     }
   };

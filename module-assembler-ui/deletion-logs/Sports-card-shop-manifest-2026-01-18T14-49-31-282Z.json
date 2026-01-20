@@ -1,0 +1,57 @@
+{
+  "projectName": "Sports-card-shop",
+  "savedAt": "2026-01-18T14:49:31.283Z",
+  "resources": {
+    "name": "Sports-card-shop",
+    "sanitizedName": "sports-card-shop",
+    "github": {
+      "repos": [
+        {
+          "name": "sports-card-shop-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "sports-card-shop-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "sports-card-shop-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "f133518795d8797c48514f1a4d6e81c1",
+          "name": "sports-card-shop.be1st.io",
+          "type": "CNAME",
+          "content": "946pc77d.up.railway.app"
+        },
+        {
+          "id": "2f096ee738eb27350ae9034db88a1c1b",
+          "name": "api.sports-card-shop.be1st.io",
+          "type": "CNAME",
+          "content": "zbvxggry.up.railway.app"
+        },
+        {
+          "id": "0f7edc4d2a009482165ca72c987a7654",
+          "name": "admin.sports-card-shop.be1st.io",
+          "type": "CNAME",
+          "content": "vm0rt8pt.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Sports-card-shop",
+      "exists": true
+    }
+  }
+}

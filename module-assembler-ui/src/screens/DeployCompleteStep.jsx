@@ -19,7 +19,7 @@ const deployCompleteStyles = {
   }
 };
 
-export function DeployCompleteStep({ result, onReset }) {
+export function DeployCompleteStep({ result, onReset, onGenerateCompanion }) {
   const [copied, setCopied] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -153,6 +153,44 @@ export function DeployCompleteStep({ result, onReset }) {
           + Create Another
         </button>
       </div>
+
+      {/* Companion App CTA */}
+      {onGenerateCompanion && result?.appType !== 'companion-app' && result?.appType !== 'advanced-app' && (
+        <div style={{
+          marginTop: '24px',
+          padding: '20px',
+          background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(59, 130, 246, 0.15))',
+          border: '1px solid rgba(139, 92, 246, 0.3)',
+          borderRadius: '16px',
+          textAlign: 'center'
+        }}>
+          <div style={{ fontSize: '32px', marginBottom: '8px' }}>📱</div>
+          <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '4px' }}>
+            Want a Mobile App?
+          </h3>
+          <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', marginBottom: '16px' }}>
+            Create a companion app that connects to this site's backend
+          </p>
+          <button
+            style={{
+              padding: '12px 24px',
+              background: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '10px',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer'
+            }}
+            onClick={onGenerateCompanion}
+          >
+            🚀 Generate Companion App
+          </button>
+          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginTop: '8px' }}>
+            Deploys to <strong>{result?.urls?.frontend?.replace('https://', '').split('.')[0]}.be1st.app</strong>
+          </p>
+        </div>
+      )}
 
       <p style={styles.dnsNote}>
         💡 If the site doesn't load immediately, wait 1-2 minutes for DNS propagation.

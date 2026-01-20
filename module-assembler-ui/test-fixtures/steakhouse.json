@@ -1,0 +1,154 @@
+{
+  "id": "steakhouse",
+  "name": "Steakhouse / Fine Dining",
+  "icon": "🥩",
+  "business": {
+    "name": "Test Prime Steakhouse",
+    "location": "Manhattan, NY",
+    "tagline": "Where tradition meets perfection",
+    "industry": "steakhouse",
+    "teamSize": "20-50",
+    "priceRange": "$$$$",
+    "established": "1985",
+    "phone": "(212) 555-8900",
+    "email": "reservations@testprimesteakhouse.com",
+    "address": "789 Fifth Avenue, New York, NY 10065",
+    "hours": {
+      "monday": "5:00 PM - 11:00 PM",
+      "tuesday": "5:00 PM - 11:00 PM",
+      "wednesday": "5:00 PM - 11:00 PM",
+      "thursday": "5:00 PM - 11:00 PM",
+      "friday": "5:00 PM - 12:00 AM",
+      "saturday": "5:00 PM - 12:00 AM",
+      "sunday": "4:00 PM - 10:00 PM"
+    }
+  },
+  "theme": {
+    "colors": {
+      "primary": "#722F37",
+      "secondary": "#C9A961",
+      "accent": "#1a1a1a",
+      "background": "#0d0d0d",
+      "text": "#f5f0e6"
+    },
+    "fonts": {
+      "heading": "Playfair Display",
+      "body": "Lora"
+    },
+    "style": "luxury-classic"
+  },
+  "pages": {
+    "home": {
+      "hero": {
+        "headline": "An Unforgettable Dining Experience",
+        "subheadline": "USDA Prime dry-aged steaks, impeccable service, and an award-winning wine list",
+        "cta": "Reserve Your Table",
+        "backgroundImage": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920"
+      },
+      "sections": [
+        {
+          "type": "features",
+          "title": "The Prime Difference",
+          "items": [
+            { "icon": "Award", "title": "USDA Prime Only", "description": "We serve only the top 2% of beef in America" },
+            { "icon": "Clock", "title": "45-Day Dry Aged", "description": "Our signature aging process creates unmatched flavor" },
+            { "icon": "Wine", "title": "2,000+ Wine Labels", "description": "Award-winning cellar curated by our master sommelier" }
+          ]
+        },
+        {
+          "type": "menu-preview",
+          "title": "Signature Cuts",
+          "items": [
+            { "name": "Porterhouse for Two", "price": 165, "description": "40oz of pure perfection" },
+            { "name": "Filet Mignon", "price": 68, "description": "12oz center-cut, butter tender" },
+            { "name": "Bone-In Ribeye", "price": 78, "description": "24oz, heavily marbled" }
+          ]
+        }
+      ]
+    },
+    "menu": {
+      "categories": [
+        {
+          "name": "Prime Steaks",
+          "items": [
+            { "name": "Filet Mignon", "price": 68, "description": "12oz center-cut, the most tender steak" },
+            { "name": "NY Strip", "price": 72, "description": "18oz bone-in, bold flavor" },
+            { "name": "Bone-In Ribeye", "price": 78, "description": "24oz, heavily marbled" },
+            { "name": "Porterhouse for Two", "price": 165, "description": "40oz, filet & strip combined" },
+            { "name": "Wagyu A5", "price": 195, "description": "Japanese import, 6oz" }
+          ]
+        },
+        {
+          "name": "Seafood",
+          "items": [
+            { "name": "Lobster Tail", "price": 85, "description": "Cold water, 1.5lb" },
+            { "name": "Chilean Sea Bass", "price": 62, "description": "Miso glazed" },
+            { "name": "Jumbo Shrimp Cocktail", "price": 28, "description": "6 colossal shrimp" }
+          ]
+        },
+        {
+          "name": "Sides",
+          "items": [
+            { "name": "Creamed Spinach", "price": 16, "description": "Our signature recipe" },
+            { "name": "Truffle Mac & Cheese", "price": 22, "description": "Black truffle, gruyère" },
+            { "name": "Baked Potato", "price": 14, "description": "Loaded with the works" }
+          ]
+        }
+      ]
+    },
+    "about": {
+      "story": "Since 1985, Test Prime Steakhouse has been Manhattan's premier destination for exceptional steaks and fine dining. Our commitment to quality, from sourcing only USDA Prime beef to our meticulous 45-day dry-aging process, has earned us recognition as one of America's finest steakhouses.",
+      "team": [
+        { "name": "Chef Richard Burke", "role": "Executive Chef", "image": "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=400", "bio": "30 years of culinary excellence" },
+        { "name": "James Laurent", "role": "Master Sommelier", "image": "https://images.unsplash.com/photo-1560717789-0ac7c58ac90a?w=400", "bio": "One of only 269 in the world" }
+      ]
+    },
+    "contact": {
+      "address": "789 Fifth Avenue, New York, NY 10065",
+      "phone": "(212) 555-8900",
+      "email": "reservations@testprimesteakhouse.com"
+    }
+  },
+  "companionApp": {
+    "dashboard": {
+      "greeting": "Welcome back, valued guest",
+      "widgets": [
+        { "type": "points", "label": "Dining Credits", "value": 2500 },
+        { "type": "tier", "label": "Member Status", "value": "Platinum" },
+        { "type": "orders", "label": "Visits This Year", "value": 12 },
+        { "type": "savings", "label": "Member Savings", "value": "$850" }
+      ]
+    },
+    "rewards": {
+      "tiers": [
+        { "name": "Member", "minPoints": 0, "perks": ["10% off wine pairings"] },
+        { "name": "Gold", "minPoints": 1000, "perks": ["Priority reservations", "Complimentary valet"] },
+        { "name": "Platinum", "minPoints": 2500, "perks": ["Private dining access", "Chef's table events", "Complimentary champagne"] }
+      ],
+      "currentPoints": 2500,
+      "currentTier": "Platinum"
+    },
+    "profile": {
+      "fields": [
+        { "name": "fullName", "label": "Full Name", "type": "text", "value": "Demo Guest" },
+        { "name": "email", "label": "Email", "type": "email", "value": "demo@example.com" },
+        { "name": "phone", "label": "Phone", "type": "tel", "value": "(212) 555-1234" }
+      ]
+    },
+    "wallet": {
+      "balance": 150.00,
+      "transactions": [
+        { "id": "t1", "type": "credit", "amount": 200.00, "description": "Gift card", "date": "2024-01-10" },
+        { "id": "t2", "type": "debit", "amount": -50.00, "description": "Wine pairing", "date": "2024-01-15" }
+      ]
+    }
+  },
+  "sync": {
+    "sharedState": ["user", "rewards", "wallet", "orders", "profile"],
+    "endpoints": [
+      { "path": "/api/auth/me", "method": "GET", "description": "User profile" },
+      { "path": "/api/loyalty", "method": "GET", "description": "Rewards data" },
+      { "path": "/api/wallet", "method": "GET", "description": "Wallet balance" }
+    ]
+  }
+}

@@ -68,6 +68,7 @@ export function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
+                autoComplete="email"
                 style={styles.input}
               />
             </div>
@@ -83,6 +84,7 @@ export function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
+                autoComplete="current-password"
                 style={styles.input}
               />
               <button
@@ -107,6 +109,27 @@ export function LoginPage() {
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
+
+        {/* Demo Account Quick Login */}
+        <div style={styles.demoSection}>
+          <p style={styles.demoTitle}>Quick Demo Login</p>
+          <div style={styles.demoButtons}>
+            <button
+              type="button"
+              onClick={() => { setEmail('demo@demo.com'); setPassword('demo1234'); }}
+              style={styles.demoButton}
+            >
+              👤 Customer Demo
+            </button>
+            <button
+              type="button"
+              onClick={() => { setEmail('admin@demo.com'); setPassword('admin1234'); }}
+              style={styles.demoButtonAdmin}
+            >
+              👑 Admin Demo
+            </button>
+          </div>
+        </div>
 
         <div style={styles.footer}>
           <p style={styles.footerText}>
@@ -249,6 +272,49 @@ const styles = {
     color: '#22c55e',
     textDecoration: 'none',
     fontWeight: '600'
+  },
+  demoSection: {
+    marginTop: '24px',
+    padding: '16px',
+    background: 'rgba(34, 197, 94, 0.05)',
+    border: '1px solid rgba(34, 197, 94, 0.2)',
+    borderRadius: '12px'
+  },
+  demoTitle: {
+    fontSize: '12px',
+    color: '#9ca3af',
+    textAlign: 'center',
+    marginBottom: '12px',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px'
+  },
+  demoButtons: {
+    display: 'flex',
+    gap: '10px'
+  },
+  demoButton: {
+    flex: 1,
+    padding: '10px 12px',
+    background: 'rgba(255, 255, 255, 0.05)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    borderRadius: '8px',
+    color: '#e5e5e5',
+    fontSize: '13px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    transition: 'all 0.2s'
+  },
+  demoButtonAdmin: {
+    flex: 1,
+    padding: '10px 12px',
+    background: 'rgba(234, 179, 8, 0.1)',
+    border: '1px solid rgba(234, 179, 8, 0.3)',
+    borderRadius: '8px',
+    color: '#eab308',
+    fontSize: '13px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    transition: 'all 0.2s'
   }
 };
 

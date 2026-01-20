@@ -3,13 +3,14 @@
  * Quick business description and industry detection
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { styles } from '../styles';
 
 export function QuickStep({ industries, projectData, updateProject, onContinue, onBack }) {
   const [input, setInput] = useState('');
   const [detecting, setDetecting] = useState(false);
   const [detected, setDetected] = useState(null);
+  const [nameAvailability, setNameAvailability] = useState(null);
 
   const examples = [
     'Pizza restaurant in Brooklyn',
@@ -93,7 +94,7 @@ export function QuickStep({ industries, projectData, updateProject, onContinue, 
       }
     }
 
-    setTimeout(() => {
+    setTimeout(async () => {
       setDetected({ industry: matchedIndustry, key: matchedKey });
       updateProject({
         businessName: input,
@@ -104,6 +105,17 @@ export function QuickStep({ industries, projectData, updateProject, onContinue, 
         selectedPages: matchedIndustry?.defaultPages || ['home', 'about', 'services', 'contact']
       });
       setDetecting(false);
+
+      // Check name availability
+      try {
+        const res = await fetch(`/api/check-name?name=${encodeURIComponent(input)}`);
+        const data = await res.json();
+        if (data.success) {
+          setNameAvailability(data);
+        }
+      } catch (err) {
+        console.error('Name check failed:', err);
+      }
     }, 800);
   };
 
@@ -152,9 +164,62 @@ export function QuickStep({ industries, projectData, updateProject, onContinue, 
           <div style={styles.detectedContent}>
             <h3 style={styles.detectedTitle}>{detected.industry?.name || 'Business'} Detected!</h3>
             <p style={styles.detectedDesc}>Perfect template selected. Ready to customize.</p>
+            {nameAvailability && (
+              <div style={{ marginTop: '8px' }}>
+                <p style={{
+                  fontSize: '13px',
+                  color: nameAvailability.available ? '#10b981' : '#ef4444',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}>
+                  {nameAvailability.available ? '✓' : '✗'}
+                  {nameAvailability.available
+                    ? `"${nameAvailability.sanitizedName}" is available`
+                    : `"${nameAvailability.sanitizedName}" already exists`
+                  }
+                </p>
+                {!nameAvailability.available && nameAvailability.suggestions?.length > 0 && (
+                  <div style={{ marginTop: '6px' }}>
+                    <p style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>Try instead:</p>
+                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                      {nameAvailability.suggestions.map(s => (
+                        <button
+                          key={s}
+                          onClick={() => {
+                            setInput(s);
+                            setDetected(null);
+                            setNameAvailability(null);
+                          }}
+                          style={{
+                            padding: '4px 10px',
+                            fontSize: '12px',
+                            background: '#2a2a2a',
+                            border: '1px solid #444',
+                            borderRadius: '4px',
+                            color: '#fff',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-          <button style={styles.continueBtn} onClick={onContinue}>
-            Customize →
+          <button
+            style={{
+              ...styles.continueBtn,
+              opacity: nameAvailability && !nameAvailability.available ? 0.5 : 1,
+              cursor: nameAvailability && !nameAvailability.available ? 'not-allowed' : 'pointer'
+            }}
+            onClick={onContinue}
+            disabled={nameAvailability && !nameAvailability.available}
+          >
+            {nameAvailability && !nameAvailability.available ? 'Name Taken' : 'Customize →'}
           </button>
         </div>
       )}

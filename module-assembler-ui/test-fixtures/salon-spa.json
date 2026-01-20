@@ -1,0 +1,146 @@
+{
+  "id": "salon-spa",
+  "name": "Salon / Spa",
+  "icon": "💆",
+  "business": {
+    "name": "Test Luxe Salon & Spa",
+    "location": "Beverly Hills, CA",
+    "tagline": "Where beauty meets relaxation",
+    "industry": "spa-salon",
+    "teamSize": "10-20",
+    "priceRange": "$$$",
+    "established": "2015",
+    "phone": "(310) 555-7890",
+    "email": "hello@testluxesalon.com",
+    "address": "456 Rodeo Drive, Beverly Hills, CA 90210",
+    "hours": {
+      "monday": "Closed",
+      "tuesday": "9:00 AM - 8:00 PM",
+      "wednesday": "9:00 AM - 8:00 PM",
+      "thursday": "9:00 AM - 8:00 PM",
+      "friday": "9:00 AM - 8:00 PM",
+      "saturday": "9:00 AM - 6:00 PM",
+      "sunday": "10:00 AM - 5:00 PM"
+    }
+  },
+  "theme": {
+    "colors": {
+      "primary": "#9D8189",
+      "secondary": "#D4AF37",
+      "accent": "#F5F5F5",
+      "background": "#faf8f5",
+      "text": "#2D2D2D"
+    },
+    "fonts": {
+      "heading": "Cormorant Garamond",
+      "body": "Lato"
+    },
+    "style": "elegant-minimal"
+  },
+  "pages": {
+    "home": {
+      "hero": {
+        "headline": "Indulge in Pure Luxury",
+        "subheadline": "Award-winning stylists and therapeutic treatments in the heart of Beverly Hills",
+        "cta": "Book Your Experience",
+        "backgroundImage": "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920"
+      },
+      "sections": [
+        {
+          "type": "features",
+          "title": "The Luxe Experience",
+          "items": [
+            { "icon": "Sparkles", "title": "Master Stylists", "description": "Our team has 50+ years of combined experience" },
+            { "icon": "Leaf", "title": "Organic Products", "description": "We use only the finest organic, cruelty-free products" },
+            { "icon": "Heart", "title": "Personalized Care", "description": "Every treatment is tailored to your unique needs" }
+          ]
+        },
+        {
+          "type": "services-preview",
+          "title": "Our Services",
+          "items": [
+            { "name": "Signature Haircut & Style", "price": 125, "description": "Consultation, cut, and blowout" },
+            { "name": "Balayage Color", "price": 350, "description": "Hand-painted highlights for natural dimension" },
+            { "name": "Luxe Facial", "price": 195, "description": "90-minute rejuvenating treatment" }
+          ]
+        }
+      ]
+    },
+    "menu": {
+      "categories": [
+        {
+          "name": "Hair Services",
+          "items": [
+            { "name": "Women's Haircut", "price": 85, "description": "Cut, wash, and style" },
+            { "name": "Men's Haircut", "price": 55, "description": "Cut and style" },
+            { "name": "Single Process Color", "price": 125, "description": "All-over color application" },
+            { "name": "Balayage", "price": 350, "description": "Hand-painted highlights" },
+            { "name": "Keratin Treatment", "price": 400, "description": "Smoothing and shine" }
+          ]
+        },
+        {
+          "name": "Spa Services",
+          "items": [
+            { "name": "Swedish Massage", "price": 150, "description": "60 minutes of relaxation" },
+            { "name": "Deep Tissue Massage", "price": 175, "description": "60 minutes, therapeutic" },
+            { "name": "Luxe Facial", "price": 195, "description": "90-minute anti-aging treatment" },
+            { "name": "Body Wrap", "price": 165, "description": "Detoxifying seaweed wrap" }
+          ]
+        },
+        {
+          "name": "Nail Services",
+          "items": [
+            { "name": "Manicure", "price": 45, "description": "Classic nail care" },
+            { "name": "Pedicure", "price": 65, "description": "Relaxing foot treatment" },
+            { "name": "Gel Manicure", "price": 65, "description": "Long-lasting gel polish" }
+          ]
+        }
+      ]
+    },
+    "about": {
+      "story": "Founded in 2015, Test Luxe Salon & Spa has become Beverly Hills' premier destination for beauty and wellness. Our award-winning team combines artistry with technique to deliver exceptional results in a serene, luxurious environment.",
+      "team": [
+        { "name": "Isabella Chen", "role": "Founder & Creative Director", "image": "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400", "bio": "Celebrity stylist with 20+ years experience" },
+        { "name": "Marcus Williams", "role": "Master Colorist", "image": "https://images.unsplash.com/photo-1562322140-8baeececf3df?w=400", "bio": "Color specialist and Wella ambassador" },
+        { "name": "Dr. Sarah Kim", "role": "Spa Director", "image": "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400", "bio": "Licensed esthetician and wellness expert" }
+      ]
+    }
+  },
+  "companionApp": {
+    "dashboard": {
+      "greeting": "Welcome back, beautiful!",
+      "widgets": [
+        { "type": "points", "label": "Beauty Points", "value": 1250 },
+        { "type": "tier", "label": "VIP Status", "value": "Gold" },
+        { "type": "appointments", "label": "Appointments", "value": 3 },
+        { "type": "savings", "label": "Member Savings", "value": "$320" }
+      ]
+    },
+    "rewards": {
+      "tiers": [
+        { "name": "Member", "minPoints": 0, "perks": ["Birthday discount 15%"] },
+        { "name": "Gold", "minPoints": 1000, "perks": ["20% off products", "Priority booking"] },
+        { "name": "Platinum", "minPoints": 2500, "perks": ["30% off all services", "Complimentary add-ons"] }
+      ],
+      "currentPoints": 1250,
+      "currentTier": "Gold"
+    },
+    "profile": {
+      "fields": [
+        { "name": "fullName", "label": "Full Name", "type": "text", "value": "Demo Client" },
+        { "name": "email", "label": "Email", "type": "email", "value": "demo@example.com" }
+      ]
+    },
+    "wallet": {
+      "balance": 75.00,
+      "transactions": []
+    }
+  },
+  "sync": {
+    "sharedState": ["user", "rewards", "wallet", "appointments", "profile"],
+    "endpoints": [
+      { "path": "/api/auth/me", "method": "GET", "description": "User profile" },
+      { "path": "/api/loyalty", "method": "GET", "description": "Rewards data" }
+    ]
+  }
+}

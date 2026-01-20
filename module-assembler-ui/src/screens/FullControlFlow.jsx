@@ -122,33 +122,141 @@ const styles = {
     marginTop: '6px',
     fontStyle: 'italic'
   },
+  // Category tabs at top
+  categoryTabs: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '8px',
+    marginBottom: '20px',
+    padding: '4px',
+    background: 'rgba(255, 255, 255, 0.02)',
+    borderRadius: '12px'
+  },
+  categoryTab: {
+    padding: '10px 16px',
+    background: 'transparent',
+    border: 'none',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    fontSize: '0.85rem',
+    fontWeight: '500',
+    color: '#888',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    transition: 'all 0.2s ease',
+    whiteSpace: 'nowrap'
+  },
+  categoryTabActive: {
+    background: 'rgba(99, 102, 241, 0.15)',
+    color: '#a5b4fc'
+  },
+  categoryTabAll: {
+    background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.15))',
+    color: '#c4b5fd'
+  },
+  // Responsive industry grid - 4 cols desktop, 3 tablet, 2 mobile
   industryGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
-    gap: '12px'
+    gridTemplateColumns: 'repeat(4, 1fr)',
+    gap: '16px'
   },
+  // Premium card styling matching mode selection cards
   industryOption: {
-    padding: '16px 12px',
+    position: 'relative',
+    padding: '24px 16px',
     background: 'rgba(255, 255, 255, 0.03)',
     border: '2px solid rgba(255, 255, 255, 0.08)',
-    borderRadius: '10px',
+    borderRadius: '16px',
     cursor: 'pointer',
     textAlign: 'center',
-    transition: 'all 0.2s ease'
+    transition: 'all 0.3s ease',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: '120px'
+  },
+  industryOptionHover: {
+    borderColor: 'rgba(99, 102, 241, 0.4)',
+    background: 'rgba(99, 102, 241, 0.08)',
+    transform: 'translateY(-2px)',
+    boxShadow: '0 8px 24px rgba(99, 102, 241, 0.15)'
   },
   industryOptionSelected: {
     borderColor: '#6366f1',
-    background: 'rgba(99, 102, 241, 0.1)'
+    background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.1))',
+    boxShadow: '0 0 0 1px rgba(99, 102, 241, 0.3), 0 8px 24px rgba(99, 102, 241, 0.2)'
   },
   industryIcon: {
-    fontSize: '2rem',
-    marginBottom: '8px',
-    display: 'block'
+    fontSize: '2.5rem',
+    marginBottom: '12px',
+    display: 'block',
+    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
   },
   industryName: {
     fontSize: '0.9rem',
-    fontWeight: '500',
-    color: '#fff'
+    fontWeight: '600',
+    color: '#fff',
+    lineHeight: 1.3
+  },
+  industryCheckmark: {
+    position: 'absolute',
+    top: '8px',
+    right: '8px',
+    width: '24px',
+    height: '24px',
+    background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '14px',
+    color: '#fff',
+    boxShadow: '0 2px 8px rgba(99, 102, 241, 0.4)'
+  },
+  // Category header in grid view
+  categoryHeader: {
+    gridColumn: '1 / -1',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    padding: '16px 0 8px 0',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+    marginBottom: '8px'
+  },
+  categoryHeaderIcon: {
+    fontSize: '1.5rem'
+  },
+  categoryHeaderText: {
+    fontSize: '1rem',
+    fontWeight: '600',
+    color: '#a5b4fc'
+  },
+  // Search input for filtering
+  industrySearch: {
+    width: '100%',
+    padding: '12px 16px 12px 44px',
+    fontSize: '0.95rem',
+    background: 'rgba(255, 255, 255, 0.05)',
+    border: '2px solid rgba(255, 255, 255, 0.1)',
+    borderRadius: '12px',
+    color: '#fff',
+    outline: 'none',
+    marginBottom: '16px',
+    transition: 'all 0.2s ease'
+  },
+  industrySearchWrapper: {
+    position: 'relative',
+    marginBottom: '16px'
+  },
+  industrySearchIcon: {
+    position: 'absolute',
+    left: '16px',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    fontSize: '1.1rem',
+    color: '#666'
   },
   pagesGrid: {
     display: 'flex',
@@ -319,28 +427,132 @@ const styles = {
   }
 };
 
-const INDUSTRIES = [
-  { key: 'restaurant', name: 'Restaurant', icon: '🍽️' },
-  { key: 'pizza', name: 'Pizzeria', icon: '🍕' },
-  { key: 'cafe', name: 'Cafe', icon: '☕' },
-  { key: 'bakery', name: 'Bakery', icon: '🥐' },
-  { key: 'barbershop', name: 'Barbershop', icon: '💈' },
-  { key: 'spa-salon', name: 'Spa & Salon', icon: '💅' },
-  { key: 'fitness', name: 'Fitness', icon: '🏋️' },
-  { key: 'yoga', name: 'Yoga Studio', icon: '🧘' },
-  { key: 'dental', name: 'Dental', icon: '🦷' },
-  { key: 'healthcare', name: 'Healthcare', icon: '🏥' },
-  { key: 'law-firm', name: 'Law Firm', icon: '⚖️' },
-  { key: 'real-estate', name: 'Real Estate', icon: '🏠' },
-  { key: 'construction', name: 'Construction', icon: '🏗️' },
-  { key: 'plumber', name: 'Plumber', icon: '🔧' },
-  { key: 'electrician', name: 'Electrician', icon: '⚡' },
-  { key: 'photography', name: 'Photography', icon: '📷' },
-  { key: 'portfolio', name: 'Portfolio', icon: '💼' },
-  { key: 'ecommerce', name: 'E-Commerce', icon: '🛍️' },
-  { key: 'startup', name: 'Startup', icon: '🚀' },
-  { key: 'agency', name: 'Agency', icon: '📊' }
-];
+// Comprehensive industry list organized by category
+const INDUSTRY_CATEGORIES = {
+  'Food & Beverage': {
+    icon: '🍽️',
+    industries: [
+      { key: 'restaurant', name: 'Restaurant', icon: '🍽️' },
+      { key: 'pizza', name: 'Pizzeria', icon: '🍕' },
+      { key: 'cafe', name: 'Cafe', icon: '☕' },
+      { key: 'bakery', name: 'Bakery', icon: '🥐' },
+      { key: 'bar', name: 'Bar & Lounge', icon: '🍸' },
+      { key: 'food-truck', name: 'Food Truck', icon: '🚚' },
+      { key: 'catering', name: 'Catering', icon: '🍱' },
+      { key: 'food-delivery', name: 'Food Delivery', icon: '🛵' }
+    ]
+  },
+  'Beauty & Wellness': {
+    icon: '💆',
+    industries: [
+      { key: 'spa-salon', name: 'Spa & Salon', icon: '💆' },
+      { key: 'barbershop', name: 'Barbershop', icon: '💈' },
+      { key: 'nail-salon', name: 'Nail Salon', icon: '💅' },
+      { key: 'fitness', name: 'Fitness Center', icon: '🏋️' },
+      { key: 'yoga', name: 'Yoga Studio', icon: '🧘' },
+      { key: 'massage', name: 'Massage Therapy', icon: '🙌' },
+      { key: 'medspa', name: 'Med Spa', icon: '✨' }
+    ]
+  },
+  'Healthcare': {
+    icon: '🏥',
+    industries: [
+      { key: 'healthcare', name: 'Healthcare', icon: '🏥' },
+      { key: 'dental', name: 'Dental Practice', icon: '🦷' },
+      { key: 'chiropractic', name: 'Chiropractic', icon: '🦴' },
+      { key: 'veterinary', name: 'Veterinary', icon: '🐾' },
+      { key: 'mental-health', name: 'Mental Health', icon: '🧠' },
+      { key: 'pharmacy', name: 'Pharmacy', icon: '💊' }
+    ]
+  },
+  'Professional Services': {
+    icon: '⚖️',
+    industries: [
+      { key: 'law-firm', name: 'Law Firm', icon: '⚖️' },
+      { key: 'accounting', name: 'Accounting', icon: '📊' },
+      { key: 'consulting', name: 'Consulting', icon: '💼' },
+      { key: 'insurance', name: 'Insurance', icon: '🛡️' },
+      { key: 'real-estate', name: 'Real Estate', icon: '🏠' },
+      { key: 'financial', name: 'Financial Services', icon: '💰' }
+    ]
+  },
+  'Home Services': {
+    icon: '🔧',
+    industries: [
+      { key: 'plumbing', name: 'Plumbing', icon: '🔧' },
+      { key: 'electrician', name: 'Electrician', icon: '⚡' },
+      { key: 'hvac', name: 'HVAC', icon: '❄️' },
+      { key: 'construction', name: 'Construction', icon: '🏗️' },
+      { key: 'landscaping', name: 'Landscaping', icon: '🌳' },
+      { key: 'cleaning', name: 'Cleaning Service', icon: '🧹' },
+      { key: 'roofing', name: 'Roofing', icon: '🏠' },
+      { key: 'pest-control', name: 'Pest Control', icon: '🐜' }
+    ]
+  },
+  'Automotive': {
+    icon: '🚗',
+    industries: [
+      { key: 'auto-repair', name: 'Auto Repair', icon: '🔩' },
+      { key: 'car-dealership', name: 'Car Dealership', icon: '🚗' },
+      { key: 'car-wash', name: 'Car Wash', icon: '🧽' },
+      { key: 'towing', name: 'Towing Service', icon: '🚛' },
+      { key: 'tire-shop', name: 'Tire Shop', icon: '🛞' }
+    ]
+  },
+  'Retail & Commerce': {
+    icon: '🛍️',
+    industries: [
+      { key: 'ecommerce', name: 'E-Commerce', icon: '🛒' },
+      { key: 'retail', name: 'Retail Store', icon: '🏪' },
+      { key: 'boutique', name: 'Boutique', icon: '👗' },
+      { key: 'jewelry', name: 'Jewelry Store', icon: '💎' },
+      { key: 'florist', name: 'Florist', icon: '💐' }
+    ]
+  },
+  'Creative & Media': {
+    icon: '📷',
+    industries: [
+      { key: 'photography', name: 'Photography', icon: '📷' },
+      { key: 'videography', name: 'Videography', icon: '🎬' },
+      { key: 'agency', name: 'Creative Agency', icon: '🎨' },
+      { key: 'portfolio', name: 'Portfolio', icon: '💼' },
+      { key: 'wedding', name: 'Wedding Services', icon: '💒' },
+      { key: 'music-school', name: 'Music School', icon: '🎵' },
+      { key: 'art-studio', name: 'Art Studio', icon: '🖼️' }
+    ]
+  },
+  'Tech & SaaS': {
+    icon: '🚀',
+    industries: [
+      { key: 'saas', name: 'SaaS Platform', icon: '☁️' },
+      { key: 'startup', name: 'Tech Startup', icon: '🚀' },
+      { key: 'tech-agency', name: 'Tech Agency', icon: '💻' },
+      { key: 'app', name: 'Mobile App', icon: '📱' }
+    ]
+  },
+  'Education & Community': {
+    icon: '🎓',
+    industries: [
+      { key: 'school', name: 'School', icon: '🎓' },
+      { key: 'tutoring', name: 'Tutoring', icon: '📚' },
+      { key: 'daycare', name: 'Daycare', icon: '👶' },
+      { key: 'non-profit', name: 'Non-Profit', icon: '🤝' },
+      { key: 'church', name: 'Church', icon: '⛪' }
+    ]
+  },
+  'Hospitality & Events': {
+    icon: '🏨',
+    industries: [
+      { key: 'hotel', name: 'Hotel', icon: '🏨' },
+      { key: 'event-venue', name: 'Event Venue', icon: '🎪' },
+      { key: 'travel', name: 'Travel Agency', icon: '✈️' },
+      { key: 'pet-grooming', name: 'Pet Grooming', icon: '🐕' }
+    ]
+  }
+};
+
+// Flatten industries for backward compatibility
+const INDUSTRIES = Object.values(INDUSTRY_CATEGORIES).flatMap(cat => cat.industries);
 
 const STEPS = [
   { id: 'basics', name: 'Basics', icon: '📝' },
@@ -374,6 +586,11 @@ export function FullControlFlow({
 
   // AI suggestions
   const [aiSuggesting, setAiSuggesting] = useState(false);
+
+  // Industry selection UI state
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [industrySearch, setIndustrySearch] = useState('');
+  const [hoveredIndustry, setHoveredIndustry] = useState(null);
 
   // Get industry info
   const industryInfo = INDUSTRIES.find(i => i.key === industry);
@@ -532,70 +749,232 @@ export function FullControlFlow({
     }
   };
 
-  const renderBasicsStep = () => (
-    <div>
-      <div style={styles.section}>
-        <div style={styles.sectionTitle}>Business Details</div>
+  // Filter industries based on category and search
+  const getFilteredIndustries = () => {
+    let industries = [];
 
-        <div style={styles.inputGroup}>
-          <label style={styles.label}>
-            Business Name <span style={styles.required}>*</span>
-          </label>
-          <input
-            type="text"
-            placeholder="e.g., Sunrise Bakery"
-            value={businessName}
-            onChange={(e) => setBusinessName(e.target.value)}
-            style={styles.input}
-          />
+    if (activeCategory === 'all') {
+      // Show all industries grouped by category
+      return { grouped: true, categories: INDUSTRY_CATEGORIES };
+    } else {
+      // Show only the selected category
+      industries = INDUSTRY_CATEGORIES[activeCategory]?.industries || [];
+    }
+
+    // Apply search filter
+    if (industrySearch.trim()) {
+      const search = industrySearch.toLowerCase();
+      industries = industries.filter(ind =>
+        ind.name.toLowerCase().includes(search) ||
+        ind.key.toLowerCase().includes(search)
+      );
+    }
+
+    return { grouped: false, industries };
+  };
+
+  // Get responsive grid columns based on window width
+  const getGridStyle = () => {
+    // Using CSS media queries in inline styles isn't ideal, but works for now
+    // For a production app, consider using styled-components or CSS modules
+    return {
+      ...styles.industryGrid,
+      // This will be overridden by the @media query approach below
+    };
+  };
+
+  const renderBasicsStep = () => {
+    const filteredData = getFilteredIndustries();
+
+    return (
+      <div>
+        <div style={styles.section}>
+          <div style={styles.sectionTitle}>Business Details</div>
+
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>
+              Business Name <span style={styles.required}>*</span>
+            </label>
+            <input
+              type="text"
+              placeholder="e.g., Sunrise Bakery"
+              value={businessName}
+              onChange={(e) => setBusinessName(e.target.value)}
+              style={styles.input}
+            />
+          </div>
+
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Location</label>
+            <input
+              type="text"
+              placeholder="e.g., Austin, TX"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              style={styles.input}
+            />
+          </div>
+
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Tagline</label>
+            <input
+              type="text"
+              placeholder="e.g., Baked fresh daily"
+              value={tagline}
+              onChange={(e) => setTagline(e.target.value)}
+              style={styles.input}
+            />
+            <div style={styles.inputHint}>Skip and we'll generate one</div>
+          </div>
         </div>
 
-        <div style={styles.inputGroup}>
-          <label style={styles.label}>Location</label>
-          <input
-            type="text"
-            placeholder="e.g., Austin, TX"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            style={styles.input}
-          />
-        </div>
+        <div style={styles.section}>
+          <div style={styles.sectionTitle}>
+            Industry <span style={styles.required}>*</span>
+          </div>
 
-        <div style={styles.inputGroup}>
-          <label style={styles.label}>Tagline</label>
-          <input
-            type="text"
-            placeholder="e.g., Baked fresh daily"
-            value={tagline}
-            onChange={(e) => setTagline(e.target.value)}
-            style={styles.input}
-          />
-          <div style={styles.inputHint}>Skip and we'll generate one</div>
-        </div>
-      </div>
+          {/* Search Bar */}
+          <div style={styles.industrySearchWrapper}>
+            <span style={styles.industrySearchIcon}>🔍</span>
+            <input
+              type="text"
+              placeholder="Search industries..."
+              value={industrySearch}
+              onChange={(e) => setIndustrySearch(e.target.value)}
+              style={styles.industrySearch}
+            />
+          </div>
 
-      <div style={styles.section}>
-        <div style={styles.sectionTitle}>
-          Industry <span style={styles.required}>*</span>
-        </div>
-        <div style={styles.industryGrid}>
-          {INDUSTRIES.map(ind => (
-            <div
-              key={ind.key}
+          {/* Category Tabs */}
+          <div style={styles.categoryTabs}>
+            <button
               style={{
-                ...styles.industryOption,
-                ...(industry === ind.key ? styles.industryOptionSelected : {})
+                ...styles.categoryTab,
+                ...(activeCategory === 'all' ? styles.categoryTabAll : {})
               }}
-              onClick={() => setIndustry(ind.key)}
+              onClick={() => setActiveCategory('all')}
             >
-              <span style={styles.industryIcon}>{ind.icon}</span>
-              <span style={styles.industryName}>{ind.name}</span>
+              <span>🌐</span> All
+            </button>
+            {Object.entries(INDUSTRY_CATEGORIES).map(([catName, catData]) => (
+              <button
+                key={catName}
+                style={{
+                  ...styles.categoryTab,
+                  ...(activeCategory === catName ? styles.categoryTabActive : {})
+                }}
+                onClick={() => setActiveCategory(catName)}
+              >
+                <span>{catData.icon}</span>
+                <span style={{ display: 'none' }}>{catName}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Industry Grid */}
+          {filteredData.grouped ? (
+            // Show all categories with headers
+            <div>
+              {Object.entries(filteredData.categories).map(([catName, catData]) => {
+                // Filter by search if needed
+                let industries = catData.industries;
+                if (industrySearch.trim()) {
+                  const search = industrySearch.toLowerCase();
+                  industries = industries.filter(ind =>
+                    ind.name.toLowerCase().includes(search) ||
+                    ind.key.toLowerCase().includes(search)
+                  );
+                }
+                if (industries.length === 0) return null;
+
+                return (
+                  <div key={catName} style={{ marginBottom: '24px' }}>
+                    <div style={styles.categoryHeader}>
+                      <span style={styles.categoryHeaderIcon}>{catData.icon}</span>
+                      <span style={styles.categoryHeaderText}>{catName}</span>
+                    </div>
+                    <div className="industry-grid" style={styles.industryGrid}>
+                      {industries.map(ind => (
+                        <div
+                          key={ind.key}
+                          style={{
+                            ...styles.industryOption,
+                            ...(hoveredIndustry === ind.key ? styles.industryOptionHover : {}),
+                            ...(industry === ind.key ? styles.industryOptionSelected : {})
+                          }}
+                          onClick={() => setIndustry(ind.key)}
+                          onMouseEnter={() => setHoveredIndustry(ind.key)}
+                          onMouseLeave={() => setHoveredIndustry(null)}
+                        >
+                          {industry === ind.key && (
+                            <div style={styles.industryCheckmark}>✓</div>
+                          )}
+                          <span style={styles.industryIcon}>{ind.icon}</span>
+                          <span style={styles.industryName}>{ind.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          ))}
+          ) : (
+            // Show filtered industries
+            <div className="industry-grid" style={styles.industryGrid}>
+              {filteredData.industries.map(ind => (
+                <div
+                  key={ind.key}
+                  style={{
+                    ...styles.industryOption,
+                    ...(hoveredIndustry === ind.key ? styles.industryOptionHover : {}),
+                    ...(industry === ind.key ? styles.industryOptionSelected : {})
+                  }}
+                  onClick={() => setIndustry(ind.key)}
+                  onMouseEnter={() => setHoveredIndustry(ind.key)}
+                  onMouseLeave={() => setHoveredIndustry(null)}
+                >
+                  {industry === ind.key && (
+                    <div style={styles.industryCheckmark}>✓</div>
+                  )}
+                  <span style={styles.industryIcon}>{ind.icon}</span>
+                  <span style={styles.industryName}>{ind.name}</span>
+                </div>
+              ))}
+              {filteredData.industries.length === 0 && (
+                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: '#666' }}>
+                  No industries found matching "{industrySearch}"
+                </div>
+              )}
+            </div>
+          )}
         </div>
+
+        {/* Responsive CSS */}
+        <style>{`
+          .industry-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+          }
+          @media (max-width: 1024px) {
+            .industry-grid {
+              grid-template-columns: repeat(3, 1fr);
+            }
+          }
+          @media (max-width: 768px) {
+            .industry-grid {
+              grid-template-columns: repeat(2, 1fr);
+            }
+          }
+          @media (max-width: 480px) {
+            .industry-grid {
+              grid-template-columns: 1fr;
+            }
+          }
+        `}</style>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderPagesStep = () => (
     <div>

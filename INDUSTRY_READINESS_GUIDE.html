@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blink Industry Readiness Guide</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      min-height: 100vh;
+      color: #e2e8f0;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    h1 {
+      font-size: 42px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      color: #94a3b8;
+      font-size: 18px;
+    }
+
+    .last-updated {
+      color: #64748b;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-bottom: 48px;
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 24px 40px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .stat-number.ready { color: #22c55e; }
+    .stat-number.partial { color: #f59e0b; }
+    .stat-number.total { color: #60a5fa; }
+
+    .stat-label {
+      color: #94a3b8;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .section {
+      margin-bottom: 48px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .section-icon {
+      font-size: 28px;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .badge-ready {
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+    }
+
+    .badge-partial {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+    }
+
+    .industry-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .industry-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.2s;
+    }
+
+    .industry-card:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.15);
+      transform: translateY(-2px);
+    }
+
+    .industry-card.ready {
+      border-left: 4px solid #22c55e;
+    }
+
+    .industry-card.partial {
+      border-left: 4px solid #f59e0b;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .card-icon {
+      font-size: 24px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+
+    .card-key {
+      font-size: 12px;
+      color: #64748b;
+      font-family: 'Monaco', 'Consolas', monospace;
+      background: rgba(0,0,0,0.3);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .card-category {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 12px;
+    }
+
+    .card-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .feature-tag {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.08);
+      color: #94a3b8;
+    }
+
+    .feature-tag.has-data {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+    }
+
+    .feature-tag.has-cart {
+      background: rgba(96, 165, 250, 0.15);
+      color: #60a5fa;
+    }
+
+    .feature-tag.has-booking {
+      background: rgba(167, 139, 250, 0.15);
+      color: #a78bfa;
+    }
+
+    .card-note {
+      font-size: 13px;
+      color: #94a3b8;
+      font-style: italic;
+    }
+
+    .card-missing {
+      font-size: 12px;
+      color: #f59e0b;
+      margin-top: 8px;
+    }
+
+    .checklist {
+      margin-top: 12px;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .check-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .check-icon.done {
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+    }
+
+    .check-icon.pending {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+    }
+
+    .legend {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 48px;
+    }
+
+    .legend h3 {
+      font-size: 16px;
+      margin-bottom: 16px;
+      color: #94a3b8;
+    }
+
+    .legend-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+    }
+
+    .priority-section {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 48px;
+    }
+
+    .priority-section h2 {
+      margin-bottom: 20px;
+    }
+
+    .priority-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 12px;
+    }
+
+    .priority-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,0.05);
+      padding: 12px 16px;
+      border-radius: 8px;
+    }
+
+    .priority-rank {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    footer {
+      text-align: center;
+      padding-top: 48px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    footer a {
+      color: #60a5fa;
+      text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+      h1 { font-size: 28px; }
+      .stats-bar { gap: 16px; }
+      .stat-card { padding: 16px 24px; }
+      .stat-number { font-size: 32px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Blink Industry Readiness Guide</h1>
+      <p class="subtitle">Full-stack generation status for all supported industries</p>
+      <p class="last-updated">Last Updated: January 20, 2026</p>
+    </header>
+
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-number ready">10</div>
+        <div class="stat-label">Fully Ready</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number partial">33</div>
+        <div class="stat-label">Partial</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number total">43</div>
+        <div class="stat-label">Total Industries</div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <h3>Legend</h3>
+      <div class="legend-grid">
+        <div class="legend-item">
+          <span class="feature-tag has-data">Sample Data</span>
+          <span>Real industry-specific content</span>
+        </div>
+        <div class="legend-item">
+          <span class="feature-tag has-cart">Cart</span>
+          <span>Shopping cart functionality</span>
+        </div>
+        <div class="legend-item">
+          <span class="feature-tag has-booking">Booking</span>
+          <span>Appointment/booking system</span>
+        </div>
+        <div class="legend-item">
+          <span class="check-icon done">✓</span>
+          <span>Feature complete</span>
+        </div>
+        <div class="legend-item">
+          <span class="check-icon pending">○</span>
+          <span>Uses default/generic</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FULLY READY SECTION -->
+    <section class="section">
+      <div class="section-header">
+        <span class="section-icon">✅</span>
+        <h2>Fully Ready Industries</h2>
+        <span class="badge badge-ready">Production Ready</span>
+      </div>
+
+      <div class="industry-grid">
+        <!-- Pizza -->
+        <div class="industry-card ready">
+          <div class="card-header">
+            <span class="card-icon">🍕</span>
+            <div>
+              <div class="card-title">Pizza / Pizzeria</div>
+              <span class="card-key">pizza</span>
+            </div>
+          </div>
+          <div class="card-category">Food & Beverage</div>
+          <div class="card-features">
+            <span class="feature-tag has-data">Sample Data</span>
+            <span class="feature-tag has-cart">Cart</span>
+          </div>
+          <div class="checklist">
+            <div class="check-item"><span class="check-icon done">✓</span> Menu items with prices</div>
+            <div class="check-item"><span class="check-icon done">✓</span> Categories (Classic, Specialty, Sides)</div>
+            <div class="check-item"><span class="check-icon done">✓</span> Industry colors & typography</div>
+          </div>
+        </div>
+
+        <!-- Restaurant -->
+        <div class="industry-card ready">
+          <div class="card-header">
+            <span class="card-icon">🍽️</span>
+            <div>
+              <div class="card-title">Restaurant / Food Service</div>
+              <span class="card-key">restaurant</span>
+            </div>
+          </div>
+          <div class="card-category">Food & Beverage</div>
+          <div class="card-features">
+            <span class="feature-tag has-data">Sample Data</span>
+            <span class="feature-tag has-cart">Cart</span>
+          </div>
+          <div class="checklist">
+            <div class="check-item"><span class="check-icon done">✓</span> Appetizers, Entrees, Desserts</div>
+            <div class="check-item"><span class="check-icon done">✓</span> Price ranges ($8-$38)</div>
+            <div class="check-item"><span class="check-icon done">✓</span> Warm color palette</div>
+          </div>
+        </div>
+
+        <!-- Cafe -->
+        <div class="industry-card ready">
+          <div class="card-header">
+            <span class="card-icon">☕</span>
+            <div>
+              <div class="card-title">Coffee Shop / Cafe</div>
+              <span class="card-key">cafe</span>
+            </div>
+          </div>
+          <div class="card-category">Food & Beverage</div>
+          <div class="card-features">
+            <span class="feature-tag has-data">Sample Data</span>
+            <span class="feature-tag has-cart">Cart</span>
+          </div>
+          <div class="checklist">
+            <div class="check-item"><span class="check-icon done">✓</span> Coffee drinks with prices</div>
+            <div class="check-item"><span class="check-icon done">✓</span> Pastries & baked goods</div>
+            <div class="check-item"><span class="check-icon done">✓</span> Cozy brown palette</div>
+          </div>
+        </div>
+
+        <!-- Ecommerce -->
+        <div class="industry-card ready">
+          <div class="card-header">
+            <span class="card-icon">🛒</span>
+            <div>
+              <div class="card-title">E-Commerce / Online Store</div>
+              <span class="card-key">ecommerce</span>
+            </div>
+          </div>
+          <div class="card-category">Retail</div>
+          <div class="card-features">
+            <span class="feature-tag has-data">Sample Data</span>
+            <span class="feature-tag has-cart">Cart</span>
+          </div>
+          <div class="checklist">
+            <div class="check-item"><span class="check-icon done">✓</span> Products with prices</div>
+            <div class="check-item"><span class="check-icon done">✓</span> Featured & Accessories categories</div>
+            <div class="check-item"><span class="check-icon done">✓</span> CartContext included</div>
+          </div>
+        </div>
+
+        <!-- Spa Salon -->
+        <div class="industry-card ready">
+          <div class="card-header">
+            <span class="card-icon">💆</span>
+            <div>
+              <div class="card-title">Spa / Salon / Beauty</div>
+              <span class="card-key">spa-salon</span>
+            </div>
+          </div>
+          <div class="card-category">Healthcare</div>
+          <div class="card-features">
+            <span class="feature-tag has-data">Sample Data</span>
+            <span class="feature-tag has-booking">Booking</span>
+          </div>
+          <div class="checklist">
+            <div class="check-item"><span class="check-icon done">✓</span> Hair services with prices</div>
+            <div class="check-item"><span class="check-icon done">✓</span> Spa services with prices</div>
+            <div class="check-item"><span class="check-icon done">✓</span> Purple luxury palette</div>
+          </div>
+        </div>
+
+        <!-- Dental -->
+        <div class="industry-card ready">
+          <div class="card-header">
+            <span class="card-icon">🦷</span>
+            <div>
+              <div class="card-title">Dental Practice</div>
+              <span class="card-key">dental</span>
+            </div>
+          </div>
+          <div class="card-category">Healthcare</div>
+          <div class="card-features">
+            <span class="feature-tag has-data">Sample Data</span>
+            <span class="feature-tag has-booking">Booking</span>
+          </div>
+          <div class="checklist">
+            <div class="check-item"><span class="check-icon done">✓</span> General dentistry services</div>
+            <div class="check-item"><span class="check-icon done">✓</span> Cosmetic services with prices</div>
+            <div class="check-item"><span class="check-icon done">✓</span> Fresh teal palette</div>
+          </div>
+        </div>
+
+        <!-- Law Firm -->
+        <div class="industry-card ready">
+          <div class="card-header">
+            <span class="card-icon">⚖️</span>
+            <div>
+              <div class="card-title">Law Firm / Attorney</div>
+              <span class="card-key">law-firm</span>
+            </div>
+          </div>
+          <div class="card-category">Professional Services</div>
+          <div class="card-features">
+            <span class="feature-tag has-data">Sample Data</span>
+          </div>
+          <div class="checklist">
+            <div class="check-item"><span class="check-icon done">✓</span> Practice areas defined</div>
+            <div class="check-item"><span class="check-icon done">✓</span> Professional descriptions</div>
+            <div class="check-item"><span class="check-icon done">✓</span> Navy & gold palette</div>
+          </div>
+        </div>
+
+        <!-- Real Estate -->
+        <div class="industry-card ready">
+          <div class="card-header">
+            <span class="card-icon">🏠</span>
+            <div>
+              <div class="card-title">Real Estate Agent</div>
+              <span class="card-key">real-estate</span>
+            </div>
+          </div>
+          <div class="card-category">Professional Services</div>
+          <div class="card-features">
+            <span class="feature-tag has-data">Sample Data</span>
+          </div>
+          <div class="checklist">
+            <div class="check-item"><span class="check-icon done">✓</span> Featured listings with prices</div>
+            <div class="check-item"><span class="check-icon done">✓</span> Services defined</div>
+            <div class="check-item"><span class="check-icon done">✓</span> Elegant palette</div>
+          </div>
+        </div>
+
+        <!-- Fitness -->
+        <div class="industry-card ready">
+          <div class="card-header">
+            <span class="card-icon">🏋️</span>
+            <div>
+              <div class="card-title">Gym / Fitness Center</div>
+              <span class="card-key">fitness</span>
+            </div>
+          </div>
+          <div class="card-category">Health & Wellness</div>
+          <div class="card-features">
+            <span class="feature-tag has-data">Sample Data</span>
+          </div>
+          <div class="checklist">
+            <div class="check-item"><span class="check-icon done">✓</span> Membership tiers with prices</div>
+            <div class="check-item"><span class="check-icon done">✓</span> Class offerings</div>
+            <div class="check-item"><span class="check-icon done">✓</span> Energetic dark + red palette</div>
+          </div>
+        </div>
+
+        <!-- Plumber -->
+        <div class="industry-card ready">
+          <div class="card-header">
+            <span class="card-icon">🔧</span>
+            <div>
+              <div class="card-title">Plumber / HVAC</div>
+              <span class="card-key">plumber</span>
+            </div>
+          </div>
+          <div class="card-category">Trade Services</div>
+          <div class="card-features">
+            <span class="feature-tag has-data">Sample Data</span>
+          </div>
+          <div class="checklist">
+            <div class="check-item"><span class="check-icon done">✓</span> Residential services + prices</div>
+            <div class="check-item"><span class="check-icon done">✓</span> Emergency services + prices</div>
+            <div class="check-item"><span class="check-icon done">✓</span> Trust-focused blue palette</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PARTIAL SECTION -->
+    <section class="section">
+      <div class="section-header">
+        <span class="section-icon">⚠️</span>
+        <h2>Partial Industries</h2>
+        <span class="badge badge-partial">Needs Sample Data</span>
+      </div>
+      <p style="color: #94a3b8; margin-bottom: 24px;">These industries have styling and structure but use generic placeholder data. They will build and work, but test mode content won't be industry-specific.</p>
+
+      <div class="industry-grid">
+        <!-- Food & Beverage -->
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">🍸</span>
+            <div>
+              <div class="card-title">Bar / Nightclub / Lounge</div>
+              <span class="card-key">bar</span>
+            </div>
+          </div>
+          <div class="card-category">Food & Beverage</div>
+          <div class="card-features">
+            <span class="feature-tag has-cart">Cart</span>
+          </div>
+          <div class="card-missing">Missing: Cocktail menu, drink pricing</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">🥐</span>
+            <div>
+              <div class="card-title">Bakery / Pastry Shop</div>
+              <span class="card-key">bakery</span>
+            </div>
+          </div>
+          <div class="card-category">Food & Beverage</div>
+          <div class="card-features">
+            <span class="feature-tag has-cart">Cart</span>
+          </div>
+          <div class="card-missing">Missing: Pastry/bread menu, pricing</div>
+        </div>
+
+        <!-- Healthcare -->
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">💈</span>
+            <div>
+              <div class="card-title">Barbershop</div>
+              <span class="card-key">barbershop</span>
+            </div>
+          </div>
+          <div class="card-category">Healthcare</div>
+          <div class="card-features">
+            <span class="feature-tag has-booking">Booking</span>
+          </div>
+          <div class="card-missing">Missing: Haircut/shave services, pricing</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">🏥</span>
+            <div>
+              <div class="card-title">Healthcare / Medical</div>
+              <span class="card-key">healthcare</span>
+            </div>
+          </div>
+          <div class="card-category">Healthcare</div>
+          <div class="card-features">
+            <span class="feature-tag has-booking">Booking</span>
+          </div>
+          <div class="card-missing">Missing: Medical services data</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">🦴</span>
+            <div>
+              <div class="card-title">Chiropractic</div>
+              <span class="card-key">chiropractic</span>
+            </div>
+          </div>
+          <div class="card-category">Healthcare</div>
+          <div class="card-features">
+            <span class="feature-tag has-booking">Booking</span>
+          </div>
+          <div class="card-missing">Missing: Treatment types, pricing</div>
+        </div>
+
+        <!-- Health & Wellness -->
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">🧘</span>
+            <div>
+              <div class="card-title">Yoga / Pilates Studio</div>
+              <span class="card-key">yoga</span>
+            </div>
+          </div>
+          <div class="card-category">Health & Wellness</div>
+          <div class="card-features">
+            <span class="feature-tag has-booking">Booking</span>
+          </div>
+          <div class="card-missing">Missing: Class types, membership tiers</div>
+        </div>
+
+        <!-- Professional Services -->
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">📊</span>
+            <div>
+              <div class="card-title">Accounting / CPA</div>
+              <span class="card-key">accounting</span>
+            </div>
+          </div>
+          <div class="card-category">Professional Services</div>
+          <div class="card-missing">Missing: Service packages, pricing</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">💼</span>
+            <div>
+              <div class="card-title">Business Consulting</div>
+              <span class="card-key">consulting</span>
+            </div>
+          </div>
+          <div class="card-category">Professional Services</div>
+          <div class="card-missing">Missing: Service offerings</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">🛡️</span>
+            <div>
+              <div class="card-title">Insurance Agency</div>
+              <span class="card-key">insurance</span>
+            </div>
+          </div>
+          <div class="card-category">Professional Services</div>
+          <div class="card-missing">Missing: Coverage types</div>
+        </div>
+
+        <!-- Technology -->
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">💻</span>
+            <div>
+              <div class="card-title">SaaS / Software</div>
+              <span class="card-key">saas</span>
+            </div>
+          </div>
+          <div class="card-category">Technology</div>
+          <div class="card-missing">Missing: Feature list, pricing tiers</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">🚀</span>
+            <div>
+              <div class="card-title">Tech Startup</div>
+              <span class="card-key">startup</span>
+            </div>
+          </div>
+          <div class="card-category">Technology</div>
+          <div class="card-missing">Missing: Product features</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">📱</span>
+            <div>
+              <div class="card-title">Digital Agency</div>
+              <span class="card-key">agency</span>
+            </div>
+          </div>
+          <div class="card-category">Technology</div>
+          <div class="card-missing">Missing: Service offerings</div>
+        </div>
+
+        <!-- Retail -->
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">📦</span>
+            <div>
+              <div class="card-title">Subscription Box</div>
+              <span class="card-key">subscription-box</span>
+            </div>
+          </div>
+          <div class="card-category">Retail</div>
+          <div class="card-features">
+            <span class="feature-tag has-cart">Cart</span>
+          </div>
+          <div class="card-missing">Missing: Box contents, pricing</div>
+        </div>
+
+        <!-- Creative -->
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">📷</span>
+            <div>
+              <div class="card-title">Photographer</div>
+              <span class="card-key">photography</span>
+            </div>
+          </div>
+          <div class="card-category">Creative</div>
+          <div class="card-features">
+            <span class="feature-tag has-booking">Booking</span>
+          </div>
+          <div class="card-missing">Missing: Package pricing</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">💒</span>
+            <div>
+              <div class="card-title">Wedding Planner</div>
+              <span class="card-key">wedding</span>
+            </div>
+          </div>
+          <div class="card-category">Creative</div>
+          <div class="card-features">
+            <span class="feature-tag has-booking">Booking</span>
+          </div>
+          <div class="card-missing">Missing: Package pricing</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">🎨</span>
+            <div>
+              <div class="card-title">Portfolio / Designer</div>
+              <span class="card-key">portfolio</span>
+            </div>
+          </div>
+          <div class="card-category">Creative</div>
+          <div class="card-missing">Generic (personal portfolio)</div>
+        </div>
+
+        <!-- Organization -->
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">💚</span>
+            <div>
+              <div class="card-title">Nonprofit / Charity</div>
+              <span class="card-key">nonprofit</span>
+            </div>
+          </div>
+          <div class="card-category">Organization</div>
+          <div class="card-missing">Missing: Programs, impact data</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">⛪</span>
+            <div>
+              <div class="card-title">Church</div>
+              <span class="card-key">church</span>
+            </div>
+          </div>
+          <div class="card-category">Organization</div>
+          <div class="card-missing">Missing: Service times, ministries</div>
+        </div>
+
+        <!-- Education -->
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">🏫</span>
+            <div>
+              <div class="card-title">School</div>
+              <span class="card-key">school</span>
+            </div>
+          </div>
+          <div class="card-category">Education</div>
+          <div class="card-missing">Missing: Programs, tuition</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">🎓</span>
+            <div>
+              <div class="card-title">Online Course</div>
+              <span class="card-key">online-course</span>
+            </div>
+          </div>
+          <div class="card-category">Education</div>
+          <div class="card-missing">Missing: Curriculum, pricing</div>
+        </div>
+
+        <!-- Trade Services -->
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">🔨</span>
+            <div>
+              <div class="card-title">Construction</div>
+              <span class="card-key">construction</span>
+            </div>
+          </div>
+          <div class="card-category">Trade Services</div>
+          <div class="card-missing">Missing: Project types, pricing</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">⚡</span>
+            <div>
+              <div class="card-title">Electrician</div>
+              <span class="card-key">electrician</span>
+            </div>
+          </div>
+          <div class="card-category">Trade Services</div>
+          <div class="card-missing">Missing: Service pricing</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">🌿</span>
+            <div>
+              <div class="card-title">Landscaping</div>
+              <span class="card-key">landscaping</span>
+            </div>
+          </div>
+          <div class="card-category">Trade Services</div>
+          <div class="card-missing">Missing: Service pricing</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">🧹</span>
+            <div>
+              <div class="card-title">Cleaning Service</div>
+              <span class="card-key">cleaning</span>
+            </div>
+          </div>
+          <div class="card-category">Trade Services</div>
+          <div class="card-missing">Missing: Package pricing</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">🚗</span>
+            <div>
+              <div class="card-title">Auto Repair</div>
+              <span class="card-key">auto-repair</span>
+            </div>
+          </div>
+          <div class="card-category">Trade Services</div>
+          <div class="card-missing">Missing: Service pricing</div>
+        </div>
+
+        <!-- Other -->
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">🐾</span>
+            <div>
+              <div class="card-title">Pet Services</div>
+              <span class="card-key">pet-services</span>
+            </div>
+          </div>
+          <div class="card-category">Pet Industry</div>
+          <div class="card-features">
+            <span class="feature-tag has-booking">Booking</span>
+          </div>
+          <div class="card-missing">Missing: Grooming/boarding prices</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">🚚</span>
+            <div>
+              <div class="card-title">Moving Company</div>
+              <span class="card-key">moving</span>
+            </div>
+          </div>
+          <div class="card-category">Services</div>
+          <div class="card-missing">Missing: Package pricing</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">🎪</span>
+            <div>
+              <div class="card-title">Event Venue</div>
+              <span class="card-key">event-venue</span>
+            </div>
+          </div>
+          <div class="card-category">Events</div>
+          <div class="card-features">
+            <span class="feature-tag has-booking">Booking</span>
+          </div>
+          <div class="card-missing">Missing: Space/package pricing</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">🏨</span>
+            <div>
+              <div class="card-title">Hotel</div>
+              <span class="card-key">hotel</span>
+            </div>
+          </div>
+          <div class="card-category">Hospitality</div>
+          <div class="card-features">
+            <span class="feature-tag has-booking">Booking</span>
+          </div>
+          <div class="card-missing">Missing: Room rates</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">✈️</span>
+            <div>
+              <div class="card-title">Travel Agency</div>
+              <span class="card-key">travel</span>
+            </div>
+          </div>
+          <div class="card-category">Hospitality</div>
+          <div class="card-missing">Missing: Tour packages</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">🎸</span>
+            <div>
+              <div class="card-title">Musician / Band</div>
+              <span class="card-key">musician</span>
+            </div>
+          </div>
+          <div class="card-category">Entertainment</div>
+          <div class="card-missing">Generic (artist-specific)</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">🎙️</span>
+            <div>
+              <div class="card-title">Podcast</div>
+              <span class="card-key">podcast</span>
+            </div>
+          </div>
+          <div class="card-category">Entertainment</div>
+          <div class="card-missing">Generic (show-specific)</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">🎮</span>
+            <div>
+              <div class="card-title">Gaming / Esports</div>
+              <span class="card-key">gaming</span>
+            </div>
+          </div>
+          <div class="card-category">Entertainment</div>
+          <div class="card-missing">Generic (team-specific)</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">💹</span>
+            <div>
+              <div class="card-title">Finance / Investment</div>
+              <span class="card-key">finance</span>
+            </div>
+          </div>
+          <div class="card-category">Finance</div>
+          <div class="card-missing">Missing: Service offerings</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">🃏</span>
+            <div>
+              <div class="card-title">Collectibles / NFTs</div>
+              <span class="card-key">collectibles</span>
+            </div>
+          </div>
+          <div class="card-category">Collectibles</div>
+          <div class="card-missing">Specialized (portfolio app)</div>
+        </div>
+
+        <div class="industry-card partial">
+          <div class="card-header">
+            <span class="card-icon">💰</span>
+            <div>
+              <div class="card-title">Survey Rewards</div>
+              <span class="card-key">survey-rewards</span>
+            </div>
+          </div>
+          <div class="card-category">Fintech</div>
+          <div class="card-missing">Specialized (gamification)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRIORITY RECOMMENDATIONS -->
+    <section class="priority-section">
+      <h2>🎯 Recommended Priority for Adding Sample Data</h2>
+      <p style="color: #a5b4fc; margin-bottom: 20px;">Industries likely to have highest demand for Blink customers</p>
+
+      <div class="priority-list">
+        <div class="priority-item">
+          <span class="priority-rank">1</span>
+          <span>💈 Barbershop - High demand, simple services</span>
+        </div>
+        <div class="priority-item">
+          <span class="priority-rank">2</span>
+          <span>🥐 Bakery - Food category is strong</span>
+        </div>
+        <div class="priority-item">
+          <span class="priority-rank">3</span>
+          <span>🧹 Cleaning - Common local business</span>
+        </div>
+        <div class="priority-item">
+          <span class="priority-rank">4</span>
+          <span>⚡ Electrician - Trade services demand</span>
+        </div>
+        <div class="priority-item">
+          <span class="priority-rank">5</span>
+          <span>🧘 Yoga - Wellness is growing</span>
+        </div>
+        <div class="priority-item">
+          <span class="priority-rank">6</span>
+          <span>🐾 Pet Services - Pet industry booming</span>
+        </div>
+        <div class="priority-item">
+          <span class="priority-rank">7</span>
+          <span>📊 Accounting - B2B professional</span>
+        </div>
+        <div class="priority-item">
+          <span class="priority-rank">8</span>
+          <span>💻 SaaS - Tech startup customers</span>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>Blink Module Library | Built with the Assembler UI</p>
+      <p style="margin-top: 8px;">Industries use <code style="background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px;">industry-fixtures.cjs</code> for test mode data</p>
+    </footer>
+  </div>
+</body>
+</html>

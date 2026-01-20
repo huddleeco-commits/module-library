@@ -58,7 +58,26 @@
       "Bash(npx eslint:*)",
       "WebSearch",
       "Bash(grep:*)",
-      "Bash(git fetch:*)"
+      "Bash(git fetch:*)",
+      "Bash(start \"\" \"C:/Users/huddl/OneDrive/Desktop/module-library/BLINK_SCORECARD.md\")",
+      "Bash(npm start)",
+      "Bash(Stop-Process -Force)",
+      "Bash(Start-Sleep -Seconds 2)",
+      "Bash(Write-Host 'Node processes stopped' \")",
+      "Bash(start /B npm start)",
+      "Bash(tree:*)",
+      "Bash(TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MCwiZW1haWwiOiJkZXZAYmxpbmsubG9jYWwiLCJpc19hZG1pbiI6dHJ1ZSwiaXNEZXYiOnRydWUsImlhdCI6MTc2ODc1NDY3NSwiZXhwIjoxNzY4ODQxMDc1fQ.oEjWvbi-q142BIjHnnuiHlI2I4xNL93hCdVxBh_UbW4\":*)",
+      "WebFetch(domain:aurelius-steakhouse.be1st.io)",
+      "Bash(npm run deploy:*)",
+      "WebFetch(domain:solevault.be1st.io)",
+      "Bash(nslookup:*)",
+      "WebFetch(domain:api.solevault.be1st.io)",
+      "WebFetch(domain:backend-production-f404.up.railway.app)",
+      "WebFetch(domain:frontend-production-3c28.up.railway.app)",
+      "WebFetch(domain:backend-production-641e.up.railway.app)",
+      "WebFetch(domain:admin.solevault.be1st.io)",
+      "WebFetch(domain:lbkah3pl.up.railway.app)",
+      "Bash(xxd:*)"
     ]
   }
 }

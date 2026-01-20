@@ -1,752 +1,227 @@
+/**
+ * Inventory Routes - PostgreSQL Compatible
+ * SoleVault Inventory Management API
+ */
 const express = require('express');
-const mongoose = require('mongoose');
-const { query, body, param, validationResult } = require('express-validator');
-const sanitizeHtml = require('sanitize-html');
-const rateLimit = require('express-rate-limit');
-const redis = require('redis');
-const User = require('../models/User');
-const Card = require('../models/Card');
-const authMiddleware = require('../middleware/authMiddleware');
-
 const router = express.Router();
+const db = require('../database/db');
+const { authenticateToken } = require('../middleware/auth');
 
-// Redis client for caching
-const client = redis.createClient(process.env.REDIS_URL);
+// Get user's inventory
+router.get('/', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { page = 1, limit = 50, sort = 'created_at', order = 'DESC' } = req.query;
+    const offset = (parseInt(page) - 1) * parseInt(limit);
 
-// Rate limiters
-const getLimiter = rateLimit({
- windowMs: 15 * 60 * 1000,
- max: (req) => req.user?.isAdmin || req.user?.role === 'master' ? 100 : 50,
- message: 'Too many requests, please try again later.',
+    const validSorts = ['created_at', 'name', 'brand', 'price'];
+    const sortColumn = validSorts.includes(sort) ? sort : 'created_at';
+    const sortOrder = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
+
+    const result = await db.query(
+      `SELECT * FROM cards WHERE user_id = $1 ORDER BY ${sortColumn} ${sortOrder} LIMIT $2 OFFSET $3`,
+      [userId, parseInt(limit), offset]
+    ).catch(() => ({ rows: [] }));
+
+    const countResult = await db.query(
+      'SELECT COUNT(*) FROM cards WHERE user_id = $1',
+      [userId]
+    ).catch(() => ({ rows: [{ count: 0 }] }));
+
+    res.json({
+      success: true,
+      items: result.rows,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: parseInt(countResult.rows[0].count),
+        pages: Math.ceil(countResult.rows[0].count / parseInt(limit))
+      }
+    });
+  } catch (error) {
+    console.error('Get inventory error:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch inventory' });
+  }
 });
 
-const postLimiter = rateLimit({
- windowMs: 15 * 60 * 1000,
- max: (req) => req.user?.isAdmin || req.user?.role === 'master' ? 20 : 10,
- message: 'Too many requests, please try again later.',
+// Get single item
+router.get('/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.userId;
+
+    const result = await db.query(
+      'SELECT * FROM cards WHERE id = $1 AND user_id = $2',
+      [id, userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'Item not found' });
+    }
+
+    res.json({ success: true, item: result.rows[0] });
+  } catch (error) {
+    console.error('Get item error:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch item' });
+  }
 });
 
-const deleteLimiter = rateLimit({
- windowMs: 15 * 60 * 1000,
- max: (req) => req.user?.isAdmin || req.user?.role === 'master' ? 20 : 10,
- message: 'Too many requests, please try again later.',
+// Add new item to inventory
+router.post('/', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const {
+      name, brand, model, size, condition,
+      price, description, front_image_url, back_image_url,
+      sku, colorway, release_date
+    } = req.body;
+
+    if (!name || !brand) {
+      return res.status(400).json({ success: false, error: 'Name and brand required' });
+    }
+
+    const result = await db.query(
+      `INSERT INTO cards (user_id, name, brand, model, size, condition, price, description, front_image_url, back_image_url, sku, colorway, release_date, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW())
+       RETURNING *`,
+      [userId, name, brand, model, size, condition, parseFloat(price) || 0, description, front_image_url, back_image_url, sku, colorway, release_date]
+    );
+
+    res.json({ success: true, item: result.rows[0] });
+  } catch (error) {
+    console.error('Add item error:', error);
+    res.status(500).json({ success: false, error: 'Failed to add item' });
+  }
 });
 
-// Cache middleware for inventory data
-const cacheMiddleware = (keyPrefix, ttl = 180) => async (req, res, next) => {
- const cacheKey = `${keyPrefix}:${req.user._id}:${req.originalUrl}`;
- try {
-   const cached = await client.get(cacheKey);
-   if (cached) return res.json(JSON.parse(cached));
-   
-   res.sendResponse = res.json;
-   res.json = async (body) => {
-     await client.setEx(cacheKey, ttl, JSON.stringify(body));
-     res.sendResponse(body);
-   };
-   next();
- } catch (err) {
-   next();
- }
-};
+// Update item
+router.put('/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.userId;
+    const updates = req.body;
 
-// Input validation schemas
-const validateCardId = [
- param('cardId').custom(value => mongoose.Types.ObjectId.isValid(value)).withMessage('Invalid card ID format')
-];
+    // Verify ownership
+    const existing = await db.query(
+      'SELECT id FROM cards WHERE id = $1 AND user_id = $2',
+      [id, userId]
+    );
 
-const validateInventoryQuery = [
- query('userId').optional().custom(value => mongoose.Types.ObjectId.isValid(value)).withMessage('Invalid user ID format'),
- query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
- query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
- query('sortBy').optional().isIn(['player_name', 'card_set', 'year', 'team_name', 'createdAt']).withMessage('Invalid sort field'),
- query('sortOrder').optional().isIn(['asc', 'desc']).withMessage('Sort order must be asc or desc'),
- query('isInProfile').optional().isBoolean().withMessage('isInProfile must be a boolean'),
- query('isInMarketplace').optional().isBoolean().withMessage('isInMarketplace must be a boolean'),
- query('team').optional().trim().isLength({ max: 50 }).withMessage('Team name too long'),
- query('cardSet').optional().trim().isLength({ max: 100 }).withMessage('Card set name too long'),
- query('year').optional().isInt({ min: 1800, max: 2100 }).withMessage('Invalid year')
-];
+    if (existing.rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'Item not found or not owned' });
+    }
 
-const validateAddCard = [
- body('cardId').custom(value => mongoose.Types.ObjectId.isValid(value)).withMessage('Invalid card ID format'),
- body('isInProfile').optional().isBoolean().withMessage('isInProfile must be a boolean')
-];
+    // Build update query
+    const allowedFields = ['name', 'brand', 'model', 'size', 'condition', 'price', 'description', 'front_image_url', 'back_image_url', 'sku', 'colorway', 'for_sale'];
+    const fields = [];
+    const values = [];
+    let paramIndex = 1;
 
-const validateBulkOperation = [
- body('cardIds').isArray({ min: 1, max: 50 }).withMessage('cardIds must be an array with 1-50 items'),
- body('cardIds.*').custom(value => mongoose.Types.ObjectId.isValid(value)).withMessage('Invalid card ID format'),
- body('operation').isIn(['add', 'remove', 'updateProfile']).withMessage('Invalid operation'),
- body('isInProfile').optional().isBoolean().withMessage('isInProfile must be a boolean')
-];
+    for (const [key, value] of Object.entries(updates)) {
+      if (allowedFields.includes(key)) {
+        fields.push(`${key} = $${paramIndex++}`);
+        values.push(key === 'price' ? parseFloat(value) : value);
+      }
+    }
 
-// Helper function to verify card ownership
-const verifyCardOwnership = async (userId, cardId, session = null) => {
- const card = await Card.findById(cardId).session(session);
- if (!card) {
-   throw new Error('Card not found');
- }
- if (card.assignedTo?.toString() !== userId.toString()) {
-   throw new Error('Card not owned by user');
- }
- return card;
-};
+    if (fields.length === 0) {
+      return res.status(400).json({ success: false, error: 'No valid fields to update' });
+    }
 
-// Helper function to clear inventory cache
-const clearInventoryCache = async (userId) => {
- try {
-   const pattern = `inventory:${userId}:*`;
-   const keys = await client.keys(pattern);
-   if (keys.length > 0) {
-     await client.del(keys);
-   }
- } catch (err) {
-   console.warn('[Inventory] Cache clear failed:', err.message);
- }
-};
+    values.push(id);
+    const result = await db.query(
+      `UPDATE cards SET ${fields.join(', ')}, updated_at = NOW() WHERE id = $${paramIndex} RETURNING *`,
+      values
+    );
 
-// GET /api/inventory - Get User's Inventory (Protected)
-router.get('/', cacheMiddleware('inventory'), getLimiter, authMiddleware.verifyToken, validateInventoryQuery, async (req, res) => {
- try {
-   const errors = validationResult(req);
-   if (!errors.isEmpty()) {
-     console.log('[Inventory Get] Validation errors:', errors.array());
-     return res.status(400).json({ 
-       success: false,
-       message: 'Validation failed', 
-       errors: errors.array() 
-     });
-   }
-
-   let userId = req.user._id;
-   const { 
-     userId: queryUserId, 
-     page = 1, 
-     limit = 20, 
-     sortBy = 'player_name', 
-     sortOrder = 'asc',
-     isInProfile,
-     isInMarketplace,
-     team,
-     cardSet,
-     year
-   } = req.query;
-
-   // Support userId query parameter for admins or self
-   if (queryUserId) {
-     if (req.user.isAdmin || req.user.role === 'master' || queryUserId === userId.toString()) {
-       userId = queryUserId;
-     } else {
-       console.log(`[Inventory Get] Access denied for user ${req.user._id} to fetch inventory of user ${queryUserId}`);
-       return res.status(403).json({ 
-         success: false,
-         message: 'Access denied: Insufficient permissions' 
-       });
-     }
-   }
-
-   // Build filter query
-   let cardFilter = {};
-   if (isInProfile !== undefined) cardFilter.isInProfile = isInProfile === 'true';
-   if (isInMarketplace !== undefined) cardFilter.isInMarketplace = isInMarketplace === 'true';
-   if (team) cardFilter.team_name = new RegExp(sanitizeHtml(team, { allowedTags: [], allowedAttributes: {} }), 'i');
-   if (cardSet) cardFilter.card_set = new RegExp(sanitizeHtml(cardSet, { allowedTags: [], allowedAttributes: {} }), 'i');
-   if (year) cardFilter.year = parseInt(year);
-
-   // Calculate pagination
-   const skip = (parseInt(page) - 1) * parseInt(limit);
-
-   // Build sort object
-   const sortObj = {};
-   sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
-
-   // Get user with populated cards
-   const user = await User.findById(userId).select('assignedCards username');
-   if (!user) {
-     console.log(`[Inventory Get] User not found: ${userId}`);
-     return res.status(404).json({ 
-       success: false,
-       message: 'User not found' 
-     });
-   }
-
-   // Get total count for pagination
-   const totalCards = await Card.countDocuments({
-     _id: { $in: user.assignedCards },
-     assignedTo: userId,
-     ...cardFilter
-   });
-
-   // Fetch paginated inventory
-   const inventory = await Card.find({
-     _id: { $in: user.assignedCards },
-     assignedTo: userId,
-     ...cardFilter
-   })
-   .populate('assignedTo', 'username email')
-   .select('player_name card_set card_number year team_name images grading_data currentValuation isInProfile isInMarketplace assignedTo')
-   .sort(sortObj)
-   .skip(skip)
-   .limit(parseInt(limit))
-   .lean();
-
-   // Calculate inventory statistics
-   const stats = {
-     totalCards,
-     cardsInProfile: await Card.countDocuments({
-       _id: { $in: user.assignedCards },
-       assignedTo: userId,
-       isInProfile: true
-     }),
-     cardsInMarketplace: await Card.countDocuments({
-       _id: { $in: user.assignedCards },
-       assignedTo: userId,
-       isInMarketplace: true
-     }),
-     totalValue: inventory.reduce((sum, card) => sum + (card.currentValuation || 0), 0),
-     cardsByTeam: await Card.aggregate([
-       { $match: { _id: { $in: user.assignedCards }, assignedTo: new mongoose.Types.ObjectId(userId) } },
-       { $group: { _id: '$team_name', count: { $sum: 1 } } },
-       { $sort: { count: -1 } },
-       { $limit: 5 }
-     ]),
-     cardsBySet: await Card.aggregate([
-       { $match: { _id: { $in: user.assignedCards }, assignedTo: new mongoose.Types.ObjectId(userId) } },
-       { $group: { _id: '$card_set', count: { $sum: 1 } } },
-       { $sort: { count: -1 } },
-       { $limit: 5 }
-     ])
-   };
-
-   console.log(`[Inventory Get] Fetched inventory for user ${userId}: ${inventory.length}/${totalCards} cards (page ${page})`);
-   
-   res.json({
-     success: true,
-     inventory,
-     pagination: {
-       total: totalCards,
-       page: parseInt(page),
-       limit: parseInt(limit),
-       totalPages: Math.ceil(totalCards / parseInt(limit))
-     },
-     statistics: stats,
-     filters: {
-       isInProfile: isInProfile || null,
-       isInMarketplace: isInMarketplace || null,
-       team: team || null,
-       cardSet: cardSet || null,
-       year: year || null,
-       sortBy,
-       sortOrder
-     },
-     owner: {
-       _id: user._id,
-       username: user.username
-     }
-   });
-
- } catch (error) {
-   console.error(`[Inventory Get] Error fetching inventory for user ${req.user._id}:`, error.message, error.stack);
-   res.status(500).json({ 
-     success: false,
-     message: 'Server error while fetching inventory', 
-     error: error.message 
-   });
- }
+    res.json({ success: true, item: result.rows[0] });
+  } catch (error) {
+    console.error('Update item error:', error);
+    res.status(500).json({ success: false, error: 'Failed to update item' });
+  }
 });
 
-// POST /api/inventory/add - Add Card to Inventory (Protected)
-router.post('/add', postLimiter, authMiddleware.verifyToken, validateAddCard, async (req, res) => {
- try {
-   const errors = validationResult(req);
-   if (!errors.isEmpty()) {
-     console.log('[Inventory Add] Validation errors:', errors.array());
-     return res.status(400).json({ 
-       success: false,
-       message: 'Validation failed', 
-       errors: errors.array() 
-     });
-   }
+// Delete item
+router.delete('/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.userId;
 
-   const { cardId, isInProfile = false } = req.body;
-   const userId = req.user._id;
+    const result = await db.query(
+      'DELETE FROM cards WHERE id = $1 AND user_id = $2 RETURNING id',
+      [id, userId]
+    );
 
-   const session = await mongoose.startSession();
-   session.startTransaction();
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'Item not found or not owned' });
+    }
 
-   try {
-     const user = await User.findById(userId).session(session);
-     if (!user) {
-       console.log(`[Inventory Add] User not found: ${userId}`);
-       return res.status(404).json({ 
-         success: false,
-         message: 'User not found' 
-       });
-     }
-
-     const card = await Card.findById(cardId).session(session);
-     if (!card) {
-       console.log(`[Inventory Add] Card not found: ${cardId}`);
-       return res.status(404).json({ 
-         success: false,
-         message: 'Card not found' 
-       });
-     }
-
-     // Check if card is already assigned to someone else
-     if (card.assignedTo && card.assignedTo.toString() !== userId.toString()) {
-       console.log(`[Inventory Add] Card already assigned to another user: ${cardId}`);
-       return res.status(400).json({ 
-         success: false,
-         message: 'Card is already assigned to another user' 
-       });
-     }
-
-     // Check if card is already in user's inventory
-     if (user.assignedCards.includes(cardId)) {
-       console.log(`[Inventory Add] Card already in inventory: ${cardId} for user ${userId}`);
-       return res.status(400).json({ 
-         success: false,
-         message: 'Card already exists in inventory' 
-       });
-     }
-
-     // Add card to user's inventory
-     user.assignedCards.push(cardId);
-     card.assignedTo = userId;
-     card.isInProfile = isInProfile;
-
-     // Log activity
-     user.activities.push({
-       type: 'card_added',
-       cardId,
-       details: { isInProfile },
-       timestamp: new Date()
-     });
-
-     if (user.activities.length > 50) {
-       user.activities = user.activities.slice(-50);
-     }
-
-     await Promise.all([
-       user.save({ session }),
-       card.save({ session })
-     ]);
-
-     await session.commitTransaction();
-
-     // Clear cache
-     await clearInventoryCache(userId);
-
-     console.log(`[Inventory Add] Added card ${cardId} to inventory for user ${userId}`);
-
-     const updatedCard = await Card.findById(cardId)
-       .populate('assignedTo', 'username email')
-       .select('player_name card_set card_number year team_name images grading_data currentValuation isInProfile isInMarketplace assignedTo');
-
-     res.json({ 
-       success: true,
-       message: 'Card added to inventory successfully', 
-       card: updatedCard 
-     });
-
-   } catch (error) {
-     await session.abortTransaction();
-     throw error;
-   } finally {
-     session.endSession();
-   }
-
- } catch (error) {
-   console.error(`[Inventory Add] Error adding card for user ${req.user._id}:`, error.message, error.stack);
-   res.status(500).json({ 
-     success: false,
-     message: 'Server error while adding card to inventory', 
-     error: error.message 
-   });
- }
+    res.json({ success: true, message: 'Item deleted' });
+  } catch (error) {
+    console.error('Delete item error:', error);
+    res.status(500).json({ success: false, error: 'Failed to delete item' });
+  }
 });
 
-// DELETE /api/inventory/remove/:cardId - Remove Card from Inventory (Protected)
-router.delete('/remove/:cardId', deleteLimiter, authMiddleware.verifyToken, validateCardId, async (req, res) => {
- try {
-   const errors = validationResult(req);
-   if (!errors.isEmpty()) {
-     console.log('[Inventory Remove] Validation errors:', errors.array());
-     return res.status(400).json({ 
-       success: false,
-       message: 'Validation failed', 
-       errors: errors.array() 
-     });
-   }
+// Get inventory stats
+router.get('/stats/summary', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
 
-   const { cardId } = req.params;
-   const userId = req.user._id;
+    const totalItems = await db.query(
+      'SELECT COUNT(*) FROM cards WHERE user_id = $1',
+      [userId]
+    ).catch(() => ({ rows: [{ count: 0 }] }));
 
-   const session = await mongoose.startSession();
-   session.startTransaction();
+    const totalValue = await db.query(
+      'SELECT COALESCE(SUM(price), 0) as total FROM cards WHERE user_id = $1',
+      [userId]
+    ).catch(() => ({ rows: [{ total: 0 }] }));
 
-   try {
-     const user = await User.findById(userId).session(session);
-     if (!user) {
-       console.log(`[Inventory Remove] User not found: ${userId}`);
-       return res.status(404).json({ 
-         success: false,
-         message: 'User not found' 
-       });
-     }
+    const forSale = await db.query(
+      'SELECT COUNT(*) FROM cards WHERE user_id = $1 AND for_sale = true',
+      [userId]
+    ).catch(() => ({ rows: [{ count: 0 }] }));
 
-     // Verify card ownership
-     await verifyCardOwnership(userId, cardId, session);
-
-     if (!user.assignedCards.includes(cardId)) {
-       console.log(`[Inventory Remove] Card not found in inventory: ${cardId} for user ${userId}`);
-       return res.status(404).json({ 
-         success: false,
-         message: 'Card not found in inventory' 
-       });
-     }
-
-     const card = await Card.findById(cardId).session(session);
-
-     // Check if card is in marketplace
-     if (card.isInMarketplace) {
-       console.log(`[Inventory Remove] Cannot remove card from marketplace: ${cardId}`);
-       return res.status(400).json({ 
-         success: false,
-         message: 'Cannot remove card that is listed in marketplace' 
-       });
-     }
-
-     // Remove card from user's inventory
-     user.assignedCards = user.assignedCards.filter((id) => id.toString() !== cardId);
-     card.assignedTo = null;
-     card.isInProfile = false;
-
-     // Log activity
-     user.activities.push({
-       type: 'card_removed',
-       cardId,
-       details: { reason: 'manual_removal' },
-       timestamp: new Date()
-     });
-
-     if (user.activities.length > 50) {
-       user.activities = user.activities.slice(-50);
-     }
-
-     await Promise.all([
-       user.save({ session }),
-       card.save({ session })
-     ]);
-
-     await session.commitTransaction();
-
-     // Clear cache
-     await clearInventoryCache(userId);
-
-     console.log(`[Inventory Remove] Removed card ${cardId} from inventory for user ${userId}`);
-
-     res.json({ 
-       success: true,
-       message: 'Card removed from inventory successfully',
-       cardId 
-     });
-
-   } catch (error) {
-     await session.abortTransaction();
-     throw error;
-   } finally {
-     session.endSession();
-   }
-
- } catch (error) {
-   console.error(`[Inventory Remove] Error removing card for user ${req.user._id}:`, error.message, error.stack);
-   
-   if (error.message === 'Card not found') {
-     return res.status(404).json({ 
-       success: false,
-       message: 'Card not found' 
-     });
-   }
-   
-   if (error.message === 'Card not owned by user') {
-     return res.status(403).json({ 
-       success: false,
-       message: 'You do not own this card' 
-     });
-   }
-
-   res.status(500).json({ 
-     success: false,
-     message: 'Server error while removing card from inventory', 
-     error: error.message 
-   });
- }
+    res.json({
+      success: true,
+      stats: {
+        totalItems: parseInt(totalItems.rows[0].count),
+        totalValue: parseFloat(totalValue.rows[0].total),
+        forSale: parseInt(forSale.rows[0].count)
+      }
+    });
+  } catch (error) {
+    console.error('Get stats error:', error);
+    res.json({ success: true, stats: { totalItems: 0, totalValue: 0, forSale: 0 } });
+  }
 });
 
-// POST /api/inventory/bulk - Bulk operations on inventory (Protected)
-router.post('/bulk', postLimiter, authMiddleware.verifyToken, validateBulkOperation, async (req, res) => {
- try {
-   const errors = validationResult(req);
-   if (!errors.isEmpty()) {
-     console.log('[Inventory Bulk] Validation errors:', errors.array());
-     return res.status(400).json({ 
-       success: false,
-       message: 'Validation failed', 
-       errors: errors.array() 
-     });
-   }
+// Bulk operations
+router.post('/bulk/delete', authenticateToken, async (req, res) => {
+  try {
+    const { ids } = req.body;
+    const userId = req.user.userId;
 
-   const { cardIds, operation, isInProfile } = req.body;
-   const userId = req.user._id;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ success: false, error: 'Item IDs required' });
+    }
 
-   const session = await mongoose.startSession();
-   session.startTransaction();
+    const placeholders = ids.map((_, i) => `$${i + 2}`).join(', ');
+    const result = await db.query(
+      `DELETE FROM cards WHERE user_id = $1 AND id IN (${placeholders}) RETURNING id`,
+      [userId, ...ids]
+    );
 
-   try {
-     const user = await User.findById(userId).session(session);
-     if (!user) {
-       console.log(`[Inventory Bulk] User not found: ${userId}`);
-       return res.status(404).json({ 
-         success: false,
-         message: 'User not found' 
-       });
-     }
-
-     let results = [];
-     let successCount = 0;
-     let errorCount = 0;
-
-     for (const cardId of cardIds) {
-       try {
-         const card = await Card.findById(cardId).session(session);
-         
-         if (!card) {
-           results.push({ cardId, status: 'error', message: 'Card not found' });
-           errorCount++;
-           continue;
-         }
-
-         switch (operation) {
-           case 'add':
-             if (card.assignedTo && card.assignedTo.toString() !== userId.toString()) {
-               results.push({ cardId, status: 'error', message: 'Card already assigned to another user' });
-               errorCount++;
-               continue;
-             }
-             
-             if (!user.assignedCards.includes(cardId)) {
-               user.assignedCards.push(cardId);
-               card.assignedTo = userId;
-               if (isInProfile !== undefined) card.isInProfile = isInProfile;
-               await card.save({ session });
-               results.push({ cardId, status: 'success', message: 'Card added to inventory' });
-               successCount++;
-             } else {
-               results.push({ cardId, status: 'skipped', message: 'Card already in inventory' });
-             }
-             break;
-
-           case 'remove':
-             if (card.assignedTo?.toString() !== userId.toString()) {
-               results.push({ cardId, status: 'error', message: 'Card not owned by user' });
-               errorCount++;
-               continue;
-             }
-
-             if (card.isInMarketplace) {
-               results.push({ cardId, status: 'error', message: 'Cannot remove card from marketplace' });
-               errorCount++;
-               continue;
-             }
-
-             if (user.assignedCards.includes(cardId)) {
-               user.assignedCards = user.assignedCards.filter(id => id.toString() !== cardId);
-               card.assignedTo = null;
-               card.isInProfile = false;
-               await card.save({ session });
-               results.push({ cardId, status: 'success', message: 'Card removed from inventory' });
-               successCount++;
-             } else {
-               results.push({ cardId, status: 'skipped', message: 'Card not in inventory' });
-             }
-             break;
-
-           case 'updateProfile':
-             if (card.assignedTo?.toString() !== userId.toString()) {
-               results.push({ cardId, status: 'error', message: 'Card not owned by user' });
-               errorCount++;
-               continue;
-             }
-
-             if (isInProfile !== undefined) {
-               card.isInProfile = isInProfile;
-               await card.save({ session });
-               results.push({ cardId, status: 'success', message: `Card profile status updated to ${isInProfile}` });
-               successCount++;
-             } else {
-               results.push({ cardId, status: 'error', message: 'isInProfile value required' });
-               errorCount++;
-             }
-             break;
-
-           default:
-             results.push({ cardId, status: 'error', message: 'Invalid operation' });
-             errorCount++;
-         }
-       } catch (cardError) {
-         console.error(`[Inventory Bulk] Error processing card ${cardId}:`, cardError.message);
-         results.push({ cardId, status: 'error', message: cardError.message });
-         errorCount++;
-       }
-     }
-
-     // Log bulk activity
-     user.activities.push({
-       type: 'bulk_operation',
-       details: { 
-         operation, 
-         cardCount: cardIds.length,
-         successCount,
-         errorCount,
-         isInProfile 
-       },
-       timestamp: new Date()
-     });
-
-     if (user.activities.length > 50) {
-       user.activities = user.activities.slice(-50);
-     }
-
-     await user.save({ session });
-     await session.commitTransaction();
-
-     // Clear cache
-     await clearInventoryCache(userId);
-
-     console.log(`[Inventory Bulk] Completed bulk ${operation} for user ${userId}: ${successCount} success, ${errorCount} errors`);
-
-     res.json({
-       success: true,
-       message: `Bulk ${operation} completed`,
-       summary: {
-         total: cardIds.length,
-         successful: successCount,
-         errors: errorCount,
-         operation
-       },
-       results
-     });
-
-   } catch (error) {
-     await session.abortTransaction();
-     throw error;
-   } finally {
-     session.endSession();
-   }
-
- } catch (error) {
-   console.error(`[Inventory Bulk] Error in bulk operation for user ${req.user._id}:`, error.message, error.stack);
-   res.status(500).json({ 
-     success: false,
-     message: 'Server error during bulk operation', 
-     error: error.message 
-   });
- }
-});
-
-// PUT /api/inventory/profile/:cardId - Toggle card profile status (Protected)
-router.put('/profile/:cardId', postLimiter, authMiddleware.verifyToken, [
- ...validateCardId,
- body('isInProfile').isBoolean().withMessage('isInProfile must be a boolean')
-], async (req, res) => {
- try {
-   const errors = validationResult(req);
-   if (!errors.isEmpty()) {
-     console.log('[Inventory Profile] Validation errors:', errors.array());
-     return res.status(400).json({ 
-       success: false,
-       message: 'Validation failed', 
-       errors: errors.array() 
-     });
-   }
-
-   const { cardId } = req.params;
-   const { isInProfile } = req.body;
-   const userId = req.user._id;
-
-   const session = await mongoose.startSession();
-   session.startTransaction();
-
-   try {
-     // Verify card ownership
-     const card = await verifyCardOwnership(userId, cardId, session);
-
-     card.isInProfile = isInProfile;
-     await card.save({ session });
-
-     // Log activity
-     const user = await User.findById(userId).session(session);
-     user.activities.push({
-       type: 'profile_toggle',
-       cardId,
-       details: { isInProfile },
-       timestamp: new Date()
-     });
-
-     if (user.activities.length > 50) {
-       user.activities = user.activities.slice(-50);
-     }
-
-     await user.save({ session });
-     await session.commitTransaction();
-
-     // Clear cache
-     await clearInventoryCache(userId);
-
-     console.log(`[Inventory Profile] Updated profile status for card ${cardId} to ${isInProfile} for user ${userId}`);
-
-     const updatedCard = await Card.findById(cardId)
-       .populate('assignedTo', 'username email')
-       .select('player_name card_set card_number year team_name images isInProfile isInMarketplace assignedTo');
-
-     res.json({
-       success: true,
-       message: `Card ${isInProfile ? 'added to' : 'removed from'} profile`,
-       card: updatedCard
-     });
-
-   } catch (error) {
-     await session.abortTransaction();
-     throw error;
-   } finally {
-     session.endSession();
-   }
-
- } catch (error) {
-   console.error(`[Inventory Profile] Error updating profile status for user ${req.user._id}:`, error.message, error.stack);
-   
-   if (error.message === 'Card not found') {
-     return res.status(404).json({ 
-       success: false,
-       message: 'Card not found' 
-     });
-   }
-   
-   if (error.message === 'Card not owned by user') {
-     return res.status(403).json({ 
-       success: false,
-       message: 'You do not own this card' 
-     });
-   }
-
-   res.status(500).json({ 
-     success: false,
-     message: 'Server error while updating card profile status', 
-     error: error.message 
-   });
- }
+    res.json({
+      success: true,
+      deleted: result.rows.length,
+      message: `${result.rows.length} items deleted`
+    });
+  } catch (error) {
+    console.error('Bulk delete error:', error);
+    res.status(500).json({ success: false, error: 'Failed to delete items' });
+  }
 });
 
 module.exports = router;

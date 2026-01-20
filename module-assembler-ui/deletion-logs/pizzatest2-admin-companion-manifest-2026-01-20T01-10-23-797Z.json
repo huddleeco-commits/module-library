@@ -1,0 +1,38 @@
+{
+  "projectName": "pizzatest2-admin-companion",
+  "savedAt": "2026-01-20T01:10:23.797Z",
+  "resources": {
+    "name": "pizzatest2-admin-companion",
+    "sanitizedName": "pizzatest2-admin-companion",
+    "github": {
+      "repos": [
+        {
+          "name": "pizzatest2-admin-companion-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "pizzatest2-admin-companion-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "pizzatest2-admin-companion-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

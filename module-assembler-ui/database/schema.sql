@@ -12,13 +12,26 @@ CREATE TABLE IF NOT EXISTS generated_projects (
   railway_project_id VARCHAR(255),
   user_id INTEGER,
   user_email VARCHAR(255),
-  status VARCHAR(50) DEFAULT 'pending', -- pending, building, deployed, failed
+  subscriber_id INTEGER REFERENCES subscribers(id),
+  status VARCHAR(50) DEFAULT 'pending', -- pending, building, completed, build_passed, build_failed, deployed, deploy_failed, failed
   deploy_url VARCHAR(255),
   api_tokens_used INTEGER DEFAULT 0,
   api_cost DECIMAL(10,4) DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   deployed_at TIMESTAMP WITH TIME ZONE,
-  metadata JSONB DEFAULT '{}'
+  metadata JSONB DEFAULT '{}',
+  -- URL columns for deployed projects
+  frontend_url VARCHAR(255),
+  admin_url VARCHAR(255),
+  backend_url VARCHAR(255),
+  github_frontend VARCHAR(255),
+  github_backend VARCHAR(255),
+  github_admin VARCHAR(255),
+  railway_project_url VARCHAR(255),
+  -- Companion app tracking columns
+  app_type VARCHAR(50) DEFAULT 'website', -- 'website', 'companion-app', 'advanced-app'
+  parent_project_id INTEGER REFERENCES generated_projects(id), -- For companion apps, links to parent website
+  domain_type VARCHAR(20) DEFAULT 'be1st.io' -- 'be1st.io' for websites, 'be1st.app' for apps
 );
 
 -- Subscribers Table (Stripe Integration)
@@ -122,10 +135,77 @@ CREATE TABLE IF NOT EXISTS cost_entries (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Indexes for performance
+-- Indexes for performance (base columns that always exist)
 CREATE INDEX IF NOT EXISTS idx_projects_created_at ON generated_projects(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_projects_status ON generated_projects(status);
 CREATE INDEX IF NOT EXISTS idx_projects_user ON generated_projects(user_id);
+
+-- Migration: Add companion app columns to existing tables (safe to run multiple times)
+DO $$
+BEGIN
+  -- Add frontend_url if not exists
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'generated_projects' AND column_name = 'frontend_url') THEN
+    ALTER TABLE generated_projects ADD COLUMN frontend_url VARCHAR(255);
+  END IF;
+  -- Add admin_url if not exists
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'generated_projects' AND column_name = 'admin_url') THEN
+    ALTER TABLE generated_projects ADD COLUMN admin_url VARCHAR(255);
+  END IF;
+  -- Add backend_url if not exists
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'generated_projects' AND column_name = 'backend_url') THEN
+    ALTER TABLE generated_projects ADD COLUMN backend_url VARCHAR(255);
+  END IF;
+  -- Add github_frontend if not exists
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'generated_projects' AND column_name = 'github_frontend') THEN
+    ALTER TABLE generated_projects ADD COLUMN github_frontend VARCHAR(255);
+  END IF;
+  -- Add github_backend if not exists
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'generated_projects' AND column_name = 'github_backend') THEN
+    ALTER TABLE generated_projects ADD COLUMN github_backend VARCHAR(255);
+  END IF;
+  -- Add github_admin if not exists
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'generated_projects' AND column_name = 'github_admin') THEN
+    ALTER TABLE generated_projects ADD COLUMN github_admin VARCHAR(255);
+  END IF;
+  -- Add railway_project_url if not exists
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'generated_projects' AND column_name = 'railway_project_url') THEN
+    ALTER TABLE generated_projects ADD COLUMN railway_project_url VARCHAR(255);
+  END IF;
+  -- Add app_type if not exists
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'generated_projects' AND column_name = 'app_type') THEN
+    ALTER TABLE generated_projects ADD COLUMN app_type VARCHAR(50) DEFAULT 'website';
+  END IF;
+  -- Add parent_project_id if not exists
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'generated_projects' AND column_name = 'parent_project_id') THEN
+    ALTER TABLE generated_projects ADD COLUMN parent_project_id INTEGER REFERENCES generated_projects(id);
+  END IF;
+  -- Add domain_type if not exists
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'generated_projects' AND column_name = 'domain_type') THEN
+    ALTER TABLE generated_projects ADD COLUMN domain_type VARCHAR(20) DEFAULT 'be1st.io';
+  END IF;
+  -- Add subscriber_id if not exists
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'generated_projects' AND column_name = 'subscriber_id') THEN
+    ALTER TABLE generated_projects ADD COLUMN subscriber_id INTEGER REFERENCES subscribers(id);
+  END IF;
+  -- Add is_demo if not exists
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'generated_projects' AND column_name = 'is_demo') THEN
+    ALTER TABLE generated_projects ADD COLUMN is_demo BOOLEAN DEFAULT FALSE;
+  END IF;
+  -- Add companion_app_url if not exists
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'generated_projects' AND column_name = 'companion_app_url') THEN
+    ALTER TABLE generated_projects ADD COLUMN companion_app_url VARCHAR(255);
+  END IF;
+  -- Add demo_batch_id for grouping demo runs if not exists
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'generated_projects' AND column_name = 'demo_batch_id') THEN
+    ALTER TABLE generated_projects ADD COLUMN demo_batch_id VARCHAR(100);
+  END IF;
+END $$;
+
+-- Indexes for companion app columns (created after migration adds them)
+CREATE INDEX IF NOT EXISTS idx_projects_app_type ON generated_projects(app_type);
+CREATE INDEX IF NOT EXISTS idx_projects_parent ON generated_projects(parent_project_id);
+CREATE INDEX IF NOT EXISTS idx_projects_is_demo ON generated_projects(is_demo) WHERE is_demo = TRUE;
+
 CREATE INDEX IF NOT EXISTS idx_subscribers_status ON subscribers(status);
 CREATE INDEX IF NOT EXISTS idx_subscribers_stripe ON subscribers(stripe_customer_id);
 CREATE INDEX IF NOT EXISTS idx_api_usage_project ON api_usage(project_id);

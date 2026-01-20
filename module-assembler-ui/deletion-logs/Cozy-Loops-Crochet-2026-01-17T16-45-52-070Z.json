@@ -1,0 +1,135 @@
+{
+  "projectName": "Cozy-Loops-Crochet",
+  "deletedAt": "2026-01-17T16:45:52.070Z",
+  "resourcesFound": {
+    "name": "Cozy-Loops-Crochet",
+    "sanitizedName": "cozy-loops-crochet",
+    "github": {
+      "repos": [
+        {
+          "name": "cozy-loops-crochet-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "cozy-loops-crochet-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "cozy-loops-crochet-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "c401e4353c1432e1617941c160656cf1",
+          "name": "cozy-loops-crochet.be1st.io",
+          "type": "CNAME",
+          "content": "7zdkuq28.up.railway.app"
+        },
+        {
+          "id": "aca1175d6d99b9c16aa3ed13e0e48ab7",
+          "name": "api.cozy-loops-crochet.be1st.io",
+          "type": "CNAME",
+          "content": "dpaw67ok.up.railway.app"
+        },
+        {
+          "id": "25e94075719174c57dec72f6c8d25d7c",
+          "name": "admin.cozy-loops-crochet.be1st.io",
+          "type": "CNAME",
+          "content": "se0zf45s.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Cozy-Loops-Crochet",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/cozy-loops-crochet-backend",
+        "success": false,
+        "message": "Failed to delete huddleeco-commits/cozy-loops-crochet-backend: HTTP 403"
+      },
+      {
+        "repo": "huddleeco-commits/cozy-loops-crochet-frontend",
+        "success": false,
+        "message": "Failed to delete huddleeco-commits/cozy-loops-crochet-frontend: HTTP 403"
+      },
+      {
+        "repo": "huddleeco-commits/cozy-loops-crochet-admin",
+        "success": false,
+        "message": "Failed to delete huddleeco-commits/cozy-loops-crochet-admin: HTTP 403"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [
+      {
+        "record": "cozy-loops-crochet.be1st.io",
+        "success": true,
+        "message": "Deleted cozy-loops-crochet.be1st.io"
+      },
+      {
+        "record": "api.cozy-loops-crochet.be1st.io",
+        "success": true,
+        "message": "Deleted api.cozy-loops-crochet.be1st.io"
+      },
+      {
+        "record": "admin.cozy-loops-crochet.be1st.io",
+        "success": true,
+        "message": "Deleted admin.cozy-loops-crochet.be1st.io"
+      }
+    ],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Cozy-Loops-Crochet"
+    },
+    "errors": [
+      "Failed to delete huddleeco-commits/cozy-loops-crochet-backend: HTTP 403",
+      "Failed to delete huddleeco-commits/cozy-loops-crochet-frontend: HTTP 403",
+      "Failed to delete huddleeco-commits/cozy-loops-crochet-admin: HTTP 403"
+    ],
+    "verification": {
+      "github": [
+        {
+          "repo": "huddleeco-commits/cozy-loops-crochet-backend",
+          "verified": false
+        },
+        {
+          "repo": "huddleeco-commits/cozy-loops-crochet-frontend",
+          "verified": false
+        },
+        {
+          "repo": "huddleeco-commits/cozy-loops-crochet-admin",
+          "verified": false
+        }
+      ],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "cozy-loops-crochet",
+          "verified": true
+        },
+        {
+          "subdomain": "api.cozy-loops-crochet",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.cozy-loops-crochet",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

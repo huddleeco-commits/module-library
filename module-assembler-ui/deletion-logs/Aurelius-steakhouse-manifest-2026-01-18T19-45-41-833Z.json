@@ -1,0 +1,38 @@
+{
+  "projectName": "Aurelius-steakhouse",
+  "savedAt": "2026-01-18T19:45:41.833Z",
+  "resources": {
+    "name": "Aurelius-steakhouse",
+    "sanitizedName": "aurelius-steakhouse",
+    "github": {
+      "repos": [
+        {
+          "name": "aurelius-steakhouse-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "aurelius-steakhouse-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "aurelius-steakhouse-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "projectName": "Graze-Anatomy",
+  "savedAt": "2026-01-18T17:39:27.337Z",
+  "resources": {
+    "name": "Graze-Anatomy",
+    "sanitizedName": "graze-anatomy",
+    "github": {
+      "repos": [
+        {
+          "name": "graze-anatomy-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "graze-anatomy-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "graze-anatomy-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

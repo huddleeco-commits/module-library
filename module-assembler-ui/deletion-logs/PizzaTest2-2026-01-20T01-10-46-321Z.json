@@ -1,0 +1,161 @@
+{
+  "projectName": "PizzaTest2",
+  "deletedAt": "2026-01-20T01:10:46.321Z",
+  "resourcesFound": {
+    "name": "PizzaTest2",
+    "sanitizedName": "pizzatest2",
+    "github": {
+      "repos": [
+        {
+          "name": "pizzatest2-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "pizzatest2-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "pizzatest2-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "182cde13-c41f-4da8-80ee-681927ce123e",
+        "name": "pizzatest2",
+        "createdAt": "2026-01-20T00:42:58.335Z",
+        "environments": [
+          {
+            "id": "0f826e62-ef0b-4806-9118-053d07c7656d",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "18f1e3a0-f2c9-4b54-a05f-4d1e69558da4",
+          "name": "frontend"
+        },
+        {
+          "id": "34907eb7-8657-4bbc-b2ce-b56ec0c0d522",
+          "name": "postgres"
+        },
+        {
+          "id": "8ffaaf24-0b8b-4e7e-9a6e-f0aecfd5ab96",
+          "name": "admin"
+        },
+        {
+          "id": "e884d480-b333-4842-b70d-10a80ee228d2",
+          "name": "backend"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "aaece94d8878f67bb9b4eee03c9a1918",
+          "name": "pizzatest2.be1st.io",
+          "type": "CNAME",
+          "content": "gl7nriaw.up.railway.app"
+        },
+        {
+          "id": "32fdb8392718fa0821fc423a5c0f7fa9",
+          "name": "api.pizzatest2.be1st.io",
+          "type": "CNAME",
+          "content": "iimtcyga.up.railway.app"
+        },
+        {
+          "id": "9b866ceffb08ce97632cd9082891844d",
+          "name": "admin.pizzatest2.be1st.io",
+          "type": "CNAME",
+          "content": "1eeq1mxx.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\PizzaTest2",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/pizzatest2-backend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/pizzatest2-backend"
+      },
+      {
+        "repo": "huddleeco-commits/pizzatest2-frontend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/pizzatest2-frontend"
+      },
+      {
+        "repo": "huddleeco-commits/pizzatest2-admin",
+        "success": true,
+        "message": "Deleted huddleeco-commits/pizzatest2-admin"
+      }
+    ],
+    "railway": {
+      "success": true,
+      "message": "Deleted Railway project 182cde13-c41f-4da8-80ee-681927ce123e"
+    },
+    "cloudflare": [
+      {
+        "record": "pizzatest2.be1st.io",
+        "success": true,
+        "message": "Deleted pizzatest2.be1st.io"
+      },
+      {
+        "record": "api.pizzatest2.be1st.io",
+        "success": true,
+        "message": "Deleted api.pizzatest2.be1st.io"
+      },
+      {
+        "record": "admin.pizzatest2.be1st.io",
+        "success": true,
+        "message": "Deleted admin.pizzatest2.be1st.io"
+      }
+    ],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\PizzaTest2"
+    },
+    "errors": [],
+    "verification": {
+      "github": [
+        {
+          "repo": "huddleeco-commits/pizzatest2-backend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/pizzatest2-frontend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/pizzatest2-admin",
+          "verified": true
+        }
+      ],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "pizzatest2",
+          "verified": true
+        },
+        {
+          "subdomain": "api.pizzatest2",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.pizzatest2",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "projectName": "The-Brass-Razor",
+  "deletedAt": "2026-01-18T20:47:18.195Z",
+  "resourcesFound": {
+    "name": "The-Brass-Razor",
+    "sanitizedName": "the-brass-razor",
+    "github": {
+      "repos": [
+        {
+          "name": "the-brass-razor-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "the-brass-razor-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "the-brass-razor-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\The-Brass-Razor",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/the-brass-razor-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/the-brass-razor-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/the-brass-razor-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\The-Brass-Razor"
+    },
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "the-brass-razor",
+          "verified": true
+        },
+        {
+          "subdomain": "api.the-brass-razor",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.the-brass-razor",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

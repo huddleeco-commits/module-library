@@ -73,7 +73,14 @@ async function getIndustryVideo(industryName, businessName = '') {
 
   // Add industry-specific terms
   const industryLower = industryName.toLowerCase();
-  if (industryLower.includes('pizza')) searchTerms.push('pizza making', 'pizzeria');
+  console.log(`   🎬 getIndustryVideo called with industry: "${industryName}"`);
+
+  // STEAKHOUSE - must match BEFORE generic restaurant
+  if (industryLower.includes('steakhouse') || industryLower.includes('steak house') ||
+      industryLower.includes('chophouse') || industryLower.includes('prime rib') ||
+      (industryLower.includes('steak') && (industryLower.includes('luxury') || industryLower.includes('fine') || industryLower.includes('upscale')))) {
+    searchTerms.push('steak sizzling', 'luxury dining', 'fine dining restaurant', 'grill steak');
+  } else if (industryLower.includes('pizza')) searchTerms.push('pizza making', 'pizzeria');
   else if (industryLower.includes('restaurant') || industryLower.includes('food')) searchTerms.push('restaurant cooking', 'chef cooking');
   else if (industryLower.includes('spa') || industryLower.includes('wellness')) searchTerms.push('spa massage', 'wellness relaxation');
   else if (industryLower.includes('fitness') || industryLower.includes('gym')) searchTerms.push('gym workout', 'fitness training');

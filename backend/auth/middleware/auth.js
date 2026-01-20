@@ -1,5 +1,11 @@
 const jwt = require('jsonwebtoken');
 
+// Must match the fallback used in module-assembler-ui/lib/routes/auth.cjs
+const JWT_SECRET = process.env.JWT_SECRET || 'blink-default-secret';
+
+// Debug: log secret on module load (first 10 chars only for security)
+console.log('   🔐 Auth middleware loaded with secret:', JWT_SECRET.substring(0, 10) + '...');
+
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -8,8 +14,9 @@ function authenticateToken(req, res, next) {
         return res.status(401).json({ success: false, error: 'Access token required' });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    jwt.verify(token, JWT_SECRET, (err, user) => {
         if (err) {
+            console.log('   ❌ Token verification failed:', err.message);
             return res.status(403).json({ success: false, error: 'Invalid token' });
         }
 

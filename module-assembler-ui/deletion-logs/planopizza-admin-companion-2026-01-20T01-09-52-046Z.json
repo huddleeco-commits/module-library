@@ -1,0 +1,80 @@
+{
+  "projectName": "planopizza-admin-companion",
+  "deletedAt": "2026-01-20T01:09:52.046Z",
+  "resourcesFound": {
+    "name": "planopizza-admin-companion",
+    "sanitizedName": "planopizza-admin-companion",
+    "github": {
+      "repos": [
+        {
+          "name": "planopizza-admin-companion-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "planopizza-admin-companion-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "planopizza-admin-companion-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/planopizza-admin-companion-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/planopizza-admin-companion-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/planopizza-admin-companion-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "planopizza-admin-companion",
+          "verified": true
+        },
+        {
+          "subdomain": "api.planopizza-admin-companion",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.planopizza-admin-companion",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

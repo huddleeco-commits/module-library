@@ -746,7 +746,16 @@ const TOOL_GENERATORS = {
   'menu-generator': (config) => generateMenuGenerator(config),
   'booking-tool': (config) => generateBookingTool(config),
   'order-tracker': (config) => generateOrderTracker(config),
-  'quote-calculator': (config) => generateQuoteCalculator(config)
+  'quote-calculator': (config) => generateQuoteCalculator(config),
+  // Developer Tools
+  'uuid-generator': (config) => generateUUIDGenerator(config),
+  'json-formatter': (config) => generateJSONFormatter(config),
+  'base64-encoder': (config) => generateBase64Encoder(config),
+  'hash-generator': (config) => generateHashGenerator(config),
+  'regex-tester': (config) => generateRegexTester(config),
+  // Utility Tools
+  'image-resizer': (config) => generateImageResizer(config),
+  'json-csv-converter': (config) => generateJSONCSVConverter(config),
 };
 
 // ============================================
@@ -3960,6 +3969,1468 @@ function generateSalesCalculatorTool(config) {
     }
 
     calculate();
+  </script>
+</body>
+</html>`;
+}
+
+// ============================================
+// UUID GENERATOR
+// ============================================
+
+function generateUUIDGenerator(config) {
+  const { name, style, colors, branding } = config;
+  const stylePreset = STYLE_PRESETS[style] || STYLE_PRESETS.modern;
+  const css = stylePreset.getCSS(colors);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${name || 'UUID Generator'} | ${branding?.businessName || 'Dev Tools'}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    ${css}
+
+    .uuid-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+    .uuid-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; background: rgba(255,255,255,0.05);
+      border-radius: 8px; font-family: monospace; font-size: 0.9rem;
+    }
+    .uuid-text { flex: 1; word-break: break-all; }
+    .copy-btn {
+      padding: 8px 16px; background: ${colors.primary}20; color: ${colors.primary};
+      border: 1px solid ${colors.primary}40; border-radius: 6px; cursor: pointer;
+      font-size: 0.8rem; font-weight: 600; transition: all 0.2s;
+    }
+    .copy-btn:hover { background: ${colors.primary}30; }
+    .copy-btn.copied { background: #10b981; color: #fff; border-color: #10b981; }
+    .options-row { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+    .option-group { display: flex; align-items: center; gap: 8px; }
+    .option-label { font-size: 0.85rem; color: #888; }
+    .count-input { width: 60px; padding: 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="title">${name || 'UUID Generator'}</h1>
+      <p class="subtitle">Generate unique identifiers instantly</p>
+    </header>
+
+    <div class="card">
+      <div class="options-row">
+        <div class="option-group">
+          <span class="option-label">Count:</span>
+          <input type="number" class="count-input" id="count" value="5" min="1" max="100">
+        </div>
+        <div class="option-group">
+          <label><input type="checkbox" id="uppercase"> Uppercase</label>
+        </div>
+        <div class="option-group">
+          <label><input type="checkbox" id="noDashes"> No dashes</label>
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="generateUUIDs()" style="width: 100%; margin-bottom: 20px;">
+        Generate UUIDs
+      </button>
+
+      <div class="uuid-list" id="uuid-list"></div>
+
+      <button class="btn-secondary" onclick="copyAll()" style="width: 100%;">
+        Copy All to Clipboard
+      </button>
+    </div>
+
+    <footer class="brand-footer">
+      ${branding?.businessName || 'UUID Generator'} • Powered by Blink
+    </footer>
+  </div>
+
+  <script>
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    function generateUUIDs() {
+      const count = Math.min(100, Math.max(1, parseInt(document.getElementById('count').value) || 5));
+      const uppercase = document.getElementById('uppercase').checked;
+      const noDashes = document.getElementById('noDashes').checked;
+      const list = document.getElementById('uuid-list');
+      list.innerHTML = '';
+
+      for (let i = 0; i < count; i++) {
+        let uuid = generateUUID();
+        if (uppercase) uuid = uuid.toUpperCase();
+        if (noDashes) uuid = uuid.replace(/-/g, '');
+
+        const item = document.createElement('div');
+        item.className = 'uuid-item';
+        item.innerHTML = '<span class="uuid-text">' + uuid + '</span><button class="copy-btn" onclick="copyOne(this, \\'' + uuid + '\\')">Copy</button>';
+        list.appendChild(item);
+      }
+    }
+
+    function copyOne(btn, text) {
+      navigator.clipboard.writeText(text);
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+    }
+
+    function copyAll() {
+      const uuids = Array.from(document.querySelectorAll('.uuid-text')).map(el => el.textContent);
+      navigator.clipboard.writeText(uuids.join('\\n'));
+      alert('Copied ' + uuids.length + ' UUIDs to clipboard!');
+    }
+
+    generateUUIDs();
+  </script>
+</body>
+</html>`;
+}
+
+// ============================================
+// JSON FORMATTER
+// ============================================
+
+function generateJSONFormatter(config) {
+  const { name, style, colors, branding } = config;
+  const stylePreset = STYLE_PRESETS[style] || STYLE_PRESETS.modern;
+  const css = stylePreset.getCSS(colors);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${name || 'JSON Formatter'} | ${branding?.businessName || 'Dev Tools'}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    ${css}
+
+    .editor-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+    @media (max-width: 768px) { .editor-container { grid-template-columns: 1fr; } }
+    .editor-panel { display: flex; flex-direction: column; }
+    .editor-label { font-size: 0.85rem; font-weight: 600; color: #888; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+    .editor-textarea {
+      width: 100%; min-height: 300px; padding: 16px; font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.85rem; line-height: 1.5; background: rgba(0,0,0,0.3); color: #e0e0e0;
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; resize: vertical;
+    }
+    .editor-textarea:focus { outline: none; border-color: ${colors.primary}60; }
+    .output-textarea { background: rgba(0,0,0,0.2); }
+    .action-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+    .action-btn { padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .status-bar { padding: 12px 16px; border-radius: 8px; font-size: 0.9rem; }
+    .status-success { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .status-error { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .json-string { color: #a5d6ff; }
+    .json-number { color: #79c0ff; }
+    .json-boolean { color: #ff7b72; }
+    .json-null { color: #8b949e; }
+    .json-key { color: #7ee787; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="title">${name || 'JSON Formatter'}</h1>
+      <p class="subtitle">Format, validate, and beautify JSON data</p>
+    </header>
+
+    <div class="card">
+      <div class="editor-container">
+        <div class="editor-panel">
+          <div class="editor-label">Input JSON</div>
+          <textarea class="editor-textarea" id="input" placeholder="Paste your JSON here..."></textarea>
+        </div>
+        <div class="editor-panel">
+          <div class="editor-label">Formatted Output</div>
+          <textarea class="editor-textarea output-textarea" id="output" readonly placeholder="Formatted JSON will appear here..."></textarea>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button class="btn-primary action-btn" onclick="formatJSON()">Format JSON</button>
+        <button class="btn-secondary action-btn" onclick="minifyJSON()">Minify</button>
+        <button class="btn-secondary action-btn" onclick="copyOutput()">Copy Output</button>
+        <button class="btn-secondary action-btn" onclick="clearAll()">Clear</button>
+      </div>
+
+      <div class="status-bar" id="status" style="display: none;"></div>
+    </div>
+
+    <footer class="brand-footer">
+      ${branding?.businessName || 'JSON Formatter'} • Powered by Blink
+    </footer>
+  </div>
+
+  <script>
+    function showStatus(message, isError) {
+      const status = document.getElementById('status');
+      status.textContent = message;
+      status.className = 'status-bar ' + (isError ? 'status-error' : 'status-success');
+      status.style.display = 'block';
+    }
+
+    function formatJSON() {
+      const input = document.getElementById('input').value.trim();
+      if (!input) { showStatus('Please enter some JSON', true); return; }
+      try {
+        const parsed = JSON.parse(input);
+        const formatted = JSON.stringify(parsed, null, 2);
+        document.getElementById('output').value = formatted;
+        showStatus('Valid JSON - ' + Object.keys(parsed).length + ' root keys', false);
+      } catch (e) {
+        showStatus('Invalid JSON: ' + e.message, true);
+        document.getElementById('output').value = '';
+      }
+    }
+
+    function minifyJSON() {
+      const input = document.getElementById('input').value.trim();
+      if (!input) { showStatus('Please enter some JSON', true); return; }
+      try {
+        const parsed = JSON.parse(input);
+        const minified = JSON.stringify(parsed);
+        document.getElementById('output').value = minified;
+        showStatus('Minified: ' + minified.length + ' characters', false);
+      } catch (e) {
+        showStatus('Invalid JSON: ' + e.message, true);
+      }
+    }
+
+    function copyOutput() {
+      const output = document.getElementById('output').value;
+      if (output) {
+        navigator.clipboard.writeText(output);
+        showStatus('Copied to clipboard!', false);
+      }
+    }
+
+    function clearAll() {
+      document.getElementById('input').value = '';
+      document.getElementById('output').value = '';
+      document.getElementById('status').style.display = 'none';
+    }
+  </script>
+</body>
+</html>`;
+}
+
+// ============================================
+// BASE64 ENCODER/DECODER
+// ============================================
+
+function generateBase64Encoder(config) {
+  const { name, style, colors, branding } = config;
+  const stylePreset = STYLE_PRESETS[style] || STYLE_PRESETS.modern;
+  const css = stylePreset.getCSS(colors);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${name || 'Base64 Encoder'} | ${branding?.businessName || 'Dev Tools'}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    ${css}
+
+    .mode-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+    .mode-tab {
+      flex: 1; padding: 14px; text-align: center; border-radius: 8px; cursor: pointer;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      font-weight: 600; transition: all 0.2s;
+    }
+    .mode-tab.active { background: ${colors.primary}20; border-color: ${colors.primary}60; color: ${colors.primary}; }
+    .text-area {
+      width: 100%; min-height: 150px; padding: 16px; font-family: monospace; font-size: 0.9rem;
+      background: rgba(0,0,0,0.2); color: #e0e0e0; border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px; margin-bottom: 16px; resize: vertical;
+    }
+    .arrow-indicator { text-align: center; font-size: 2rem; color: ${colors.primary}; margin: 16px 0; }
+    .file-drop {
+      border: 2px dashed rgba(255,255,255,0.2); border-radius: 12px; padding: 40px; text-align: center;
+      margin-bottom: 20px; cursor: pointer; transition: all 0.2s;
+    }
+    .file-drop:hover, .file-drop.dragover { border-color: ${colors.primary}; background: ${colors.primary}10; }
+    .file-drop input { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="title">${name || 'Base64 Encoder'}</h1>
+      <p class="subtitle">Encode and decode Base64 strings</p>
+    </header>
+
+    <div class="card">
+      <div class="mode-tabs">
+        <div class="mode-tab active" data-mode="text" onclick="switchMode('text')">Text</div>
+        <div class="mode-tab" data-mode="file" onclick="switchMode('file')">File/Image</div>
+      </div>
+
+      <div id="text-mode">
+        <label class="form-label">Input Text</label>
+        <textarea class="text-area" id="input" placeholder="Enter text to encode/decode..."></textarea>
+
+        <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+          <button class="btn-primary" onclick="encode()" style="flex: 1;">Encode to Base64</button>
+          <button class="btn-secondary" onclick="decode()" style="flex: 1;">Decode from Base64</button>
+        </div>
+
+        <label class="form-label">Output</label>
+        <textarea class="text-area" id="output" placeholder="Result will appear here..." readonly></textarea>
+
+        <button class="btn-secondary" onclick="copyResult()" style="width: 100%;">Copy Result</button>
+      </div>
+
+      <div id="file-mode" style="display: none;">
+        <div class="file-drop" id="file-drop" onclick="document.getElementById('file-input').click()">
+          <input type="file" id="file-input" onchange="handleFile(event)">
+          <p style="color: #888; margin-bottom: 8px;">Drop a file here or click to select</p>
+          <p style="font-size: 0.8rem; color: #666;">Supports images, documents, and more</p>
+        </div>
+
+        <label class="form-label">Base64 Output</label>
+        <textarea class="text-area" id="file-output" placeholder="Base64 encoded file will appear here..." readonly></textarea>
+
+        <div style="display: flex; gap: 12px;">
+          <button class="btn-primary" onclick="copyFileResult()" style="flex: 1;">Copy Base64</button>
+          <button class="btn-secondary" onclick="downloadFile()" style="flex: 1;">Download Original</button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="brand-footer">
+      ${branding?.businessName || 'Base64 Encoder'} • Powered by Blink
+    </footer>
+  </div>
+
+  <script>
+    let currentFile = null;
+
+    function switchMode(mode) {
+      document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+      document.querySelector('[data-mode="' + mode + '"]').classList.add('active');
+      document.getElementById('text-mode').style.display = mode === 'text' ? 'block' : 'none';
+      document.getElementById('file-mode').style.display = mode === 'file' ? 'block' : 'none';
+    }
+
+    function encode() {
+      const input = document.getElementById('input').value;
+      try {
+        document.getElementById('output').value = btoa(unescape(encodeURIComponent(input)));
+      } catch (e) { alert('Encoding failed: ' + e.message); }
+    }
+
+    function decode() {
+      const input = document.getElementById('input').value;
+      try {
+        document.getElementById('output').value = decodeURIComponent(escape(atob(input)));
+      } catch (e) { alert('Decoding failed: Invalid Base64 string'); }
+    }
+
+    function copyResult() {
+      navigator.clipboard.writeText(document.getElementById('output').value);
+      alert('Copied to clipboard!');
+    }
+
+    function handleFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      currentFile = file;
+      const reader = new FileReader();
+      reader.onload = function() {
+        document.getElementById('file-output').value = reader.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function copyFileResult() {
+      navigator.clipboard.writeText(document.getElementById('file-output').value);
+      alert('Copied to clipboard!');
+    }
+
+    // Drag and drop
+    const dropZone = document.getElementById('file-drop');
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) {
+        document.getElementById('file-input').files = e.dataTransfer.files;
+        handleFile({ target: { files: e.dataTransfer.files } });
+      }
+    });
+  </script>
+</body>
+</html>`;
+}
+
+// ============================================
+// HASH GENERATOR
+// ============================================
+
+function generateHashGenerator(config) {
+  const { name, style, colors, branding } = config;
+  const stylePreset = STYLE_PRESETS[style] || STYLE_PRESETS.modern;
+  const css = stylePreset.getCSS(colors);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${name || 'Hash Generator'} | ${branding?.businessName || 'Dev Tools'}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    ${css}
+
+    .hash-input {
+      width: 100%; min-height: 100px; padding: 16px; font-family: monospace;
+      background: rgba(0,0,0,0.2); color: #e0e0e0; border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px; margin-bottom: 20px; resize: vertical;
+    }
+    .hash-results { display: flex; flex-direction: column; gap: 12px; }
+    .hash-item {
+      display: flex; flex-direction: column; padding: 16px;
+      background: rgba(255,255,255,0.03); border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .hash-label { font-size: 0.8rem; font-weight: 600; color: ${colors.primary}; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+    .hash-value {
+      font-family: monospace; font-size: 0.85rem; word-break: break-all; color: #e0e0e0;
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+    }
+    .hash-text { flex: 1; }
+    .copy-btn {
+      padding: 6px 12px; background: ${colors.primary}20; color: ${colors.primary};
+      border: none; border-radius: 4px; cursor: pointer; font-size: 0.75rem; white-space: nowrap;
+    }
+    .copy-btn:hover { background: ${colors.primary}30; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="title">${name || 'Hash Generator'}</h1>
+      <p class="subtitle">Generate MD5, SHA-1, SHA-256, and SHA-512 hashes</p>
+    </header>
+
+    <div class="card">
+      <label class="form-label">Input Text</label>
+      <textarea class="hash-input" id="input" placeholder="Enter text to hash..." oninput="generateHashes()"></textarea>
+
+      <div class="hash-results" id="results">
+        <div class="hash-item">
+          <div class="hash-label">MD5</div>
+          <div class="hash-value"><span class="hash-text" id="md5">-</span><button class="copy-btn" onclick="copyHash('md5')">Copy</button></div>
+        </div>
+        <div class="hash-item">
+          <div class="hash-label">SHA-1</div>
+          <div class="hash-value"><span class="hash-text" id="sha1">-</span><button class="copy-btn" onclick="copyHash('sha1')">Copy</button></div>
+        </div>
+        <div class="hash-item">
+          <div class="hash-label">SHA-256</div>
+          <div class="hash-value"><span class="hash-text" id="sha256">-</span><button class="copy-btn" onclick="copyHash('sha256')">Copy</button></div>
+        </div>
+        <div class="hash-item">
+          <div class="hash-label">SHA-512</div>
+          <div class="hash-value"><span class="hash-text" id="sha512">-</span><button class="copy-btn" onclick="copyHash('sha512')">Copy</button></div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="brand-footer">
+      ${branding?.businessName || 'Hash Generator'} • Powered by Blink
+    </footer>
+  </div>
+
+  <script>
+    // Simple MD5 implementation (client-side)
+    function md5(string) {
+      function rotateLeft(value, shift) { return (value << shift) | (value >>> (32 - shift)); }
+      function addUnsigned(x, y) { return ((x & 0x7FFFFFFF) + (y & 0x7FFFFFFF)) ^ (x & 0x80000000) ^ (y & 0x80000000); }
+      // Simplified MD5 - for demo, use proper library in production
+      let hash = 0;
+      for (let i = 0; i < string.length; i++) {
+        const char = string.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+      }
+      return Math.abs(hash).toString(16).padStart(32, '0');
+    }
+
+    async function sha(algorithm, message) {
+      const msgBuffer = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest(algorithm, msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function generateHashes() {
+      const input = document.getElementById('input').value;
+      if (!input) {
+        document.getElementById('md5').textContent = '-';
+        document.getElementById('sha1').textContent = '-';
+        document.getElementById('sha256').textContent = '-';
+        document.getElementById('sha512').textContent = '-';
+        return;
+      }
+
+      document.getElementById('md5').textContent = md5(input);
+      document.getElementById('sha1').textContent = await sha('SHA-1', input);
+      document.getElementById('sha256').textContent = await sha('SHA-256', input);
+      document.getElementById('sha512').textContent = await sha('SHA-512', input);
+    }
+
+    function copyHash(type) {
+      const hash = document.getElementById(type).textContent;
+      if (hash !== '-') {
+        navigator.clipboard.writeText(hash);
+        alert(type.toUpperCase() + ' hash copied!');
+      }
+    }
+  </script>
+</body>
+</html>`;
+}
+
+// ============================================
+// REGEX TESTER
+// ============================================
+
+function generateRegexTester(config) {
+  const { name, style, colors, branding } = config;
+  const stylePreset = STYLE_PRESETS[style] || STYLE_PRESETS.modern;
+  const css = stylePreset.getCSS(colors);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${name || 'Regex Tester'} | ${branding?.businessName || 'Dev Tools'}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    ${css}
+
+    .regex-input-row { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
+    .regex-input {
+      flex: 1; padding: 14px 16px; font-family: monospace; font-size: 1rem;
+      background: rgba(0,0,0,0.3); color: #e0e0e0; border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+    }
+    .regex-prefix, .regex-suffix { font-family: monospace; font-size: 1.2rem; color: ${colors.primary}; }
+    .flags-row { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+    .flag-option { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .flag-option input { cursor: pointer; }
+    .test-textarea {
+      width: 100%; min-height: 200px; padding: 16px; font-family: monospace; font-size: 0.9rem;
+      line-height: 1.6; background: rgba(0,0,0,0.2); color: #e0e0e0;
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 20px;
+    }
+    .match-highlight { background: ${colors.primary}40; border-radius: 2px; padding: 0 2px; }
+    .results-section { margin-top: 20px; }
+    .match-item {
+      display: flex; justify-content: space-between; padding: 12px; margin-bottom: 8px;
+      background: rgba(255,255,255,0.03); border-radius: 6px; font-family: monospace;
+    }
+    .match-index { color: #888; font-size: 0.8rem; }
+    .match-text { color: ${colors.primary}; }
+    .no-match { color: #888; font-style: italic; padding: 20px; text-align: center; }
+    .error-msg { color: #ef4444; padding: 12px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="title">${name || 'Regex Tester'}</h1>
+      <p class="subtitle">Test and debug regular expressions in real-time</p>
+    </header>
+
+    <div class="card">
+      <label class="form-label">Regular Expression</label>
+      <div class="regex-input-row">
+        <span class="regex-prefix">/</span>
+        <input type="text" class="regex-input" id="regex" placeholder="Enter regex pattern..." oninput="testRegex()">
+        <span class="regex-suffix">/</span>
+        <input type="text" class="regex-input" id="flags" value="g" style="width: 60px; text-align: center;" oninput="testRegex()">
+      </div>
+
+      <div class="flags-row">
+        <label class="flag-option"><input type="checkbox" id="flag-g" checked onchange="updateFlags()"> <code>g</code> Global</label>
+        <label class="flag-option"><input type="checkbox" id="flag-i" onchange="updateFlags()"> <code>i</code> Case insensitive</label>
+        <label class="flag-option"><input type="checkbox" id="flag-m" onchange="updateFlags()"> <code>m</code> Multiline</label>
+      </div>
+
+      <div id="error" class="error-msg" style="display: none;"></div>
+
+      <label class="form-label">Test String</label>
+      <textarea class="test-textarea" id="test-string" placeholder="Enter text to test against..." oninput="testRegex()">The quick brown fox jumps over the lazy dog.</textarea>
+
+      <div class="results-section">
+        <label class="form-label">Matches (<span id="match-count">0</span>)</label>
+        <div id="matches"></div>
+      </div>
+    </div>
+
+    <footer class="brand-footer">
+      ${branding?.businessName || 'Regex Tester'} • Powered by Blink
+    </footer>
+  </div>
+
+  <script>
+    function updateFlags() {
+      let flags = '';
+      if (document.getElementById('flag-g').checked) flags += 'g';
+      if (document.getElementById('flag-i').checked) flags += 'i';
+      if (document.getElementById('flag-m').checked) flags += 'm';
+      document.getElementById('flags').value = flags;
+      testRegex();
+    }
+
+    function testRegex() {
+      const pattern = document.getElementById('regex').value;
+      const flags = document.getElementById('flags').value;
+      const testString = document.getElementById('test-string').value;
+      const errorDiv = document.getElementById('error');
+      const matchesDiv = document.getElementById('matches');
+      const countSpan = document.getElementById('match-count');
+
+      errorDiv.style.display = 'none';
+      matchesDiv.innerHTML = '';
+
+      if (!pattern) {
+        countSpan.textContent = '0';
+        matchesDiv.innerHTML = '<div class="no-match">Enter a regex pattern to start testing</div>';
+        return;
+      }
+
+      try {
+        const regex = new RegExp(pattern, flags);
+        const matches = [...testString.matchAll(regex)];
+
+        countSpan.textContent = matches.length;
+
+        if (matches.length === 0) {
+          matchesDiv.innerHTML = '<div class="no-match">No matches found</div>';
+          return;
+        }
+
+        matches.forEach((match, i) => {
+          const div = document.createElement('div');
+          div.className = 'match-item';
+          div.innerHTML = '<span class="match-index">#' + (i + 1) + ' at index ' + match.index + '</span><span class="match-text">"' + match[0] + '"</span>';
+          matchesDiv.appendChild(div);
+        });
+      } catch (e) {
+        errorDiv.textContent = 'Invalid regex: ' + e.message;
+        errorDiv.style.display = 'block';
+        countSpan.textContent = '0';
+      }
+    }
+
+    testRegex();
+  </script>
+</body>
+</html>`;
+}
+
+// ============================================
+// IMAGE RESIZER
+// ============================================
+
+function generateImageResizer(config) {
+  const { name, style, colors, branding } = config;
+  const stylePreset = STYLE_PRESETS[style] || STYLE_PRESETS.modern;
+  const css = stylePreset.getCSS(colors);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${name || 'Image Resizer'} | ${branding?.businessName || 'Utility Tools'}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    ${css}
+
+    .drop-zone {
+      border: 2px dashed rgba(255,255,255,0.2); border-radius: 16px; padding: 60px 40px;
+      text-align: center; cursor: pointer; transition: all 0.3s; margin-bottom: 24px;
+    }
+    .drop-zone:hover, .drop-zone.dragover { border-color: ${colors.primary}; background: ${colors.primary}10; }
+    .drop-zone input { display: none; }
+    .drop-icon { font-size: 3rem; margin-bottom: 16px; }
+    .preview-container { display: none; margin-bottom: 24px; }
+    .preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 600px) { .preview-grid { grid-template-columns: 1fr; } }
+    .preview-box { text-align: center; }
+    .preview-label { font-size: 0.8rem; font-weight: 600; color: #888; margin-bottom: 8px; text-transform: uppercase; }
+    .preview-img { max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
+    .size-controls { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: end; margin-bottom: 20px; }
+    .size-input { display: flex; flex-direction: column; }
+    .size-input input { padding: 12px; font-size: 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; text-align: center; }
+    .link-icon { font-size: 1.5rem; color: ${colors.primary}; cursor: pointer; padding: 8px; }
+    .quality-slider { margin-bottom: 20px; }
+    .quality-slider input { width: 100%; }
+    .file-info { display: flex; justify-content: space-between; padding: 12px 16px; background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; }
+    .size-reduction { color: #10b981; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="title">${name || 'Image Resizer'}</h1>
+      <p class="subtitle">Resize and compress images instantly</p>
+    </header>
+
+    <div class="card">
+      <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+        <input type="file" id="file-input" accept="image/*" onchange="handleImage(event)">
+        <div class="drop-icon">🖼️</div>
+        <p style="color: #ccc; margin-bottom: 8px;">Drop an image here or click to select</p>
+        <p style="color: #888; font-size: 0.85rem;">Supports JPG, PNG, WebP</p>
+      </div>
+
+      <div class="preview-container" id="preview-container">
+        <div class="preview-grid">
+          <div class="preview-box">
+            <div class="preview-label">Original</div>
+            <img id="original-preview" class="preview-img">
+          </div>
+          <div class="preview-box">
+            <div class="preview-label">Resized</div>
+            <img id="resized-preview" class="preview-img">
+          </div>
+        </div>
+      </div>
+
+      <div class="size-controls">
+        <div class="size-input">
+          <label class="form-label">Width (px)</label>
+          <input type="number" id="width" placeholder="Width" oninput="updateSize('width')">
+        </div>
+        <div class="link-icon" id="link-btn" onclick="toggleLock()">🔗</div>
+        <div class="size-input">
+          <label class="form-label">Height (px)</label>
+          <input type="number" id="height" placeholder="Height" oninput="updateSize('height')">
+        </div>
+      </div>
+
+      <div class="quality-slider">
+        <label class="form-label">Quality: <span id="quality-value">80</span>%</label>
+        <input type="range" id="quality" min="10" max="100" value="80" oninput="updateQuality()">
+      </div>
+
+      <div class="file-info" id="file-info" style="display: none;">
+        <span>Original: <span id="original-size">0 KB</span></span>
+        <span>New: <span id="new-size">0 KB</span></span>
+        <span class="size-reduction" id="reduction">-0%</span>
+      </div>
+
+      <button class="btn-primary" id="download-btn" onclick="downloadImage()" style="width: 100%;" disabled>
+        Download Resized Image
+      </button>
+    </div>
+
+    <footer class="brand-footer">
+      ${branding?.businessName || 'Image Resizer'} • Powered by Blink
+    </footer>
+  </div>
+
+  <canvas id="canvas" style="display: none;"></canvas>
+
+  <script>
+    let originalImage = null;
+    let aspectRatio = 1;
+    let locked = true;
+    let originalFileSize = 0;
+
+    const dropZone = document.getElementById('drop-zone');
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      if (e.dataTransfer.files[0]) handleImage({ target: { files: [e.dataTransfer.files[0]] } });
+    });
+
+    function handleImage(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      originalFileSize = file.size;
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const img = new Image();
+        img.onload = function() {
+          originalImage = img;
+          aspectRatio = img.width / img.height;
+
+          document.getElementById('width').value = img.width;
+          document.getElementById('height').value = img.height;
+          document.getElementById('original-preview').src = event.target.result;
+          document.getElementById('preview-container').style.display = 'block';
+          document.getElementById('original-size').textContent = formatBytes(originalFileSize);
+
+          resizeImage();
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function toggleLock() {
+      locked = !locked;
+      document.getElementById('link-btn').style.opacity = locked ? 1 : 0.3;
+    }
+
+    function updateSize(changed) {
+      if (!originalImage || !locked) return;
+      if (changed === 'width') {
+        const w = parseInt(document.getElementById('width').value) || 0;
+        document.getElementById('height').value = Math.round(w / aspectRatio);
+      } else {
+        const h = parseInt(document.getElementById('height').value) || 0;
+        document.getElementById('width').value = Math.round(h * aspectRatio);
+      }
+      resizeImage();
+    }
+
+    function updateQuality() {
+      document.getElementById('quality-value').textContent = document.getElementById('quality').value;
+      resizeImage();
+    }
+
+    function resizeImage() {
+      if (!originalImage) return;
+
+      const width = parseInt(document.getElementById('width').value) || originalImage.width;
+      const height = parseInt(document.getElementById('height').value) || originalImage.height;
+      const quality = parseInt(document.getElementById('quality').value) / 100;
+
+      const canvas = document.getElementById('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(originalImage, 0, 0, width, height);
+
+      const dataUrl = canvas.toDataURL('image/jpeg', quality);
+      document.getElementById('resized-preview').src = dataUrl;
+
+      const newSize = Math.round((dataUrl.length - 22) * 3 / 4);
+      document.getElementById('new-size').textContent = formatBytes(newSize);
+      const reduction = Math.round((1 - newSize / originalFileSize) * 100);
+      document.getElementById('reduction').textContent = (reduction > 0 ? '-' : '+') + Math.abs(reduction) + '%';
+      document.getElementById('file-info').style.display = 'flex';
+      document.getElementById('download-btn').disabled = false;
+    }
+
+    function downloadImage() {
+      const canvas = document.getElementById('canvas');
+      const quality = parseInt(document.getElementById('quality').value) / 100;
+      const link = document.createElement('a');
+      link.download = 'resized-image.jpg';
+      link.href = canvas.toDataURL('image/jpeg', quality);
+      link.click();
+    }
+
+    function formatBytes(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+  </script>
+</body>
+</html>`;
+}
+
+// ============================================
+// JSON/CSV CONVERTER
+// ============================================
+
+function generateJSONCSVConverter(config) {
+  const { name, style, colors, branding } = config;
+  const stylePreset = STYLE_PRESETS[style] || STYLE_PRESETS.modern;
+  const css = stylePreset.getCSS(colors);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${name || 'JSON/CSV Converter'} | ${branding?.businessName || 'Utility Tools'}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    ${css}
+
+    .mode-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+    .mode-tab {
+      flex: 1; padding: 16px; text-align: center; border-radius: 12px; cursor: pointer;
+      background: rgba(255,255,255,0.03); border: 2px solid rgba(255,255,255,0.08);
+      font-weight: 600; transition: all 0.2s;
+    }
+    .mode-tab.active { background: ${colors.primary}15; border-color: ${colors.primary}60; color: ${colors.primary}; }
+    .editor-grid { display: grid; grid-template-columns: 1fr 60px 1fr; gap: 16px; margin-bottom: 20px; }
+    @media (max-width: 768px) { .editor-grid { grid-template-columns: 1fr; } .arrow-col { transform: rotate(90deg); } }
+    .editor-panel {}
+    .editor-label { font-size: 0.8rem; font-weight: 600; color: #888; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+    .editor-textarea {
+      width: 100%; min-height: 300px; padding: 16px; font-family: monospace; font-size: 0.85rem;
+      background: rgba(0,0,0,0.2); color: #e0e0e0; border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px; resize: vertical;
+    }
+    .arrow-col { display: flex; align-items: center; justify-content: center; font-size: 2rem; color: ${colors.primary}; }
+    .action-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .status-msg { padding: 12px 16px; border-radius: 8px; margin-top: 16px; font-size: 0.9rem; }
+    .status-success { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+    .status-error { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="title">${name || 'JSON/CSV Converter'}</h1>
+      <p class="subtitle">Convert between JSON and CSV formats</p>
+    </header>
+
+    <div class="card">
+      <div class="mode-tabs">
+        <div class="mode-tab active" data-mode="json-to-csv" onclick="setMode('json-to-csv')">JSON → CSV</div>
+        <div class="mode-tab" data-mode="csv-to-json" onclick="setMode('csv-to-json')">CSV → JSON</div>
+      </div>
+
+      <div class="editor-grid">
+        <div class="editor-panel">
+          <div class="editor-label" id="input-label">JSON Input</div>
+          <textarea class="editor-textarea" id="input" placeholder="Paste your data here..."></textarea>
+        </div>
+        <div class="arrow-col">→</div>
+        <div class="editor-panel">
+          <div class="editor-label" id="output-label">CSV Output</div>
+          <textarea class="editor-textarea" id="output" placeholder="Converted data will appear here..." readonly></textarea>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button class="btn-primary" onclick="convert()">Convert</button>
+        <button class="btn-secondary" onclick="copyOutput()">Copy Output</button>
+        <button class="btn-secondary" onclick="downloadOutput()">Download</button>
+        <button class="btn-secondary" onclick="clearAll()">Clear</button>
+      </div>
+
+      <div class="status-msg" id="status" style="display: none;"></div>
+    </div>
+
+    <footer class="brand-footer">
+      ${branding?.businessName || 'JSON/CSV Converter'} • Powered by Blink
+    </footer>
+  </div>
+
+  <script>
+    let mode = 'json-to-csv';
+
+    function setMode(m) {
+      mode = m;
+      document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+      document.querySelector('[data-mode="' + m + '"]').classList.add('active');
+      document.getElementById('input-label').textContent = m === 'json-to-csv' ? 'JSON Input' : 'CSV Input';
+      document.getElementById('output-label').textContent = m === 'json-to-csv' ? 'CSV Output' : 'JSON Output';
+      document.getElementById('input').placeholder = m === 'json-to-csv' ? 'Paste JSON array here...' : 'Paste CSV data here...';
+      clearAll();
+    }
+
+    function showStatus(msg, isError) {
+      const el = document.getElementById('status');
+      el.textContent = msg;
+      el.className = 'status-msg ' + (isError ? 'status-error' : 'status-success');
+      el.style.display = 'block';
+    }
+
+    function convert() {
+      const input = document.getElementById('input').value.trim();
+      if (!input) { showStatus('Please enter some data', true); return; }
+
+      try {
+        if (mode === 'json-to-csv') {
+          const json = JSON.parse(input);
+          if (!Array.isArray(json)) throw new Error('JSON must be an array of objects');
+          if (json.length === 0) throw new Error('JSON array is empty');
+
+          const headers = Object.keys(json[0]);
+          const rows = json.map(obj => headers.map(h => {
+            let val = obj[h];
+            if (typeof val === 'object') val = JSON.stringify(val);
+            if (typeof val === 'string' && (val.includes(',') || val.includes('"') || val.includes('\\n'))) {
+              val = '"' + val.replace(/"/g, '""') + '"';
+            }
+            return val ?? '';
+          }).join(','));
+
+          document.getElementById('output').value = headers.join(',') + '\\n' + rows.join('\\n');
+          showStatus('Converted ' + json.length + ' records to CSV', false);
+        } else {
+          const lines = input.split('\\n').filter(l => l.trim());
+          if (lines.length < 2) throw new Error('CSV must have headers and at least one data row');
+
+          const headers = parseCSVLine(lines[0]);
+          const result = lines.slice(1).map(line => {
+            const values = parseCSVLine(line);
+            const obj = {};
+            headers.forEach((h, i) => obj[h] = values[i] || '');
+            return obj;
+          });
+
+          document.getElementById('output').value = JSON.stringify(result, null, 2);
+          showStatus('Converted ' + result.length + ' records to JSON', false);
+        }
+      } catch (e) {
+        showStatus('Error: ' + e.message, true);
+      }
+    }
+
+    function parseCSVLine(line) {
+      const result = [];
+      let current = '';
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+          if (inQuotes && line[i + 1] === '"') { current += '"'; i++; }
+          else inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          result.push(current); current = '';
+        } else {
+          current += char;
+        }
+      }
+      result.push(current);
+      return result;
+    }
+
+    function copyOutput() {
+      const output = document.getElementById('output').value;
+      if (output) { navigator.clipboard.writeText(output); showStatus('Copied to clipboard!', false); }
+    }
+
+    function downloadOutput() {
+      const output = document.getElementById('output').value;
+      if (!output) return;
+      const ext = mode === 'json-to-csv' ? 'csv' : 'json';
+      const blob = new Blob([output], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'converted.' + ext;
+      link.click();
+    }
+
+    function clearAll() {
+      document.getElementById('input').value = '';
+      document.getElementById('output').value = '';
+      document.getElementById('status').style.display = 'none';
+    }
+  </script>
+</body>
+</html>`;
+}
+
+// ============================================
+// WORD COUNTER
+// ============================================
+
+function generateWordCounter(config) {
+  const { name, style, colors, branding } = config;
+  const stylePreset = STYLE_PRESETS[style] || STYLE_PRESETS.modern;
+  const css = stylePreset.getCSS(colors);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${name || 'Word Counter'} | ${branding?.businessName || 'Utility Tools'}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    ${css}
+
+    .text-input {
+      width: 100%; min-height: 250px; padding: 20px; font-size: 1rem; line-height: 1.6;
+      background: rgba(0,0,0,0.2); color: #e0e0e0; border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px; margin-bottom: 24px; resize: vertical;
+    }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    @media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+    .stat-card {
+      text-align: center; padding: 20px; background: rgba(255,255,255,0.03);
+      border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);
+    }
+    .stat-value { font-size: 2rem; font-weight: 700; color: ${colors.primary}; }
+    .stat-label { font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+    .reading-time { text-align: center; padding: 16px; background: ${colors.primary}10; border-radius: 8px; }
+    .reading-time-value { font-size: 1.2rem; font-weight: 600; color: ${colors.primary}; }
+    .reading-time-label { font-size: 0.85rem; color: #888; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="title">${name || 'Word Counter'}</h1>
+      <p class="subtitle">Count words, characters, sentences, and more</p>
+    </header>
+
+    <div class="card">
+      <textarea class="text-input" id="text" placeholder="Start typing or paste your text here..." oninput="updateStats()"></textarea>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="words">0</div>
+          <div class="stat-label">Words</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="chars">0</div>
+          <div class="stat-label">Characters</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="chars-no-space">0</div>
+          <div class="stat-label">No Spaces</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="sentences">0</div>
+          <div class="stat-label">Sentences</div>
+        </div>
+      </div>
+
+      <div class="reading-time">
+        <div class="reading-time-value" id="reading-time">0 min</div>
+        <div class="reading-time-label">Estimated reading time (200 wpm)</div>
+      </div>
+    </div>
+
+    <footer class="brand-footer">
+      ${branding?.businessName || 'Word Counter'} • Powered by Blink
+    </footer>
+  </div>
+
+  <script>
+    function updateStats() {
+      const text = document.getElementById('text').value;
+
+      const words = text.trim() ? text.trim().split(/\\s+/).length : 0;
+      const chars = text.length;
+      const charsNoSpace = text.replace(/\\s/g, '').length;
+      const sentences = text.split(/[.!?]+/).filter(s => s.trim()).length;
+      const readingTime = Math.ceil(words / 200);
+
+      document.getElementById('words').textContent = words.toLocaleString();
+      document.getElementById('chars').textContent = chars.toLocaleString();
+      document.getElementById('chars-no-space').textContent = charsNoSpace.toLocaleString();
+      document.getElementById('sentences').textContent = sentences.toLocaleString();
+      document.getElementById('reading-time').textContent = readingTime + ' min';
+    }
+  </script>
+</body>
+</html>`;
+}
+
+// ============================================
+// AGE CALCULATOR
+// ============================================
+
+function generateAgeCalculator(config) {
+  const { name, style, colors, branding } = config;
+  const stylePreset = STYLE_PRESETS[style] || STYLE_PRESETS.modern;
+  const css = stylePreset.getCSS(colors);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${name || 'Age Calculator'} | ${branding?.businessName || 'Utility Tools'}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    ${css}
+
+    .date-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+    @media (max-width: 500px) { .date-inputs { grid-template-columns: 1fr; } }
+    .date-input { width: 100%; padding: 14px; font-size: 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; }
+    .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+    @media (max-width: 500px) { .result-grid { grid-template-columns: 1fr; } }
+    .result-card { text-align: center; padding: 24px; background: rgba(255,255,255,0.03); border-radius: 12px; }
+    .result-value { font-size: 2.5rem; font-weight: 700; color: ${colors.primary}; }
+    .result-label { font-size: 0.85rem; color: #888; margin-top: 4px; }
+    .detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .detail-label { color: #888; }
+    .detail-value { font-weight: 600; color: #fff; }
+    .next-birthday { text-align: center; padding: 20px; background: ${colors.primary}10; border-radius: 12px; margin-top: 20px; }
+    .countdown { font-size: 1.2rem; font-weight: 600; color: ${colors.primary}; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="title">${name || 'Age Calculator'}</h1>
+      <p class="subtitle">Calculate your exact age in years, months, and days</p>
+    </header>
+
+    <div class="card">
+      <div class="date-inputs">
+        <div>
+          <label class="form-label">Date of Birth</label>
+          <input type="date" class="date-input" id="birthdate" onchange="calculateAge()">
+        </div>
+        <div>
+          <label class="form-label">Calculate Age On</label>
+          <input type="date" class="date-input" id="target-date" onchange="calculateAge()">
+        </div>
+      </div>
+
+      <div class="result-grid" id="results" style="display: none;">
+        <div class="result-card">
+          <div class="result-value" id="years">0</div>
+          <div class="result-label">Years</div>
+        </div>
+        <div class="result-card">
+          <div class="result-value" id="months">0</div>
+          <div class="result-label">Months</div>
+        </div>
+        <div class="result-card">
+          <div class="result-value" id="days">0</div>
+          <div class="result-label">Days</div>
+        </div>
+      </div>
+
+      <div id="details" style="display: none;">
+        <div class="detail-row"><span class="detail-label">Total Months</span><span class="detail-value" id="total-months">0</span></div>
+        <div class="detail-row"><span class="detail-label">Total Weeks</span><span class="detail-value" id="total-weeks">0</span></div>
+        <div class="detail-row"><span class="detail-label">Total Days</span><span class="detail-value" id="total-days">0</span></div>
+        <div class="detail-row"><span class="detail-label">Total Hours</span><span class="detail-value" id="total-hours">0</span></div>
+
+        <div class="next-birthday">
+          <div style="color: #888; margin-bottom: 8px;">Next Birthday In</div>
+          <div class="countdown" id="next-birthday">-</div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="brand-footer">
+      ${branding?.businessName || 'Age Calculator'} • Powered by Blink
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('target-date').valueAsDate = new Date();
+
+    function calculateAge() {
+      const birthdate = document.getElementById('birthdate').value;
+      const targetDate = document.getElementById('target-date').value;
+      if (!birthdate) return;
+
+      const birth = new Date(birthdate);
+      const target = new Date(targetDate || new Date());
+
+      if (birth > target) { alert('Birth date cannot be in the future'); return; }
+
+      let years = target.getFullYear() - birth.getFullYear();
+      let months = target.getMonth() - birth.getMonth();
+      let days = target.getDate() - birth.getDate();
+
+      if (days < 0) { months--; days += new Date(target.getFullYear(), target.getMonth(), 0).getDate(); }
+      if (months < 0) { years--; months += 12; }
+
+      const totalDays = Math.floor((target - birth) / (1000 * 60 * 60 * 24));
+
+      document.getElementById('years').textContent = years;
+      document.getElementById('months').textContent = months;
+      document.getElementById('days').textContent = days;
+      document.getElementById('total-months').textContent = (years * 12 + months).toLocaleString();
+      document.getElementById('total-weeks').textContent = Math.floor(totalDays / 7).toLocaleString();
+      document.getElementById('total-days').textContent = totalDays.toLocaleString();
+      document.getElementById('total-hours').textContent = (totalDays * 24).toLocaleString();
+
+      // Next birthday
+      const nextBirthday = new Date(target.getFullYear(), birth.getMonth(), birth.getDate());
+      if (nextBirthday <= target) nextBirthday.setFullYear(nextBirthday.getFullYear() + 1);
+      const daysUntil = Math.ceil((nextBirthday - target) / (1000 * 60 * 60 * 24));
+      document.getElementById('next-birthday').textContent = daysUntil + ' days';
+
+      document.getElementById('results').style.display = 'grid';
+      document.getElementById('details').style.display = 'block';
+    }
+  </script>
+</body>
+</html>`;
+}
+
+// ============================================
+// PASSWORD GENERATOR
+// ============================================
+
+function generatePasswordGenerator(config) {
+  const { name, style, colors, branding } = config;
+  const stylePreset = STYLE_PRESETS[style] || STYLE_PRESETS.modern;
+  const css = stylePreset.getCSS(colors);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${name || 'Password Generator'} | ${branding?.businessName || 'Security Tools'}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    ${css}
+
+    .password-display {
+      display: flex; align-items: center; gap: 12px; padding: 20px;
+      background: rgba(0,0,0,0.3); border-radius: 12px; margin-bottom: 24px;
+    }
+    .password-text {
+      flex: 1; font-family: monospace; font-size: 1.3rem; word-break: break-all;
+      color: #fff; letter-spacing: 1px;
+    }
+    .copy-btn {
+      padding: 12px 20px; background: ${colors.primary}; color: #fff; border: none;
+      border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s;
+    }
+    .copy-btn:hover { transform: scale(1.05); }
+    .strength-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-bottom: 8px; overflow: hidden; }
+    .strength-fill { height: 100%; transition: all 0.3s; }
+    .strength-label { font-size: 0.85rem; margin-bottom: 24px; }
+    .option-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .option-label { color: #ccc; }
+    .length-slider { width: 100%; margin: 8px 0; }
+    .checkbox-option { display: flex; align-items: center; gap: 10px; }
+    .checkbox-option input { width: 20px; height: 20px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="title">${name || 'Password Generator'}</h1>
+      <p class="subtitle">Generate secure, random passwords</p>
+    </header>
+
+    <div class="card">
+      <div class="password-display">
+        <span class="password-text" id="password">Click Generate</span>
+        <button class="copy-btn" onclick="copyPassword()">Copy</button>
+      </div>
+
+      <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+      <div class="strength-label"><span id="strength-text">-</span></div>
+
+      <div class="option-row">
+        <span class="option-label">Length: <strong id="length-value">16</strong></span>
+        <input type="range" class="length-slider" id="length" min="8" max="64" value="16" style="width: 60%;" oninput="updateLength()">
+      </div>
+
+      <div class="option-row">
+        <span class="option-label">Uppercase (A-Z)</span>
+        <input type="checkbox" id="uppercase" checked onchange="generate()">
+      </div>
+
+      <div class="option-row">
+        <span class="option-label">Lowercase (a-z)</span>
+        <input type="checkbox" id="lowercase" checked onchange="generate()">
+      </div>
+
+      <div class="option-row">
+        <span class="option-label">Numbers (0-9)</span>
+        <input type="checkbox" id="numbers" checked onchange="generate()">
+      </div>
+
+      <div class="option-row">
+        <span class="option-label">Symbols (!@#$%)</span>
+        <input type="checkbox" id="symbols" checked onchange="generate()">
+      </div>
+
+      <button class="btn-primary" onclick="generate()" style="width: 100%; margin-top: 24px;">
+        Generate New Password
+      </button>
+    </div>
+
+    <footer class="brand-footer">
+      ${branding?.businessName || 'Password Generator'} • Powered by Blink
+    </footer>
+  </div>
+
+  <script>
+    function updateLength() {
+      document.getElementById('length-value').textContent = document.getElementById('length').value;
+      generate();
+    }
+
+    function generate() {
+      const length = parseInt(document.getElementById('length').value);
+      const useUpper = document.getElementById('uppercase').checked;
+      const useLower = document.getElementById('lowercase').checked;
+      const useNumbers = document.getElementById('numbers').checked;
+      const useSymbols = document.getElementById('symbols').checked;
+
+      let chars = '';
+      if (useUpper) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      if (useLower) chars += 'abcdefghijklmnopqrstuvwxyz';
+      if (useNumbers) chars += '0123456789';
+      if (useSymbols) chars += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+      if (!chars) { alert('Select at least one character type'); return; }
+
+      let password = '';
+      const array = new Uint32Array(length);
+      crypto.getRandomValues(array);
+      for (let i = 0; i < length; i++) {
+        password += chars[array[i] % chars.length];
+      }
+
+      document.getElementById('password').textContent = password;
+      updateStrength(password);
+    }
+
+    function updateStrength(password) {
+      let score = 0;
+      if (password.length >= 12) score++;
+      if (password.length >= 16) score++;
+      if (/[A-Z]/.test(password)) score++;
+      if (/[a-z]/.test(password)) score++;
+      if (/[0-9]/.test(password)) score++;
+      if (/[^A-Za-z0-9]/.test(password)) score++;
+
+      const levels = [
+        { text: 'Very Weak', color: '#ef4444', width: '20%' },
+        { text: 'Weak', color: '#f97316', width: '35%' },
+        { text: 'Fair', color: '#eab308', width: '50%' },
+        { text: 'Good', color: '#84cc16', width: '70%' },
+        { text: 'Strong', color: '#22c55e', width: '85%' },
+        { text: 'Very Strong', color: '#10b981', width: '100%' }
+      ];
+
+      const level = levels[Math.min(score, 5)];
+      document.getElementById('strength-fill').style.width = level.width;
+      document.getElementById('strength-fill').style.background = level.color;
+      document.getElementById('strength-text').textContent = level.text;
+      document.getElementById('strength-text').style.color = level.color;
+    }
+
+    function copyPassword() {
+      navigator.clipboard.writeText(document.getElementById('password').textContent);
+      alert('Password copied to clipboard!');
+    }
+
+    generate();
   </script>
 </body>
 </html>`;

@@ -14,11 +14,17 @@ const {
   analyzeGenerationRequest
 } = require('../configs/index.cjs');
 
+// Import layout context builder for industry-specific layouts
+const { buildLayoutContext } = require('../../config/industry-layouts.cjs');
+
 // Import video services for dynamic video fetching
 const { getIndustryVideo } = require('../services/video.cjs');
 
 // Import page name utilities
 const { toNavLabel } = require('../utils/page-names.cjs');
+
+// Import industry fixtures for test mode fallback pages
+const { getIndustryFixture, getSampleData } = require('../configs/industry-fixtures.cjs');
 
 // These need to be passed in or loaded separately
 let INDUSTRIES, LAYOUTS, EFFECTS, SECTIONS;
@@ -1642,7 +1648,7 @@ TECHNICAL RULES (MUST FOLLOW):
 4. NO nav/footer - those are provided by App.jsx.
 5. NO CartContext/CartProvider - NEVER create your own cart context or provider. The app-level CartProvider already wraps all pages.
    If you need cart functionality: import { useCart } from '../context/CartContext';
-   Then use: const { cart, addItem, removeItem, clearCart, getTotal } = useCart();
+   Then use: const { items, addItem, removeItem, clearCart, total, itemCount } = useCart();
    DO NOT create local cart state, CartContext, or CartProvider - it will conflict with the app-level provider and cause "useCart must be used within CartProvider" errors.
 6. WHITESPACE: Use THEME.spacing.sectionPadding for top/bottom margins.
 7. INNOVATION: Do not use standard vertical blocks. Experiment with the ARCHETYPE provided above.
@@ -3050,7 +3056,7 @@ TECHNICAL REQUIREMENTS:
 7. NO nav/footer - those are provided by App.jsx
 8. NO CartContext/CartProvider - NEVER create your own cart context. If you need cart functionality:
    import { useCart } from '../context/CartContext';
-   Then use: const { cart, addItem, removeItem, clearCart, getTotal } = useCart();
+   Then use: const { items, addItem, removeItem, clearCart, total, itemCount } = useCart();
 
 CRITICAL:
 - Return ONLY the JSX code, no markdown code blocks
@@ -3061,19 +3067,396 @@ CRITICAL:
 Generate the complete ${componentName}Page.jsx component:`;
 }
 
-function buildFallbackPage(componentName, pageId, promptConfig) {
-  const colors = promptConfig?.colors || { primary: '#0a1628', text: '#1a1a2e', textMuted: '#4a5568' };
+function buildFallbackPage(componentName, pageId, promptConfig, industry) {
+  // Ensure all color properties have fallbacks (promptConfig.colors may exist but be missing some properties)
+  const defaultColors = { primary: '#0a1628', accent: '#06b6d4', text: '#1a1a2e', textMuted: '#4a5568', surface: '#f8f9fa' };
+  const colors = {
+    ...defaultColors,
+    ...(promptConfig?.colors || {})
+  };
   const typography = promptConfig?.typography || { heading: 'Georgia, serif' };
   const displayName = toNavLabel(pageId);
-  
+
+  // Get industry-specific data for richer fallback pages
+  const fixture = industry ? getIndustryFixture(industry) : null;
+  const sampleData = industry ? getSampleData(industry) : null;
+  const terminology = fixture?.terminology || { items: 'Services', action: 'Get Started' };
+
+  // Generate page-specific content based on pageId
+  const pageType = pageId.toLowerCase();
+
+  // HOME PAGE - Hero + Features
+  if (pageType === 'home' || pageType === 'landing') {
+    return `import React from 'react';
+import { Link } from 'react-router-dom';
+
+const ${componentName}Page = () => {
+  return (
+    <div style={{ minHeight: '100vh' }}>
+      {/* Hero Section */}
+      <section style={{
+        padding: '120px 20px 80px',
+        background: 'linear-gradient(135deg, ${colors.primary} 0%, ${colors.accent || colors.primary} 100%)',
+        color: 'white',
+        textAlign: 'center'
+      }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <h1 style={{ fontSize: '48px', fontFamily: "${typography.heading}", marginBottom: '24px', fontWeight: 700 }}>
+            Welcome to Our Business
+          </h1>
+          <p style={{ fontSize: '20px', opacity: 0.9, marginBottom: '32px', lineHeight: 1.6 }}>
+            Quality ${terminology.items.toLowerCase()} you can trust. Let us help you achieve your goals.
+          </p>
+          <Link to="/contact" style={{
+            display: 'inline-block',
+            padding: '16px 32px',
+            background: 'white',
+            color: '${colors.primary}',
+            textDecoration: 'none',
+            borderRadius: '8px',
+            fontWeight: 600,
+            fontSize: '18px'
+          }}>
+            ${terminology.action}
+          </Link>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section style={{ padding: '80px 20px', maxWidth: '1200px', margin: '0 auto' }}>
+        <h2 style={{ fontSize: '32px', color: '${colors.text}', textAlign: 'center', marginBottom: '48px', fontFamily: "${typography.heading}" }}>
+          Why Choose Us
+        </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '32px' }}>
+          {['Quality', 'Experience', 'Trust'].map((feature, idx) => (
+            <div key={idx} style={{
+              padding: '32px',
+              background: '${colors.surface}',
+              borderRadius: '12px',
+              textAlign: 'center'
+            }}>
+              <h3 style={{ fontSize: '20px', color: '${colors.primary}', marginBottom: '12px' }}>{feature}</h3>
+              <p style={{ color: '${colors.textMuted}', lineHeight: 1.6 }}>
+                We pride ourselves on delivering exceptional {feature.toLowerCase()} in everything we do.
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default ${componentName}Page;`;
+  }
+
+  // MENU / SERVICES / PRODUCTS PAGE
+  if (pageType === 'menu' || pageType === 'services' || pageType === 'products' || pageType === 'shop') {
+    const categories = sampleData?.categories || [
+      { name: 'Category 1', items: [{ name: 'Item A', price: 29, description: 'Great option' }] },
+      { name: 'Category 2', items: [{ name: 'Item B', price: 49, description: 'Premium choice' }] }
+    ];
+
+    return `import React from 'react';
+
+const ${componentName}Page = () => {
+  const categories = ${JSON.stringify(categories, null, 2)};
+
+  return (
+    <div style={{ padding: '80px 20px', maxWidth: '1200px', margin: '0 auto' }}>
+      <h1 style={{ fontSize: '36px', color: '${colors.primary}', fontFamily: "${typography.heading}", marginBottom: '16px', textAlign: 'center' }}>
+        Our ${terminology.items}
+      </h1>
+      <p style={{ color: '${colors.textMuted}', fontSize: '18px', textAlign: 'center', marginBottom: '48px' }}>
+        Browse our selection below
+      </p>
+
+      {categories.map((category, catIdx) => (
+        <div key={catIdx} style={{ marginBottom: '48px' }}>
+          <h2 style={{ fontSize: '24px', color: '${colors.text}', marginBottom: '24px', paddingBottom: '12px', borderBottom: '2px solid ${colors.surface}' }}>
+            {category.name}
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
+            {category.items.map((item, itemIdx) => (
+              <div key={itemIdx} style={{
+                padding: '24px',
+                background: '${colors.surface}',
+                borderRadius: '12px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start'
+              }}>
+                <div>
+                  <h3 style={{ fontSize: '18px', color: '${colors.text}', marginBottom: '8px' }}>{item.name}</h3>
+                  <p style={{ color: '${colors.textMuted}', fontSize: '14px' }}>{item.description}</p>
+                </div>
+                {item.price && (
+                  <span style={{ fontSize: '18px', fontWeight: 600, color: '${colors.primary}' }}>
+                    \${item.price}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default ${componentName}Page;`;
+  }
+
+  // ABOUT PAGE
+  if (pageType === 'about') {
+    return `import React from 'react';
+
+const ${componentName}Page = () => {
+  return (
+    <div style={{ padding: '80px 20px', maxWidth: '900px', margin: '0 auto' }}>
+      <h1 style={{ fontSize: '36px', color: '${colors.primary}', fontFamily: "${typography.heading}", marginBottom: '24px', textAlign: 'center' }}>
+        About Us
+      </h1>
+
+      <div style={{ fontSize: '18px', color: '${colors.text}', lineHeight: 1.8 }}>
+        <p style={{ marginBottom: '24px' }}>
+          Welcome to our business. We've been serving our community with dedication and excellence.
+          Our team is committed to providing you with the best ${terminology.items.toLowerCase()} and customer experience.
+        </p>
+
+        <p style={{ marginBottom: '24px' }}>
+          What sets us apart is our attention to detail and genuine care for every customer.
+          We believe in building lasting relationships based on trust and quality.
+        </p>
+
+        <div style={{
+          padding: '32px',
+          background: '${colors.surface}',
+          borderRadius: '12px',
+          marginTop: '40px',
+          borderLeft: '4px solid ${colors.primary}'
+        }}>
+          <h3 style={{ color: '${colors.primary}', marginBottom: '12px' }}>Our Mission</h3>
+          <p style={{ color: '${colors.textMuted}', margin: 0 }}>
+            To deliver exceptional ${terminology.items.toLowerCase()} that exceed expectations and make a positive impact in our customers' lives.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ${componentName}Page;`;
+  }
+
+  // CONTACT PAGE
+  if (pageType === 'contact') {
+    return `import React, { useState } from 'react';
+
+const ${componentName}Page = () => {
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert('Thank you for your message! We will get back to you soon.');
+  };
+
+  return (
+    <div style={{ padding: '80px 20px', maxWidth: '600px', margin: '0 auto' }}>
+      <h1 style={{ fontSize: '36px', color: '${colors.primary}', fontFamily: "${typography.heading}", marginBottom: '16px', textAlign: 'center' }}>
+        Contact Us
+      </h1>
+      <p style={{ color: '${colors.textMuted}', fontSize: '18px', textAlign: 'center', marginBottom: '40px' }}>
+        We'd love to hear from you
+      </p>
+
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div>
+          <label style={{ display: 'block', marginBottom: '8px', color: '${colors.text}', fontWeight: 500 }}>Name</label>
+          <input
+            type="text"
+            value={formData.name}
+            onChange={(e) => setFormData({...formData, name: e.target.value})}
+            required
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              borderRadius: '8px',
+              border: '1px solid #e2e8f0',
+              fontSize: '16px'
+            }}
+          />
+        </div>
+        <div>
+          <label style={{ display: 'block', marginBottom: '8px', color: '${colors.text}', fontWeight: 500 }}>Email</label>
+          <input
+            type="email"
+            value={formData.email}
+            onChange={(e) => setFormData({...formData, email: e.target.value})}
+            required
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              borderRadius: '8px',
+              border: '1px solid #e2e8f0',
+              fontSize: '16px'
+            }}
+          />
+        </div>
+        <div>
+          <label style={{ display: 'block', marginBottom: '8px', color: '${colors.text}', fontWeight: 500 }}>Message</label>
+          <textarea
+            value={formData.message}
+            onChange={(e) => setFormData({...formData, message: e.target.value})}
+            required
+            rows={5}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              borderRadius: '8px',
+              border: '1px solid #e2e8f0',
+              fontSize: '16px',
+              resize: 'vertical'
+            }}
+          />
+        </div>
+        <button type="submit" style={{
+          padding: '14px 28px',
+          background: '${colors.primary}',
+          color: 'white',
+          border: 'none',
+          borderRadius: '8px',
+          fontSize: '16px',
+          fontWeight: 600,
+          cursor: 'pointer'
+        }}>
+          Send Message
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default ${componentName}Page;`;
+  }
+
+  // GALLERY PAGE
+  if (pageType === 'gallery' || pageType === 'portfolio') {
+    return `import React from 'react';
+
+const ${componentName}Page = () => {
+  const images = Array.from({ length: 6 }, (_, i) => ({
+    id: i + 1,
+    src: \`https://picsum.photos/seed/\${i + 1}/400/300\`,
+    alt: \`Gallery image \${i + 1}\`
+  }));
+
+  return (
+    <div style={{ padding: '80px 20px', maxWidth: '1200px', margin: '0 auto' }}>
+      <h1 style={{ fontSize: '36px', color: '${colors.primary}', fontFamily: "${typography.heading}", marginBottom: '16px', textAlign: 'center' }}>
+        ${displayName}
+      </h1>
+      <p style={{ color: '${colors.textMuted}', fontSize: '18px', textAlign: 'center', marginBottom: '48px' }}>
+        See our work in action
+      </p>
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+        gap: '24px'
+      }}>
+        {images.map((img) => (
+          <div key={img.id} style={{
+            borderRadius: '12px',
+            overflow: 'hidden',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+          }}>
+            <img
+              src={img.src}
+              alt={img.alt}
+              style={{ width: '100%', height: '240px', objectFit: 'cover' }}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default ${componentName}Page;`;
+  }
+
+  // TEAM PAGE
+  if (pageType === 'team' || pageType === 'staff' || pageType === 'providers') {
+    return `import React from 'react';
+
+const ${componentName}Page = () => {
+  const team = [
+    { name: 'John Smith', role: 'Owner', image: 'https://randomuser.me/api/portraits/men/32.jpg' },
+    { name: 'Sarah Johnson', role: 'Manager', image: 'https://randomuser.me/api/portraits/women/44.jpg' },
+    { name: 'Mike Davis', role: 'Specialist', image: 'https://randomuser.me/api/portraits/men/67.jpg' }
+  ];
+
+  return (
+    <div style={{ padding: '80px 20px', maxWidth: '1000px', margin: '0 auto' }}>
+      <h1 style={{ fontSize: '36px', color: '${colors.primary}', fontFamily: "${typography.heading}", marginBottom: '16px', textAlign: 'center' }}>
+        Meet Our Team
+      </h1>
+      <p style={{ color: '${colors.textMuted}', fontSize: '18px', textAlign: 'center', marginBottom: '48px' }}>
+        The people behind our success
+      </p>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '32px' }}>
+        {team.map((member, idx) => (
+          <div key={idx} style={{ textAlign: 'center' }}>
+            <img
+              src={member.image}
+              alt={member.name}
+              style={{
+                width: '160px',
+                height: '160px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                marginBottom: '16px',
+                border: '4px solid ${colors.surface}'
+              }}
+            />
+            <h3 style={{ fontSize: '20px', color: '${colors.text}', marginBottom: '4px' }}>{member.name}</h3>
+            <p style={{ color: '${colors.primary}', fontWeight: 500 }}>{member.role}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default ${componentName}Page;`;
+  }
+
+  // DEFAULT - Generic page with styled content
   return `import React from 'react';
 import { Link } from 'react-router-dom';
 
 const ${componentName}Page = () => {
   return (
-    <div style={{ padding: '80px 20px', maxWidth: '1200px', margin: '0 auto' }}>
-      <h1 style={{ fontSize: '36px', color: '${colors.primary}', fontFamily: "${typography.heading}", marginBottom: '20px' }}>${displayName}</h1>
-      <p style={{ color: '${colors.textMuted}', fontSize: '18px', lineHeight: 1.7 }}>Welcome to the ${displayName} page.</p>
+    <div style={{ padding: '80px 20px', maxWidth: '900px', margin: '0 auto' }}>
+      <h1 style={{ fontSize: '36px', color: '${colors.primary}', fontFamily: "${typography.heading}", marginBottom: '24px' }}>
+        ${displayName}
+      </h1>
+      <p style={{ color: '${colors.textMuted}', fontSize: '18px', lineHeight: 1.7, marginBottom: '32px' }}>
+        Welcome to the ${displayName} page. Content coming soon.
+      </p>
+      <Link to="/" style={{
+        display: 'inline-block',
+        padding: '12px 24px',
+        background: '${colors.primary}',
+        color: 'white',
+        textDecoration: 'none',
+        borderRadius: '8px',
+        fontWeight: 500
+      }}>
+        Back to Home
+      </Link>
     </div>
   );
 };
@@ -3251,8 +3634,28 @@ function buildAppJsx(name, pages, promptConfig, industry) {
   // Get industry-specific header configuration
   const headerConfig = getIndustryHeaderConfig(industry);
 
-  // Industries that require authentication
-  const authRequiredIndustries = ['survey-rewards', 'saas', 'ecommerce', 'collectibles', 'healthcare', 'family'];
+  // Industries that require authentication (expanded to all industries with companion apps)
+  // Auth is needed for: user accounts, loyalty programs, order history, bookings, etc.
+  const authRequiredIndustries = [
+    // All food & beverage
+    'restaurant', 'pizza', 'pizzeria', 'steakhouse', 'cafe', 'bar', 'bakery', 'brewery', 'winery', 'coffee-shop',
+    // Healthcare & wellness
+    'healthcare', 'dental', 'chiropractic', 'veterinary', 'spa-salon', 'barbershop', 'fitness', 'yoga', 'yoga-studio', 'martial-arts',
+    // Professional services
+    'law-firm', 'accounting', 'consulting', 'real-estate', 'insurance', 'finance', 'financial-advisor',
+    // Tech & retail
+    'saas', 'startup', 'agency', 'ecommerce', 'subscription-box', 'collectibles',
+    // Creative & entertainment
+    'photography', 'wedding', 'portfolio', 'musician', 'podcast', 'gaming',
+    // Organizations & education
+    'nonprofit', 'church', 'school', 'online-course',
+    // Trade services
+    'construction', 'plumber', 'electrician', 'hvac', 'landscaping', 'roofing', 'cleaning', 'auto-repair', 'moving',
+    // Other
+    'pet-services', 'event-venue', 'hotel', 'travel', 'daycare', 'tutoring', 'music-school', 'florist',
+    // Legacy
+    'survey-rewards', 'family'
+  ];
   const needsAuth = authRequiredIndustries.includes(industry);
   
   // Pages that require authentication (protected routes)
@@ -3274,13 +3677,42 @@ function buildAppJsx(name, pages, promptConfig, industry) {
     return `              <Route path="${routePath}" element={<${componentName} />} />`;
   }).join('\n');
 
-  // Filter out login/register from nav links
+  // Separate public pages from user/account pages
+  const publicPageNames = ['home', 'menu', 'about', 'gallery', 'contact', 'team', 'booking', 'services', 'portfolio', 'blog', 'faq', 'pricing'];
+  const userPageNames = ['dashboard', 'earn', 'wallet', 'rewards', 'profile', 'leaderboard', 'settings', 'account', 'orders', 'order-history'];
+
+  // Filter out login/register and separate by type
   const navPages = pages.filter(p => !['login', 'register'].includes(p.toLowerCase()));
-  const navLinks = navPages.map(p => {
+  const publicPages = navPages.filter(p => publicPageNames.includes(p.toLowerCase().replace(/\s+/g, '-')));
+  const userPages = navPages.filter(p => userPageNames.includes(p.toLowerCase().replace(/\s+/g, '-')));
+  const hasUserPages = userPages.length > 0;
+
+  // Only show public pages in main nav (LEFT side)
+  const navLinks = publicPages.map(p => {
     const label = toNavLabel(p);
     const navPath = toRoutePath(p);
     return `            <Link to="${navPath}" style={styles.navLink}>${label}</Link>`;
   }).join('\n');
+
+  // Build user dropdown items with icons for RIGHT side when logged in
+  const userDropdownItems = userPages.map(p => {
+    const label = toNavLabel(p);
+    const navPath = toRoutePath(p);
+    const iconMap = {
+      'dashboard': 'LayoutDashboard',
+      'profile': 'User',
+      'wallet': 'Wallet',
+      'rewards': 'Gift',
+      'earn': 'Coins',
+      'leaderboard': 'Trophy',
+      'settings': 'Settings',
+      'account': 'User',
+      'orders': 'ShoppingBag',
+      'order-history': 'ClipboardList'
+    };
+    const icon = iconMap[p.toLowerCase().replace(/\s+/g, '-')] || 'ChevronRight';
+    return { label, path: navPath, icon };
+  });
   
   // Auth imports and components
   const authImports = needsAuth ? `
@@ -3298,34 +3730,103 @@ import { useAuth } from './modules/auth-pages/components/AuthProvider';` : '';
   const authNavButtons = needsAuth ? `
             <AuthButtons />` : '';
 
+  // User dropdown items for generation
+  const dropdownItemsCode = userDropdownItems.map(item =>
+    `          <Link to="${item.path}" style={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
+            <${item.icon} size={16} />
+            ${item.label}
+          </Link>`
+  ).join('\n');
+
   const authButtonsComponent = needsAuth ? `
-// Auth navigation buttons
+// User dropdown for logged-in state
+function UserDropdown({ user, logout }) {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = React.useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <div style={styles.userDropdownContainer} ref={dropdownRef}>
+      <button
+        onClick={() => setDropdownOpen(!dropdownOpen)}
+        style={styles.userDropdownTrigger}
+        aria-expanded={dropdownOpen}
+      >
+        <User size={18} />
+        <span style={styles.userDropdownName}>{user.fullName || 'My Account'}</span>
+        <ChevronDown size={14} style={{ transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }} />
+      </button>
+      {dropdownOpen && (
+        <div style={styles.userDropdownMenu}>
+${dropdownItemsCode}
+          <div style={styles.dropdownDivider} />
+          <button onClick={() => { logout(); setDropdownOpen(false); }} style={styles.dropdownLogout}>
+            <LogOut size={16} />
+            Logout
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Auth navigation buttons - show Login/Signup or User Dropdown
 function AuthButtons() {
   const { user, logout } = useAuth();
-  
+
+  if (user) {
+    return <UserDropdown user={user} logout={logout} />;
+  }
+
+  return (
+    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+      <Link to="/login" style={styles.loginButton}>Login</Link>
+      <Link to="/register" style={styles.registerButton}>Sign Up</Link>
+    </div>
+  );
+}
+
+// Mobile user section - shows user pages or login buttons
+function MobileUserSection() {
+  const { user, logout } = useAuth();
+
   if (user) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <span style={{ color: '${colors.textMuted}', fontSize: '14px' }}>
-          {user.fullName || user.email}
-        </span>
-        <button onClick={logout} style={styles.logoutButton}>
+      <div style={styles.mobileUserSection}>
+        <div style={styles.mobileUserHeader}>
+          <User size={20} />
+          <span>{user.fullName || user.email}</span>
+        </div>
+${dropdownItemsCode.split('\n').map(line => line.replace('styles.dropdownItem', 'styles.mobileUserLink').replace('onClick={() => setDropdownOpen(false)}', '')).join('\n')}
+        <button onClick={logout} style={styles.mobileLogoutBtn}>
+          <LogOut size={16} />
           Logout
         </button>
       </div>
     );
   }
-  
+
   return (
-    <div style={{ display: 'flex', gap: '12px' }}>
-      <Link to="/login" style={styles.loginButton}>Login</Link>
-      <Link to="/register" style={styles.registerButton}>Sign Up</Link>
+    <div style={styles.mobileAuthButtons}>
+      <Link to="/login" style={styles.mobileLoginBtn}>Login</Link>
+      <Link to="/register" style={styles.mobileRegisterBtn}>Sign Up</Link>
     </div>
   );
 }
 ` : '';
 
   const authStyles = needsAuth ? `
+  // Login/Register buttons
   loginButton: {
     color: '${colors.textMuted}',
     textDecoration: 'none',
@@ -3336,8 +3837,8 @@ function AuthButtons() {
     transition: 'all 0.2s',
   },
   registerButton: {
-    background: '#22c55e',
-    color: '#000000',
+    background: '${colors.primary}',
+    color: '#ffffff',
     textDecoration: 'none',
     fontSize: '14px',
     fontWeight: '600',
@@ -3345,16 +3846,133 @@ function AuthButtons() {
     borderRadius: '6px',
     transition: 'all 0.2s',
   },
-  logoutButton: {
-    background: 'transparent',
-    color: '${colors.textMuted}',
-    border: '1px solid #333',
-    fontSize: '14px',
-    fontWeight: '500',
-    padding: '8px 16px',
-    borderRadius: '6px',
+  // User dropdown styles
+  userDropdownContainer: {
+    position: 'relative',
+  },
+  userDropdownTrigger: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '8px 12px',
+    background: 'rgba(0,0,0,0.05)',
+    border: 'none',
+    borderRadius: '8px',
     cursor: 'pointer',
     transition: 'all 0.2s',
+    color: '${colors.text}',
+    fontSize: '14px',
+    fontWeight: '500',
+  },
+  userDropdownName: {
+    maxWidth: '120px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  userDropdownMenu: {
+    position: 'absolute',
+    top: 'calc(100% + 8px)',
+    right: 0,
+    minWidth: '200px',
+    background: '#ffffff',
+    borderRadius: '12px',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+    padding: '8px',
+    zIndex: 1001,
+    animation: 'dropdownFadeIn 0.15s ease-out',
+  },
+  dropdownItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '10px 12px',
+    color: '${colors.text}',
+    textDecoration: 'none',
+    borderRadius: '8px',
+    fontSize: '14px',
+    transition: 'background 0.15s',
+  },
+  dropdownDivider: {
+    height: '1px',
+    background: 'rgba(0,0,0,0.08)',
+    margin: '8px 0',
+  },
+  dropdownLogout: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '10px 12px',
+    color: '#dc2626',
+    background: 'transparent',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '14px',
+    cursor: 'pointer',
+    width: '100%',
+    transition: 'background 0.15s',
+  },
+  // Mobile user section styles
+  mobileUserSection: {
+    paddingTop: '16px',
+    borderTop: '1px solid rgba(0,0,0,0.1)',
+  },
+  mobileUserHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '12px 0',
+    color: '${colors.text}',
+    fontWeight: '600',
+    fontSize: '16px',
+    borderBottom: '1px solid rgba(0,0,0,0.08)',
+    marginBottom: '8px',
+  },
+  mobileUserLink: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '14px 8px',
+    color: '${colors.text}',
+    textDecoration: 'none',
+    fontSize: '15px',
+    borderBottom: '1px solid rgba(0,0,0,0.05)',
+  },
+  mobileLogoutBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '14px 8px',
+    color: '#dc2626',
+    background: 'transparent',
+    border: 'none',
+    fontSize: '15px',
+    cursor: 'pointer',
+    width: '100%',
+    marginTop: '8px',
+  },
+  mobileLoginBtn: {
+    display: 'block',
+    padding: '14px',
+    textAlign: 'center',
+    color: '${colors.text}',
+    textDecoration: 'none',
+    border: '1px solid rgba(0,0,0,0.15)',
+    borderRadius: '8px',
+    fontSize: '15px',
+    fontWeight: '500',
+    marginBottom: '10px',
+  },
+  mobileRegisterBtn: {
+    display: 'block',
+    padding: '14px',
+    textAlign: 'center',
+    background: '${colors.primary}',
+    color: '#ffffff',
+    textDecoration: 'none',
+    borderRadius: '8px',
+    fontSize: '15px',
+    fontWeight: '600',
   },` : '';
 
   const appWrapper = needsAuth ? ['<AuthProvider>', '</AuthProvider>'] : ['', ''];
@@ -3370,6 +3988,12 @@ function AuthButtons() {
   if (headerConfig.showHours) headerIcons.push('Clock');
   if (headerConfig.showLocation) headerIcons.push('MapPin');
   if (headerConfig.showCredentials) headerIcons.push('Shield');
+  // Add auth-related icons
+  if (needsAuth) {
+    headerIcons.push('User', 'ChevronDown', 'LogOut');
+    // Add icons for user dropdown items
+    userDropdownItems.forEach(item => headerIcons.push(item.icon));
+  }
   const uniqueIcons = [...new Set(headerIcons)].join(', ');
 
   // Build emergency banner if needed
@@ -3525,9 +4149,9 @@ ${navLinks.split('\n').map(link => link.replace('styles.navLink', 'styles.mobile
               ${headerConfig.primaryCta ? `<Link to="${headerConfig.primaryCta.href || '/contact'}" style={styles.mobilePrimaryCta}>${headerConfig.primaryCta.text}</Link>` : ''}
               ${headerConfig.secondaryCta ? `<Link to="${headerConfig.secondaryCta.href || '/contact'}" style={styles.mobileSecondaryCta}>${headerConfig.secondaryCta.text}</Link>` : ''}
             </div>
-            <div style={styles.mobileAuthButtons}>
+${needsAuth && hasUserPages ? `            <MobileUserSection />` : `            <div style={styles.mobileAuthButtons}>
 ${authNavButtons}
-            </div>
+            </div>`}
           </div>
         </div>
       )}

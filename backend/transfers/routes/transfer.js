@@ -12,22 +12,22 @@ router.get('/validate/:code', async (req, res) => {
 
     // Find card with this transfer code
     const result = await db.query(`
-      SELECT 
+      SELECT
         c.*,
         u.full_name as seller_name,
         u.email as seller_email
       FROM cards c
       JOIN users u ON c.user_id = u.id
-      WHERE c.transfer_code = ?
+      WHERE c.transfer_code = $1
         AND c.transfer_code_used = FALSE
         AND c.transfer_code_expires_at > NOW()
     `, [code]);
 
     if (result.rows.length === 0) {
       console.log('❌ Invalid or expired code');
-      return res.json({ 
-        success: false, 
-        error: 'Invalid or expired transfer code' 
+      return res.json({
+        success: false,
+        error: 'Invalid or expired transfer code'
       });
     }
 
@@ -48,15 +48,15 @@ router.get('/validate/:code', async (req, res) => {
         is_graded: card.is_graded,
         grading_company: card.grading_company,
         grade: card.grade,
-        seller: card.seller_name || 'SlabTrack User'
+        seller: card.seller_name || 'SoleVault User'
       }
     });
 
   } catch (error) {
     console.error('Validate transfer code error:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Failed to validate code' 
+    res.status(500).json({
+      success: false,
+      error: 'Failed to validate code'
     });
   }
 });
@@ -71,17 +71,17 @@ router.post('/claim/:code', authenticateToken, async (req, res) => {
 
     // Find card with this transfer code
     const cardResult = await db.query(`
-      SELECT * FROM cards 
-      WHERE transfer_code = ?
+      SELECT * FROM cards
+      WHERE transfer_code = $1
         AND transfer_code_used = FALSE
         AND transfer_code_expires_at > NOW()
     `, [code]);
 
     if (cardResult.rows.length === 0) {
       console.log('❌ Invalid or expired code');
-      return res.json({ 
-        success: false, 
-        error: 'Invalid or expired transfer code' 
+      return res.json({
+        success: false,
+        error: 'Invalid or expired transfer code'
       });
     }
 
@@ -90,34 +90,34 @@ router.post('/claim/:code', authenticateToken, async (req, res) => {
 
     // Don't let user claim their own card
     if (previousOwnerId === newOwnerId) {
-      return res.json({ 
-        success: false, 
-        error: 'You cannot claim your own card' 
+      return res.json({
+        success: false,
+        error: 'You cannot claim your own card'
       });
     }
 
     console.log('🔄 Transferring card', card.id, 'from user', previousOwnerId, 'to user', newOwnerId);
 
-    // Start transaction
-    await db.query('START TRANSACTION');
+    // Start transaction (PostgreSQL syntax)
+    await db.query('BEGIN');
 
     try {
       // Record ownership history
       await db.query(`
-        INSERT INTO card_ownership_history 
+        INSERT INTO card_ownership_history
         (card_id, previous_owner_id, new_owner_id, sale_price, transfer_method, transfer_code)
-        VALUES (?, ?, ?, ?, ?, ?)
+        VALUES ($1, $2, $3, $4, $5, $6)
       `, [card.id, previousOwnerId, newOwnerId, card.sold_price || null, 'transfer_code', code]);
 
       // Transfer ownership
       await db.query(`
-        UPDATE cards 
-        SET 
-          user_id = ?,
+        UPDATE cards
+        SET
+          user_id = $1,
           transfer_code_used = TRUE,
           listing_status = 'unlisted',
           for_sale = FALSE
-        WHERE id = ?
+        WHERE id = $2
       `, [newOwnerId, card.id]);
 
       // Commit transaction
@@ -142,9 +142,9 @@ router.post('/claim/:code', authenticateToken, async (req, res) => {
 
   } catch (error) {
     console.error('Claim card error:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Failed to claim card' 
+    res.status(500).json({
+      success: false,
+      error: 'Failed to claim card'
     });
   }
 });

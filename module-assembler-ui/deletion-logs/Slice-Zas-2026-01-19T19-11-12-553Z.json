@@ -1,0 +1,161 @@
+{
+  "projectName": "Slice-Zas",
+  "deletedAt": "2026-01-19T19:11:12.553Z",
+  "resourcesFound": {
+    "name": "Slice-Zas",
+    "sanitizedName": "slice-zas",
+    "github": {
+      "repos": [
+        {
+          "name": "slice-zas-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "slice-zas-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "slice-zas-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "47731d73-3829-4d27-a4ad-ff97dee84222",
+        "name": "slice-zas",
+        "createdAt": "2026-01-19T18:26:26.002Z",
+        "environments": [
+          {
+            "id": "82a93be7-8800-46bd-adfd-da75efd5fcae",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "16144185-a8b0-44d6-b64e-2b9d980f7b46",
+          "name": "postgres"
+        },
+        {
+          "id": "1dbc02db-20d8-4591-848e-4120400e8021",
+          "name": "admin"
+        },
+        {
+          "id": "22e29103-47ef-4f6f-b724-5765e6a5146e",
+          "name": "backend"
+        },
+        {
+          "id": "89136781-a1e5-44bf-acc0-c075739a0efe",
+          "name": "frontend"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "fb1963ef0b37d8dd8852ce2cdabeb649",
+          "name": "slice-zas.be1st.io",
+          "type": "CNAME",
+          "content": "jfuvkb2t.up.railway.app"
+        },
+        {
+          "id": "25b0cf11c60916d67bb19f47bd6a71f3",
+          "name": "api.slice-zas.be1st.io",
+          "type": "CNAME",
+          "content": "vtstg8wj.up.railway.app"
+        },
+        {
+          "id": "9fc85bf073bdf190a6f0e80e49f3c580",
+          "name": "admin.slice-zas.be1st.io",
+          "type": "CNAME",
+          "content": "dxic2hrz.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Slice-Zas",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/slice-zas-backend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/slice-zas-backend"
+      },
+      {
+        "repo": "huddleeco-commits/slice-zas-frontend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/slice-zas-frontend"
+      },
+      {
+        "repo": "huddleeco-commits/slice-zas-admin",
+        "success": true,
+        "message": "Deleted huddleeco-commits/slice-zas-admin"
+      }
+    ],
+    "railway": {
+      "success": true,
+      "message": "Deleted Railway project 47731d73-3829-4d27-a4ad-ff97dee84222"
+    },
+    "cloudflare": [
+      {
+        "record": "slice-zas.be1st.io",
+        "success": true,
+        "message": "Deleted slice-zas.be1st.io"
+      },
+      {
+        "record": "api.slice-zas.be1st.io",
+        "success": true,
+        "message": "Deleted api.slice-zas.be1st.io"
+      },
+      {
+        "record": "admin.slice-zas.be1st.io",
+        "success": true,
+        "message": "Deleted admin.slice-zas.be1st.io"
+      }
+    ],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Slice-Zas"
+    },
+    "errors": [],
+    "verification": {
+      "github": [
+        {
+          "repo": "huddleeco-commits/slice-zas-backend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/slice-zas-frontend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/slice-zas-admin",
+          "verified": true
+        }
+      ],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "slice-zas",
+          "verified": true
+        },
+        {
+          "subdomain": "api.slice-zas",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.slice-zas",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

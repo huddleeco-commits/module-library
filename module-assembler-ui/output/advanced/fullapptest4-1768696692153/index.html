@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>fullapptest4 Loyalty Program</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              bronze: '#CD7F32',
+              silver: '#C0C0C0',
+              gold: '#FFD700',
+              platinum: '#E5E4E2'
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      .tier-bronze { color: #CD7F32; }
+      .tier-silver { color: #C0C0C0; }
+      .tier-gold { color: #FFD700; }
+      .tier-platinum { color: #E5E4E2; }
+      .bg-tier-bronze { background-color: #CD7F32; }
+      .bg-tier-silver { background-color: #C0C0C0; }
+      .bg-tier-gold { background-color: #FFD700; }
+      .bg-tier-platinum { background-color: #E5E4E2; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

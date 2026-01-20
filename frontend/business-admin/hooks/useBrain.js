@@ -23,6 +23,24 @@ const defaultBrain = {
   }
 };
 
+// Get API URL - auto-detect production vs development
+function getApiUrl() {
+  // Check for explicit override first
+  if (import.meta.env?.VITE_API_URL) return import.meta.env.VITE_API_URL;
+
+  // Auto-detect: in production (be1st.io), API is at same origin
+  // In development (localhost), use backend port 5000
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:5000';
+    }
+  }
+
+  // Production: API is served from same origin
+  return '';
+}
+
 export function useBrain() {
   const [brain, setBrain] = useState(defaultBrain);
   const [business, setBusiness] = useState(defaultBrain.business);
@@ -33,9 +51,9 @@ export function useBrain() {
   useEffect(() => {
     const fetchBrain = async () => {
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        const apiUrl = getApiUrl();
         const response = await fetch(`${apiUrl}/api/brain`);
-        
+
         if (response.ok) {
           const data = await response.json();
           if (data.success && data.brain) {
@@ -60,7 +78,7 @@ export function useBrain() {
   const refreshBrain = async () => {
     setLoading(true);
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const apiUrl = getApiUrl();
       const response = await fetch(`${apiUrl}/api/brain`);
       if (response.ok) {
         const data = await response.json();

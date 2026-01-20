@@ -1,0 +1,57 @@
+{
+  "projectName": "Cozy-Loops-Crochet",
+  "savedAt": "2026-01-17T16:45:44.120Z",
+  "resources": {
+    "name": "Cozy-Loops-Crochet",
+    "sanitizedName": "cozy-loops-crochet",
+    "github": {
+      "repos": [
+        {
+          "name": "cozy-loops-crochet-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "cozy-loops-crochet-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "cozy-loops-crochet-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "c401e4353c1432e1617941c160656cf1",
+          "name": "cozy-loops-crochet.be1st.io",
+          "type": "CNAME",
+          "content": "7zdkuq28.up.railway.app"
+        },
+        {
+          "id": "aca1175d6d99b9c16aa3ed13e0e48ab7",
+          "name": "api.cozy-loops-crochet.be1st.io",
+          "type": "CNAME",
+          "content": "dpaw67ok.up.railway.app"
+        },
+        {
+          "id": "25e94075719174c57dec72f6c8d25d7c",
+          "name": "admin.cozy-loops-crochet.be1st.io",
+          "type": "CNAME",
+          "content": "se0zf45s.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Cozy-Loops-Crochet",
+      "exists": true
+    }
+  }
+}

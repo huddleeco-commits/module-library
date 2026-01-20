@@ -1,0 +1,80 @@
+{
+  "projectName": "Aurelius-steakhouse",
+  "deletedAt": "2026-01-18T19:45:44.333Z",
+  "resourcesFound": {
+    "name": "Aurelius-steakhouse",
+    "sanitizedName": "aurelius-steakhouse",
+    "github": {
+      "repos": [
+        {
+          "name": "aurelius-steakhouse-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "aurelius-steakhouse-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "aurelius-steakhouse-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/aurelius-steakhouse-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/aurelius-steakhouse-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/aurelius-steakhouse-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "aurelius-steakhouse",
+          "verified": true
+        },
+        {
+          "subdomain": "api.aurelius-steakhouse",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.aurelius-steakhouse",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

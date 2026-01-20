@@ -1,0 +1,80 @@
+{
+  "projectName": "pizza-restaurant-in-brooklyn-4-companion",
+  "deletedAt": "2026-01-20T01:10:53.801Z",
+  "resourcesFound": {
+    "name": "pizza-restaurant-in-brooklyn-4-companion",
+    "sanitizedName": "pizza-restaurant-in-brooklyn-4-companion",
+    "github": {
+      "repos": [
+        {
+          "name": "pizza-restaurant-in-brooklyn-4-companion-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "pizza-restaurant-in-brooklyn-4-companion-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "pizza-restaurant-in-brooklyn-4-companion-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/pizza-restaurant-in-brooklyn-4-companion-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/pizza-restaurant-in-brooklyn-4-companion-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/pizza-restaurant-in-brooklyn-4-companion-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "pizza-restaurant-in-brooklyn-4-companion",
+          "verified": true
+        },
+        {
+          "subdomain": "api.pizza-restaurant-in-brooklyn-4-companion",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.pizza-restaurant-in-brooklyn-4-companion",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

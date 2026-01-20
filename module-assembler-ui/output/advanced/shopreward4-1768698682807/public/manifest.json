@@ -1,0 +1,15 @@
+{
+  "name": "ShopReward4 Rewards",
+  "short_name": "ShopReward4",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#8b5cf6",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

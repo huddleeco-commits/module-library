@@ -12,7 +12,7 @@ export default defineConfig({
   },
   server: {
     host: true,
-    port: 5174,
+    port: 5175,
     open: true,
     allowedHosts: ['.railway.app', '.be1st.io', 'localhost'],
     proxy: {

@@ -1,4 +1,4 @@
-﻿export { ScrollReveal } from './ScrollReveal';
+export { ScrollReveal } from './ScrollReveal';
 export { AnimatedCounter } from './AnimatedCounter';
 export { TiltCard } from './TiltCard';
 export { ParallaxSection } from './ParallaxSection';
