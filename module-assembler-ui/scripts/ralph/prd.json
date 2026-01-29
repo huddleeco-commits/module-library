@@ -1,0 +1,42 @@
+{
+  "project": "Blink",
+  "branchName": "fix-page-generation",
+  "createdBy": "Flint-Blink",
+  "createdAt": "2026-01-29",
+  "objective": "Fix the page generation blocker so pages flow through the pipeline correctly",
+  "stories": [
+    {
+      "id": 1,
+      "description": "As a developer, I can identify where the pages array is getting lost in the generation pipeline so that I can fix the root cause",
+      "acceptanceCriteria": [
+        "Document the flow of pages array through the codebase",
+        "Identify the exact file/function where pages stops being passed",
+        "Add to progress.txt with findings"
+      ],
+      "priority": 1,
+      "passes": true
+    },
+    {
+      "id": 2,
+      "description": "As a developer, I can fix the pages array flow so that pages are included in generated projects",
+      "acceptanceCriteria": [
+        "Pages array flows from input to output",
+        "Generated projects include all specified pages",
+        "No console errors related to missing pages"
+      ],
+      "priority": 2,
+      "passes": true
+    },
+    {
+      "id": 3,
+      "description": "As a developer, I can verify the fix works end-to-end so that we can ship confidently",
+      "acceptanceCriteria": [
+        "Run a test generation with 3+ pages",
+        "Verify all pages appear in output",
+        "Document test results in progress.txt"
+      ],
+      "priority": 3,
+      "passes": true
+    }
+  ]
+}
