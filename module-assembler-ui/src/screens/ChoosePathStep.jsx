@@ -1425,6 +1425,37 @@ export function ChoosePathStep({ onSelect, isDevUnlocked }) {
       <p style={premiumStyles.bottomHint}>
         💡 New here? Start with <strong>GUIDED</strong> in either section for the best experience.
       </p>
+
+      {/* Start Fresh / Setup Wizard Button */}
+      <button
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '10px',
+          margin: '24px auto 0',
+          padding: '12px 28px',
+          background: 'transparent',
+          border: '1px solid rgba(99, 102, 241, 0.3)',
+          borderRadius: '12px',
+          color: '#a5b4fc',
+          fontSize: '0.9rem',
+          fontWeight: '500',
+          cursor: 'pointer',
+          transition: 'all 0.2s ease',
+        }}
+        onClick={() => onSelect('setup-wizard')}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = 'rgba(99, 102, 241, 0.1)';
+          e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.5)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'transparent';
+          e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.3)';
+        }}
+      >
+        <span>🎯</span> Start New Project with Setup Wizard
+      </button>
     </div>
   );
 }

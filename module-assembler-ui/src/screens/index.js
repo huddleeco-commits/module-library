@@ -56,6 +56,9 @@ export { CompanionAppStep } from './CompanionAppStep.jsx';
 // Full Control Mode
 export { FullControlFlow } from './FullControlFlow.jsx';
 
+// CardFlow Setup Wizard
+export { CardFlowSetupWizard } from './CardFlowSetupWizard.jsx';
+
 // Demo Mode (Investor)
 export { DemoBatchStep } from './DemoBatchStep.jsx';
 

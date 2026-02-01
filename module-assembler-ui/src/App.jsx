@@ -78,7 +78,8 @@ import {
   LandingPage,
   MyDeploymentsPage,
   StylePreviewAdmin,
-  StudioMode
+  StudioMode,
+  CardFlowSetupWizard
 } from './screens';
 
 // Admin Dashboard import
@@ -105,8 +106,9 @@ export default function App() {
   const [adminStartPage, setAdminStartPage] = useState('overview'); // Which admin page to start on
   const [showTestGenerator, setShowTestGenerator] = useState(false); // L1-L4 quick test modes
   
-  // Flow state
-  const [step, setStep] = useState('choose-path'); // choose-path, rebuild, quick, reference, orchestrator, full-control, upload-assets, customize, generating, preview, complete, deploying, deploy-complete, deploy-error, error, companion
+  // Flow state - Check if first-time user (no setup complete)
+  const hasCompletedSetup = localStorage.getItem('blink_setup_complete') === 'true';
+  const [step, setStep] = useState(hasCompletedSetup ? 'choose-path' : 'setup-wizard'); // setup-wizard for new users, choose-path for returning users
 
   // Deploy state
   const [deployStatus, setDeployStatus] = useState(null);
@@ -477,6 +479,10 @@ export default function App() {
     // ═══ STUDIO MODE (Full Visual Control) ═══
     else if (selectedPath === 'studio') {
       setStep('studio');
+    }
+    // ═══ CARDFLOW SETUP WIZARD ═══
+    else if (selectedPath === 'setup-wizard') {
+      setStep('setup-wizard');
     }
   };
   
@@ -1496,6 +1502,58 @@ export default function App() {
                 // Stay on studio mode - UI shows success with deploy button
               }
             }}
+            onBack={() => setStep('choose-path')}
+          />
+        )}
+
+        {/* CardFlow Setup Wizard */}
+        {step === 'setup-wizard' && (
+          <CardFlowSetupWizard
+            onComplete={(setupData) => {
+              // Apply setup data to shared context and project data
+              setSharedContext(prev => ({
+                ...prev,
+                businessName: setupData.businessName,
+                industry: setupData.industry,
+                location: setupData.location
+              }));
+              updateProject({
+                businessName: setupData.businessName,
+                location: setupData.location
+              });
+              // Navigate based on project type and workflow mode
+              if (setupData.projectType === 'website') {
+                if (setupData.workflowMode === 'guided') {
+                  setStep('quick');
+                } else if (setupData.workflowMode === 'instant') {
+                  setStep('orchestrator');
+                } else {
+                  setStep('full-control');
+                }
+              } else if (setupData.projectType === 'app') {
+                if (setupData.workflowMode === 'guided') {
+                  setStep('app-guided');
+                } else {
+                  setStep('app-ai-builder');
+                }
+              } else if (setupData.projectType === 'tool-suite') {
+                if (setupData.workflowMode === 'guided') {
+                  setStep('tool-suite-guided');
+                } else if (setupData.workflowMode === 'instant') {
+                  setStep('tool-suite-instant');
+                } else {
+                  setStep('tool-suite-custom');
+                }
+              } else if (setupData.projectType === 'landing-page') {
+                // Landing pages use quick mode with a single page
+                updateProject({ selectedPages: ['home'] });
+                setStep('quick');
+              } else {
+                // Default: go to choose-path
+                setStep('choose-path');
+              }
+            }}
+            onSkip={() => setStep('choose-path')}
             onBack={() => setStep('choose-path')}
           />
         )}
