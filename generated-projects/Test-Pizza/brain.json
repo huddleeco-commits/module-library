@@ -1,0 +1,79 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-01-23T00:19:39.402Z",
+  "generationMode": "smart-template",
+  "business": {
+    "name": "Test Pizza",
+    "tagline": "Welcome to Test Pizza",
+    "industry": "pizza",
+    "location": "Dallas, TX"
+  },
+  "theme": {
+    "colors": {
+      "primary": "#3b82f6",
+      "accent": "#8b5cf6",
+      "text": "#1a1a2e",
+      "background": "#ffffff"
+    },
+    "moodSliders": {},
+    "moodInterpretation": {
+      "tone": "balanced",
+      "energy": "moderate",
+      "style": "contemporary",
+      "contentDensity": "balanced",
+      "marketPosition": "quality-focused"
+    }
+  },
+  "content": {
+    "hero": {
+      "tagline": "Welcome to Test Pizza",
+      "subtext": "Your premier pizza destination in Dallas, TX.",
+      "ctas": [
+        "Get Started",
+        "Book Now",
+        "Learn More"
+      ]
+    },
+    "testimonials": [
+      {
+        "quote": "Great experience at Test Pizza!",
+        "name": "Sarah",
+        "role": "Local Customer"
+      },
+      {
+        "quote": "Highly recommend!",
+        "name": "Mike",
+        "role": "Regular Visitor"
+      },
+      {
+        "quote": "The best in Dallas, TX!",
+        "name": "Jennifer",
+        "role": "Happy Client"
+      }
+    ],
+    "team": []
+  },
+  "pages": [
+    "home",
+    "menu",
+    "about",
+    "gallery",
+    "contact"
+  ],
+  "portalPages": [],
+  "pageTier": "recommended",
+  "industryConfig": {
+    "key": "pizza",
+    "terminology": {
+      "services": "Menu",
+      "service": "Item",
+      "team": "Our Team"
+    },
+    "availableTiers": [
+      "essential",
+      "recommended",
+      "premium"
+    ]
+  },
+  "features": []
+}

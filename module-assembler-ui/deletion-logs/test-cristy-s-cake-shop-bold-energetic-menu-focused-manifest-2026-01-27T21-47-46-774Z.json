@@ -1,0 +1,57 @@
+{
+  "projectName": "test-cristy-s-cake-shop-bold-energetic-menu-focused",
+  "savedAt": "2026-01-27T21:47:46.774Z",
+  "resources": {
+    "name": "test-cristy-s-cake-shop-bold-energetic-menu-focused",
+    "sanitizedName": "test-cristy-s-cake-shop-bold-energetic-menu-focused",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-bold-energetic-menu-focused-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "test-cristy-s-cake-shop-bold-energetic-menu-focused-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "test-cristy-s-cake-shop-bold-energetic-menu-focused-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "bfa42fd15b4868848e8a7c33f7b643cb",
+          "name": "test-cristy-s-cake-shop-bold-energetic-menu-focused.be1st.io",
+          "type": "CNAME",
+          "content": "8r6emxox.up.railway.app"
+        },
+        {
+          "id": "635e3a6c83f86c9e1a99bf049b70e110",
+          "name": "api.test-cristy-s-cake-shop-bold-energetic-menu-focused.be1st.io",
+          "type": "CNAME",
+          "content": "73uueyn7.up.railway.app"
+        },
+        {
+          "id": "e117b3e70b2706c76779b5fbc6bd1bc0",
+          "name": "admin.test-cristy-s-cake-shop-bold-energetic-menu-focused.be1st.io",
+          "type": "CNAME",
+          "content": "zjp21ax4.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

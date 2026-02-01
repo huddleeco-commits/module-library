@@ -1,0 +1,161 @@
+{
+  "projectName": "coffee5",
+  "deletedAt": "2026-01-22T23:14:29.447Z",
+  "resourcesFound": {
+    "name": "coffee5",
+    "sanitizedName": "coffee5",
+    "github": {
+      "repos": [
+        {
+          "name": "coffee5-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "coffee5-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "coffee5-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "cf81fc0e-a087-44d5-bf59-767829c80b01",
+        "name": "coffee5",
+        "createdAt": "2026-01-22T21:02:26.922Z",
+        "environments": [
+          {
+            "id": "e7e3b45c-f18b-48bf-93e1-fca0384cca60",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "0386d62c-2a4b-45ca-81ce-fd4b15dcbddf",
+          "name": "postgres"
+        },
+        {
+          "id": "09060db9-7df3-4013-bb33-92fb290a31e2",
+          "name": "backend"
+        },
+        {
+          "id": "f479e5eb-4e21-4611-aaa7-ebf221381b81",
+          "name": "frontend"
+        },
+        {
+          "id": "f967f011-cf0f-4d1e-b95c-4fb598e82bc2",
+          "name": "admin"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "f51e39cc496db177a0ba6c447b83ab2f",
+          "name": "coffee5.be1st.io",
+          "type": "CNAME",
+          "content": "frontend-production-ef385.up.railway.app"
+        },
+        {
+          "id": "6ee7436003dea8104776a7f3a7970eff",
+          "name": "api.coffee5.be1st.io",
+          "type": "CNAME",
+          "content": "backend-production-6c202.up.railway.app"
+        },
+        {
+          "id": "3078d1aba6351c1af6e51394ef53138d",
+          "name": "admin.coffee5.be1st.io",
+          "type": "CNAME",
+          "content": "admin-production-cb96.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\coffee5",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/coffee5-backend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/coffee5-backend"
+      },
+      {
+        "repo": "huddleeco-commits/coffee5-frontend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/coffee5-frontend"
+      },
+      {
+        "repo": "huddleeco-commits/coffee5-admin",
+        "success": true,
+        "message": "Deleted huddleeco-commits/coffee5-admin"
+      }
+    ],
+    "railway": {
+      "success": true,
+      "message": "Deleted Railway project cf81fc0e-a087-44d5-bf59-767829c80b01"
+    },
+    "cloudflare": [
+      {
+        "record": "coffee5.be1st.io",
+        "success": true,
+        "message": "Deleted coffee5.be1st.io"
+      },
+      {
+        "record": "api.coffee5.be1st.io",
+        "success": true,
+        "message": "Deleted api.coffee5.be1st.io"
+      },
+      {
+        "record": "admin.coffee5.be1st.io",
+        "success": true,
+        "message": "Deleted admin.coffee5.be1st.io"
+      }
+    ],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\coffee5"
+    },
+    "errors": [],
+    "verification": {
+      "github": [
+        {
+          "repo": "huddleeco-commits/coffee5-backend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/coffee5-frontend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/coffee5-admin",
+          "verified": true
+        }
+      ],
+      "railway": false,
+      "cloudflare": [
+        {
+          "subdomain": "coffee5",
+          "verified": true
+        },
+        {
+          "subdomain": "api.coffee5",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.coffee5",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

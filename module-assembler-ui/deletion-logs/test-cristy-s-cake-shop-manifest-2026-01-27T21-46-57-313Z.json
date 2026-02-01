@@ -1,0 +1,38 @@
+{
+  "projectName": "test-cristy-s-cake-shop",
+  "savedAt": "2026-01-27T21:46:57.313Z",
+  "resources": {
+    "name": "test-cristy-s-cake-shop",
+    "sanitizedName": "test-cristy-s-cake-shop",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

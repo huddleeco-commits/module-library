@@ -1,0 +1,61 @@
+{
+  "projectName": "test-ale-s-salon-eyelashes-luxury",
+  "deletedAt": "2026-01-27T21:51:54.100Z",
+  "resourcesFound": {
+    "name": "test-ale-s-salon-eyelashes-luxury",
+    "sanitizedName": "test-ale-s-salon-eyelashes-luxury",
+    "github": {
+      "repos": [
+        {
+          "name": "test-ale-s-salon-eyelashes-luxury-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-ale-s-salon-eyelashes-luxury-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-ale-s-salon-eyelashes-luxury-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-ale-s-salon-eyelashes-luxury-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-ale-s-salon-eyelashes-luxury-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-ale-s-salon-eyelashes-luxury-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": []
+  }
+}

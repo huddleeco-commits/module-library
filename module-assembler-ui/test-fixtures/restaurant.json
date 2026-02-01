@@ -1,0 +1,158 @@
+{
+  "id": "restaurant",
+  "name": "Restaurant",
+  "icon": "🍽️",
+  "business": {
+    "name": "The Golden Fork",
+    "location": "San Francisco, CA",
+    "tagline": "Farm-to-Table California Cuisine",
+    "industry": "restaurant",
+    "teamSize": "15-25",
+    "priceRange": "$$$",
+    "established": "2018",
+    "phone": "(555) 867-5309",
+    "email": "reservations@goldenfork-demo.com",
+    "address": "789 Market Street, San Francisco, CA 94103",
+    "hours": {
+      "monday": "Closed",
+      "tuesday": "5:00 PM - 10:00 PM",
+      "wednesday": "5:00 PM - 10:00 PM",
+      "thursday": "5:00 PM - 10:00 PM",
+      "friday": "5:00 PM - 11:00 PM",
+      "saturday": "11:00 AM - 11:00 PM",
+      "sunday": "11:00 AM - 9:00 PM"
+    }
+  },
+  "theme": {
+    "colors": {
+      "primary": "#2D3436",
+      "secondary": "#D4A574",
+      "accent": "#6C5CE7",
+      "background": "#FDFCFB",
+      "text": "#2D3436"
+    },
+    "fonts": {
+      "heading": "Cormorant Garamond",
+      "body": "Lato"
+    },
+    "style": "elegant-warm"
+  },
+  "pages": {
+    "home": {
+      "hero": {
+        "headline": "Farm-to-Table California Cuisine",
+        "subheadline": "Seasonal ingredients, local farms, unforgettable flavors. Experience the best of California on every plate.",
+        "cta": "Make Reservation",
+        "secondaryCta": "View Menu",
+        "backgroundImage": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920"
+      },
+      "sections": [
+        {
+          "type": "features",
+          "title": "The Golden Fork Experience",
+          "items": [
+            { "icon": "Leaf", "title": "Farm Fresh", "description": "Ingredients sourced from local farms within 100 miles" },
+            { "icon": "Award", "title": "Award Winning", "description": "Michelin recommended, SF Chronicle Top 100" },
+            { "icon": "Wine", "title": "Curated Wines", "description": "300+ selections from California and beyond" },
+            { "icon": "ChefHat", "title": "Chef's Vision", "description": "Seasonal tasting menus that tell a story" }
+          ]
+        },
+        {
+          "type": "menu-preview",
+          "title": "Featured Dishes",
+          "items": [
+            { "name": "Burrata & Heirloom Tomatoes", "price": 18, "description": "Local burrata, summer tomatoes, basil oil, aged balsamic" },
+            { "name": "Pan-Seared Sea Bass", "price": 42, "description": "Wild caught, cauliflower purée, brown butter, capers" },
+            { "name": "Dry-Aged Ribeye", "price": 58, "description": "45-day aged, bone marrow butter, roasted garlic, seasonal vegetables" },
+            { "name": "Meyer Lemon Tart", "price": 14, "description": "House-made curd, torched meringue, candied zest" }
+          ]
+        },
+        {
+          "type": "testimonials",
+          "title": "Guest Reviews",
+          "items": [
+            { "name": "Michael S.", "text": "The tasting menu was a journey. Every course was thoughtful and delicious. A must-visit.", "rating": 5 },
+            { "name": "Sarah L.", "text": "Perfect for our anniversary dinner. The service, ambiance, and food were all impeccable.", "rating": 5 },
+            { "name": "James K.", "text": "Best farm-to-table experience in the city. You can taste the freshness in every bite.", "rating": 5 }
+          ]
+        },
+        {
+          "type": "reservation-cta",
+          "title": "Reserve Your Table",
+          "subtitle": "Join us for an unforgettable dining experience",
+          "cta": "Book Now",
+          "note": "For parties of 8 or more, please call us directly"
+        }
+      ]
+    },
+    "menu": {
+      "hero": {
+        "headline": "Our Menu",
+        "subheadline": "Seasonal California cuisine crafted with care"
+      },
+      "categories": [
+        {
+          "name": "Starters",
+          "items": [
+            { "name": "Burrata & Heirloom Tomatoes", "price": 18, "description": "Local burrata, summer tomatoes, basil oil, aged balsamic" },
+            { "name": "Beef Tartare", "price": 22, "description": "Hand-cut filet, quail egg, capers, house mustard" },
+            { "name": "Roasted Beet Salad", "price": 16, "description": "Mixed beets, goat cheese, arugula, candied walnuts" },
+            { "name": "Dungeness Crab Cakes", "price": 24, "description": "Jumbo lump crab, remoulade, microgreens" }
+          ]
+        },
+        {
+          "name": "Mains",
+          "items": [
+            { "name": "Pan-Seared Sea Bass", "price": 42, "description": "Wild caught, cauliflower purée, brown butter, capers" },
+            { "name": "Dry-Aged Ribeye", "price": 58, "description": "45-day aged, bone marrow butter, roasted garlic" },
+            { "name": "Duck Breast", "price": 44, "description": "Sonoma duck, cherry gastrique, roasted root vegetables" },
+            { "name": "Wild Mushroom Risotto", "price": 32, "description": "Arborio rice, foraged mushrooms, truffle oil, parmesan" }
+          ]
+        },
+        {
+          "name": "Desserts",
+          "items": [
+            { "name": "Meyer Lemon Tart", "price": 14, "description": "House-made curd, torched meringue, candied zest" },
+            { "name": "Chocolate Fondant", "price": 16, "description": "Valrhona chocolate, vanilla gelato, sea salt" },
+            { "name": "Seasonal Fruit Crisp", "price": 12, "description": "Market fruits, oat streusel, crème fraîche" }
+          ]
+        }
+      ]
+    },
+    "about": {
+      "hero": {
+        "headline": "Our Story",
+        "subheadline": "A passion for California cuisine"
+      },
+      "sections": [
+        {
+          "type": "story",
+          "title": "The Golden Fork Story",
+          "content": "Founded in 2018 by Chef Maria Santos, The Golden Fork celebrates the incredible bounty of California. Our relationships with local farmers and producers allow us to serve the freshest seasonal ingredients, prepared with technique and creativity."
+        }
+      ],
+      "team": [
+        { "name": "Maria Santos", "role": "Executive Chef/Owner", "bio": "Trained at The French Laundry, committed to sustainable cuisine", "image": "chef1.jpg" },
+        { "name": "David Park", "role": "Sous Chef", "bio": "Pastry wizard and flavor alchemist", "image": "chef2.jpg" },
+        { "name": "Emma Thompson", "role": "Sommelier", "bio": "Curating our award-winning wine program", "image": "team3.jpg" }
+      ]
+    },
+    "contact": {
+      "hero": {
+        "headline": "Visit Us",
+        "subheadline": "We look forward to serving you"
+      },
+      "info": {
+        "address": "789 Market Street, San Francisco, CA 94103",
+        "phone": "(555) 867-5309",
+        "email": "reservations@goldenfork-demo.com",
+        "hours": "Tue-Thu: 5pm-10pm, Fri: 5pm-11pm, Sat: 11am-11pm, Sun: 11am-9pm"
+      },
+      "reservation": {
+        "enabled": true,
+        "platform": "OpenTable",
+        "buttonText": "Reserve on OpenTable"
+      }
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "projectName": "test-cristy-s-cake-shop-modern-minimal-medium",
+  "deletedAt": "2026-01-26T20:35:57.884Z",
+  "resourcesFound": {
+    "name": "test-cristy-s-cake-shop-modern-minimal-medium",
+    "sanitizedName": "test-cristy-s-cake-shop-modern-minimal-medium",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-modern-minimal-medium-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-modern-minimal-medium-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-modern-minimal-medium-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-modern-minimal-medium-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-modern-minimal-medium-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-modern-minimal-medium-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "test-cristy-s-cake-shop-modern-minimal-medium",
+          "verified": true
+        },
+        {
+          "subdomain": "api.test-cristy-s-cake-shop-modern-minimal-medium",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.test-cristy-s-cake-shop-modern-minimal-medium",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

@@ -1,0 +1,235 @@
+{
+  "id": "ChIJySShgi0lTIYRHwPWb4y2sjI",
+  "name": "Lounge Luxury Nail & Lash",
+  "address": "4770 State Hwy 121 #120, Lewisville, TX 75056, USA",
+  "phone": "(214) 469-2123",
+  "category": "nail_salon",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 4.1,
+  "reviewCount": 150,
+  "photos": [
+    "places/ChIJySShgi0lTIYRHwPWb4y2sjI/photos/AcnlKN1rK3HMi05C6d2ufISElGV_0korfCsjkutcscoxkIWd3SN0ECR054QX8SgjtK7DFLlLOjP50VFmh-bRDzYZMpbeaQv_Ijdj1ZhpYkJn9JxwFc7dpLfK624GKeNvdxaa-AgewZO3peV_ahen9unP6ZLLwEBn9TCYoMfHSA1e9igXhlF9l3H-4SnoNPxKyK8UPHOlOK6pagqBMIKYHpZKudxrFcooVdZ-Ofc8LVIu3SAJIeov_QVFzdxzFmoihwdG2xJV0dDySXoRedRMTo7k2-i5u9vevtu3fJ0t1ZGFrbQ1ayu9pFf2lCUHsTsHwilzqF0QfhJ_7JW10A3eQacGxoqIKihmsieqb5a_gQt3bvW7fXUCRJRkrdynJ9zx2OUl8bZQKHfvprV-qPrAqkVWnn9YhyWApo7AMcovzG_p8I0",
+    "places/ChIJySShgi0lTIYRHwPWb4y2sjI/photos/AcnlKN2wHRB4TPiodZMON8oB0Qm5sTBSzOOMvogwso0CaDtLUyM3EsICdN4cPLLVWMIgje_bmz-6ZsBcNebC_xiswI1mjoqksD4jcCHrgTeT2TboZEtJufsCsb3fsQ95Si1YSgT0-8b3K0-Mw6C0fQmEPcFY5_9nE_I34m8PlII1sEnpwcm_dq2d6hGVYmrc2jTsmt0IF6eyy0mxClzHU3N3WI6KMjdhC5eJ77Lrqz0cAvWTMcMLbEpBae-cTOg2UGj9JXmsreqzAiQiTq5WB9MJ4R2HT_1w_UDY4sG-9K3dkOvC5mX0S1LzquSAb33z219qGkGzgHyAIVmgOZVRhEOm0IMOA--uPt70UjNhauQILcYZA_eumHSGy3QkKqUJFpLTTdrgfmxMeKJ7RLVzX8XG-cnKioEyEr5NSEjQPE9y39cJpPEOHtq_OMkx_Febm3Vf",
+    "places/ChIJySShgi0lTIYRHwPWb4y2sjI/photos/AcnlKN3ESzGmc1HrJ1IATazjMfmBocVlcZwxEmpN_a5zMH0bLJ-y_ycRxUIUBJMzkiXFS0OfaPCeeYW4Xh4G7K-_q5LsmI28QfqX95V84U1sTNXodnMLWcwF3X43ZyAA7MACh7soDm9bgbKOFqhQ6wEr_otFtZb9F_uMtGKgg0d-pZ7ebXVMMXIna4kf_vOnVyn2VEOTXzUdLcVdHl6B5VLSeJKENfjlI0YRaxgPOzjuHPDykzpFSv6Y855eDjYYw1lox5oMu7SnGIgwmi0WFshy3JrL8-3AEjthO6dlKcGSvgn9GvfxL7yPiSdn30GVdeNlMD79pwaJonm_Dj4hL-s724w-PafyRDSaJVUuC_RE3TtGnp36lY6M6oOQBQarqKgQhk98MEaNLZYFDk3LjncRlLpM-HgB3ZiIbRnJvdWWXrzR9Q",
+    "places/ChIJySShgi0lTIYRHwPWb4y2sjI/photos/AcnlKN3Y6oQpxcXuWhFXJc9TwZDsepY9ZTVyoiZD4aIrR6VnLsDpCqShQilwPXy7AbWeM5AN-C4nfXtkLuHbDs6dp6l_QranXJBKlFZw8BHHeuCJD9GroAUtRaDLtwA-MVm_sSMASI9CKF72gMkaCv2GFXYQi4hi-57_uMF-BhexLrZvpyKYiywuFgIIgbsPKSYPB9AYwce_Ogi3TFPb0IsgO1RPv4JmoaL-U3ydQxOF3vfbEroDGyvVDK5NNIWSVZDMFgRTL19ByTlY-awwvidkKtB13zbXDR1-j0fprFGiUosPm1zi-gP3haAQRvW3O25oPuyt_CRjEEQAop5EioiTZcVtNjk1HEJYWVwYkpSo_ilru0R0gFfk4AH_rot9L7g5WJxeDqLc-JyvNpjTY2q2SG9kh0WGlCJ5wQfdWra08AHPrlQ",
+    "places/ChIJySShgi0lTIYRHwPWb4y2sjI/photos/AcnlKN3an-03fLNXtxcNcg3OvQWJHBM0CZhAV7D0dPjE6yHwhls2v_U-JGp99aPsRfrmND1IM8NHxvNJzhqJCWkVHQwPef8pw6StOdVCn6B7rLD9yla-sk7BDgvnILCpjgd6pQr4sjd4L6HzhJDGX0gL-4ZxXjqk5eY5lPp7u8hIvvyuQQpyebG8GZo68ZUuch2nD1ptif-L1c8BXy9WviQvuhNwcoZxqGawW94lCJNsT7Q5Pqsow95Ws9G6bVIuZyjNX9idZfSBzhILkmqsGgKgZYstb0O2DTJVOdCylZTBOKuCwHh3xEegt6v0FzNyQbEkcvFviCnzSeJtRjcpEtd-ZuJLFcR21xk69UUIhldW0AkK_bO0TcMLKAfdTD0Uc7fRXqE7SoVLwNDF0usi1hiuwXXin49mP-BVx7pMw1ZEp3uotgbro8l14jVv8q03AQ",
+    "places/ChIJySShgi0lTIYRHwPWb4y2sjI/photos/AcnlKN0A7P9NhCnbvh7GiLUS-88PrPvaDtOHMJKz_PcnF6UgLT2a75a9xfEGfaIkDtERDozCH3a226_CZ3fxiwBt6jrh3Z1NGf7wwD-9cor8G73bOMcWP9znhAGhPfZG9RZXaH2X0d2hIS9h19Tdu18Z-VZXfwdJufyJySa73ABiCiG4Nw_uwsMk8c27ycZ8lQq7PDRnAchz9HqphdpiUbPYHLxRhVfjG-bKNtGnzFhpLOoPpwRYQIDqhRyZxtTYh05EhLUoVX1D85v-74PUSfnn5H547sqlA1iIpaiCnqEUDAipI_Zr2krXc3s-NCkkzA8E4MzeG4992stJ48-kwJDUymtNGM9R1Z9F7Mc4L4XplOloJCEO7Cl48Woy-57afYx_eWujpFHEQdqugDgZ7PxPkas0w6U6MMGhzpXLocB2Uu83SvyF",
+    "places/ChIJySShgi0lTIYRHwPWb4y2sjI/photos/AcnlKN07N41lwxcG7uqF7SOyequY1w3OdqDYkwF0FtBO7zzhlgpH_PIa87oSLvpAgexkTCscT5b5THXH2ah5elog_cshuE6OuN1ZffCOnXbJZOV7yT6q9xL-HP6l0qziAUCUlp3L4SaU4zsYyEIUcLql5wYGcuQBlYfnkPUW7d460J2ie0mSePYqsT7glOhfT-1kK8ETt6EXyOJp7U3q57bHujz2VvF2BMQiJsKJCCbsN9B6MoyyTi6hrEZMGU-fP2GBYd348W_wtG2YZndWTFobHaJfbA2_XwZGeLIVO3NQJli7qZsgx6XWMc9AyHrcasbywjVqq3WRAnZpN0If6fona03gGVsEHGU325GNZ9pNgdpj4nVnUbJqV35fG5niZzQTOpeGGWOIRHSwj6VJSuUNXKdblZe9fUkAibnptfI7-4djEQ",
+    "places/ChIJySShgi0lTIYRHwPWb4y2sjI/photos/AcnlKN2-M65BIVI77_LFuiMiQ9poq_ZdFm9pLsk83mJ58vCVK9YyXZtjhakuxFEwmXcsXiHCrlJACcQ73fybkFIuTvXldlRodIgU8Daz_-uTQb9yfVgHi8mhB8xD1n6zbvqSlnPyIAT1sjs50kL3AF5RmjDL84YU1bFaHXFBt8fZdIKvPhWfcGSEd65y7ZEiMHovj7HUp988TUwbPZP9HAa6d_p_cxLIEBqQLGR0mXOm6N0YJFyWXf0MPEoj49oGosHgI4TmIoawAJRcemXoMJOa5C3tvBXsf_ufYQ5q4Cqs4Pv4Q9AuBEgSUDynrg2lFvSxucOPf8KtChyzNx0TWq1XsvxeoQ_2LD5vApb_RO_IkmesfWEvydG43Gzpj6ywba25lki0kjHZhkMc4d-jy2HDDPsq2cSj8RDwDkwa4IcFuvXys3sy",
+    "places/ChIJySShgi0lTIYRHwPWb4y2sjI/photos/AcnlKN3g6WRCV5DOWGEcGryDAy5vA4gXGY8tRgYtqG7blH_OHo9XEfkAoxI7ljOQ4Or6THrYv8W-Wjsw5nmC4YzjVTGicqXAIh4Dy_dpjswaq6DsuSldNpnKP7nUU3WyYpebywmd3M8IrmjLvwusXsUll3hYRAbhqyQY2GrgyMkGZcmdR0gIJyTOChbiAN0cMIFqsWQE8B4M_9RAGd10TE56D3qAbbry9Cz4IOeXjasX0rCgUPIRYQoT5bmqvs2DlO1pbByV0OenNQleReJSnncYUqUQNu9Ixuu5eX5ndD3Ly0TEN6q1ulgqRKLo-TZeJQiuqUy2kijWaPLLvRhGuGGSg7nPLBmXJnohhAn7n8p1iwlB0eUkpx1DocPPIhsrxfZiD831OMI07uyddg7x7YFosWLOqo5YxJJgL1e71-2BQcWjbw",
+    "places/ChIJySShgi0lTIYRHwPWb4y2sjI/photos/AcnlKN1DzvAn4XIIsTCo5iLklGcnpGsCtgrwj89yALCdXeycWslbXa44Ktqoa_hmgs3KBNAgunUEJX-X5pCDW8mCwLSKfThaazEcns3F4SimS8FXcLCCouxfTWIqIbCCAf_o--yUMXMg6uukLNutivO5iq6enEon96hIHRM3i2WwRBYEp2zXyUT8vE3VpOL7TgqkQ0WwWCZ1lZPXVXu4fXIlpaKHmbQlgPMnaqFnFLtZDjKhGUB6PpI6hJGNbXe9RycnMyp8GZVLcK7kgKatEKMvlsKQAnkvDYjUw7tWL7B9Y00emadhNR0dsui5zbzuUgIokiHaKrBPlDedmYBHjb5UsPVwHnfWrnAqDSRnTwTRLgn5hAsegoqVwNjFSbL3WOQ2RzbAMVtC-6e1bczy02H2QJ7zz1h2cZiFzUBFlltW0huLgg"
+  ],
+  "fixtureId": "salon-spa",
+  "source": "google",
+  "googleMapsUrl": "https://maps.google.com/?cid=3653182962038866719&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+  "coordinates": {
+    "latitude": 33.065641299999996,
+    "longitude": -96.8862719
+  },
+  "raw": {
+    "id": "ChIJySShgi0lTIYRHwPWb4y2sjI",
+    "types": [
+      "nail_salon",
+      "beauty_salon",
+      "point_of_interest",
+      "establishment"
+    ],
+    "nationalPhoneNumber": "(214) 469-2123",
+    "formattedAddress": "4770 State Hwy 121 #120, Lewisville, TX 75056, USA",
+    "location": {
+      "latitude": 33.065641299999996,
+      "longitude": -96.8862719
+    },
+    "rating": 4.1,
+    "googleMapsUri": "https://maps.google.com/?cid=3653182962038866719&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "userRatingCount": 150,
+    "displayName": {
+      "text": "Lounge Luxury Nail & Lash",
+      "languageCode": "en"
+    },
+    "primaryType": "nail_salon",
+    "photos": [
+      {
+        "name": "places/ChIJySShgi0lTIYRHwPWb4y2sjI/photos/AcnlKN1rK3HMi05C6d2ufISElGV_0korfCsjkutcscoxkIWd3SN0ECR054QX8SgjtK7DFLlLOjP50VFmh-bRDzYZMpbeaQv_Ijdj1ZhpYkJn9JxwFc7dpLfK624GKeNvdxaa-AgewZO3peV_ahen9unP6ZLLwEBn9TCYoMfHSA1e9igXhlF9l3H-4SnoNPxKyK8UPHOlOK6pagqBMIKYHpZKudxrFcooVdZ-Ofc8LVIu3SAJIeov_QVFzdxzFmoihwdG2xJV0dDySXoRedRMTo7k2-i5u9vevtu3fJ0t1ZGFrbQ1ayu9pFf2lCUHsTsHwilzqF0QfhJ_7JW10A3eQacGxoqIKihmsieqb5a_gQt3bvW7fXUCRJRkrdynJ9zx2OUl8bZQKHfvprV-qPrAqkVWnn9YhyWApo7AMcovzG_p8I0",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Jeannie Kelly",
+            "uri": "https://maps.google.com/maps/contrib/111793499729445145835",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVCiW6myIbX76V-_BIlpygVgZRJtPcrpLlkanBE80eyk-648Ck8=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICc0Z3LNw&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICc0Z3LNw!2e10!4m2!3m1!1s0x864c252d82a124c9:0x32b2b68c6fd6031f"
+      },
+      {
+        "name": "places/ChIJySShgi0lTIYRHwPWb4y2sjI/photos/AcnlKN2wHRB4TPiodZMON8oB0Qm5sTBSzOOMvogwso0CaDtLUyM3EsICdN4cPLLVWMIgje_bmz-6ZsBcNebC_xiswI1mjoqksD4jcCHrgTeT2TboZEtJufsCsb3fsQ95Si1YSgT0-8b3K0-Mw6C0fQmEPcFY5_9nE_I34m8PlII1sEnpwcm_dq2d6hGVYmrc2jTsmt0IF6eyy0mxClzHU3N3WI6KMjdhC5eJ77Lrqz0cAvWTMcMLbEpBae-cTOg2UGj9JXmsreqzAiQiTq5WB9MJ4R2HT_1w_UDY4sG-9K3dkOvC5mX0S1LzquSAb33z219qGkGzgHyAIVmgOZVRhEOm0IMOA--uPt70UjNhauQILcYZA_eumHSGy3QkKqUJFpLTTdrgfmxMeKJ7RLVzX8XG-cnKioEyEr5NSEjQPE9y39cJpPEOHtq_OMkx_Febm3Vf",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Laura Vega",
+            "uri": "https://maps.google.com/maps/contrib/114442071196159161876",
+            "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocLt1LaHF9VZDSqko60yMQbrnRc34L7xLT31aV96gCGKmUg6ZQ=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhADydER5C1nfmfvKsAADYrF&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhADydER5C1nfmfvKsAADYrF!2e10!4m2!3m1!1s0x864c252d82a124c9:0x32b2b68c6fd6031f"
+      },
+      {
+        "name": "places/ChIJySShgi0lTIYRHwPWb4y2sjI/photos/AcnlKN3ESzGmc1HrJ1IATazjMfmBocVlcZwxEmpN_a5zMH0bLJ-y_ycRxUIUBJMzkiXFS0OfaPCeeYW4Xh4G7K-_q5LsmI28QfqX95V84U1sTNXodnMLWcwF3X43ZyAA7MACh7soDm9bgbKOFqhQ6wEr_otFtZb9F_uMtGKgg0d-pZ7ebXVMMXIna4kf_vOnVyn2VEOTXzUdLcVdHl6B5VLSeJKENfjlI0YRaxgPOzjuHPDykzpFSv6Y855eDjYYw1lox5oMu7SnGIgwmi0WFshy3JrL8-3AEjthO6dlKcGSvgn9GvfxL7yPiSdn30GVdeNlMD79pwaJonm_Dj4hL-s724w-PafyRDSaJVUuC_RE3TtGnp36lY6M6oOQBQarqKgQhk98MEaNLZYFDk3LjncRlLpM-HgB3ZiIbRnJvdWWXrzR9Q",
+        "widthPx": 4032,
+        "heightPx": 3024,
+        "authorAttributions": [
+          {
+            "displayName": "Alicia Tilmon",
+            "uri": "https://maps.google.com/maps/contrib/117051665726855247539",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjXkflHkJQs-ONzn4dHyLVVYvCcIcA1rRt5yJXL54_A3ORI5UPyx=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICcvtH7Og&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICcvtH7Og!2e10!4m2!3m1!1s0x864c252d82a124c9:0x32b2b68c6fd6031f"
+      },
+      {
+        "name": "places/ChIJySShgi0lTIYRHwPWb4y2sjI/photos/AcnlKN3Y6oQpxcXuWhFXJc9TwZDsepY9ZTVyoiZD4aIrR6VnLsDpCqShQilwPXy7AbWeM5AN-C4nfXtkLuHbDs6dp6l_QranXJBKlFZw8BHHeuCJD9GroAUtRaDLtwA-MVm_sSMASI9CKF72gMkaCv2GFXYQi4hi-57_uMF-BhexLrZvpyKYiywuFgIIgbsPKSYPB9AYwce_Ogi3TFPb0IsgO1RPv4JmoaL-U3ydQxOF3vfbEroDGyvVDK5NNIWSVZDMFgRTL19ByTlY-awwvidkKtB13zbXDR1-j0fprFGiUosPm1zi-gP3haAQRvW3O25oPuyt_CRjEEQAop5EioiTZcVtNjk1HEJYWVwYkpSo_ilru0R0gFfk4AH_rot9L7g5WJxeDqLc-JyvNpjTY2q2SG9kh0WGlCJ5wQfdWra08AHPrlQ",
+        "widthPx": 2268,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Raq M",
+            "uri": "https://maps.google.com/maps/contrib/103128076517568055449",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUJNUReOZ2lgoNeSRJ_X6sdKtKBN-udxK4Tnz-Nsfxb2pUTvDG2sg=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgID97cGH8wE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgID97cGH8wE!2e10!4m2!3m1!1s0x864c252d82a124c9:0x32b2b68c6fd6031f"
+      },
+      {
+        "name": "places/ChIJySShgi0lTIYRHwPWb4y2sjI/photos/AcnlKN3an-03fLNXtxcNcg3OvQWJHBM0CZhAV7D0dPjE6yHwhls2v_U-JGp99aPsRfrmND1IM8NHxvNJzhqJCWkVHQwPef8pw6StOdVCn6B7rLD9yla-sk7BDgvnILCpjgd6pQr4sjd4L6HzhJDGX0gL-4ZxXjqk5eY5lPp7u8hIvvyuQQpyebG8GZo68ZUuch2nD1ptif-L1c8BXy9WviQvuhNwcoZxqGawW94lCJNsT7Q5Pqsow95Ws9G6bVIuZyjNX9idZfSBzhILkmqsGgKgZYstb0O2DTJVOdCylZTBOKuCwHh3xEegt6v0FzNyQbEkcvFviCnzSeJtRjcpEtd-ZuJLFcR21xk69UUIhldW0AkK_bO0TcMLKAfdTD0Uc7fRXqE7SoVLwNDF0usi1hiuwXXin49mP-BVx7pMw1ZEp3uotgbro8l14jVv8q03AQ",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Lynn Luxury nails",
+            "uri": "https://maps.google.com/maps/contrib/102066641869169466265",
+            "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocI0qrvAoV0-vnKb4HwpVnUUA863sPm8uMVc8iLn-b0_jX93oA=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhCXjnoMR__vtp9_aSqzqg83&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhCXjnoMR__vtp9_aSqzqg83!2e10!4m2!3m1!1s0x864c252d82a124c9:0x32b2b68c6fd6031f"
+      },
+      {
+        "name": "places/ChIJySShgi0lTIYRHwPWb4y2sjI/photos/AcnlKN0A7P9NhCnbvh7GiLUS-88PrPvaDtOHMJKz_PcnF6UgLT2a75a9xfEGfaIkDtERDozCH3a226_CZ3fxiwBt6jrh3Z1NGf7wwD-9cor8G73bOMcWP9znhAGhPfZG9RZXaH2X0d2hIS9h19Tdu18Z-VZXfwdJufyJySa73ABiCiG4Nw_uwsMk8c27ycZ8lQq7PDRnAchz9HqphdpiUbPYHLxRhVfjG-bKNtGnzFhpLOoPpwRYQIDqhRyZxtTYh05EhLUoVX1D85v-74PUSfnn5H547sqlA1iIpaiCnqEUDAipI_Zr2krXc3s-NCkkzA8E4MzeG4992stJ48-kwJDUymtNGM9R1Z9F7Mc4L4XplOloJCEO7Cl48Woy-57afYx_eWujpFHEQdqugDgZ7PxPkas0w6U6MMGhzpXLocB2Uu83SvyF",
+        "widthPx": 2304,
+        "heightPx": 4096,
+        "authorAttributions": [
+          {
+            "displayName": "Janica Germaine Burden",
+            "uri": "https://maps.google.com/maps/contrib/113522466082577423398",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUQX1PltMA-cHWhOCVG7_QWAa852Djbual5S9i3lxFcE9rtZgAciA=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICk7Mae6gE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICk7Mae6gE!2e10!4m2!3m1!1s0x864c252d82a124c9:0x32b2b68c6fd6031f"
+      },
+      {
+        "name": "places/ChIJySShgi0lTIYRHwPWb4y2sjI/photos/AcnlKN07N41lwxcG7uqF7SOyequY1w3OdqDYkwF0FtBO7zzhlgpH_PIa87oSLvpAgexkTCscT5b5THXH2ah5elog_cshuE6OuN1ZffCOnXbJZOV7yT6q9xL-HP6l0qziAUCUlp3L4SaU4zsYyEIUcLql5wYGcuQBlYfnkPUW7d460J2ie0mSePYqsT7glOhfT-1kK8ETt6EXyOJp7U3q57bHujz2VvF2BMQiJsKJCCbsN9B6MoyyTi6hrEZMGU-fP2GBYd348W_wtG2YZndWTFobHaJfbA2_XwZGeLIVO3NQJli7qZsgx6XWMc9AyHrcasbywjVqq3WRAnZpN0If6fona03gGVsEHGU325GNZ9pNgdpj4nVnUbJqV35fG5niZzQTOpeGGWOIRHSwj6VJSuUNXKdblZe9fUkAibnptfI7-4djEQ",
+        "widthPx": 2304,
+        "heightPx": 4096,
+        "authorAttributions": [
+          {
+            "displayName": "Janica Germaine Burden",
+            "uri": "https://maps.google.com/maps/contrib/113522466082577423398",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUQX1PltMA-cHWhOCVG7_QWAa852Djbual5S9i3lxFcE9rtZgAciA=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICk7Ma6cQ&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICk7Ma6cQ!2e10!4m2!3m1!1s0x864c252d82a124c9:0x32b2b68c6fd6031f"
+      },
+      {
+        "name": "places/ChIJySShgi0lTIYRHwPWb4y2sjI/photos/AcnlKN2-M65BIVI77_LFuiMiQ9poq_ZdFm9pLsk83mJ58vCVK9YyXZtjhakuxFEwmXcsXiHCrlJACcQ73fybkFIuTvXldlRodIgU8Daz_-uTQb9yfVgHi8mhB8xD1n6zbvqSlnPyIAT1sjs50kL3AF5RmjDL84YU1bFaHXFBt8fZdIKvPhWfcGSEd65y7ZEiMHovj7HUp988TUwbPZP9HAa6d_p_cxLIEBqQLGR0mXOm6N0YJFyWXf0MPEoj49oGosHgI4TmIoawAJRcemXoMJOa5C3tvBXsf_ufYQ5q4Cqs4Pv4Q9AuBEgSUDynrg2lFvSxucOPf8KtChyzNx0TWq1XsvxeoQ_2LD5vApb_RO_IkmesfWEvydG43Gzpj6ywba25lki0kjHZhkMc4d-jy2HDDPsq2cSj8RDwDkwa4IcFuvXys3sy",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Candy Artworks",
+            "uri": "https://maps.google.com/maps/contrib/112417301686339537529",
+            "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocKSbxGIhBENEqiq9Yky9TxSmQKpBmfJHi8MvOaeUfBOWXo9cQ=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIC4g6Xp9gE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIC4g6Xp9gE!2e10!4m2!3m1!1s0x864c252d82a124c9:0x32b2b68c6fd6031f"
+      },
+      {
+        "name": "places/ChIJySShgi0lTIYRHwPWb4y2sjI/photos/AcnlKN3g6WRCV5DOWGEcGryDAy5vA4gXGY8tRgYtqG7blH_OHo9XEfkAoxI7ljOQ4Or6THrYv8W-Wjsw5nmC4YzjVTGicqXAIh4Dy_dpjswaq6DsuSldNpnKP7nUU3WyYpebywmd3M8IrmjLvwusXsUll3hYRAbhqyQY2GrgyMkGZcmdR0gIJyTOChbiAN0cMIFqsWQE8B4M_9RAGd10TE56D3qAbbry9Cz4IOeXjasX0rCgUPIRYQoT5bmqvs2DlO1pbByV0OenNQleReJSnncYUqUQNu9Ixuu5eX5ndD3Ly0TEN6q1ulgqRKLo-TZeJQiuqUy2kijWaPLLvRhGuGGSg7nPLBmXJnohhAn7n8p1iwlB0eUkpx1DocPPIhsrxfZiD831OMI07uyddg7x7YFosWLOqo5YxJJgL1e71-2BQcWjbw",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Quyen Duong",
+            "uri": "https://maps.google.com/maps/contrib/100006722500402366878",
+            "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocLbKddwS2PK171mZ9pwjGhfNNYd1pWKpSMNa-a87lkf0NKUAeM=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDOn9yBBQ&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDOn9yBBQ!2e10!4m2!3m1!1s0x864c252d82a124c9:0x32b2b68c6fd6031f"
+      },
+      {
+        "name": "places/ChIJySShgi0lTIYRHwPWb4y2sjI/photos/AcnlKN1DzvAn4XIIsTCo5iLklGcnpGsCtgrwj89yALCdXeycWslbXa44Ktqoa_hmgs3KBNAgunUEJX-X5pCDW8mCwLSKfThaazEcns3F4SimS8FXcLCCouxfTWIqIbCCAf_o--yUMXMg6uukLNutivO5iq6enEon96hIHRM3i2WwRBYEp2zXyUT8vE3VpOL7TgqkQ0WwWCZ1lZPXVXu4fXIlpaKHmbQlgPMnaqFnFLtZDjKhGUB6PpI6hJGNbXe9RycnMyp8GZVLcK7kgKatEKMvlsKQAnkvDYjUw7tWL7B9Y00emadhNR0dsui5zbzuUgIokiHaKrBPlDedmYBHjb5UsPVwHnfWrnAqDSRnTwTRLgn5hAsegoqVwNjFSbL3WOQ2RzbAMVtC-6e1bczy02H2QJ7zz1h2cZiFzUBFlltW0huLgg",
+        "widthPx": 4032,
+        "heightPx": 2268,
+        "authorAttributions": [
+          {
+            "displayName": "Raq M",
+            "uri": "https://maps.google.com/maps/contrib/103128076517568055449",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUJNUReOZ2lgoNeSRJ_X6sdKtKBN-udxK4Tnz-Nsfxb2pUTvDG2sg=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgID97cGHcw&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgID97cGHcw!2e10!4m2!3m1!1s0x864c252d82a124c9:0x32b2b68c6fd6031f"
+      }
+    ]
+  },
+  "detectedWebsite": null,
+  "scannedAt": "2026-01-25T16:21:49.926Z",
+  "readyForGeneration": true,
+  "research": {
+    "source": "yelp",
+    "enrichedAt": "2026-01-27T15:41:19.306Z",
+    "matched": true,
+    "yelpId": "LTnnfgbvS2jkIKf3MvCFYw",
+    "matchStatus": "found",
+    "rating": 3.3,
+    "reviewCount": 93,
+    "priceLevel": "$$",
+    "categories": [
+      "Waxing",
+      "Eyelash Service",
+      "Nail Salons"
+    ],
+    "photos": [],
+    "hours": null,
+    "transactions": []
+  },
+  "opportunityScore": 63,
+  "scoreBreakdown": [
+    {
+      "factor": "No website (base)",
+      "points": 50,
+      "source": "Google"
+    },
+    {
+      "factor": "Good reviews (93)",
+      "points": 8,
+      "source": "Yelp"
+    },
+    {
+      "factor": "Price level ($$)",
+      "points": 5,
+      "source": "Yelp"
+    }
+  ],
+  "city": "The Colony"
+}

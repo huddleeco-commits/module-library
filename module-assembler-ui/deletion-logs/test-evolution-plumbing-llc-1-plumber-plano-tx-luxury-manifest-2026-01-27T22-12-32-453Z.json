@@ -1,0 +1,38 @@
+{
+  "projectName": "test-evolution-plumbing-llc-1-plumber-plano-tx-luxury",
+  "savedAt": "2026-01-27T22:12:32.453Z",
+  "resources": {
+    "name": "test-evolution-plumbing-llc-1-plumber-plano-tx-luxury",
+    "sanitizedName": "test-evolution-plumbing-llc-1-plumber-plano-tx-luxury",
+    "github": {
+      "repos": [
+        {
+          "name": "test-evolution-plumbing-llc-1-plumber-plano-tx-luxury-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-evolution-plumbing-llc-1-plumber-plano-tx-luxury-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-evolution-plumbing-llc-1-plumber-plano-tx-luxury-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

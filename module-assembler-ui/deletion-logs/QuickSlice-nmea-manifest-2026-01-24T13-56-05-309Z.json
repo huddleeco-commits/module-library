@@ -1,0 +1,38 @@
+{
+  "projectName": "QuickSlice-nmea",
+  "savedAt": "2026-01-24T13:56:05.309Z",
+  "resources": {
+    "name": "QuickSlice-nmea",
+    "sanitizedName": "quickslice-nmea",
+    "github": {
+      "repos": [
+        {
+          "name": "quickslice-nmea-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "quickslice-nmea-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "quickslice-nmea-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\QuickSlice-nmea",
+      "exists": true
+    }
+  }
+}

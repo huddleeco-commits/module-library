@@ -1,0 +1,108 @@
+{
+  "id": "JnZ0DPDY3EAO2TZhM2Tqbw",
+  "name": "Lakeside Barber Co",
+  "address": "3540 N Grapevine Mills Blvd, Grapevine, TX, 76051",
+  "phone": "+18175047210",
+  "category": "barbers",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 4.6,
+  "reviewCount": 76,
+  "photos": [
+    "https://s3-media0.fl.yelpcdn.com/bphoto/LrWoGtYAm96HTUKFO-JTKg/o.jpg"
+  ],
+  "hours": null,
+  "fixtureId": "barbershop",
+  "source": "yelp",
+  "yelpUrl": "https://www.yelp.com/biz/lakeside-barber-co-grapevine?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+  "raw": {
+    "id": "JnZ0DPDY3EAO2TZhM2Tqbw",
+    "alias": "lakeside-barber-co-grapevine",
+    "name": "Lakeside Barber Co",
+    "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/LrWoGtYAm96HTUKFO-JTKg/o.jpg",
+    "is_closed": false,
+    "url": "https://www.yelp.com/biz/lakeside-barber-co-grapevine?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+    "review_count": 76,
+    "categories": [
+      {
+        "alias": "barbers",
+        "title": "Barbers"
+      }
+    ],
+    "rating": 4.6,
+    "coordinates": {
+      "latitude": 32.972206,
+      "longitude": -97.033091
+    },
+    "transactions": [],
+    "price": "$$",
+    "location": {
+      "address1": "3540 N Grapevine Mills Blvd",
+      "address2": "500 Ste 120",
+      "address3": "",
+      "city": "Grapevine",
+      "zip_code": "76051",
+      "country": "US",
+      "state": "TX",
+      "display_address": [
+        "3540 N Grapevine Mills Blvd",
+        "500 Ste 120",
+        "Grapevine, TX 76051"
+      ]
+    },
+    "phone": "+18175047210",
+    "display_phone": "(817) 504-7210",
+    "distance": 7715.664167561552,
+    "business_hours": [
+      {
+        "open": [
+          {
+            "is_overnight": false,
+            "start": "1000",
+            "end": "1900",
+            "day": 0
+          },
+          {
+            "is_overnight": false,
+            "start": "1000",
+            "end": "1900",
+            "day": 1
+          },
+          {
+            "is_overnight": false,
+            "start": "1400",
+            "end": "1900",
+            "day": 2
+          },
+          {
+            "is_overnight": false,
+            "start": "1000",
+            "end": "1900",
+            "day": 3
+          },
+          {
+            "is_overnight": false,
+            "start": "1000",
+            "end": "1900",
+            "day": 4
+          },
+          {
+            "is_overnight": false,
+            "start": "0900",
+            "end": "1700",
+            "day": 5
+          }
+        ],
+        "hours_type": "REGULAR",
+        "is_open_now": false
+      }
+    ],
+    "attributes": {
+      "business_temp_closed": null,
+      "menu_url": null,
+      "waitlist_reservation": null
+    }
+  },
+  "scannedAt": "2026-01-25T14:23:35.929Z",
+  "readyForGeneration": true
+}

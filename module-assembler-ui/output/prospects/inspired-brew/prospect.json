@@ -1,0 +1,280 @@
+{
+  "id": "ChIJ8du4tqEjTIYRhqQWRfsmlRs",
+  "name": "Inspired Brew",
+  "address": "19009 Preston Rd Ste. 209B, Dallas, TX 75252, USA",
+  "phone": "(214) 200-3973",
+  "category": "coffee_shop",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 4.8,
+  "reviewCount": 407,
+  "photo": "https://places.googleapis.com/v1/places/ChIJ8du4tqEjTIYRhqQWRfsmlRs/photos/AcnlKN1aGMH69vKrVeV4ued3xTzRcWeOHhM6bNhKzStwhd8xJ4utHOQ2sr20YPqJuKx1ZFiCPvJ0bYxeAkdgfXRs_yfyZee1tM9Qu7thyw3Uw8mIwvnqvNzvq7xl4jZ4P8jRQZbROp1UYFxF_vMOtJ424RG-TMUaDa05h2_c3PiTHD7IuK8Ccq89uyV1YH8NnCt7HwVjBYVEYsyfJcdqNdmmWLNGt0NSa3MtrMZIqzgRo_zkJpKEVI-Hr_mZ_QbzILq8SeR-AgbTOMYiNkG6gLtnOiok308UyHKorCZ8XoQjhSkUJwJ7oPrrhqPmUFqeay63j6-nlMPx4TYbjCPZtSnlXN-tCakJe2sOM27E6zoqyCtXXhNs_4cYhPGqeeMXbTFSP0xpJe_ncg9NNjvCBt5eeIXXcWJBPn7pg5hV2Xqm_jYJ0lV5/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+  "photos": [
+    "https://places.googleapis.com/v1/places/ChIJ8du4tqEjTIYRhqQWRfsmlRs/photos/AcnlKN1aGMH69vKrVeV4ued3xTzRcWeOHhM6bNhKzStwhd8xJ4utHOQ2sr20YPqJuKx1ZFiCPvJ0bYxeAkdgfXRs_yfyZee1tM9Qu7thyw3Uw8mIwvnqvNzvq7xl4jZ4P8jRQZbROp1UYFxF_vMOtJ424RG-TMUaDa05h2_c3PiTHD7IuK8Ccq89uyV1YH8NnCt7HwVjBYVEYsyfJcdqNdmmWLNGt0NSa3MtrMZIqzgRo_zkJpKEVI-Hr_mZ_QbzILq8SeR-AgbTOMYiNkG6gLtnOiok308UyHKorCZ8XoQjhSkUJwJ7oPrrhqPmUFqeay63j6-nlMPx4TYbjCPZtSnlXN-tCakJe2sOM27E6zoqyCtXXhNs_4cYhPGqeeMXbTFSP0xpJe_ncg9NNjvCBt5eeIXXcWJBPn7pg5hV2Xqm_jYJ0lV5/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+    "https://places.googleapis.com/v1/places/ChIJ8du4tqEjTIYRhqQWRfsmlRs/photos/AcnlKN2iCfm18_LpAGYJSTnU_pU9T0Ez3--oQQCgzqoIi-z8wT_bQVT5sbdI6oc0KyDsOQKxOi9HG3Q_3-RCnw6KGx2Dus33xttta5u7B1GAadhKcE3lHHf35F11-mJO0KjET9hZ5-TuXoix75znD_TOX87rQKlUObQeCO0mL3dI2uAogspSVw4hXP3A2SXpHhPLBf4laNZ0n_LhmbKSpgvH_6nvrqshmmk6q5Vblax98OhgYFQj5S4Bwv4nPEXuleCrRxuMoNRMUxb74RwnDDdZXKByHppLjSiSN_3_ltcoQjon4A/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+    "https://places.googleapis.com/v1/places/ChIJ8du4tqEjTIYRhqQWRfsmlRs/photos/AcnlKN0ZbrYIcCovhuymd0lrAEapFVJCASpB4wGdKcrZ5R6eTC49ZKJsU2-DvOKQ4emQM9M5gynZhyNDgF69PZRP4t3PI7QBH5fVaeVMfRXabB96XjJXWlHiX2isyiyf7gA7sXRpFcYSfWMip5LONY3--aktBtAIi5XQlUxcM66SWAtrVX4CwoYxah-eREiRAxoPmWJirSQM_BuRUZ1JkIY0tkshVBXQwMId3u-My1rhL0BiVIKQN-8O-WFREJQhXkxOrHWILUzsbBMkV-hZZRs46b9KQxQepMnzB3MlCCsm3kNAFiepg1b1-Cwn6YPB8aqgDoNrJGTTLpU6P9kzpzAneCvREhZpGbjuNYL6Q-6JLpl3IPbUcRCUG--jicY_6qgISnsNMDoXWAbgtx344uO3Ky0Dfhdj0oWxhKbV0tOOPDfOgqdSwgvZYB9kXz-e5-6i/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+    "https://places.googleapis.com/v1/places/ChIJ8du4tqEjTIYRhqQWRfsmlRs/photos/AcnlKN0_Wq9yByMN-QVQrL58jEYXqfNy2ICq57yhdBvl5Yq8dbNya8qXAJ7D2b7lhrE3SFmWBUN3j40agoawBMcin5GNGIvi1TKa02GlpVFm0TxuNLGBCHSjgvmp5Ng22Do_AqSh-CJ5_0QdCjA8oaE8pU6ad3e-QGIrXcgfnRotT_Do0eD3ABAls14fh7hBjFuFPt4IpUKGJmvMoE71O2O5npqwNPU0PL1dAaDEkKnqjZJx6FsRRkWTU0J2jKCwhNa8HegYMwvlGyUWe-WZ1scsPJo3cwFNZuv-6IS1uui1imyjmk6JhJTTF1FfBDTyKKfZGCjLLElU5gfmZZE-V7EhbanAv8OfiaF03eYyngCBPMlU0XelVSsSQjQysFwpGgGtP_WbP-6mb8GRVQvrw1jIf0sRIL7ggH-dkz2hcqygTXg/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+    "https://places.googleapis.com/v1/places/ChIJ8du4tqEjTIYRhqQWRfsmlRs/photos/AcnlKN37VfC12b-ghhPXAEonOGxzr4ftMTCN4CwWWp-DGs-U6R1q2EmIeoZwOMT58Pr7CRUP8FKalpXW4F3RTq1vZGCqJj0o7Twh9nb39nQPIXlu1ZfsdPrqLpAcRLggipmtJjFptaPzWfFhRxcMVao1YpQ6pLCjXs4ei6NkWH2Yf6bhzYr_Jce8eUFAykxIpwZ4jM8XLh-li79CYBQDrQkQypYTo3GumdsAQ974AEEy_zVeCbsbkbXwn_PG8N_PMpO5WuboZx5KEiW7ilc9jgWal0bFAOZFwNUO5T_Lpy5Y9d4-WoyqH0nM96oO5SVXk_juoOxgqHse2yJMhxcbZNS5S9BHM48GNW7jxeyM8mRunSUZPmr9DS7YgoOYz-JfSN_RPlW8VA8seePu5qqTPh9JuUToOwVNXK2mRa7hDaNrbbswpX56/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+    "https://places.googleapis.com/v1/places/ChIJ8du4tqEjTIYRhqQWRfsmlRs/photos/AcnlKN06qvbhwAIXRAcWR569C_ZDUp0daSuMTOySMVcKGfWBNP8TWYHGXBEgqbTpdUDwRIH5GL4vEZexBlfNl9gXYnVrN5LhHlODi9a7b6q757Ar3AdC6iAzcDZMi0AfL5sI-S_GL529iZzOfDIJ5dduQUGBmaRUN2-BQvuC9GzENFk0oYEOvbOSFYDTK_hReiYZgMVsgaJQCHiMqBUMsf1Ua0okmT7nfe10NBgraWayJczmRDlJXlfDEBStmaGcN3PjBwHleJVD1ekdLV9JVF_uzWdqeqKFtKgvr5A45mM8KBoNzdFLsc9g02miVoEPEnF6OU1wxzwnYS170wz2JLJoczbAErT20kPKpyhoO21qvUi6UR4hLl6tosUHJZuSV1rW9jUKsUZV_cBqpR2eCcEF1zEAz0kit9v-hncJrAtkCzQe6LdD/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+    "https://places.googleapis.com/v1/places/ChIJ8du4tqEjTIYRhqQWRfsmlRs/photos/AcnlKN0zdMKGMzMhFlpEakLPIpelS7AAzvYwDx386amRH1PMu6Ou4rf0DsScspEYbftTWFRqyYqilsm0_P20rlhNbRSBzBVrtJH9cgKQZfY7WN7woT2gLRqToYu8F_2SRbzNrm3L8sRldUMqu_5kxULlZTUgkNMZn1_-w4nJhUDbXdkPfqOR4YZwOJbGWMAtguSVZtc5Z0U53kNWXm1zVtsuFct0v_7LdnhJzo0VTZnq2y30zCr5JH7AXk6WM_SCCM7k0cGMABYHYbWRa8Z3XERfQHRrGUtXUphUQLCCJZckNlOoCxPDxYgr-1KE1D64IAzdSZkIcnHCZhbo8RK5m1QJMvlBcXFuUz_1EbzwUTDxNgKbUkkdEZfS871K8iE-O1x-B5wshu8TD_2AUgfO3cqh1H1LrJJ1GXh8bODQClGiRkJ6Yj0ipdMzPSH1TOsv6E4V/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+    "https://places.googleapis.com/v1/places/ChIJ8du4tqEjTIYRhqQWRfsmlRs/photos/AcnlKN1Wc8ZoUDs9BgJayOOjfoTB5qRlV3bWLMwYMxF2TFKOsM-s0ZIOQ75F5tTKUOooIZv7hdEav-1UEdiCkztD2FWix4mJuSVGjNRFxAR0mKh7Jd1tWRhkynFk9Md5a3xk2gTPyCRrdJqBoJDTMdK0sH79JQoNLD6rb4pH80gFOhUiEjaBBXz75itaPTVFTzaa6pEc3p3poLMNF81GGPbSqCCbdqfnX1oEoIE0dBVRJrDu0guCwOSPREJY0mPIA21evmZ90JH7qXW0m-2OlqqIQQI39e7fumtZnWp3brhMvCP7OlcIAIBfaza7C2kY8zUquqlPxYHinEnZaKWyrI6vTj9ViF7b_obuvq3h5ZY7D5s4roeP3BK5OihSrf88LejjA5D8mNvxeQuQFLwruJNhk4Qiu0oCfjKgAbRfNfjcDVJOR6HRPXmbX5GXCCfoAZ54/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+    "https://places.googleapis.com/v1/places/ChIJ8du4tqEjTIYRhqQWRfsmlRs/photos/AcnlKN1MxSIU_z2RWw3QO5DwQkG-9d44ZtmNTn7wtal2AOvki-RLnCux6GmJdziGkSinumebQvCdUuWW7KDyVgzYz5g4_vrN_un8baJEURc_uMgKcWBa0g3Ln950fc6DS6gM2VpEDRvLuL-dFALBxTLrkbL9QFojV4lVxVhoxqgRv_s49_EbomglvJrtxYB7QVFGggzrmLLET_UA43YKhRu7Z56qHrNvxKB6n9Dwj6M4MX7uxFrToqJ9a5lI7eBUVG_BN_Iul7gSSE0YYrpaA8l9TJxgOt5nZyE6vkpmM-UqSmSx1cHSOhNlO5rlaR8XGDaBNUORPxG92evFHSqoBz-XWk3QJKq21kiUDIbkVFzszUal6huDDzXZbpPE7Q-6V6MFT2Qgo7W_TvB3FW308BIuR-MPq48myx-Eodl-3khv4X03L7FZ/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+    "https://places.googleapis.com/v1/places/ChIJ8du4tqEjTIYRhqQWRfsmlRs/photos/AcnlKN35duJYvVjjUcqrg5LYF24rVjOtsmSAuUHYhmCu7u7_4hcq645e4mhJ7E4ixKAlg3viN7sley8ThedK08_kADavsr007PTcZnHTNteTNSXqqLT3z4gTQeEJfMegrlJBi3YWIC_g3km9pNaQyAMY_p0cnhfrfobQ-xeMuut5DnESnhT7ivkG3jEvz6Jbb6jWjXT2H0QyfAAbTQBXZOMO2FGhjWBhapFxOgI1e-hxurKemeWdF30TlNJDGWEHqbmsQiFfPcTSUTi0GmYliwLnuW0jWApOdcxku5jyy-tBAbX5wbbauBgV1Aw2D3xbLVQzECTMVt5DlGpGWpcDq8QtirQBmMrY8T4bWili55MM0ljcQzCRLAqWHrAsL01RGR5cn4Nen2IPXml5oYUnVBgHUxeasyyE14TKGRlKg3gmlShtyQ/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k"
+  ],
+  "fixtureId": "coffee-cafe",
+  "source": "google",
+  "googleMapsUrl": "https://maps.google.com/?cid=1987537671191700614&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+  "coordinates": {
+    "latitude": 33.00730860000001,
+    "longitude": -96.7961017
+  },
+  "raw": {
+    "id": "ChIJ8du4tqEjTIYRhqQWRfsmlRs",
+    "types": [
+      "coffee_shop",
+      "cafe",
+      "food_store",
+      "store",
+      "food",
+      "point_of_interest",
+      "establishment"
+    ],
+    "nationalPhoneNumber": "(214) 200-3973",
+    "formattedAddress": "19009 Preston Rd Ste. 209B, Dallas, TX 75252, USA",
+    "location": {
+      "latitude": 33.00730860000001,
+      "longitude": -96.7961017
+    },
+    "rating": 4.8,
+    "googleMapsUri": "https://maps.google.com/?cid=1987537671191700614&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "userRatingCount": 407,
+    "displayName": {
+      "text": "Inspired Brew",
+      "languageCode": "en"
+    },
+    "primaryType": "coffee_shop",
+    "photos": [
+      {
+        "name": "places/ChIJ8du4tqEjTIYRhqQWRfsmlRs/photos/AcnlKN1aGMH69vKrVeV4ued3xTzRcWeOHhM6bNhKzStwhd8xJ4utHOQ2sr20YPqJuKx1ZFiCPvJ0bYxeAkdgfXRs_yfyZee1tM9Qu7thyw3Uw8mIwvnqvNzvq7xl4jZ4P8jRQZbROp1UYFxF_vMOtJ424RG-TMUaDa05h2_c3PiTHD7IuK8Ccq89uyV1YH8NnCt7HwVjBYVEYsyfJcdqNdmmWLNGt0NSa3MtrMZIqzgRo_zkJpKEVI-Hr_mZ_QbzILq8SeR-AgbTOMYiNkG6gLtnOiok308UyHKorCZ8XoQjhSkUJwJ7oPrrhqPmUFqeay63j6-nlMPx4TYbjCPZtSnlXN-tCakJe2sOM27E6zoqyCtXXhNs_4cYhPGqeeMXbTFSP0xpJe_ncg9NNjvCBt5eeIXXcWJBPn7pg5hV2Xqm_jYJ0lV5",
+        "widthPx": 1868,
+        "heightPx": 4000,
+        "authorAttributions": [
+          {
+            "displayName": "Vic Dela Cruz",
+            "uri": "https://maps.google.com/maps/contrib/106445484084578269837",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjW-vHJEETzjEDWqgyRFMtAVseTAr6rPzkaap3MRe3zJUGIzTPcqXA=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDxqL-5hAE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDxqL-5hAE!2e10!4m2!3m1!1s0x864c23a1b6b8dbf1:0x1b9526fb4516a486"
+      },
+      {
+        "name": "places/ChIJ8du4tqEjTIYRhqQWRfsmlRs/photos/AcnlKN2iCfm18_LpAGYJSTnU_pU9T0Ez3--oQQCgzqoIi-z8wT_bQVT5sbdI6oc0KyDsOQKxOi9HG3Q_3-RCnw6KGx2Dus33xttta5u7B1GAadhKcE3lHHf35F11-mJO0KjET9hZ5-TuXoix75znD_TOX87rQKlUObQeCO0mL3dI2uAogspSVw4hXP3A2SXpHhPLBf4laNZ0n_LhmbKSpgvH_6nvrqshmmk6q5Vblax98OhgYFQj5S4Bwv4nPEXuleCrRxuMoNRMUxb74RwnDDdZXKByHppLjSiSN_3_ltcoQjon4A",
+        "widthPx": 1440,
+        "heightPx": 1800,
+        "authorAttributions": [
+          {
+            "displayName": "Inspired Brew",
+            "uri": "https://maps.google.com/maps/contrib/118220884386780579890",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVZKMJAF10NWi2EDgqOQkBXJPQApdj1HffcsbeHEdII8G8U2KU=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipNuaukOSfO7AEsdSPue-qw-c3S7Qz-0YBIni088&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipNuaukOSfO7AEsdSPue-qw-c3S7Qz-0YBIni088!2e10!4m2!3m1!1s0x864c23a1b6b8dbf1:0x1b9526fb4516a486"
+      },
+      {
+        "name": "places/ChIJ8du4tqEjTIYRhqQWRfsmlRs/photos/AcnlKN0ZbrYIcCovhuymd0lrAEapFVJCASpB4wGdKcrZ5R6eTC49ZKJsU2-DvOKQ4emQM9M5gynZhyNDgF69PZRP4t3PI7QBH5fVaeVMfRXabB96XjJXWlHiX2isyiyf7gA7sXRpFcYSfWMip5LONY3--aktBtAIi5XQlUxcM66SWAtrVX4CwoYxah-eREiRAxoPmWJirSQM_BuRUZ1JkIY0tkshVBXQwMId3u-My1rhL0BiVIKQN-8O-WFREJQhXkxOrHWILUzsbBMkV-hZZRs46b9KQxQepMnzB3MlCCsm3kNAFiepg1b1-Cwn6YPB8aqgDoNrJGTTLpU6P9kzpzAneCvREhZpGbjuNYL6Q-6JLpl3IPbUcRCUG--jicY_6qgISnsNMDoXWAbgtx344uO3Ky0Dfhdj0oWxhKbV0tOOPDfOgqdSwgvZYB9kXz-e5-6i",
+        "widthPx": 3145,
+        "heightPx": 2252,
+        "authorAttributions": [
+          {
+            "displayName": "Derek Corzine",
+            "uri": "https://maps.google.com/maps/contrib/103201305417870532204",
+            "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocLkhZO_GmwyxS3A67ijLuHdKAb6SevyaOk2utNqGhl6AiBAfw=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhDhnNpYTKTDnfvfaJRghP8a&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhDhnNpYTKTDnfvfaJRghP8a!2e10!4m2!3m1!1s0x864c23a1b6b8dbf1:0x1b9526fb4516a486"
+      },
+      {
+        "name": "places/ChIJ8du4tqEjTIYRhqQWRfsmlRs/photos/AcnlKN0_Wq9yByMN-QVQrL58jEYXqfNy2ICq57yhdBvl5Yq8dbNya8qXAJ7D2b7lhrE3SFmWBUN3j40agoawBMcin5GNGIvi1TKa02GlpVFm0TxuNLGBCHSjgvmp5Ng22Do_AqSh-CJ5_0QdCjA8oaE8pU6ad3e-QGIrXcgfnRotT_Do0eD3ABAls14fh7hBjFuFPt4IpUKGJmvMoE71O2O5npqwNPU0PL1dAaDEkKnqjZJx6FsRRkWTU0J2jKCwhNa8HegYMwvlGyUWe-WZ1scsPJo3cwFNZuv-6IS1uui1imyjmk6JhJTTF1FfBDTyKKfZGCjLLElU5gfmZZE-V7EhbanAv8OfiaF03eYyngCBPMlU0XelVSsSQjQysFwpGgGtP_WbP-6mb8GRVQvrw1jIf0sRIL7ggH-dkz2hcqygTXg",
+        "widthPx": 2992,
+        "heightPx": 2992,
+        "authorAttributions": [
+          {
+            "displayName": "Monica C.",
+            "uri": "https://maps.google.com/maps/contrib/104121908907003580799",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjX27aK8KukZV7X8NOYU680JndFSDqHV6vieIWCEWfI0d2nN7mev=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgMCgqOXiIw&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgMCgqOXiIw!2e10!4m2!3m1!1s0x864c23a1b6b8dbf1:0x1b9526fb4516a486"
+      },
+      {
+        "name": "places/ChIJ8du4tqEjTIYRhqQWRfsmlRs/photos/AcnlKN37VfC12b-ghhPXAEonOGxzr4ftMTCN4CwWWp-DGs-U6R1q2EmIeoZwOMT58Pr7CRUP8FKalpXW4F3RTq1vZGCqJj0o7Twh9nb39nQPIXlu1ZfsdPrqLpAcRLggipmtJjFptaPzWfFhRxcMVao1YpQ6pLCjXs4ei6NkWH2Yf6bhzYr_Jce8eUFAykxIpwZ4jM8XLh-li79CYBQDrQkQypYTo3GumdsAQ974AEEy_zVeCbsbkbXwn_PG8N_PMpO5WuboZx5KEiW7ilc9jgWal0bFAOZFwNUO5T_Lpy5Y9d4-WoyqH0nM96oO5SVXk_juoOxgqHse2yJMhxcbZNS5S9BHM48GNW7jxeyM8mRunSUZPmr9DS7YgoOYz-JfSN_RPlW8VA8seePu5qqTPh9JuUToOwVNXK2mRa7hDaNrbbswpX56",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Alexis Garcia",
+            "uri": "https://maps.google.com/maps/contrib/113439794649443417928",
+            "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocLv6VUvqcR2gBzFUo3n8mKgR2H28M1DyIJfXb4dL1mxrW5KOw=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICLiYSfuAE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICLiYSfuAE!2e10!4m2!3m1!1s0x864c23a1b6b8dbf1:0x1b9526fb4516a486"
+      },
+      {
+        "name": "places/ChIJ8du4tqEjTIYRhqQWRfsmlRs/photos/AcnlKN06qvbhwAIXRAcWR569C_ZDUp0daSuMTOySMVcKGfWBNP8TWYHGXBEgqbTpdUDwRIH5GL4vEZexBlfNl9gXYnVrN5LhHlODi9a7b6q757Ar3AdC6iAzcDZMi0AfL5sI-S_GL529iZzOfDIJ5dduQUGBmaRUN2-BQvuC9GzENFk0oYEOvbOSFYDTK_hReiYZgMVsgaJQCHiMqBUMsf1Ua0okmT7nfe10NBgraWayJczmRDlJXlfDEBStmaGcN3PjBwHleJVD1ekdLV9JVF_uzWdqeqKFtKgvr5A45mM8KBoNzdFLsc9g02miVoEPEnF6OU1wxzwnYS170wz2JLJoczbAErT20kPKpyhoO21qvUi6UR4hLl6tosUHJZuSV1rW9jUKsUZV_cBqpR2eCcEF1zEAz0kit9v-hncJrAtkCzQe6LdD",
+        "widthPx": 2992,
+        "heightPx": 2992,
+        "authorAttributions": [
+          {
+            "displayName": "Monica C.",
+            "uri": "https://maps.google.com/maps/contrib/104121908907003580799",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjX27aK8KukZV7X8NOYU680JndFSDqHV6vieIWCEWfI0d2nN7mev=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgMCgqOXiwwE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgMCgqOXiwwE!2e10!4m2!3m1!1s0x864c23a1b6b8dbf1:0x1b9526fb4516a486"
+      },
+      {
+        "name": "places/ChIJ8du4tqEjTIYRhqQWRfsmlRs/photos/AcnlKN0zdMKGMzMhFlpEakLPIpelS7AAzvYwDx386amRH1PMu6Ou4rf0DsScspEYbftTWFRqyYqilsm0_P20rlhNbRSBzBVrtJH9cgKQZfY7WN7woT2gLRqToYu8F_2SRbzNrm3L8sRldUMqu_5kxULlZTUgkNMZn1_-w4nJhUDbXdkPfqOR4YZwOJbGWMAtguSVZtc5Z0U53kNWXm1zVtsuFct0v_7LdnhJzo0VTZnq2y30zCr5JH7AXk6WM_SCCM7k0cGMABYHYbWRa8Z3XERfQHRrGUtXUphUQLCCJZckNlOoCxPDxYgr-1KE1D64IAzdSZkIcnHCZhbo8RK5m1QJMvlBcXFuUz_1EbzwUTDxNgKbUkkdEZfS871K8iE-O1x-B5wshu8TD_2AUgfO3cqh1H1LrJJ1GXh8bODQClGiRkJ6Yj0ipdMzPSH1TOsv6E4V",
+        "widthPx": 1541,
+        "heightPx": 1992,
+        "authorAttributions": [
+          {
+            "displayName": "Derek Corzine",
+            "uri": "https://maps.google.com/maps/contrib/103201305417870532204",
+            "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocLkhZO_GmwyxS3A67ijLuHdKAb6SevyaOk2utNqGhl6AiBAfw=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhD6AxsZKExMSBh-RNw8hb7t&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhD6AxsZKExMSBh-RNw8hb7t!2e10!4m2!3m1!1s0x864c23a1b6b8dbf1:0x1b9526fb4516a486"
+      },
+      {
+        "name": "places/ChIJ8du4tqEjTIYRhqQWRfsmlRs/photos/AcnlKN1Wc8ZoUDs9BgJayOOjfoTB5qRlV3bWLMwYMxF2TFKOsM-s0ZIOQ75F5tTKUOooIZv7hdEav-1UEdiCkztD2FWix4mJuSVGjNRFxAR0mKh7Jd1tWRhkynFk9Md5a3xk2gTPyCRrdJqBoJDTMdK0sH79JQoNLD6rb4pH80gFOhUiEjaBBXz75itaPTVFTzaa6pEc3p3poLMNF81GGPbSqCCbdqfnX1oEoIE0dBVRJrDu0guCwOSPREJY0mPIA21evmZ90JH7qXW0m-2OlqqIQQI39e7fumtZnWp3brhMvCP7OlcIAIBfaza7C2kY8zUquqlPxYHinEnZaKWyrI6vTj9ViF7b_obuvq3h5ZY7D5s4roeP3BK5OihSrf88LejjA5D8mNvxeQuQFLwruJNhk4Qiu0oCfjKgAbRfNfjcDVJOR6HRPXmbX5GXCCfoAZ54",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Raven Castro",
+            "uri": "https://maps.google.com/maps/contrib/107636289931417508015",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUvcyzfJvhBY9z4GGsCw6Y7-vFtP8s3-pEQXUatNrhtFFn-yYtE=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhC61k3Z8nwB2z1m_z_C9ujM&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhC61k3Z8nwB2z1m_z_C9ujM!2e10!4m2!3m1!1s0x864c23a1b6b8dbf1:0x1b9526fb4516a486"
+      },
+      {
+        "name": "places/ChIJ8du4tqEjTIYRhqQWRfsmlRs/photos/AcnlKN1MxSIU_z2RWw3QO5DwQkG-9d44ZtmNTn7wtal2AOvki-RLnCux6GmJdziGkSinumebQvCdUuWW7KDyVgzYz5g4_vrN_un8baJEURc_uMgKcWBa0g3Ln950fc6DS6gM2VpEDRvLuL-dFALBxTLrkbL9QFojV4lVxVhoxqgRv_s49_EbomglvJrtxYB7QVFGggzrmLLET_UA43YKhRu7Z56qHrNvxKB6n9Dwj6M4MX7uxFrToqJ9a5lI7eBUVG_BN_Iul7gSSE0YYrpaA8l9TJxgOt5nZyE6vkpmM-UqSmSx1cHSOhNlO5rlaR8XGDaBNUORPxG92evFHSqoBz-XWk3QJKq21kiUDIbkVFzszUal6huDDzXZbpPE7Q-6V6MFT2Qgo7W_TvB3FW308BIuR-MPq48myx-Eodl-3khv4X03L7FZ",
+        "widthPx": 3600,
+        "heightPx": 4800,
+        "authorAttributions": [
+          {
+            "displayName": "Likitha S",
+            "uri": "https://maps.google.com/maps/contrib/105923780808794755123",
+            "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocKFLei4wO75cIuMnWUCLYbmOfTN2kUYGqhBXd3IHNOQa_5rFA=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgMDwzui_5gE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgMDwzui_5gE!2e10!4m2!3m1!1s0x864c23a1b6b8dbf1:0x1b9526fb4516a486"
+      },
+      {
+        "name": "places/ChIJ8du4tqEjTIYRhqQWRfsmlRs/photos/AcnlKN35duJYvVjjUcqrg5LYF24rVjOtsmSAuUHYhmCu7u7_4hcq645e4mhJ7E4ixKAlg3viN7sley8ThedK08_kADavsr007PTcZnHTNteTNSXqqLT3z4gTQeEJfMegrlJBi3YWIC_g3km9pNaQyAMY_p0cnhfrfobQ-xeMuut5DnESnhT7ivkG3jEvz6Jbb6jWjXT2H0QyfAAbTQBXZOMO2FGhjWBhapFxOgI1e-hxurKemeWdF30TlNJDGWEHqbmsQiFfPcTSUTi0GmYliwLnuW0jWApOdcxku5jyy-tBAbX5wbbauBgV1Aw2D3xbLVQzECTMVt5DlGpGWpcDq8QtirQBmMrY8T4bWili55MM0ljcQzCRLAqWHrAsL01RGR5cn4Nen2IPXml5oYUnVBgHUxeasyyE14TKGRlKg3gmlShtyQ",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Laurie Lope",
+            "uri": "https://maps.google.com/maps/contrib/115158985944247743395",
+            "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocIMRLzWvLYzB_ntKQDCmwjy5IAiuS7F90oPssrsjfO8Wtg87Q=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDXpbuPTQ&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDXpbuPTQ!2e10!4m2!3m1!1s0x864c23a1b6b8dbf1:0x1b9526fb4516a486"
+      }
+    ]
+  },
+  "detectedWebsite": null,
+  "scannedAt": "2026-01-25T19:11:47.156Z",
+  "readyForGeneration": true,
+  "research": {
+    "source": "yelp",
+    "enrichedAt": "2026-01-27T15:40:53.361Z",
+    "matched": true,
+    "yelpId": "IXS-cfvrNKl5jMt38tqkCA",
+    "matchStatus": "found",
+    "rating": 4.8,
+    "reviewCount": 100,
+    "categories": [
+      "Coffee & Tea"
+    ],
+    "photos": [],
+    "hours": [
+      {
+        "is_overnight": false,
+        "start": "0700",
+        "end": "1500",
+        "day": 0
+      },
+      {
+        "is_overnight": false,
+        "start": "0700",
+        "end": "1700",
+        "day": 1
+      },
+      {
+        "is_overnight": false,
+        "start": "0700",
+        "end": "1700",
+        "day": 2
+      },
+      {
+        "is_overnight": false,
+        "start": "0700",
+        "end": "1700",
+        "day": 3
+      },
+      {
+        "is_overnight": false,
+        "start": "0700",
+        "end": "1700",
+        "day": 4
+      },
+      {
+        "is_overnight": false,
+        "start": "0800",
+        "end": "1700",
+        "day": 5
+      },
+      {
+        "is_overnight": false,
+        "start": "0800",
+        "end": "1600",
+        "day": 6
+      }
+    ],
+    "isOpen": true,
+    "transactions": []
+  },
+  "opportunityScore": 73,
+  "scoreBreakdown": [
+    {
+      "factor": "No website (base)",
+      "points": 50,
+      "source": "Google"
+    },
+    {
+      "factor": "Excellent rating (4.8★)",
+      "points": 15,
+      "source": "Yelp"
+    },
+    {
+      "factor": "Good reviews (100)",
+      "points": 8,
+      "source": "Yelp"
+    }
+  ],
+  "city": "Dallas"
+}

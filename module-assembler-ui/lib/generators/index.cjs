@@ -15,7 +15,35 @@ const { getIndustryHeaderConfig } = require('../prompt-builders/index.cjs');
 
 function generateBrainJson(projectName, industryKey, industryConfig, additionalConfig = {}) {
   const cfg = industryConfig || {};
-  const { adminTier, adminModules, adminReason } = additionalConfig;
+  const {
+    adminTier,
+    adminModules,
+    adminReason,
+    // User-provided business data
+    businessLocation,
+    businessHours,
+    businessPhone,
+    businessEmail,
+    tagline,
+    menuText,
+    features: enabledFeatures,
+    // Research data from Scout/Yelp (for AI generation or runtime display)
+    rating,
+    reviewCount,
+    reviewHighlights,
+    priceLevel,
+    categories,
+    photos,
+    yelpUrl,
+    googleMapsUrl,
+    opportunityScore,
+    researchSource
+  } = additionalConfig;
+
+  // Parse location if provided (e.g., "Dallas, Texas")
+  const locationParts = businessLocation ? businessLocation.split(',').map(s => s.trim()) : [];
+  const city = locationParts[0] || '';
+  const state = locationParts[1] || '';
 
   const terminologyMap = {
     'restaurant': { product: 'Menu Item', products: 'Menu Items', customer: 'Guest', customers: 'Guests' },
@@ -53,15 +81,25 @@ function generateBrainJson(projectName, industryKey, industryConfig, additionalC
     },
     business: {
       name: projectName.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-      tagline: '',
+      tagline: tagline || '',
       logo: null,
       currency: 'USD',
       currencySymbol: '$',
       timezone: 'America/New_York',
       locale: 'en-US',
-      address: { street: '', city: '', state: '', zip: '', country: 'USA' },
-      contact: { phone: '', email: '', website: '' },
-      hours: {
+      address: {
+        street: '',
+        city: city || '',
+        state: state || '',
+        zip: '',
+        country: 'USA'
+      },
+      contact: {
+        phone: businessPhone || '',
+        email: businessEmail || '',
+        website: ''
+      },
+      hours: businessHours || {
         monday: { open: '09:00', close: '17:00' },
         tuesday: { open: '09:00', close: '17:00' },
         wednesday: { open: '09:00', close: '17:00' },
@@ -71,10 +109,24 @@ function generateBrainJson(projectName, industryKey, industryConfig, additionalC
         sunday: { open: 'closed', close: 'closed' }
       },
       features: {
-        onlineOrdering: true,
-        reservations: industryKey === 'restaurant' || industryKey === 'spa-salon',
-        loyaltyProgram: false,
-        giftCards: false
+        onlineOrdering: enabledFeatures?.includes('ordering') || true,
+        reservations: enabledFeatures?.includes('reservations') || industryKey === 'restaurant' || industryKey === 'spa-salon',
+        loyaltyProgram: enabledFeatures?.includes('loyalty') || false,
+        giftCards: enabledFeatures?.includes('giftCards') || false
+      },
+      // Research data from Scout/Yelp enrichment (for runtime display)
+      research: {
+        rating: rating || null,
+        reviewCount: reviewCount || 0,
+        reviewHighlights: reviewHighlights || [],
+        priceLevel: priceLevel || null,
+        categories: categories || [],
+        photos: photos || [],
+        yelpUrl: yelpUrl || null,
+        googleMapsUrl: googleMapsUrl || null,
+        opportunityScore: opportunityScore || null,
+        source: researchSource || null,
+        enrichedAt: researchSource ? new Date().toISOString() : null
       }
     },
     modules: {
@@ -118,7 +170,7 @@ function generateBrainJson(projectName, industryKey, industryConfig, additionalC
       }
     },
     // Menu structure for restaurants/food businesses
-    menu: generateMenuStructure(industryKey),
+    menu: generateMenuStructure(industryKey, menuText),
     // Loyalty program structure
     loyalty: generateLoyaltyStructure(industryKey)
   }, null, 2);
@@ -126,11 +178,19 @@ function generateBrainJson(projectName, industryKey, industryConfig, additionalC
 
 /**
  * Generate menu structure based on industry
+ * @param {string} industry - Industry key
+ * @param {string} menuText - User-provided menu text (optional)
  */
-function generateMenuStructure(industry) {
-  const foodIndustries = ['restaurant', 'steakhouse', 'pizza', 'pizzeria', 'cafe', 'bakery', 'bar', 'food-truck'];
+function generateMenuStructure(industry, menuText) {
+  const foodIndustries = ['restaurant', 'steakhouse', 'pizza', 'pizzeria', 'cafe', 'bakery', 'bar', 'food-truck', 'coffee', 'coffee-shop'];
   if (!foodIndustries.includes(industry)) return null;
 
+  // If user provided menu text, parse it
+  if (menuText && menuText.trim()) {
+    return parseMenuText(menuText);
+  }
+
+  // Default menu structure
   return {
     categories: [
       {
@@ -161,6 +221,84 @@ function generateMenuStructure(industry) {
       }
     ]
   };
+}
+
+/**
+ * Parse user-provided menu text into structured menu data
+ * Supports formats like:
+ *   Item Name - $Price
+ *   Item Name: $Price
+ *   CATEGORY HEADER (all caps line)
+ */
+function parseMenuText(menuText) {
+  const lines = menuText.split('\n').map(l => l.trim()).filter(l => l);
+  const categories = [];
+  let currentCategory = { id: 'main', name: 'Menu', description: '', items: [] };
+  let itemId = 1;
+
+  for (const line of lines) {
+    // Check if it's a category header (ALL CAPS or ends with :)
+    const isCategoryHeader = /^[A-Z\s&]+$/.test(line) || /^[A-Z][A-Za-z\s&]+:$/.test(line);
+
+    if (isCategoryHeader) {
+      // Save current category if it has items
+      if (currentCategory.items.length > 0) {
+        categories.push(currentCategory);
+      }
+      // Start new category
+      const categoryName = line.replace(/:$/, '').trim();
+      currentCategory = {
+        id: categoryName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+        name: categoryName.charAt(0).toUpperCase() + categoryName.slice(1).toLowerCase(),
+        description: '',
+        items: []
+      };
+    } else {
+      // Parse as menu item: "Item Name - $Price" or "Item Name ... $Price"
+      const priceMatch = line.match(/^(.+?)[\s\-–—:\.]+\$?(\d+(?:\.\d{2})?)\s*$/);
+
+      if (priceMatch) {
+        const name = priceMatch[1].trim();
+        const price = parseFloat(priceMatch[2]);
+
+        currentCategory.items.push({
+          id: itemId++,
+          name: name,
+          description: '',
+          price: price,
+          popular: itemId <= 3 // Mark first few items as popular
+        });
+      } else if (line.length > 3 && !line.startsWith('$')) {
+        // Line without price - might be a description or standalone item
+        // Add as item with no price (to be filled later)
+        currentCategory.items.push({
+          id: itemId++,
+          name: line,
+          description: '',
+          price: 0
+        });
+      }
+    }
+  }
+
+  // Don't forget the last category
+  if (currentCategory.items.length > 0) {
+    categories.push(currentCategory);
+  }
+
+  // If no categories were created, use default
+  if (categories.length === 0) {
+    return {
+      categories: [{
+        id: 'menu',
+        name: 'Menu',
+        description: 'Our offerings',
+        items: [{ id: 1, name: 'House Special', description: 'Ask for details', price: 15, popular: true }]
+      }]
+    };
+  }
+
+  return { categories };
 }
 
 /**
@@ -653,21 +791,40 @@ const path = require('path');
 
 router.get('/', async (req, res) => {
   const checks = { timestamp: new Date().toISOString(), status: 'healthy', services: {} };
+
+  // Check brain.json exists
   const brainPath = path.join(__dirname, '..', '..', 'brain.json');
   checks.services.brain = { status: fs.existsSync(brainPath) ? 'healthy' : 'missing' };
-  try {
-    const db = require('../database/db');
-    await db.query('SELECT 1');
-    checks.services.database = { status: 'healthy' };
-  } catch (e) {
-    checks.services.database = { status: 'unhealthy', error: e.message };
+
+  // Database check - only if DATABASE_URL is configured
+  if (process.env.DATABASE_URL) {
+    try {
+      const dbPath = path.join(__dirname, '..', 'database', 'db.js');
+      if (fs.existsSync(dbPath)) {
+        const db = require(dbPath);
+        await db.query('SELECT 1');
+        checks.services.database = { status: 'healthy' };
+      } else {
+        checks.services.database = { status: 'not_configured', note: 'Database module not present' };
+      }
+    } catch (e) {
+      checks.services.database = { status: 'unhealthy', error: e.message };
+    }
+  } else {
+    checks.services.database = { status: 'not_configured', note: 'DATABASE_URL not set' };
   }
-  const requiredEnvVars = ['JWT_SECRET', 'DATABASE_URL'];
+
+  // Environment check - JWT_SECRET is optional for demo mode
+  const requiredEnvVars = process.env.DATABASE_URL ? ['JWT_SECRET'] : [];
   const missingEnv = requiredEnvVars.filter(v => !process.env[v]);
   checks.services.environment = { status: missingEnv.length === 0 ? 'healthy' : 'warning', missing: missingEnv };
+
+  // Optional services
   checks.services.stripe = { status: process.env.STRIPE_SECRET_KEY ? 'configured' : 'not_configured' };
   checks.services.ai = { status: process.env.ANTHROPIC_API_KEY ? 'configured' : 'not_configured' };
-  const hasUnhealthy = Object.values(checks.services).some(s => s.status === 'unhealthy');
+
+  // Overall status - only unhealthy if a required service is down
+  const hasUnhealthy = checks.services.brain.status === 'missing' || checks.services.database?.status === 'unhealthy';
   checks.status = hasUnhealthy ? 'unhealthy' : 'healthy';
   res.json(checks);
 });
@@ -870,7 +1027,8 @@ module.exports = router;
 `;
 }
 
-function buildAppJsx(name, pages, promptConfig, industry) {
+function buildAppJsx(name, pages, promptConfig, industry, options = {}) {
+  const { enablePortal = true } = options;
   const colors = promptConfig?.colors || { primary: '#0a1628', text: '#1a1a2e', textMuted: '#4a5568', accent: '#22c55e' };
   const typography = promptConfig?.typography || { heading: "Georgia, 'Times New Roman', serif" };
 
@@ -902,7 +1060,8 @@ function buildAppJsx(name, pages, promptConfig, industry) {
     // Legacy
     'survey-rewards', 'family'
   ];
-  const needsAuth = authRequiredIndustries.includes(industry);
+  // Enable auth if: explicitly enabled via toggle OR industry requires it
+  const needsAuth = enablePortal || authRequiredIndustries.includes(industry);
 
   // Industries that require cart functionality (product ordering, NOT service booking)
   // Service businesses (spa-salon, barbershop) use booking systems, not carts
@@ -910,9 +1069,13 @@ function buildAppJsx(name, pages, promptConfig, industry) {
   const needsCart = cartRequiredIndustries.includes(industry) ||
                    pages.some(p => ['menu', 'cart', 'checkout', 'order', 'products', 'services', 'booking'].includes(p.toLowerCase()));
 
-  // Pages that require authentication (protected routes)
-  const protectedPages = ['dashboard', 'earn', 'rewards', 'wallet', 'profile', 'settings', 'account'];
-  
+  // Pages that require authentication (protected routes) - these go in portal dropdown
+  const portalPages = ['dashboard', 'earn', 'rewards', 'wallet', 'profile', 'settings', 'account', 'leaderboard'];
+
+  // Separate main site pages from portal/app pages
+  const mainSitePages = pages.filter(p => !portalPages.includes(p.toLowerCase().replace(/\s+/g, '-')) && !['login', 'register'].includes(p.toLowerCase()));
+  const userPortalPages = pages.filter(p => portalPages.includes(p.toLowerCase().replace(/\s+/g, '-')));
+
   const routeImports = pages.map(p => {
     const componentName = toComponentName(p) + 'Page';
     return `import ${componentName} from './pages/${componentName}';`;
@@ -921,7 +1084,7 @@ function buildAppJsx(name, pages, promptConfig, industry) {
   const routeElements = pages.map(p => {
     const componentName = toComponentName(p) + 'Page';
     const routePath = toRoutePath(p);
-    const isProtected = needsAuth && protectedPages.includes(p.toLowerCase().replace(/\s+/g, '-'));
+    const isProtected = needsAuth && portalPages.includes(p.toLowerCase().replace(/\s+/g, '-'));
 
     if (isProtected) {
       return `              <Route path="${routePath}" element={<ProtectedRoute><${componentName} /></ProtectedRoute>} />`;
@@ -929,13 +1092,22 @@ function buildAppJsx(name, pages, promptConfig, industry) {
     return `              <Route path="${routePath}" element={<${componentName} />} />`;
   }).join('\n');
 
-  // Filter out login/register from nav links
-  const navPages = pages.filter(p => !['login', 'register'].includes(p.toLowerCase()));
-  const navLinks = navPages.map(p => {
+  // Generate nav links for main site pages only (not portal pages)
+  const navLinks = mainSitePages.map(p => {
     const label = toNavLabel(p);
     const navPath = toRoutePath(p);
     return `            <Link to="${navPath}" style={styles.navLink}>${label}</Link>`;
   }).join('\n');
+
+  // Generate portal dropdown items
+  const portalDropdownItems = userPortalPages.map(p => {
+    const label = toNavLabel(p);
+    const navPath = toRoutePath(p);
+    return `                <Link to="${navPath}" style={styles.portalDropdownItem}>${label}</Link>`;
+  }).join('\n');
+
+  // Portal dropdown code (only if there are portal pages and auth is needed)
+  const hasPortalPages = needsAuth && userPortalPages.length > 0;
   
   // Auth imports and components
   const authImports = needsAuth ? `
@@ -959,23 +1131,55 @@ import { CartProvider } from './context/CartContext';` : '';
             <AuthButtons />` : '';
 
   const authButtonsComponent = needsAuth ? `
-// Auth navigation buttons
+// Auth navigation buttons with portal dropdown
 function AuthButtons() {
   const { user, logout } = useAuth();
-  
+  const [portalOpen, setPortalOpen] = useState(false);
+  const portalRef = React.useRef(null);
+
+  // Close dropdown when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (portalRef.current && !portalRef.current.contains(event.target)) {
+        setPortalOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   if (user) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <span style={{ color: '${colors.textMuted}', fontSize: '14px' }}>
+        ${hasPortalPages ? `{/* Portal Dropdown */}
+        <div ref={portalRef} style={{ position: 'relative' }}>
+          <button
+            onClick={() => setPortalOpen(!portalOpen)}
+            style={styles.portalButton}
+          >
+            <Users size={18} />
+            My Account
+            <ChevronDown size={16} style={{ transform: portalOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }} />
+          </button>
+          {portalOpen && (
+            <div style={styles.portalDropdown}>
+${portalDropdownItems}
+              <div style={styles.portalDivider} />
+              <button onClick={logout} style={styles.portalDropdownItem}>
+                Logout
+              </button>
+            </div>
+          )}
+        </div>` : `<span style={{ color: '${colors.textMuted}', fontSize: '14px' }}>
           {user.fullName || user.email}
         </span>
         <button onClick={logout} style={styles.logoutButton}>
           Logout
-        </button>
+        </button>`}
       </div>
     );
   }
-  
+
   return (
     <div style={{ display: 'flex', gap: '12px' }}>
       <Link to="/login" style={styles.loginButton}>Login</Link>
@@ -1015,6 +1219,53 @@ function AuthButtons() {
     borderRadius: '6px',
     cursor: 'pointer',
     transition: 'all 0.2s',
+  },
+  // Portal dropdown styles
+  portalButton: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '8px 16px',
+    background: '${accentColor}',
+    color: '#ffffff',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '14px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+  },
+  portalDropdown: {
+    position: 'absolute',
+    top: '100%',
+    right: 0,
+    marginTop: '8px',
+    background: '#ffffff',
+    borderRadius: '12px',
+    boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
+    border: '1px solid rgba(0,0,0,0.1)',
+    minWidth: '200px',
+    padding: '8px 0',
+    zIndex: 1000,
+  },
+  portalDropdownItem: {
+    display: 'block',
+    width: '100%',
+    padding: '12px 20px',
+    color: '${colors.text}',
+    textDecoration: 'none',
+    fontSize: '14px',
+    fontWeight: '500',
+    background: 'transparent',
+    border: 'none',
+    textAlign: 'left',
+    cursor: 'pointer',
+    transition: 'background 0.2s',
+  },
+  portalDivider: {
+    height: '1px',
+    background: 'rgba(0,0,0,0.1)',
+    margin: '8px 0',
   },` : '';
 
   // Build app wrapper based on required providers
@@ -1037,7 +1288,9 @@ function AuthButtons() {
     'Menu', 'X',
     // Common page icons - always included to prevent "not defined" errors from AI-generated pages
     'MapPin', 'Phone', 'Mail', 'Star', 'Check', 'ArrowRight', 'ChevronRight', 'ChevronDown',
-    'Calendar', 'Users', 'Award', 'Heart', 'Target', 'Sparkles', 'Quote', 'ExternalLink'
+    'Calendar', 'Users', 'Award', 'Heart', 'Target', 'Sparkles', 'Quote', 'ExternalLink',
+    // Portal dropdown icons (always needed for auth)
+    'User'
   ];
   if (headerConfig.primaryCta?.icon) headerIcons.push(headerConfig.primaryCta.icon);
   if (headerConfig.secondaryCta?.icon) headerIcons.push(headerConfig.secondaryCta.icon);
@@ -1163,7 +1416,7 @@ function NavWrapper({ children }) {
   return (
     <>${emergencyBanner}${promoBanner}
       <nav style={styles.nav}>
-        <Link to="/" style={styles.navBrand}>
+        <Link to="/home" style={styles.navBrand}>
           <span style={styles.brandText}>${name.replace(/-/g, ' ').replace(/\s+/g, ' ').trim()}</span>
         </Link>
 
@@ -1199,7 +1452,19 @@ ${authNavButtons}
       {isMobile && menuOpen && (
         <div style={styles.mobileMenuOverlay} onClick={() => setMenuOpen(false)}>
           <div style={styles.mobileMenu} onClick={(e) => e.stopPropagation()}>
+            {/* Main Navigation */}
 ${navLinks.split('\n').map(link => link.replace('styles.navLink', 'styles.mobileNavLink')).join('\n')}
+            ${hasPortalPages ? `{/* Portal Section - Only shown when logged in */}
+            <AuthProvider.Consumer>
+              {({ user }) => user && (
+                <>
+                  <div style={styles.mobilePortalSection}>
+                    <span style={styles.mobilePortalLabel}>My Account</span>
+${portalDropdownItems.split('\n').map(link => link.replace('styles.portalDropdownItem', 'styles.mobileNavLink').replace(/^\s+/, '            ')).join('\n')}
+                  </div>
+                </>
+              )}
+            </AuthProvider.Consumer>` : ''}
             <div style={styles.mobileCtas}>
               ${headerConfig.primaryCta ? `<Link to="${headerConfig.primaryCta.href || '/contact'}" style={styles.mobilePrimaryCta}>${headerConfig.primaryCta.text}</Link>` : ''}
               ${headerConfig.secondaryCta ? `<Link to="${headerConfig.secondaryCta.href || '/contact'}" style={styles.mobileSecondaryCta}>${headerConfig.secondaryCta.text}</Link>` : ''}
@@ -1555,6 +1820,20 @@ const styles = {
   mobileAuthButtons: {
     paddingTop: '16px',
     borderTop: '1px solid rgba(0,0,0,0.1)',
+  },
+  mobilePortalSection: {
+    borderTop: '1px solid rgba(0,0,0,0.1)',
+    marginTop: '8px',
+    paddingTop: '16px',
+  },
+  mobilePortalLabel: {
+    display: 'block',
+    fontSize: '12px',
+    fontWeight: '600',
+    color: '${colors.textMuted}',
+    textTransform: 'uppercase',
+    letterSpacing: '1px',
+    padding: '8px 0',
   },${authStyles}
   main: {
     flex: 1,

@@ -1,0 +1,80 @@
+{
+  "projectName": "Urban Style Boutique",
+  "deletedAt": "2026-01-24T13:48:57.227Z",
+  "resourcesFound": {
+    "name": "Urban Style Boutique",
+    "sanitizedName": "urban-style-boutique",
+    "github": {
+      "repos": [
+        {
+          "name": "urban-style-boutique-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "urban-style-boutique-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "urban-style-boutique-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/urban-style-boutique-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/urban-style-boutique-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/urban-style-boutique-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "urban-style-boutique",
+          "verified": true
+        },
+        {
+          "subdomain": "api.urban-style-boutique",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.urban-style-boutique",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

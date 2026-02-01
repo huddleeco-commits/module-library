@@ -1,0 +1,69 @@
+{
+  "id": "Z4lxbHKkKVNIPa1dWoV8pg",
+  "name": "ROOSTERS MEN'S GROOMING CENTER",
+  "address": "2500 Cross Timbers Rd, Flower Mound, TX, 75028",
+  "phone": "+19728742000",
+  "category": "barbers",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 3.8,
+  "reviewCount": 51,
+  "photos": [
+    "https://s3-media0.fl.yelpcdn.com/bphoto/aN6zboiTshoc_S8B82ZS6Q/o.jpg"
+  ],
+  "hours": null,
+  "fixtureId": "barbershop",
+  "source": "yelp",
+  "yelpUrl": "https://www.yelp.com/biz/roosters-mens-grooming-center-flower-mound-3?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+  "raw": {
+    "id": "Z4lxbHKkKVNIPa1dWoV8pg",
+    "alias": "roosters-mens-grooming-center-flower-mound-3",
+    "name": "ROOSTERS MEN'S GROOMING CENTER",
+    "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/aN6zboiTshoc_S8B82ZS6Q/o.jpg",
+    "is_closed": false,
+    "url": "https://www.yelp.com/biz/roosters-mens-grooming-center-flower-mound-3?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+    "review_count": 51,
+    "categories": [
+      {
+        "alias": "barbers",
+        "title": "Barbers"
+      },
+      {
+        "alias": "menshair",
+        "title": "Men's Hair Salons"
+      }
+    ],
+    "rating": 3.8,
+    "coordinates": {
+      "latitude": 33.03595,
+      "longitude": -97.06739
+    },
+    "transactions": [],
+    "price": "$$",
+    "location": {
+      "address1": "2500 Cross Timbers Rd",
+      "address2": "Riverwalk Market",
+      "address3": null,
+      "city": "Flower Mound",
+      "zip_code": "75028",
+      "country": "US",
+      "state": "TX",
+      "display_address": [
+        "2500 Cross Timbers Rd",
+        "Riverwalk Market",
+        "Flower Mound, TX 75028"
+      ]
+    },
+    "phone": "+19728742000",
+    "display_phone": "(972) 874-2000",
+    "distance": 6120.527497753325,
+    "business_hours": [],
+    "attributes": {
+      "business_temp_closed": null,
+      "menu_url": null,
+      "waitlist_reservation": null
+    }
+  },
+  "scannedAt": "2026-01-25T14:23:35.929Z",
+  "readyForGeneration": true
+}

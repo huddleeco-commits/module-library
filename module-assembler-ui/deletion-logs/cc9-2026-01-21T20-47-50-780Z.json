@@ -1,0 +1,83 @@
+{
+  "projectName": "cc9",
+  "deletedAt": "2026-01-21T20:47:50.780Z",
+  "resourcesFound": {
+    "name": "cc9",
+    "sanitizedName": "cc9",
+    "github": {
+      "repos": [
+        {
+          "name": "cc9-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "cc9-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "cc9-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\cc9",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/cc9-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/cc9-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/cc9-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\cc9"
+    },
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "cc9",
+          "verified": true
+        },
+        {
+          "subdomain": "api.cc9",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.cc9",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "id": "ONHBa2Zs58XEw9j16-TqZA",
+  "name": "WOLFIN Barber Shop",
+  "address": "3349 Long Prairie Rd, Flower Mound, TX, 75022",
+  "phone": "+12145130023",
+  "category": "barbers",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 5,
+  "reviewCount": 6,
+  "photos": [
+    "https://s3-media0.fl.yelpcdn.com/bphoto/EiDKHEFM47SWHhdOcoS_Lg/o.jpg"
+  ],
+  "hours": null,
+  "fixtureId": "barbershop",
+  "source": "yelp",
+  "yelpUrl": "https://www.yelp.com/biz/wolfin-barber-shop-flower-mound?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+  "raw": {
+    "id": "ONHBa2Zs58XEw9j16-TqZA",
+    "alias": "wolfin-barber-shop-flower-mound",
+    "name": "WOLFIN Barber Shop",
+    "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/EiDKHEFM47SWHhdOcoS_Lg/o.jpg",
+    "is_closed": false,
+    "url": "https://www.yelp.com/biz/wolfin-barber-shop-flower-mound?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+    "review_count": 6,
+    "categories": [
+      {
+        "alias": "barbers",
+        "title": "Barbers"
+      }
+    ],
+    "rating": 5,
+    "coordinates": {
+      "latitude": 33.032226,
+      "longitude": -97.071474
+    },
+    "transactions": [],
+    "location": {
+      "address1": "3349 Long Prairie Rd",
+      "address2": null,
+      "address3": "",
+      "city": "Flower Mound",
+      "zip_code": "75022",
+      "country": "US",
+      "state": "TX",
+      "display_address": [
+        "3349 Long Prairie Rd",
+        "Flower Mound, TX 75022"
+      ]
+    },
+    "phone": "+12145130023",
+    "display_phone": "(214) 513-0023",
+    "distance": 6517.4668534626635,
+    "business_hours": [],
+    "attributes": {
+      "business_temp_closed": null,
+      "menu_url": "",
+      "waitlist_reservation": null
+    }
+  },
+  "scannedAt": "2026-01-25T14:23:35.929Z",
+  "readyForGeneration": true
+}

@@ -1,0 +1,65 @@
+{
+  "id": "LKR20-_KMLdyaalmJdCqXg",
+  "name": "Mel's Barber Shop",
+  "address": "5801 Long Prairie Rd, Flower Mound, TX, 75028",
+  "phone": "+19723554767",
+  "category": "barbers",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 4.8,
+  "reviewCount": 84,
+  "photos": [
+    "https://s3-media0.fl.yelpcdn.com/bphoto/4gIeTCtHARnup4oIyMfdLw/o.jpg"
+  ],
+  "hours": null,
+  "fixtureId": "barbershop",
+  "source": "yelp",
+  "yelpUrl": "https://www.yelp.com/biz/mels-barber-shop-flower-mound?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+  "raw": {
+    "id": "LKR20-_KMLdyaalmJdCqXg",
+    "alias": "mels-barber-shop-flower-mound",
+    "name": "Mel's Barber Shop",
+    "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/4gIeTCtHARnup4oIyMfdLw/o.jpg",
+    "is_closed": false,
+    "url": "https://www.yelp.com/biz/mels-barber-shop-flower-mound?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+    "review_count": 84,
+    "categories": [
+      {
+        "alias": "barbers",
+        "title": "Barbers"
+      }
+    ],
+    "rating": 4.8,
+    "coordinates": {
+      "latitude": 33.06457,
+      "longitude": -97.08332
+    },
+    "transactions": [],
+    "price": "$$",
+    "location": {
+      "address1": "5801 Long Prairie Rd",
+      "address2": "Ste 840",
+      "address3": "",
+      "city": "Flower Mound",
+      "zip_code": "75028",
+      "country": "US",
+      "state": "TX",
+      "display_address": [
+        "5801 Long Prairie Rd",
+        "Ste 840",
+        "Flower Mound, TX 75028"
+      ]
+    },
+    "phone": "+19723554767",
+    "display_phone": "(972) 355-4767",
+    "distance": 8136.5755995684995,
+    "business_hours": [],
+    "attributes": {
+      "business_temp_closed": null,
+      "menu_url": "http://melsbarbershop.com",
+      "waitlist_reservation": null
+    }
+  },
+  "scannedAt": "2026-01-25T14:23:35.929Z",
+  "readyForGeneration": true
+}

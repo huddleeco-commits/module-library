@@ -1,0 +1,38 @@
+{
+  "projectName": "test-cristy-s-cake-shop-luxury-dark",
+  "savedAt": "2026-01-26T20:46:31.838Z",
+  "resources": {
+    "name": "test-cristy-s-cake-shop-luxury-dark",
+    "sanitizedName": "test-cristy-s-cake-shop-luxury-dark",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-luxury-dark-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-luxury-dark-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-luxury-dark-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

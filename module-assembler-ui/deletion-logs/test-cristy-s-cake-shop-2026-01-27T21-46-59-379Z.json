@@ -1,0 +1,80 @@
+{
+  "projectName": "test-cristy-s-cake-shop",
+  "deletedAt": "2026-01-27T21:46:59.379Z",
+  "resourcesFound": {
+    "name": "test-cristy-s-cake-shop",
+    "sanitizedName": "test-cristy-s-cake-shop",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "test-cristy-s-cake-shop",
+          "verified": true
+        },
+        {
+          "subdomain": "api.test-cristy-s-cake-shop",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.test-cristy-s-cake-shop",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

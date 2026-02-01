@@ -1,0 +1,80 @@
+{
+  "projectName": "test-cristy-s-cake-shop-sharp-corporate-dark",
+  "deletedAt": "2026-01-26T20:47:06.362Z",
+  "resourcesFound": {
+    "name": "test-cristy-s-cake-shop-sharp-corporate-dark",
+    "sanitizedName": "test-cristy-s-cake-shop-sharp-corporate-dark",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-sharp-corporate-dark-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-sharp-corporate-dark-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-sharp-corporate-dark-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-sharp-corporate-dark-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-sharp-corporate-dark-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-sharp-corporate-dark-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "test-cristy-s-cake-shop-sharp-corporate-dark",
+          "verified": true
+        },
+        {
+          "subdomain": "api.test-cristy-s-cake-shop-sharp-corporate-dark",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.test-cristy-s-cake-shop-sharp-corporate-dark",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

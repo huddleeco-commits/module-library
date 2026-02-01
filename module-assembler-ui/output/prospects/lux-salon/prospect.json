@@ -1,0 +1,231 @@
+{
+  "id": "ChIJw9aWbt0bTIYR-U14htI_Ogc",
+  "name": "Lux Salon",
+  "address": "1445 Los Rios Blvd # 303, Plano, TX 75074, USA",
+  "phone": "(469) 661-9145",
+  "category": "beauty_salon",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 4.7,
+  "reviewCount": 169,
+  "photo": "https://places.googleapis.com/v1/places/ChIJw9aWbt0bTIYR-U14htI_Ogc/photos/AcnlKN2k2bnV8Ygw4iYHkqwbGUXntx2y3iWKcp-Q9qZhvcgPiREnDkkwTwBKOGOY_Z6ZZpDytOOoEyky3WlDBcGU525AZK9WlZDOsYtrsWVRcb3aGa30-lCKay4MQMpnHC2S6r5asvEenrbU4LNiysZvh7-4oQQMNWlNqVoTLPArrCXPvZdXOilpm8oetJwjnWVCGwjbTLJSNy1Tsb6mP9p54B5NQZc9MzRtnlElmJcmL9ZEikdC3E_RrKvlIXt9AfpgOOEhDL_B1RYR9PsGQd9sEOJw3YE_yfGnSV3Ogs7nk5fGHw/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+  "photos": [
+    "https://places.googleapis.com/v1/places/ChIJw9aWbt0bTIYR-U14htI_Ogc/photos/AcnlKN2k2bnV8Ygw4iYHkqwbGUXntx2y3iWKcp-Q9qZhvcgPiREnDkkwTwBKOGOY_Z6ZZpDytOOoEyky3WlDBcGU525AZK9WlZDOsYtrsWVRcb3aGa30-lCKay4MQMpnHC2S6r5asvEenrbU4LNiysZvh7-4oQQMNWlNqVoTLPArrCXPvZdXOilpm8oetJwjnWVCGwjbTLJSNy1Tsb6mP9p54B5NQZc9MzRtnlElmJcmL9ZEikdC3E_RrKvlIXt9AfpgOOEhDL_B1RYR9PsGQd9sEOJw3YE_yfGnSV3Ogs7nk5fGHw/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+    "https://places.googleapis.com/v1/places/ChIJw9aWbt0bTIYR-U14htI_Ogc/photos/AcnlKN29xJ8OLBv0o79wS9hxcENGj0dcgvGEZTKoO3QT4tlnkCh92tZP5mvruMdmSXDC0tB3baFhz5xOrBnT_SvT64kqTK2LiKm6vEeXBTP9wCB8EOosYAekKa5SBm-Mz9gwvUSeIVkgwkmnDGn1N0GGiCqT9g2pgTKPSdOzS5zsOWcr1JxFT-feQlPvVInAtl7XUk5VyXG3rZzQNF7A-sRiVkhFvoX7_rEAkbkF6laUs7zJafLVt0JB9niA31iKX7k8v3OMskKKRGEuOee0j_H5E6rXv_XxkXTlYhWN_xMG512RVw/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+    "https://places.googleapis.com/v1/places/ChIJw9aWbt0bTIYR-U14htI_Ogc/photos/AcnlKN3UC8TpDMcb0PSVUo3C0IWLMXTx_VDnV__7AkEPjNXZoKHaVXfBHne7wP35nhXS682xjtY-zBFXuZHm2-JlIikj-MIKkJPpgH7OWWJxtlh0B6EiQOdJtvtuWW9tCWC7abP4WKmXJ-Br8zHpaXr0GQ4bpzO_B3_fyli75BYccOXsHpPKpGY5UMQ_1LXr9H8d_BRuM2ACn4_TJx17TUSZQ8g2b_I6mxiuekorkJUp7sZSgnrbGjSapSjnU9vbWVNrhAOGTDbqL9j_wPGKlIYCVCcw6LWnLUPE7hK7T3h5gE9Ac5PXVtUfVi7h1ixOEqWiwqrtF8O0xQD8P_3NVeFcJb-QUS_u1mc8ZbtSN5SgluLjLk5dYpj-R4wh0eNZNsuhq2i5qsbIkTO8obypUA3DHcRJU1SlYEZ_y1icpC3SbhU/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+    "https://places.googleapis.com/v1/places/ChIJw9aWbt0bTIYR-U14htI_Ogc/photos/AcnlKN2-euXSrag8MB7ef-vtCa7YFFJmpkuOjbhEAiVTbtY5NT05HsziV1pu1ByWQ-gV7liAQkx9GFeWleirQP0SwsxoJme1Y38-venRET97jHgTD_5fbv3JMCdJXr4CjQlV0S5U4Y10bJdj2XnX4biI94Ag6CIAp4doOBPdvZAqBzcuQ8Dgq9FtpT7xzFTWt1929SanuL8ODLVAlgRgt6VsYiyw9lXEUuGnpWHrfYF--NW9aIX1P9jYc_VbHV_d9UnWZsS-A66YKR16K_M6-rKssZu4MYeTbJvPYaryOksnRZb4M_iv2xhp_E9-n9C4fzo7CP2IfLA0AQqJlvXUVbjB7es8XUHnhBvxkY04OBWxnNRGMibd9LNXtMrAcTZydrWJwY5fU4lG1N4gAX9eN8qcxOeL-AP6eHCEaxQPw_RGc0Rz2g/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+    "https://places.googleapis.com/v1/places/ChIJw9aWbt0bTIYR-U14htI_Ogc/photos/AcnlKN0CbegXFOzrJxFkJRhhU6ZhwrZQu8g-3NgCEkLF6gg9HoUj3ECaR18OpJ6gmvAORFdg5Lav-4g3h1-Mj5YvAUKdNrZPbh9ko9q82KrHHdiuwF02Nws3JKzuAkIduZvePv6aDSnGCu7xbrwVSS_f2V8uYQsPc7WuvRW5Pjj5rsKrEUYY9S2cWPygTk4-lweO_XO4tZ33etwIgEnp1e4rKnQWRVtt_oHwns_74l19mutXvxiegzT2z6vwULdNdy8vuVoRvGQ8Up0jTkvBHST0QgFJfgis0rEGbf_8jVtCY13qqg/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+    "https://places.googleapis.com/v1/places/ChIJw9aWbt0bTIYR-U14htI_Ogc/photos/AcnlKN2d1-9lKS38XB-rK34iJam_2RTMtmQsMz7Rcd_RxRljOeZCqtpXQP8QO8wE5DPt9X-Y7NBgbI9M4FNOeod_IUPXR62ulIKHnsTGf4-Ul60_frIlTLs0nGrCup0C_mV_rkKNetRvD_-BOO1ZPJZZQbbwWQgqMdQQe8-wQIAnhgOFZXZ73l-Gr_nEmQbHaXOpYZFrsWQ3gBJ4aYXyVUd4MIuoXaUCOgEKEgY-ZDE2uYauw3m9IP0QJ4y93KN5VFRo1tWbertKJ2SRyTHSlyF8rvQ6fxgVyLGG3bmT8eVYb90I0CzupW25ae8ky0M-kSNidYJ4sMIl1spEkK9MqOVO_5aOkTZwnazLhbb2UGeany1sxxQrvlXZBQ06iqia4vEVim3V3wVZd8DpMaebZuxCzozOl1TG5gc_t7xseBD4QFH0UA/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+    "https://places.googleapis.com/v1/places/ChIJw9aWbt0bTIYR-U14htI_Ogc/photos/AcnlKN3_TBp71oj35gIuPBHR3SLBM1I1PKq1r0JQ7kXfSgPyME6mkZKxttFKxqOufyc2VTxi39i-57Cp2kdk6ri8PdpDdtbKQ9Ha3fYTMpk9QBI30oq7Hx1n0ZPPweuiHqAIoB-WkDbkPj8COQTDFUwgrqsZA2IRWGfWzqJ_iPNbkeZ4yZ_KXFJYQLKVvgu9BW_MkKLuhKEbytMocVWlhtYZHBUp7AkKE12-CnCgzYhQ0i3arCbffISvnWJyRyD8F-jKScweYRobUX1VizX7EP8fNzeiiGgLQfMoN5VM2um_jKxEykUsWpqSwfX0-ILoShMNXfqCm2DOEyWA2Vk679QKTjmNPSbwxPp8hGoD3XLELoOrzPnktMOOQZLgnkfUZPH-smLRhE2p60J6NDfuhVSo_XamtrlKaSttEJ0egn4yFKzvVQ/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+    "https://places.googleapis.com/v1/places/ChIJw9aWbt0bTIYR-U14htI_Ogc/photos/AcnlKN0JsdoS6JkY5cI0M0cKhW6Hc71NodyWMiSRrBIXKoxLejXhaimSVQyoINHHNqj93ednaa1MMTHP7RxBwdu3npyvYc1_87Z8JVnmfYMN4w9TC9BhH8FiJpYRRL4gzvtzaR2DQM4kbnukF2b3kfDIiJsxSIAmrj0ZYZZcT07s-AsfrEJf0aF-wB2HM24CxJrgaH4IDFIiYbl-R8Mb_vq_Kh5_LQd_bGpFAPKyl0hLU8tHitkSmCQEHAg-30eSPWhESup_sus2mUWBJzz9bjh5ZZF7VldO1DWaXQ2ZVXPuypzHzDr73Li1LZLr02QxKBxGgSg-T3y0OxzeTuBJzagFTa1FOJamNz3L_moRt0DIhuUjHkYqTq1fKmWSWCtDFUrS6pH40i9Z8MDgjctawAfdpMucmdpz54Cc-tykivlKcS5_yA/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+    "https://places.googleapis.com/v1/places/ChIJw9aWbt0bTIYR-U14htI_Ogc/photos/AcnlKN0P4qYN6wvB6R9fC9X69iOzeNXwpWkmBeWIXF47KJW_wOqdZw53dp54-rU06wyye-bi6Q5hrOgnXWCIq45kGSWvCatNkw2zpbimf2GGSQmiyx-vytyyyk7M3cofpuuI4uSGUw9RBkq0uAoXN4rcdXk7llHGjMBjTjOTRFBGISXvwzu-G6g1m482S43oCtXnsrjHJ1gjefgei1PkGlg7efg3XS4ve1yHna7yiLzRKBPR4GmvFHhSMHKtmq1wTeOY5wVNoX5ODspqLj5kF9NP8VHm4vBSOHw10FKBYyL6kJiiKps_yAUacpqi47SXAsohftxNWFWstlJFHHe8BT_id7MUGuZmZCenR6E2ysM0rISAafoUtoo0Vv9ZQ1j5LOgmfgxr_gDLxy97xGvSXSJas4JV_Hx4K1nRVj1ki3S5vtBKqb3A/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+    "https://places.googleapis.com/v1/places/ChIJw9aWbt0bTIYR-U14htI_Ogc/photos/AcnlKN1xdS3liyNmTm4I8cOKsSz1Ms4N27eqGiLsDWr5uE-qbP97seJ8a6XhU0KropiD8oog-UAHCkeDsHejdRmcfYaOWT9Ou_P5lL0vO6PFUOuMHXlxJ6LSaJSZoBs-J0GTARydXz84vZeKPIyNh_NYlrWoeXXf_UVEfB9EGb5FutqBz2Pc4aWi5zBW7ieixrR6oGn0iX9afr4kg95qGXO04UG1m9_LejZ-fV7RmPDa2LnCqB9EYBu2Vt9cpkcG8uuY57xDWIRf2dP3wryIUepqLqRSfJ2-viWZtlYr1kcoIL_CJWcQDLpB7MK-RD3_u3edi2p77WQaTPGwV2nHsqQsiA106M3puvCzzmHcXaNjmIxekTM28AwN1hRFaRIO9DaB6v__ksKiotK9AvvdP0FvN0391gBWs7wnCGTLa-zhdCQNR2lP/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k"
+  ],
+  "fixtureId": "salon-spa",
+  "source": "google",
+  "googleMapsUrl": "https://maps.google.com/?cid=520798880346426873&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+  "coordinates": {
+    "latitude": 33.015156,
+    "longitude": -96.6547609
+  },
+  "raw": {
+    "id": "ChIJw9aWbt0bTIYR-U14htI_Ogc",
+    "types": [
+      "beauty_salon",
+      "hair_salon",
+      "hair_care",
+      "point_of_interest",
+      "establishment"
+    ],
+    "nationalPhoneNumber": "(469) 661-9145",
+    "formattedAddress": "1445 Los Rios Blvd # 303, Plano, TX 75074, USA",
+    "location": {
+      "latitude": 33.015156,
+      "longitude": -96.6547609
+    },
+    "rating": 4.7,
+    "googleMapsUri": "https://maps.google.com/?cid=520798880346426873&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "userRatingCount": 169,
+    "displayName": {
+      "text": "Lux Salon",
+      "languageCode": "en"
+    },
+    "primaryType": "beauty_salon",
+    "photos": [
+      {
+        "name": "places/ChIJw9aWbt0bTIYR-U14htI_Ogc/photos/AcnlKN2k2bnV8Ygw4iYHkqwbGUXntx2y3iWKcp-Q9qZhvcgPiREnDkkwTwBKOGOY_Z6ZZpDytOOoEyky3WlDBcGU525AZK9WlZDOsYtrsWVRcb3aGa30-lCKay4MQMpnHC2S6r5asvEenrbU4LNiysZvh7-4oQQMNWlNqVoTLPArrCXPvZdXOilpm8oetJwjnWVCGwjbTLJSNy1Tsb6mP9p54B5NQZc9MzRtnlElmJcmL9ZEikdC3E_RrKvlIXt9AfpgOOEhDL_B1RYR9PsGQd9sEOJw3YE_yfGnSV3Ogs7nk5fGHw",
+        "widthPx": 2048,
+        "heightPx": 2048,
+        "authorAttributions": [
+          {
+            "displayName": "Lux Salon",
+            "uri": "https://maps.google.com/maps/contrib/101826984270887202058",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjXBWlvx6aoewuv7u--rqd-DY9mWROdf_hcTZMEwyFPl0hmncpg=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipOdXy0LUNiFPGm7xw2q6crcZi8UE1D_hJVuVIZF&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipOdXy0LUNiFPGm7xw2q6crcZi8UE1D_hJVuVIZF!2e10!4m2!3m1!1s0x864c1bdd6e96d6c3:0x73a3fd286784df9"
+      },
+      {
+        "name": "places/ChIJw9aWbt0bTIYR-U14htI_Ogc/photos/AcnlKN29xJ8OLBv0o79wS9hxcENGj0dcgvGEZTKoO3QT4tlnkCh92tZP5mvruMdmSXDC0tB3baFhz5xOrBnT_SvT64kqTK2LiKm6vEeXBTP9wCB8EOosYAekKa5SBm-Mz9gwvUSeIVkgwkmnDGn1N0GGiCqT9g2pgTKPSdOzS5zsOWcr1JxFT-feQlPvVInAtl7XUk5VyXG3rZzQNF7A-sRiVkhFvoX7_rEAkbkF6laUs7zJafLVt0JB9niA31iKX7k8v3OMskKKRGEuOee0j_H5E6rXv_XxkXTlYhWN_xMG512RVw",
+        "widthPx": 2704,
+        "heightPx": 3606,
+        "authorAttributions": [
+          {
+            "displayName": "Lux Salon",
+            "uri": "https://maps.google.com/maps/contrib/101826984270887202058",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjXBWlvx6aoewuv7u--rqd-DY9mWROdf_hcTZMEwyFPl0hmncpg=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipMOG2mLxgHT16BCBts4bnpijxX13W76BTZ2Ruu7&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipMOG2mLxgHT16BCBts4bnpijxX13W76BTZ2Ruu7!2e10!4m2!3m1!1s0x864c1bdd6e96d6c3:0x73a3fd286784df9"
+      },
+      {
+        "name": "places/ChIJw9aWbt0bTIYR-U14htI_Ogc/photos/AcnlKN3UC8TpDMcb0PSVUo3C0IWLMXTx_VDnV__7AkEPjNXZoKHaVXfBHne7wP35nhXS682xjtY-zBFXuZHm2-JlIikj-MIKkJPpgH7OWWJxtlh0B6EiQOdJtvtuWW9tCWC7abP4WKmXJ-Br8zHpaXr0GQ4bpzO_B3_fyli75BYccOXsHpPKpGY5UMQ_1LXr9H8d_BRuM2ACn4_TJx17TUSZQ8g2b_I6mxiuekorkJUp7sZSgnrbGjSapSjnU9vbWVNrhAOGTDbqL9j_wPGKlIYCVCcw6LWnLUPE7hK7T3h5gE9Ac5PXVtUfVi7h1ixOEqWiwqrtF8O0xQD8P_3NVeFcJb-QUS_u1mc8ZbtSN5SgluLjLk5dYpj-R4wh0eNZNsuhq2i5qsbIkTO8obypUA3DHcRJU1SlYEZ_y1icpC3SbhU",
+        "widthPx": 1199,
+        "heightPx": 1267,
+        "authorAttributions": [
+          {
+            "displayName": "Mahendra Kunwar",
+            "uri": "https://maps.google.com/maps/contrib/109385315591390017653",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWnPGvWf2lzWzjnyApz6nSX43ho0lRYKCBWw7dzgxCpWCLofi1U=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICT7KXjUQ&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICT7KXjUQ!2e10!4m2!3m1!1s0x864c1bdd6e96d6c3:0x73a3fd286784df9"
+      },
+      {
+        "name": "places/ChIJw9aWbt0bTIYR-U14htI_Ogc/photos/AcnlKN2-euXSrag8MB7ef-vtCa7YFFJmpkuOjbhEAiVTbtY5NT05HsziV1pu1ByWQ-gV7liAQkx9GFeWleirQP0SwsxoJme1Y38-venRET97jHgTD_5fbv3JMCdJXr4CjQlV0S5U4Y10bJdj2XnX4biI94Ag6CIAp4doOBPdvZAqBzcuQ8Dgq9FtpT7xzFTWt1929SanuL8ODLVAlgRgt6VsYiyw9lXEUuGnpWHrfYF--NW9aIX1P9jYc_VbHV_d9UnWZsS-A66YKR16K_M6-rKssZu4MYeTbJvPYaryOksnRZb4M_iv2xhp_E9-n9C4fzo7CP2IfLA0AQqJlvXUVbjB7es8XUHnhBvxkY04OBWxnNRGMibd9LNXtMrAcTZydrWJwY5fU4lG1N4gAX9eN8qcxOeL-AP6eHCEaxQPw_RGc0Rz2g",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Mahendra Kunwar",
+            "uri": "https://maps.google.com/maps/contrib/109385315591390017653",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWnPGvWf2lzWzjnyApz6nSX43ho0lRYKCBWw7dzgxCpWCLofi1U=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDTvdjGGw&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDTvdjGGw!2e10!4m2!3m1!1s0x864c1bdd6e96d6c3:0x73a3fd286784df9"
+      },
+      {
+        "name": "places/ChIJw9aWbt0bTIYR-U14htI_Ogc/photos/AcnlKN0CbegXFOzrJxFkJRhhU6ZhwrZQu8g-3NgCEkLF6gg9HoUj3ECaR18OpJ6gmvAORFdg5Lav-4g3h1-Mj5YvAUKdNrZPbh9ko9q82KrHHdiuwF02Nws3JKzuAkIduZvePv6aDSnGCu7xbrwVSS_f2V8uYQsPc7WuvRW5Pjj5rsKrEUYY9S2cWPygTk4-lweO_XO4tZ33etwIgEnp1e4rKnQWRVtt_oHwns_74l19mutXvxiegzT2z6vwULdNdy8vuVoRvGQ8Up0jTkvBHST0QgFJfgis0rEGbf_8jVtCY13qqg",
+        "widthPx": 2048,
+        "heightPx": 2048,
+        "authorAttributions": [
+          {
+            "displayName": "Lux Salon",
+            "uri": "https://maps.google.com/maps/contrib/101826984270887202058",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjXBWlvx6aoewuv7u--rqd-DY9mWROdf_hcTZMEwyFPl0hmncpg=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipMhot3ugh3XTktjQXnHXufgXUarh1JRdZVCTtr1&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipMhot3ugh3XTktjQXnHXufgXUarh1JRdZVCTtr1!2e10!4m2!3m1!1s0x864c1bdd6e96d6c3:0x73a3fd286784df9"
+      },
+      {
+        "name": "places/ChIJw9aWbt0bTIYR-U14htI_Ogc/photos/AcnlKN2d1-9lKS38XB-rK34iJam_2RTMtmQsMz7Rcd_RxRljOeZCqtpXQP8QO8wE5DPt9X-Y7NBgbI9M4FNOeod_IUPXR62ulIKHnsTGf4-Ul60_frIlTLs0nGrCup0C_mV_rkKNetRvD_-BOO1ZPJZZQbbwWQgqMdQQe8-wQIAnhgOFZXZ73l-Gr_nEmQbHaXOpYZFrsWQ3gBJ4aYXyVUd4MIuoXaUCOgEKEgY-ZDE2uYauw3m9IP0QJ4y93KN5VFRo1tWbertKJ2SRyTHSlyF8rvQ6fxgVyLGG3bmT8eVYb90I0CzupW25ae8ky0M-kSNidYJ4sMIl1spEkK9MqOVO_5aOkTZwnazLhbb2UGeany1sxxQrvlXZBQ06iqia4vEVim3V3wVZd8DpMaebZuxCzozOl1TG5gc_t7xseBD4QFH0UA",
+        "widthPx": 1200,
+        "heightPx": 1600,
+        "authorAttributions": [
+          {
+            "displayName": "Mahendra Kunwar",
+            "uri": "https://maps.google.com/maps/contrib/109385315591390017653",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWnPGvWf2lzWzjnyApz6nSX43ho0lRYKCBWw7dzgxCpWCLofi1U=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICnrpT0Rw&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICnrpT0Rw!2e10!4m2!3m1!1s0x864c1bdd6e96d6c3:0x73a3fd286784df9"
+      },
+      {
+        "name": "places/ChIJw9aWbt0bTIYR-U14htI_Ogc/photos/AcnlKN3_TBp71oj35gIuPBHR3SLBM1I1PKq1r0JQ7kXfSgPyME6mkZKxttFKxqOufyc2VTxi39i-57Cp2kdk6ri8PdpDdtbKQ9Ha3fYTMpk9QBI30oq7Hx1n0ZPPweuiHqAIoB-WkDbkPj8COQTDFUwgrqsZA2IRWGfWzqJ_iPNbkeZ4yZ_KXFJYQLKVvgu9BW_MkKLuhKEbytMocVWlhtYZHBUp7AkKE12-CnCgzYhQ0i3arCbffISvnWJyRyD8F-jKScweYRobUX1VizX7EP8fNzeiiGgLQfMoN5VM2um_jKxEykUsWpqSwfX0-ILoShMNXfqCm2DOEyWA2Vk679QKTjmNPSbwxPp8hGoD3XLELoOrzPnktMOOQZLgnkfUZPH-smLRhE2p60J6NDfuhVSo_XamtrlKaSttEJ0egn4yFKzvVQ",
+        "widthPx": 1080,
+        "heightPx": 1920,
+        "authorAttributions": [
+          {
+            "displayName": "Mohammad Adnan Mirza",
+            "uri": "https://maps.google.com/maps/contrib/103629421418254623958",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVMmz6T-zo-M6snlywvhR6PzuKT9_T1CWaixyeYN_3mEuLfWb9Z=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICkqJy0Yw&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICkqJy0Yw!2e10!4m2!3m1!1s0x864c1bdd6e96d6c3:0x73a3fd286784df9"
+      },
+      {
+        "name": "places/ChIJw9aWbt0bTIYR-U14htI_Ogc/photos/AcnlKN0JsdoS6JkY5cI0M0cKhW6Hc71NodyWMiSRrBIXKoxLejXhaimSVQyoINHHNqj93ednaa1MMTHP7RxBwdu3npyvYc1_87Z8JVnmfYMN4w9TC9BhH8FiJpYRRL4gzvtzaR2DQM4kbnukF2b3kfDIiJsxSIAmrj0ZYZZcT07s-AsfrEJf0aF-wB2HM24CxJrgaH4IDFIiYbl-R8Mb_vq_Kh5_LQd_bGpFAPKyl0hLU8tHitkSmCQEHAg-30eSPWhESup_sus2mUWBJzz9bjh5ZZF7VldO1DWaXQ2ZVXPuypzHzDr73Li1LZLr02QxKBxGgSg-T3y0OxzeTuBJzagFTa1FOJamNz3L_moRt0DIhuUjHkYqTq1fKmWSWCtDFUrS6pH40i9Z8MDgjctawAfdpMucmdpz54Cc-tykivlKcS5_yA",
+        "widthPx": 4032,
+        "heightPx": 3024,
+        "authorAttributions": [
+          {
+            "displayName": "Mahendra Kunwar",
+            "uri": "https://maps.google.com/maps/contrib/109385315591390017653",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWnPGvWf2lzWzjnyApz6nSX43ho0lRYKCBWw7dzgxCpWCLofi1U=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICT7OPqEg&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICT7OPqEg!2e10!4m2!3m1!1s0x864c1bdd6e96d6c3:0x73a3fd286784df9"
+      },
+      {
+        "name": "places/ChIJw9aWbt0bTIYR-U14htI_Ogc/photos/AcnlKN0P4qYN6wvB6R9fC9X69iOzeNXwpWkmBeWIXF47KJW_wOqdZw53dp54-rU06wyye-bi6Q5hrOgnXWCIq45kGSWvCatNkw2zpbimf2GGSQmiyx-vytyyyk7M3cofpuuI4uSGUw9RBkq0uAoXN4rcdXk7llHGjMBjTjOTRFBGISXvwzu-G6g1m482S43oCtXnsrjHJ1gjefgei1PkGlg7efg3XS4ve1yHna7yiLzRKBPR4GmvFHhSMHKtmq1wTeOY5wVNoX5ODspqLj5kF9NP8VHm4vBSOHw10FKBYyL6kJiiKps_yAUacpqi47SXAsohftxNWFWstlJFHHe8BT_id7MUGuZmZCenR6E2ysM0rISAafoUtoo0Vv9ZQ1j5LOgmfgxr_gDLxy97xGvSXSJas4JV_Hx4K1nRVj1ki3S5vtBKqb3A",
+        "widthPx": 4032,
+        "heightPx": 3024,
+        "authorAttributions": [
+          {
+            "displayName": "Mahendra Kunwar",
+            "uri": "https://maps.google.com/maps/contrib/109385315591390017653",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWnPGvWf2lzWzjnyApz6nSX43ho0lRYKCBWw7dzgxCpWCLofi1U=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICT7KPRzQE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICT7KPRzQE!2e10!4m2!3m1!1s0x864c1bdd6e96d6c3:0x73a3fd286784df9"
+      },
+      {
+        "name": "places/ChIJw9aWbt0bTIYR-U14htI_Ogc/photos/AcnlKN1xdS3liyNmTm4I8cOKsSz1Ms4N27eqGiLsDWr5uE-qbP97seJ8a6XhU0KropiD8oog-UAHCkeDsHejdRmcfYaOWT9Ou_P5lL0vO6PFUOuMHXlxJ6LSaJSZoBs-J0GTARydXz84vZeKPIyNh_NYlrWoeXXf_UVEfB9EGb5FutqBz2Pc4aWi5zBW7ieixrR6oGn0iX9afr4kg95qGXO04UG1m9_LejZ-fV7RmPDa2LnCqB9EYBu2Vt9cpkcG8uuY57xDWIRf2dP3wryIUepqLqRSfJ2-viWZtlYr1kcoIL_CJWcQDLpB7MK-RD3_u3edi2p77WQaTPGwV2nHsqQsiA106M3puvCzzmHcXaNjmIxekTM28AwN1hRFaRIO9DaB6v__ksKiotK9AvvdP0FvN0391gBWs7wnCGTLa-zhdCQNR2lP",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Mahendra Kunwar",
+            "uri": "https://maps.google.com/maps/contrib/109385315591390017653",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWnPGvWf2lzWzjnyApz6nSX43ho0lRYKCBWw7dzgxCpWCLofi1U=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICT7M3EkAE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICT7M3EkAE!2e10!4m2!3m1!1s0x864c1bdd6e96d6c3:0x73a3fd286784df9"
+      }
+    ]
+  },
+  "detectedWebsite": null,
+  "scannedAt": "2026-01-25T19:11:47.156Z",
+  "readyForGeneration": true,
+  "research": {
+    "source": "yelp",
+    "enrichedAt": "2026-01-27T15:41:22.233Z",
+    "matched": true,
+    "yelpId": "Sbra7EAP3pruvNpjtVGnMw",
+    "matchStatus": "found",
+    "rating": 5,
+    "reviewCount": 7,
+    "categories": [
+      "Skin Care",
+      "Hair Salons",
+      "Henna Artists"
+    ],
+    "photos": [],
+    "hours": null,
+    "transactions": []
+  },
+  "opportunityScore": 65,
+  "scoreBreakdown": [
+    {
+      "factor": "No website (base)",
+      "points": 50,
+      "source": "Google"
+    },
+    {
+      "factor": "Excellent rating (5★)",
+      "points": 15,
+      "source": "Yelp"
+    }
+  ],
+  "city": "Plano"
+}

@@ -1,0 +1,38 @@
+{
+  "projectName": "test-ale-s-salon-eyelashes-luxury",
+  "savedAt": "2026-01-27T21:51:52.576Z",
+  "resources": {
+    "name": "test-ale-s-salon-eyelashes-luxury",
+    "sanitizedName": "test-ale-s-salon-eyelashes-luxury",
+    "github": {
+      "repos": [
+        {
+          "name": "test-ale-s-salon-eyelashes-luxury-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-ale-s-salon-eyelashes-luxury-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-ale-s-salon-eyelashes-luxury-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

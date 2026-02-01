@@ -1,0 +1,378 @@
+{
+  "id": "ChIJjcBipp0vTIYRmWoV-SJbqFI",
+  "name": "Ale's Salon (Eyelashes)",
+  "address": "125 Bellaire Blvd #500, Lewisville, TX 75067, USA",
+  "phone": "(972) 436-6724",
+  "category": "beauty_salon",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 4.7,
+  "reviewCount": 51,
+  "photos": [
+    "places/ChIJjcBipp0vTIYRmWoV-SJbqFI/photos/AcnlKN1nwEpUJfWWe6pK8UkaMato7Uiy_AMOYxnKtzc1niewYnP-PPtfOu4VFvNhcvQ7OIVfOtgQIBPyc4muW91de0OnCIrOBn8HLtuT8HBzUdRIc-X7notQBHQdZfmb3kIFO8fnguAzfNhgmcjewNYBL_TyPVTAR02nxhl106mFWnZ4FmkZLv_4ssJKOMKCk1LLDPE_2BXW6ZhianI743sb2MGf9gtXEJhlTIZ4Uw67p8kQF8vtb6X0LNpOC-OzGjuCqjx-o--OayTIf8cNINo8t5YP-wjvfrhji-n1FK-Y6fxqva-K-6cQecYsvYXD8d33_3SAaCQnzWHCSZXoNNDrMMpAjsaLPKZIO5aKYFoxNRpTiDFvhMKpfzqKcro6KZf-MVl64aBOtVTmsk6k219g9sfn5BtjRs_Un_POdpnzkiyTLPt1",
+    "places/ChIJjcBipp0vTIYRmWoV-SJbqFI/photos/AcnlKN1PQ2ATXBgsM34XWJt9bteo0S4bhtbB9ZPRZSd7zVrsnlw74qOOj763HCBBc9GiMo2D45pbdOpfsixL8qFLFYOWHBNRbOhFyZB3C2YPTiLK5DtlDAeU_rlfNJ-mro_C3alVnxDl92afT7xnjqVTkl6D-ZlvTeMWu7zHQdLjW3T4ugv3r9VlMzoJUgWfkShVSpqafcHpu5wb22TJAaRpNlglvOdykKzxy5kcAVeGf1-_ORSLo_opUINeGP3lNkgw1FLhO_Ihp6LJOPOnmeJeIR461K3I57JbWAHdcuH35SuBhbME09tKrSsQUU0ZaHL5Zm-R5AYt217gZpq3VILQP61OjGGtaDljEyL9Z_GK98Bb9vuN16KCFrylvD1Zq1TgYJTVxRcao83q_1t34QCITkRcJfgmZpc_02vYpx2xFC4cJuY",
+    "places/ChIJjcBipp0vTIYRmWoV-SJbqFI/photos/AcnlKN0EwjhLoVSAt6DnG52KglSsQ6ReXebYAUurlZfy8JsKIEb9WXEDLAMhRXwUbDJWlrnTSjcx6YY3XpV_8V4_MkCOgwxOBaD1JI697q81q-8qUggI8-H03GZlzcd7xrq85wo2HEY60yfCvj4v9LoZe_XJ4SiGd4ftlS3goiWktGwhhRaQsp2EkLt13PnHOlv5Ml8pI1dkVsL8yrDSy1RC2ob_LvVl_b-61G7uxqNbrRzp8i_-Wje7cTh4lDyjJIhWOsOTkRbtCMhRtPxcPdOwK_kQs0kQEACThy_pPohmFQLK2Um2E5xBJyod_R7vG8pFoOthwbgA6zjApsziEaqI0aTSSogoAIaD8-KB47GgvpM2HbdkRGYAKvrcs1yfNpsOdx4APHuY8sBBXtz5YFGA6fKb7ZlFo3NzU12JT4vruHXQAQ",
+    "places/ChIJjcBipp0vTIYRmWoV-SJbqFI/photos/AcnlKN1kJzMlnK4xxAx_Ypt7eDrv2U13ZvxXSZuy-cyIZD4tz8rsWQy9tBC8jnH92feYOS5jA57GviqPhM2FTvUESfP_CFOAP4PbQ2Ch-EZ7Lw93tMe_SG57rFRHE7BC-VJw1OT7dUPo2UE_sQ2WowONSF-ETYTpccEJi0slQ-123L0Hu_Uz2bVF910ABAOk3ecvcyDbksCVdCpBvQgqLrG9xf9tuQ82iHui9YoyWSayYFi5hgTk_7PvwhezHjXY3uk0dAaaiwNMlCu3AD1s4Y2ROrO0oY6Bm2ezMKmUNbmEy7tM4_ssvepH9jq2Sps-_HWWvmpwt2mbBL6qmsqwK5DBLGQ2LE54Qm1SqKkfV-W13GfDo9Q0wOlWznQ5kJUuuJVqecq27i7k106DyydRno3fVCNhkvDPW5h__S8_pWJcARCKrikJ",
+    "places/ChIJjcBipp0vTIYRmWoV-SJbqFI/photos/AcnlKN1QK-bIsJznpFIae2m-7n1zPQyUOtnDh-iP0zUCI3jdvKaJFV0iFc4msX4n6tmhvPizpNRFhpiQo7fDeDuxefIZnK0tIX3Ai6u3gnM93aHM_fi8V_kJDbeJlFhCddCW6kbLPltaIbZmma3Qc94Cowj8k15qzF-c_oaZv0s6pXTu3j4F4YuRclxdn-3a3R8aovOaqWB8iP3YqVZtHAtgt0HA2NRjSnVc0SkTXBzuV2j93ZOEvjyMxoLLrdWDRTlVCAEt0BNrmHi2FeI_-LoS7pIPFvtU5mPYil_1OeXiJc0uzaT2r_Dk-ofmjXSxpf_XH5hhoMLJJB22hAkjn-WB7RqL1-azomEnW9hOcaMI3ZG4DPpAlVT9V5MVovtbu_5jE5AiqhAvKVsglwqOv_h7rOeQVTH-P_nzwKW3AuvlpsY",
+    "places/ChIJjcBipp0vTIYRmWoV-SJbqFI/photos/AcnlKN31y3B0Ds6K_zFySkf7qulUpPHlTRA2pS50ie8P04AjYgdwfJ9xipLt9IpcG61ZUqwTTcTqQV7bUtxZ-lxVBT-qXHvut4R9ywF7jfLfwTq8n6tjzLBI3_dJTCHFKPsHuZ-BIPz5cnK2CftNlSYBGjzuX8C8eAZiKzg_uHl1tMDXF2FOYOzDK7cFnSL0XiB7bzzWULTUHnw9e7SFzs63oC6BWba06B6zJRcf_fmBco2P63Jp0Qv5cjHpIbika3gWgViIqs2qJ06rhco5yChIF54a5Qor5L0DyAulcmIU4Lqg5ozDZMMp67_offnnqjfwuNJFhFdtKnL4B_5SOsAX3JS8UPgV7DQDlPnlsHq5-TM7G8Z3Zqi0_fMiznCf4H4u1Az8VD_ZbjMHgttg_J_oWi2etvfxI897X_iMJbqc85I6GwUd",
+    "places/ChIJjcBipp0vTIYRmWoV-SJbqFI/photos/AcnlKN0Wql2iXt6W2LUujrcNQnVxQeHT6UiA8jtYUHDOHnJqLR1pR7IAY0OwSfSRyieeigY_3ATlOYr8nv_tMQH0h0FBWMQGClqGnZjrbnaFia9vsXBjQl9PnHPsV58igBQ0YcBSlfxUniyLYEG_gIQxijKPTlSKPtPHPOqaft4pFe8B9f7jOoO1c9leHr5LODV20ZiW0-a0gL7tfEG7hZ1u8qJoWvCNAulQ7UJoN1Pqa9s6H_f2FogiLjs5XR1v3iJ71oOCV_lSpZzFGLQwI2T8F-fUKDCF9TZo10D2JKVmC-zd-MpJwpsxdCbgjJ44_fHez90G7G3NxLqKAry7_0iBwySTRT8F1InjD_mWeQGoAD_HEFnTn72mWsHnpZRPbcRbOtDzsET-Cwt1S2yGCky0q3TOUWXm88C0T-KWBWGdBPF876IG",
+    "places/ChIJjcBipp0vTIYRmWoV-SJbqFI/photos/AcnlKN1PtE2px1-m-BgaEaxldj_S01PwG24RoosQAW4RP26umdCGKTdztakZCvMaLt_6PzWaw7vazKkTAI38fGTAwkBO9bCd7KLmdsppOqwKI06Xp4zuO2rP5pRhfN6y-DwX7SfmlJVVlplEzw0m1mswf-EhBhBVhuZ2HHIH8td_bb_K4hvUTyMAKQOf_47AofgZp1PgyzMgLtUiNG6puvDeBxyvFnSSUKAOVD9DHq2emVNBoknPrA4rt84sE8Rd__5eND4S8-t-b2dteK4KuByYsSaCDd_CUh9eT_3iy3-Vmj84hvWfwcHB0gyvmfFX14EU66qDnwVzLLRMjFau1GCMnBiptdocm_L4C0DsOV63TSnubhEX_twzxcr7pl6vmMeI-oRqjA5A5Jd6v5sSZOr-MMF6Yhg0GBaje9VhGRwmF_v16Gk",
+    "places/ChIJjcBipp0vTIYRmWoV-SJbqFI/photos/AcnlKN1tGkrKHw7YZP-aN1YPxSgtrueh-FMAEmO8fnBdMLWn_cd3wzUBCvLNoMV4Io8OAh1rKtPuVlLzlolUtIgo9tzdOq_ok6aEocFOdJ9KxNNBM4P7loryaIiz3ixnBgCdFMnL309rh63e-9dSpuuDy1VFIFetOV_-Csno9_SVtZgznAm5ePCa4oaXG6AnBSing8HVnibH3TEy718DHqli5V_zSMWjjwhDiK4_3xwgGm_b2rDUd20mOa5xSuShshJV9yelOrIoR7zNRYMymtxpcYOK0Irm0YOv2Y7xmfo5NSEhFLTnj3Huh6ynla3I_q2ghOxJ6bjYO9KESwoSO90rgpLRyopJapBDQG1NOh_a_erAuWZxq_LvGswSCGZE4iw_71PlR4l-rftPjFrrv3b0uHVzoPH6Tjp5g1Bx1I1d8fg",
+    "places/ChIJjcBipp0vTIYRmWoV-SJbqFI/photos/AcnlKN18cwNUrT1pHynpvhv84FeOlVVOoJ3d0kISmxzMXiBcsphb-qmvP2BfHWrnTg5ezd6vfeXkAE60fQIaSvOMVW4SrAn4eSCs44O5u81GcKqqdQlqEfBwPJVmOjatWYmUOjmnie4OgB1wsbHLANvGenxupFBhHfq9bJZFiRNMWC2DBhUjWlLEiAvp1NMytINvQ0T24bGXHw57Zs4oTRrcld17qkxLE7ssT-VS3OhKcxcQEqP39H_jDN2RVOALCT2EGjHmJcy1b6lCGVE1B8vvl-1Jn47Gu2_fpGNg1VHqDrPlks_6WXh0eaHq9aja8TNI8Ks4ZuEWRZThbJK9vplrx-g1y5_vIpLDZIa4DnK5akOauAeKRpV-sxS8bB4z2SyNrhHSWuDRTsm-7mORSnxZm17kqExAWBpCQ1_DX_z3mwGhcRw"
+  ],
+  "fixtureId": "salon-spa",
+  "source": "google",
+  "googleMapsUrl": "https://maps.google.com/?cid=5956110712963426969&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+  "coordinates": {
+    "latitude": 33.0280065,
+    "longitude": -96.99432809999999
+  },
+  "raw": {
+    "id": "ChIJjcBipp0vTIYRmWoV-SJbqFI",
+    "types": [
+      "beauty_salon",
+      "point_of_interest",
+      "establishment"
+    ],
+    "nationalPhoneNumber": "(972) 436-6724",
+    "formattedAddress": "125 Bellaire Blvd #500, Lewisville, TX 75067, USA",
+    "location": {
+      "latitude": 33.0280065,
+      "longitude": -96.99432809999999
+    },
+    "rating": 4.7,
+    "googleMapsUri": "https://maps.google.com/?cid=5956110712963426969&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "userRatingCount": 51,
+    "displayName": {
+      "text": "Ale's Salon (Eyelashes)",
+      "languageCode": "en"
+    },
+    "primaryType": "beauty_salon",
+    "photos": [
+      {
+        "name": "places/ChIJjcBipp0vTIYRmWoV-SJbqFI/photos/AcnlKN1nwEpUJfWWe6pK8UkaMato7Uiy_AMOYxnKtzc1niewYnP-PPtfOu4VFvNhcvQ7OIVfOtgQIBPyc4muW91de0OnCIrOBn8HLtuT8HBzUdRIc-X7notQBHQdZfmb3kIFO8fnguAzfNhgmcjewNYBL_TyPVTAR02nxhl106mFWnZ4FmkZLv_4ssJKOMKCk1LLDPE_2BXW6ZhianI743sb2MGf9gtXEJhlTIZ4Uw67p8kQF8vtb6X0LNpOC-OzGjuCqjx-o--OayTIf8cNINo8t5YP-wjvfrhji-n1FK-Y6fxqva-K-6cQecYsvYXD8d33_3SAaCQnzWHCSZXoNNDrMMpAjsaLPKZIO5aKYFoxNRpTiDFvhMKpfzqKcro6KZf-MVl64aBOtVTmsk6k219g9sfn5BtjRs_Un_POdpnzkiyTLPt1",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Alejandra Escobedo",
+            "uri": "https://maps.google.com/maps/contrib/107174047225128570794",
+            "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocL9Kh5wG5M3fs_0Elv00iGQwkxPzCX1n0_fWIEq3qmBz9ClnxG2=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDBjc2txAE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDBjc2txAE!2e10!4m2!3m1!1s0x864c2f9da662c08d:0x52a85b22f9156a99"
+      },
+      {
+        "name": "places/ChIJjcBipp0vTIYRmWoV-SJbqFI/photos/AcnlKN1PQ2ATXBgsM34XWJt9bteo0S4bhtbB9ZPRZSd7zVrsnlw74qOOj763HCBBc9GiMo2D45pbdOpfsixL8qFLFYOWHBNRbOhFyZB3C2YPTiLK5DtlDAeU_rlfNJ-mro_C3alVnxDl92afT7xnjqVTkl6D-ZlvTeMWu7zHQdLjW3T4ugv3r9VlMzoJUgWfkShVSpqafcHpu5wb22TJAaRpNlglvOdykKzxy5kcAVeGf1-_ORSLo_opUINeGP3lNkgw1FLhO_Ihp6LJOPOnmeJeIR461K3I57JbWAHdcuH35SuBhbME09tKrSsQUU0ZaHL5Zm-R5AYt217gZpq3VILQP61OjGGtaDljEyL9Z_GK98Bb9vuN16KCFrylvD1Zq1TgYJTVxRcao83q_1t34QCITkRcJfgmZpc_02vYpx2xFC4cJuY",
+        "widthPx": 1080,
+        "heightPx": 1920,
+        "authorAttributions": [
+          {
+            "displayName": "Julio Alfaro",
+            "uri": "https://maps.google.com/maps/contrib/112205497368787252166",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUFTv5eMa8cXH0TzPwr9iYianhdLqU_19d90iOPraA02nhg2ll8Lg=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDCkuetkQE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDCkuetkQE!2e10!4m2!3m1!1s0x864c2f9da662c08d:0x52a85b22f9156a99"
+      },
+      {
+        "name": "places/ChIJjcBipp0vTIYRmWoV-SJbqFI/photos/AcnlKN0EwjhLoVSAt6DnG52KglSsQ6ReXebYAUurlZfy8JsKIEb9WXEDLAMhRXwUbDJWlrnTSjcx6YY3XpV_8V4_MkCOgwxOBaD1JI697q81q-8qUggI8-H03GZlzcd7xrq85wo2HEY60yfCvj4v9LoZe_XJ4SiGd4ftlS3goiWktGwhhRaQsp2EkLt13PnHOlv5Ml8pI1dkVsL8yrDSy1RC2ob_LvVl_b-61G7uxqNbrRzp8i_-Wje7cTh4lDyjJIhWOsOTkRbtCMhRtPxcPdOwK_kQs0kQEACThy_pPohmFQLK2Um2E5xBJyod_R7vG8pFoOthwbgA6zjApsziEaqI0aTSSogoAIaD8-KB47GgvpM2HbdkRGYAKvrcs1yfNpsOdx4APHuY8sBBXtz5YFGA6fKb7ZlFo3NzU12JT4vruHXQAQ",
+        "widthPx": 1080,
+        "heightPx": 1920,
+        "authorAttributions": [
+          {
+            "displayName": "Julio Alfaro",
+            "uri": "https://maps.google.com/maps/contrib/112205497368787252166",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUFTv5eMa8cXH0TzPwr9iYianhdLqU_19d90iOPraA02nhg2ll8Lg=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDCkquieQ&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDCkquieQ!2e10!4m2!3m1!1s0x864c2f9da662c08d:0x52a85b22f9156a99"
+      },
+      {
+        "name": "places/ChIJjcBipp0vTIYRmWoV-SJbqFI/photos/AcnlKN1kJzMlnK4xxAx_Ypt7eDrv2U13ZvxXSZuy-cyIZD4tz8rsWQy9tBC8jnH92feYOS5jA57GviqPhM2FTvUESfP_CFOAP4PbQ2Ch-EZ7Lw93tMe_SG57rFRHE7BC-VJw1OT7dUPo2UE_sQ2WowONSF-ETYTpccEJi0slQ-123L0Hu_Uz2bVF910ABAOk3ecvcyDbksCVdCpBvQgqLrG9xf9tuQ82iHui9YoyWSayYFi5hgTk_7PvwhezHjXY3uk0dAaaiwNMlCu3AD1s4Y2ROrO0oY6Bm2ezMKmUNbmEy7tM4_ssvepH9jq2Sps-_HWWvmpwt2mbBL6qmsqwK5DBLGQ2LE54Qm1SqKkfV-W13GfDo9Q0wOlWznQ5kJUuuJVqecq27i7k106DyydRno3fVCNhkvDPW5h__S8_pWJcARCKrikJ",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Alejandra Escobedo",
+            "uri": "https://maps.google.com/maps/contrib/107174047225128570794",
+            "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocL9Kh5wG5M3fs_0Elv00iGQwkxPzCX1n0_fWIEq3qmBz9ClnxG2=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDh3Yzz2gE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDh3Yzz2gE!2e10!4m2!3m1!1s0x864c2f9da662c08d:0x52a85b22f9156a99"
+      },
+      {
+        "name": "places/ChIJjcBipp0vTIYRmWoV-SJbqFI/photos/AcnlKN1QK-bIsJznpFIae2m-7n1zPQyUOtnDh-iP0zUCI3jdvKaJFV0iFc4msX4n6tmhvPizpNRFhpiQo7fDeDuxefIZnK0tIX3Ai6u3gnM93aHM_fi8V_kJDbeJlFhCddCW6kbLPltaIbZmma3Qc94Cowj8k15qzF-c_oaZv0s6pXTu3j4F4YuRclxdn-3a3R8aovOaqWB8iP3YqVZtHAtgt0HA2NRjSnVc0SkTXBzuV2j93ZOEvjyMxoLLrdWDRTlVCAEt0BNrmHi2FeI_-LoS7pIPFvtU5mPYil_1OeXiJc0uzaT2r_Dk-ofmjXSxpf_XH5hhoMLJJB22hAkjn-WB7RqL1-azomEnW9hOcaMI3ZG4DPpAlVT9V5MVovtbu_5jE5AiqhAvKVsglwqOv_h7rOeQVTH-P_nzwKW3AuvlpsY",
+        "widthPx": 1079,
+        "heightPx": 812,
+        "authorAttributions": [
+          {
+            "displayName": "Julio Alfaro",
+            "uri": "https://maps.google.com/maps/contrib/112205497368787252166",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUFTv5eMa8cXH0TzPwr9iYianhdLqU_19d90iOPraA02nhg2ll8Lg=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDCkufhYg&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDCkufhYg!2e10!4m2!3m1!1s0x864c2f9da662c08d:0x52a85b22f9156a99"
+      },
+      {
+        "name": "places/ChIJjcBipp0vTIYRmWoV-SJbqFI/photos/AcnlKN31y3B0Ds6K_zFySkf7qulUpPHlTRA2pS50ie8P04AjYgdwfJ9xipLt9IpcG61ZUqwTTcTqQV7bUtxZ-lxVBT-qXHvut4R9ywF7jfLfwTq8n6tjzLBI3_dJTCHFKPsHuZ-BIPz5cnK2CftNlSYBGjzuX8C8eAZiKzg_uHl1tMDXF2FOYOzDK7cFnSL0XiB7bzzWULTUHnw9e7SFzs63oC6BWba06B6zJRcf_fmBco2P63Jp0Qv5cjHpIbika3gWgViIqs2qJ06rhco5yChIF54a5Qor5L0DyAulcmIU4Lqg5ozDZMMp67_offnnqjfwuNJFhFdtKnL4B_5SOsAX3JS8UPgV7DQDlPnlsHq5-TM7G8Z3Zqi0_fMiznCf4H4u1Az8VD_ZbjMHgttg_J_oWi2etvfxI897X_iMJbqc85I6GwUd",
+        "widthPx": 1080,
+        "heightPx": 1920,
+        "authorAttributions": [
+          {
+            "displayName": "Julio Alfaro",
+            "uri": "https://maps.google.com/maps/contrib/112205497368787252166",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUFTv5eMa8cXH0TzPwr9iYianhdLqU_19d90iOPraA02nhg2ll8Lg=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDCkuftvQE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDCkuftvQE!2e10!4m2!3m1!1s0x864c2f9da662c08d:0x52a85b22f9156a99"
+      },
+      {
+        "name": "places/ChIJjcBipp0vTIYRmWoV-SJbqFI/photos/AcnlKN0Wql2iXt6W2LUujrcNQnVxQeHT6UiA8jtYUHDOHnJqLR1pR7IAY0OwSfSRyieeigY_3ATlOYr8nv_tMQH0h0FBWMQGClqGnZjrbnaFia9vsXBjQl9PnHPsV58igBQ0YcBSlfxUniyLYEG_gIQxijKPTlSKPtPHPOqaft4pFe8B9f7jOoO1c9leHr5LODV20ZiW0-a0gL7tfEG7hZ1u8qJoWvCNAulQ7UJoN1Pqa9s6H_f2FogiLjs5XR1v3iJ71oOCV_lSpZzFGLQwI2T8F-fUKDCF9TZo10D2JKVmC-zd-MpJwpsxdCbgjJ44_fHez90G7G3NxLqKAry7_0iBwySTRT8F1InjD_mWeQGoAD_HEFnTn72mWsHnpZRPbcRbOtDzsET-Cwt1S2yGCky0q3TOUWXm88C0T-KWBWGdBPF876IG",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Alejandra Escobedo",
+            "uri": "https://maps.google.com/maps/contrib/107174047225128570794",
+            "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocL9Kh5wG5M3fs_0Elv00iGQwkxPzCX1n0_fWIEq3qmBz9ClnxG2=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDBjc2R7gE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDBjc2R7gE!2e10!4m2!3m1!1s0x864c2f9da662c08d:0x52a85b22f9156a99"
+      },
+      {
+        "name": "places/ChIJjcBipp0vTIYRmWoV-SJbqFI/photos/AcnlKN1PtE2px1-m-BgaEaxldj_S01PwG24RoosQAW4RP26umdCGKTdztakZCvMaLt_6PzWaw7vazKkTAI38fGTAwkBO9bCd7KLmdsppOqwKI06Xp4zuO2rP5pRhfN6y-DwX7SfmlJVVlplEzw0m1mswf-EhBhBVhuZ2HHIH8td_bb_K4hvUTyMAKQOf_47AofgZp1PgyzMgLtUiNG6puvDeBxyvFnSSUKAOVD9DHq2emVNBoknPrA4rt84sE8Rd__5eND4S8-t-b2dteK4KuByYsSaCDd_CUh9eT_3iy3-Vmj84hvWfwcHB0gyvmfFX14EU66qDnwVzLLRMjFau1GCMnBiptdocm_L4C0DsOV63TSnubhEX_twzxcr7pl6vmMeI-oRqjA5A5Jd6v5sSZOr-MMF6Yhg0GBaje9VhGRwmF_v16Gk",
+        "widthPx": 3000,
+        "heightPx": 4000,
+        "authorAttributions": [
+          {
+            "displayName": "Gaviota Rivera",
+            "uri": "https://maps.google.com/maps/contrib/100377653297910084780",
+            "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocLtftW1lJfp-t_wq-Ly55TPNUzXQ2uKKkQ1umXMlzp9Se9JKw=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDqscWA_wE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDqscWA_wE!2e10!4m2!3m1!1s0x864c2f9da662c08d:0x52a85b22f9156a99"
+      },
+      {
+        "name": "places/ChIJjcBipp0vTIYRmWoV-SJbqFI/photos/AcnlKN1tGkrKHw7YZP-aN1YPxSgtrueh-FMAEmO8fnBdMLWn_cd3wzUBCvLNoMV4Io8OAh1rKtPuVlLzlolUtIgo9tzdOq_ok6aEocFOdJ9KxNNBM4P7loryaIiz3ixnBgCdFMnL309rh63e-9dSpuuDy1VFIFetOV_-Csno9_SVtZgznAm5ePCa4oaXG6AnBSing8HVnibH3TEy718DHqli5V_zSMWjjwhDiK4_3xwgGm_b2rDUd20mOa5xSuShshJV9yelOrIoR7zNRYMymtxpcYOK0Irm0YOv2Y7xmfo5NSEhFLTnj3Huh6ynla3I_q2ghOxJ6bjYO9KESwoSO90rgpLRyopJapBDQG1NOh_a_erAuWZxq_LvGswSCGZE4iw_71PlR4l-rftPjFrrv3b0uHVzoPH6Tjp5g1Bx1I1d8fg",
+        "widthPx": 1080,
+        "heightPx": 1920,
+        "authorAttributions": [
+          {
+            "displayName": "Julio Alfaro",
+            "uri": "https://maps.google.com/maps/contrib/112205497368787252166",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUFTv5eMa8cXH0TzPwr9iYianhdLqU_19d90iOPraA02nhg2ll8Lg=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDCkqv4Ig&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDCkqv4Ig!2e10!4m2!3m1!1s0x864c2f9da662c08d:0x52a85b22f9156a99"
+      },
+      {
+        "name": "places/ChIJjcBipp0vTIYRmWoV-SJbqFI/photos/AcnlKN18cwNUrT1pHynpvhv84FeOlVVOoJ3d0kISmxzMXiBcsphb-qmvP2BfHWrnTg5ezd6vfeXkAE60fQIaSvOMVW4SrAn4eSCs44O5u81GcKqqdQlqEfBwPJVmOjatWYmUOjmnie4OgB1wsbHLANvGenxupFBhHfq9bJZFiRNMWC2DBhUjWlLEiAvp1NMytINvQ0T24bGXHw57Zs4oTRrcld17qkxLE7ssT-VS3OhKcxcQEqP39H_jDN2RVOALCT2EGjHmJcy1b6lCGVE1B8vvl-1Jn47Gu2_fpGNg1VHqDrPlks_6WXh0eaHq9aja8TNI8Ks4ZuEWRZThbJK9vplrx-g1y5_vIpLDZIa4DnK5akOauAeKRpV-sxS8bB4z2SyNrhHSWuDRTsm-7mORSnxZm17kqExAWBpCQ1_DX_z3mwGhcRw",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Alejandra Escobedo",
+            "uri": "https://maps.google.com/maps/contrib/107174047225128570794",
+            "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocL9Kh5wG5M3fs_0Elv00iGQwkxPzCX1n0_fWIEq3qmBz9ClnxG2=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDBjc2n2gE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDBjc2n2gE!2e10!4m2!3m1!1s0x864c2f9da662c08d:0x52a85b22f9156a99"
+      }
+    ]
+  },
+  "detectedWebsite": null,
+  "scannedAt": "2026-01-25T16:21:49.926Z",
+  "readyForGeneration": true,
+  "testTier": "premium",
+  "testPages": [
+    "Home",
+    "Services",
+    "About",
+    "Contact",
+    "Book",
+    "Gallery",
+    "Loyalty",
+    "Products"
+  ],
+  "testFeatures": [
+    "Online Booking",
+    "Product Sales",
+    "Loyalty Program",
+    "Auth Portal",
+    "Gift Cards"
+  ],
+  "testLayout": "urban-vibe",
+  "industryGroup": "Grooming",
+  "generationTimeMs": 139483,
+  "research": {
+    "source": "yelp",
+    "enrichedAt": "2026-01-27T15:39:54.509Z",
+    "matched": true,
+    "yelpId": "JLwtnsh5LioFZeIFFVD39g",
+    "yelpUrl": "https://www.yelp.com/biz/fabulash-and-wax-studio-dallas?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+    "matchStatus": "found",
+    "rating": 4.9,
+    "reviewCount": 47,
+    "priceLevel": "$$",
+    "categories": [
+      "Eyelash Service",
+      "Waxing",
+      "Permanent Makeup"
+    ],
+    "photos": [],
+    "hours": null,
+    "transactions": []
+  },
+  "opportunityScore": 75,
+  "scoreBreakdown": [
+    {
+      "factor": "No website (base)",
+      "points": 50,
+      "source": "Google"
+    },
+    {
+      "factor": "Excellent rating (4.9★)",
+      "points": 15,
+      "source": "Yelp"
+    },
+    {
+      "factor": "Some reviews (47)",
+      "points": 5,
+      "source": "Yelp"
+    },
+    {
+      "factor": "Price level ($$)",
+      "points": 5,
+      "source": "Yelp"
+    }
+  ],
+  "city": "Lewisville",
+  "lastUnifiedGeneration": {
+    "inputLevel": "extreme",
+    "config": {
+      "tier": "premium",
+      "pages": [
+        "home",
+        "services",
+        "contact",
+        "about",
+        "gallery",
+        "book",
+        "team"
+      ],
+      "features": [
+        "online-booking",
+        "service-menu",
+        "gallery",
+        "team"
+      ],
+      "layout": "elegant-minimal",
+      "moodSliders": {
+        "vibe": 0.8,
+        "energy": 0.6,
+        "era": 0.9,
+        "density": 0.4,
+        "price": 0.5
+      },
+      "archetype": "modern-sleek",
+      "enablePortal": true,
+      "inputLevel": "extreme",
+      "generatedInputs": {
+        "businessName": "Ale's Salon (Eyelashes)",
+        "industry": "salon-spa",
+        "address": "125 Bellaire Blvd #500, Lewisville, TX 75067, USA",
+        "city": "Lewisville",
+        "phone": "(972) 436-6724",
+        "rating": 4.9,
+        "reviewCount": 47,
+        "priceLevel": "$$",
+        "categories": [
+          "Eyelash Service",
+          "Waxing",
+          "Permanent Makeup"
+        ],
+        "hours": null,
+        "photos": [],
+        "yelpUrl": "https://www.yelp.com/biz/fabulash-and-wax-studio-dallas?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+        "googleMapsUrl": "https://maps.google.com/?cid=5956110712963426969&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+        "reviewHighlights": [],
+        "inputLevel": "extreme",
+        "generatedAt": "2026-01-27T22:04:01.805Z",
+        "prospectId": "ChIJjcBipp0vTIYRmWoV-SJbqFI",
+        "preset": "luxury",
+        "theme": "light",
+        "pageTier": "premium",
+        "pages": [
+          "home",
+          "services",
+          "contact",
+          "about",
+          "gallery",
+          "book",
+          "team"
+        ],
+        "archetype": "modern-sleek",
+        "layout": "elegant-minimal",
+        "tagline": "Elevate your beauty",
+        "moodSliders": {
+          "vibe": 0.8,
+          "energy": 0.6,
+          "era": 0.9,
+          "density": 0.4,
+          "price": 0.5
+        },
+        "colors": {
+          "primary": "#18181B",
+          "secondary": "#A855F7",
+          "accent": "#F472B6"
+        },
+        "typography": {
+          "heading": "'Playfair Display', serif",
+          "body": "'Inter', sans-serif"
+        },
+        "heroHeadline": "Ale's Salon (Eyelashes)",
+        "heroSubheadline": "Rated 4.9★ by 47 happy customers",
+        "aboutText": "Ale's Salon (Eyelashes) has been proudly serving Lewisville with exceptional salon spa services. Our team is dedicated to providing the highest quality experience for every customer who walks through our doors.",
+        "features": [
+          "online-booking",
+          "service-menu",
+          "gallery",
+          "team"
+        ],
+        "heroStyle": "split-image",
+        "cardStyle": {
+          "borderRadius": "16px",
+          "shadow": "medium",
+          "border": false
+        },
+        "sectionSpacing": "balanced"
+      }
+    },
+    "variants": {
+      "enabled": true,
+      "presets": [
+        "warm"
+      ],
+      "layouts": [
+        "portfolio-showcase",
+        "booking-focused",
+        "team-highlight"
+      ]
+    },
+    "generatedAt": "2026-01-27T22:04:01.807Z"
+  },
+  "unifiedGenerated": true,
+  "unifiedGeneratedAt": "2026-01-27T22:06:21.286Z",
+  "status": "scouted"
+}

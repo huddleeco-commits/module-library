@@ -1,0 +1,82 @@
+# Docker Compose for Blink Module Assembler UI
+# This file defines the entire development environment, including the application
+# server, the background worker, and the necessary backing services (Redis, PostgreSQL).
+#
+# To run:
+#   docker-compose up --build
+#
+version: '3.8'
+
+services:
+  # The main Express API server
+  server:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    command: npm run start-server
+    volumes:
+      - ../:/usr/src/app
+      - /usr/src/app/module-assembler-ui/node_modules
+    ports:
+      - "3001:3001"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      - DATABASE_URL=postgres://user:password@db:5432/blinkdb
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - NODE_ENV=development
+      - MODULE_LIBRARY_PATH=/usr/src/app
+
+  # The background worker for processing generation jobs
+  worker:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    command: npm run start-worker
+    volumes:
+      - ../:/usr/src/app
+      - /usr/src/app/module-assembler-ui/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      - DATABASE_URL=postgres://user:password@db:5432/blinkdb
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - NODE_ENV=development
+      - MODULE_LIBRARY_PATH=/usr/src/app
+
+  # PostgreSQL Database
+  db:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=blinkdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d blinkdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis for BullMQ Job Queue
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:

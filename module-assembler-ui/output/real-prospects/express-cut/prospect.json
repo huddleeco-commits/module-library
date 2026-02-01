@@ -1,0 +1,108 @@
+{
+  "id": "rEB7vg7azfRwIN0bucULEg",
+  "name": "Express Cut",
+  "address": "601 Cross Timbers Rd, Flower Mound, TX, 75028",
+  "phone": "+19725396854",
+  "category": "hairstylists",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 4.4,
+  "reviewCount": 13,
+  "photos": [
+    "https://s3-media0.fl.yelpcdn.com/bphoto/HeVQ0cRmLE8j3rxIqecZOw/o.jpg"
+  ],
+  "hours": null,
+  "fixtureId": "barbershop",
+  "source": "yelp",
+  "yelpUrl": "https://www.yelp.com/biz/express-cut-flower-mound?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+  "raw": {
+    "id": "rEB7vg7azfRwIN0bucULEg",
+    "alias": "express-cut-flower-mound",
+    "name": "Express Cut",
+    "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/HeVQ0cRmLE8j3rxIqecZOw/o.jpg",
+    "is_closed": false,
+    "url": "https://www.yelp.com/biz/express-cut-flower-mound?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+    "review_count": 13,
+    "categories": [
+      {
+        "alias": "hairstylists",
+        "title": "Hair Stylists"
+      }
+    ],
+    "rating": 4.4,
+    "coordinates": {
+      "latitude": 33.0418347,
+      "longitude": -97.0363049
+    },
+    "transactions": [],
+    "price": "$",
+    "location": {
+      "address1": "601 Cross Timbers Rd",
+      "address2": "Ste 112",
+      "address3": null,
+      "city": "Flower Mound",
+      "zip_code": "75028",
+      "country": "US",
+      "state": "TX",
+      "display_address": [
+        "601 Cross Timbers Rd",
+        "Ste 112",
+        "Flower Mound, TX 75028"
+      ]
+    },
+    "phone": "+19725396854",
+    "display_phone": "(972) 539-6854",
+    "distance": 3282.567487936033,
+    "business_hours": [
+      {
+        "open": [
+          {
+            "is_overnight": false,
+            "start": "0900",
+            "end": "2000",
+            "day": 0
+          },
+          {
+            "is_overnight": false,
+            "start": "0900",
+            "end": "2000",
+            "day": 1
+          },
+          {
+            "is_overnight": false,
+            "start": "0900",
+            "end": "2000",
+            "day": 2
+          },
+          {
+            "is_overnight": false,
+            "start": "0900",
+            "end": "2000",
+            "day": 3
+          },
+          {
+            "is_overnight": false,
+            "start": "0900",
+            "end": "2000",
+            "day": 4
+          },
+          {
+            "is_overnight": false,
+            "start": "0900",
+            "end": "2000",
+            "day": 5
+          }
+        ],
+        "hours_type": "REGULAR",
+        "is_open_now": false
+      }
+    ],
+    "attributes": {
+      "business_temp_closed": null,
+      "menu_url": null,
+      "waitlist_reservation": null
+    }
+  },
+  "scannedAt": "2026-01-25T14:23:35.929Z",
+  "readyForGeneration": true
+}

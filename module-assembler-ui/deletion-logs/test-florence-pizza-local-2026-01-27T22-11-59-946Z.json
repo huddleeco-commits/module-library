@@ -1,0 +1,61 @@
+{
+  "projectName": "test-florence-pizza-local",
+  "deletedAt": "2026-01-27T22:11:59.946Z",
+  "resourcesFound": {
+    "name": "test-florence-pizza-local",
+    "sanitizedName": "test-florence-pizza-local",
+    "github": {
+      "repos": [
+        {
+          "name": "test-florence-pizza-local-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-florence-pizza-local-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-florence-pizza-local-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-florence-pizza-local-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-florence-pizza-local-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-florence-pizza-local-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": []
+  }
+}

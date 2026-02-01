@@ -1,0 +1,64 @@
+{
+  "id": "WZuIDD8lOdq2GrH4S-dwQg",
+  "name": "Fades And Blades",
+  "address": "2401 S Stemmons Fwy, Lewisville, TX, 75067",
+  "phone": "",
+  "category": "menshair",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 1.5,
+  "reviewCount": 2,
+  "photos": [
+    "https://s3-media0.fl.yelpcdn.com/bphoto/i9aSo8-2X7It9zLKETprvg/o.jpg"
+  ],
+  "hours": null,
+  "fixtureId": "barbershop",
+  "source": "yelp",
+  "yelpUrl": "https://www.yelp.com/biz/fades-and-blades-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+  "raw": {
+    "id": "WZuIDD8lOdq2GrH4S-dwQg",
+    "alias": "fades-and-blades-lewisville",
+    "name": "Fades And Blades",
+    "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/i9aSo8-2X7It9zLKETprvg/o.jpg",
+    "is_closed": false,
+    "url": "https://www.yelp.com/biz/fades-and-blades-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+    "review_count": 2,
+    "categories": [
+      {
+        "alias": "menshair",
+        "title": "Men's Hair Salons"
+      }
+    ],
+    "rating": 1.5,
+    "coordinates": {
+      "latitude": 33.003052459,
+      "longitude": -96.9717726989
+    },
+    "transactions": [],
+    "location": {
+      "address1": "2401 S Stemmons Fwy",
+      "address2": "Ste 2090",
+      "address3": "",
+      "city": "Lewisville",
+      "zip_code": "75067",
+      "country": "US",
+      "state": "TX",
+      "display_address": [
+        "2401 S Stemmons Fwy",
+        "Ste 2090",
+        "Lewisville, TX 75067"
+      ]
+    },
+    "phone": "",
+    "display_phone": "",
+    "distance": 4629.195305243273,
+    "business_hours": [],
+    "attributes": {
+      "business_temp_closed": null,
+      "menu_url": null,
+      "waitlist_reservation": null
+    }
+  },
+  "scannedAt": "2026-01-25T14:23:35.929Z",
+  "readyForGeneration": true
+}

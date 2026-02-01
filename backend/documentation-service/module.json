@@ -1,0 +1,7 @@
+{
+  "name": "Documentation Service",
+  "version": "1.0.0",
+  "description": "Provides an API endpoint for AI agents and other services to log documentation, changelogs, and build notes.",
+  "author": "Gemini",
+  "isCore": true
+}

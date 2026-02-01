@@ -1,0 +1,38 @@
+{
+  "projectName": "coffee5",
+  "savedAt": "2026-01-24T13:44:09.999Z",
+  "resources": {
+    "name": "coffee5",
+    "sanitizedName": "coffee5",
+    "github": {
+      "repos": [
+        {
+          "name": "coffee5-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "coffee5-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "coffee5-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

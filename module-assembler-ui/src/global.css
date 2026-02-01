@@ -1,0 +1,98 @@
+/**
+ * Global Styles - BLINK Module Assembler
+ * Platform-wide styling fixes
+ */
+
+/* ============================================
+   SELECT / DROPDOWN FIXES
+   Native select elements with dark theme support
+   ============================================ */
+
+/* Base select styling for dark theme */
+select {
+  /* Solid dark background for dropdown options visibility */
+  background-color: #1a1a2e !important;
+  color: #ffffff !important;
+}
+
+/* Style the dropdown options */
+select option {
+  background-color: #1a1a2e;
+  color: #ffffff;
+  padding: 12px 16px;
+}
+
+/* Hover state for options */
+select option:hover,
+select option:focus,
+select option:checked {
+  background-color: #2d2d44;
+  color: #ffffff;
+}
+
+/* Disabled option styling */
+select option:disabled {
+  color: #666666;
+  background-color: #1a1a2e;
+}
+
+/* Placeholder/default option */
+select option[value=""] {
+  color: #888888;
+}
+
+/* Firefox-specific fixes */
+@-moz-document url-prefix() {
+  select {
+    background-color: #1a1a2e !important;
+    color: #ffffff !important;
+  }
+
+  select option {
+    background-color: #1a1a2e;
+    color: #ffffff;
+  }
+}
+
+/* ============================================
+   SCROLLBAR STYLING (for webkit browsers)
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ============================================
+   FOCUS STATES
+   ============================================ */
+
+select:focus,
+input:focus,
+textarea:focus,
+button:focus {
+  outline: none;
+}
+
+/* Focus visible for accessibility */
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+button:focus-visible {
+  outline: 2px solid rgba(99, 102, 241, 0.5);
+  outline-offset: 2px;
+}

@@ -1,0 +1,181 @@
+{
+  "id": "healthcare",
+  "name": "Healthcare / Medical",
+  "icon": "🏥",
+  "business": {
+    "name": "Wellness Medical Center",
+    "location": "Boston, MA",
+    "tagline": "Comprehensive Care for Your Whole Family",
+    "industry": "healthcare",
+    "teamSize": "20-50",
+    "priceRange": "$$$",
+    "established": "2005",
+    "phone": "(555) 789-CARE",
+    "email": "appointments@wellnessmedical-demo.com",
+    "address": "200 Health Plaza, Boston, MA 02108",
+    "hours": {
+      "monday": "8:00 AM - 6:00 PM",
+      "tuesday": "8:00 AM - 6:00 PM",
+      "wednesday": "8:00 AM - 6:00 PM",
+      "thursday": "8:00 AM - 6:00 PM",
+      "friday": "8:00 AM - 5:00 PM",
+      "saturday": "9:00 AM - 1:00 PM",
+      "sunday": "Closed"
+    }
+  },
+  "theme": {
+    "colors": {
+      "primary": "#0284C7",
+      "secondary": "#38BDF8",
+      "accent": "#22D3EE",
+      "background": "#F0F9FF",
+      "text": "#0C4A6E"
+    },
+    "fonts": {
+      "heading": "Nunito Sans",
+      "body": "Open Sans"
+    },
+    "style": "medical-professional"
+  },
+  "pages": {
+    "home": {
+      "hero": {
+        "headline": "Comprehensive Care for Your Whole Family",
+        "subheadline": "From routine checkups to specialized care, our team of physicians is here for you at every stage of life.",
+        "cta": "Book Appointment",
+        "secondaryCta": "Patient Portal",
+        "backgroundImage": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1920"
+      },
+      "sections": [
+        {
+          "type": "features",
+          "title": "Why Choose Wellness Medical",
+          "items": [
+            { "icon": "Users", "title": "Family-Centered Care", "description": "Treating patients from newborns to seniors" },
+            { "icon": "Clock", "title": "Same-Day Appointments", "description": "Urgent care available when you need it" },
+            { "icon": "Laptop", "title": "Telehealth Available", "description": "Video visits from the comfort of home" },
+            { "icon": "CreditCard", "title": "Most Insurance Accepted", "description": "We work with all major insurance plans" }
+          ]
+        },
+        {
+          "type": "services-preview",
+          "title": "Our Services",
+          "items": [
+            { "name": "Primary Care", "description": "Annual exams, preventive care, chronic disease management" },
+            { "name": "Pediatrics", "description": "Well-child visits, immunizations, developmental screenings" },
+            { "name": "Women's Health", "description": "OB/GYN services, prenatal care, family planning" },
+            { "name": "Urgent Care", "description": "Walk-in care for non-emergency illness and injury" }
+          ]
+        },
+        {
+          "type": "stats",
+          "title": "Trusted by Boston Families",
+          "items": [
+            { "value": "50,000+", "label": "Patients Served" },
+            { "value": "15+", "label": "Physicians" },
+            { "value": "18", "label": "Years of Service" },
+            { "value": "4.8★", "label": "Patient Rating" }
+          ]
+        },
+        {
+          "type": "testimonials",
+          "title": "Patient Stories",
+          "items": [
+            { "name": "Michelle T.", "text": "Dr. Patel has been our family doctor for 10 years. She knows us, listens to us, and always takes time to explain everything.", "rating": 5 },
+            { "name": "James R.", "text": "The telehealth option is a lifesaver for busy parents. Quality care without the waiting room.", "rating": 5 },
+            { "name": "Linda C.", "text": "After a cancer scare, the team here was with me every step of the way. Compassionate, thorough care.", "rating": 5 }
+          ]
+        },
+        {
+          "type": "insurance",
+          "title": "Insurance Accepted",
+          "items": ["Blue Cross Blue Shield", "Aetna", "Cigna", "United Healthcare", "Medicare", "Medicaid", "Harvard Pilgrim", "Tufts Health"]
+        }
+      ]
+    },
+    "services": {
+      "hero": {
+        "headline": "Medical Services",
+        "subheadline": "Comprehensive healthcare for every stage of life"
+      },
+      "categories": [
+        {
+          "name": "Primary Care",
+          "items": [
+            { "name": "Annual Physical Exam", "description": "Comprehensive health assessment and preventive screening" },
+            { "name": "Chronic Disease Management", "description": "Diabetes, hypertension, heart disease, and more" },
+            { "name": "Preventive Care", "description": "Immunizations, cancer screenings, health coaching" },
+            { "name": "Acute Illness Visits", "description": "Same-day appointments for sudden illness" }
+          ]
+        },
+        {
+          "name": "Pediatrics",
+          "items": [
+            { "name": "Well-Child Visits", "description": "Growth monitoring, developmental assessments" },
+            { "name": "Immunizations", "description": "All childhood vaccines per CDC schedule" },
+            { "name": "School & Sports Physicals", "description": "Required exams for activities" },
+            { "name": "Behavioral Health", "description": "ADHD, anxiety, and developmental concerns" }
+          ]
+        },
+        {
+          "name": "Women's Health",
+          "items": [
+            { "name": "Annual GYN Exam", "description": "Pap smear, breast exam, reproductive health" },
+            { "name": "Prenatal Care", "description": "Complete pregnancy care from conception to delivery" },
+            { "name": "Family Planning", "description": "Contraception counseling and services" },
+            { "name": "Menopause Management", "description": "Hormone therapy and symptom management" }
+          ]
+        },
+        {
+          "name": "Specialty Services",
+          "items": [
+            { "name": "Dermatology", "description": "Skin conditions, mole checks, cosmetic treatments" },
+            { "name": "Mental Health", "description": "Counseling, medication management, therapy" },
+            { "name": "Nutrition Counseling", "description": "Weight management, dietary planning" },
+            { "name": "Physical Therapy", "description": "Rehabilitation and pain management" }
+          ]
+        }
+      ]
+    },
+    "about": {
+      "hero": {
+        "headline": "About Wellness Medical Center",
+        "subheadline": "Caring for Boston families since 2005"
+      },
+      "sections": [
+        {
+          "type": "story",
+          "title": "Our Mission",
+          "content": "Founded in 2005, Wellness Medical Center was built on a simple belief: healthcare should be accessible, compassionate, and comprehensive. Our team of physicians, nurses, and staff are dedicated to treating the whole person, not just symptoms."
+        }
+      ],
+      "team": [
+        { "name": "Dr. Priya Patel, MD", "role": "Medical Director, Internal Medicine", "bio": "Harvard Medical School, 20 years experience", "image": "doctor1.jpg" },
+        { "name": "Dr. Michael Chen, MD", "role": "Pediatrics", "bio": "Boston Children's Hospital trained", "image": "doctor2.jpg" },
+        { "name": "Dr. Sarah Williams, MD", "role": "OB/GYN", "bio": "Specializing in high-risk pregnancy", "image": "doctor3.jpg" },
+        { "name": "Dr. James Thompson, MD", "role": "Family Medicine", "bio": "Caring for families across generations", "image": "doctor4.jpg" }
+      ]
+    },
+    "contact": {
+      "hero": {
+        "headline": "Contact Us",
+        "subheadline": "Schedule your appointment today"
+      },
+      "info": {
+        "address": "200 Health Plaza, Boston, MA 02108",
+        "phone": "(555) 789-CARE",
+        "email": "appointments@wellnessmedical-demo.com",
+        "hours": "Mon-Thu: 8am-6pm, Fri: 8am-5pm, Sat: 9am-1pm"
+      },
+      "patientPortal": {
+        "enabled": true,
+        "buttonText": "Access Patient Portal",
+        "features": ["View test results", "Message your doctor", "Request refills", "Schedule appointments"]
+      },
+      "form": {
+        "fields": ["name", "email", "phone", "reason", "preferredDate"],
+        "submitText": "Request Appointment"
+      }
+    }
+  }
+}

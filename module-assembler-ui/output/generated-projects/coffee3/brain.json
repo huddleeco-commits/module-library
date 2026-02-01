@@ -1,0 +1,118 @@
+{
+  "version": "2.0.0",
+  "generatedAt": "2026-01-22T20:12:12.323Z",
+  "generationMode": "unified",
+  "business": {
+    "name": "coffee3",
+    "tagline": "Your trusted cafe partner",
+    "industry": "cafe",
+    "variant": null,
+    "location": "Lewisville, TX",
+    "phone": "(555) 123-4567",
+    "email": "hello@coffee3.com",
+    "yearsInBusiness": "5",
+    "terminology": {
+      "services": "Menu",
+      "service": "Item",
+      "team": "Our Baristas",
+      "booking": "Order"
+    }
+  },
+  "theme": {
+    "colors": {
+      "primary": "#6366f1",
+      "accent": "#06b6d4",
+      "text": "#1a1a2e",
+      "background": "#ffffff"
+    },
+    "moodSliders": {
+      "vibe": 45,
+      "energy": 60,
+      "era": 50,
+      "density": 50,
+      "price": 50
+    },
+    "moodInterpretation": {
+      "tone": "balanced",
+      "energy": "moderate",
+      "style": "contemporary",
+      "contentDensity": "balanced",
+      "marketPosition": "quality-focused"
+    },
+    "visualStyles": {
+      "borderRadius": "7px",
+      "buttonRadius": "6px",
+      "sectionPadding": "54px",
+      "cardPadding": "22px",
+      "headingFont": "Poppins, sans-serif",
+      "bodyFont": "Inter, system-ui, sans-serif",
+      "letterSpacing": "normal",
+      "headingWeight": "600",
+      "cardShadow": "0 4px 15px rgba(0,0,0,0.08)",
+      "containerMaxWidth": "1200px",
+      "heroMinHeight": "80vh"
+    }
+  },
+  "content": {
+    "hero": {
+      "tagline": "Welcome to coffee3",
+      "subtext": "Your trusted cafe in Lewisville, TX",
+      "ctas": [
+        "Order",
+        "Learn More"
+      ]
+    },
+    "testimonials": [
+      {
+        "quote": "[Customer testimonial]",
+        "name": "Happy Customer",
+        "role": "Local Resident"
+      },
+      {
+        "quote": "[Customer testimonial]",
+        "name": "Valued Client",
+        "role": "Regular Customer"
+      },
+      {
+        "quote": "[Customer testimonial]",
+        "name": "Satisfied Guest",
+        "role": "First-Time Visitor"
+      }
+    ],
+    "team": []
+  },
+  "pages": [
+    "home",
+    "menu",
+    "about",
+    "gallery",
+    "events",
+    "team",
+    "contact"
+  ],
+  "portalPages": [
+    "dashboard",
+    "rewards",
+    "earn",
+    "wallet",
+    "leaderboard",
+    "profile"
+  ],
+  "pageTier": "premium",
+  "industryConfig": {
+    "key": "cafe",
+    "terminology": {
+      "services": "Menu",
+      "service": "Item",
+      "team": "Our Baristas",
+      "booking": "Order"
+    },
+    "variant": null
+  },
+  "features": [
+    "specialty-coffee",
+    "pastries",
+    "wifi",
+    "cozy-seating"
+  ]
+}

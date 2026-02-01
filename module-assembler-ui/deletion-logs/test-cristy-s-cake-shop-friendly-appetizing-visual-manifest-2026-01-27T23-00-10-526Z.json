@@ -1,0 +1,38 @@
+{
+  "projectName": "test-cristy-s-cake-shop-friendly-appetizing-visual",
+  "savedAt": "2026-01-27T23:00:10.527Z",
+  "resources": {
+    "name": "test-cristy-s-cake-shop-friendly-appetizing-visual",
+    "sanitizedName": "test-cristy-s-cake-shop-friendly-appetizing-visual",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-friendly-appetizing-visual-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-friendly-appetizing-visual-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-friendly-appetizing-visual-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

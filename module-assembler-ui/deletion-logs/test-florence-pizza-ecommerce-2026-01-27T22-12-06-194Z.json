@@ -1,0 +1,61 @@
+{
+  "projectName": "test-florence-pizza-ecommerce",
+  "deletedAt": "2026-01-27T22:12:06.194Z",
+  "resourcesFound": {
+    "name": "test-florence-pizza-ecommerce",
+    "sanitizedName": "test-florence-pizza-ecommerce",
+    "github": {
+      "repos": [
+        {
+          "name": "test-florence-pizza-ecommerce-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-florence-pizza-ecommerce-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-florence-pizza-ecommerce-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-florence-pizza-ecommerce-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-florence-pizza-ecommerce-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-florence-pizza-ecommerce-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": []
+  }
+}

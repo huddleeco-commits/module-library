@@ -1,0 +1,516 @@
+{
+  "version": "2.0.0",
+  "industries": {
+    "cafe": {
+      "name": "Cafe",
+      "icon": "coffee",
+      "terminology": {
+        "services": "Menu",
+        "service": "Item",
+        "team": "Our Baristas",
+        "booking": "Order"
+      },
+      "tiers": {
+        "essential": {
+          "pages": ["home", "menu", "about", "contact"],
+          "pageCount": 4,
+          "price": 49
+        },
+        "recommended": {
+          "pages": ["home", "menu", "about", "gallery", "contact"],
+          "pageCount": 5,
+          "price": 79
+        },
+        "premium": {
+          "pages": ["home", "menu", "about", "gallery", "events", "team", "contact"],
+          "pageCount": 7,
+          "price": 129
+        }
+      },
+      "portalPages": {
+        "basic": ["dashboard", "profile"],
+        "full": ["dashboard", "rewards", "earn", "wallet", "leaderboard", "profile"]
+      },
+      "businessData": {
+        "features": ["specialty-coffee", "pastries", "wifi", "cozy-seating"],
+        "stats": { "customers": "5000+", "rating": 4.8, "experience": 5, "satisfaction": "98%" }
+      },
+      "variants": {
+        "coffee-shop": { "name": "Coffee Shop", "customPages": {} },
+        "bakery-cafe": { "name": "Bakery Cafe", "terminology": { "services": "Baked Goods" } },
+        "juice-bar": { "name": "Juice Bar", "terminology": { "services": "Drinks" } }
+      }
+    },
+    "restaurant": {
+      "name": "Restaurant",
+      "icon": "utensils",
+      "terminology": {
+        "services": "Menu",
+        "service": "Dish",
+        "team": "Our Chefs",
+        "booking": "Reservation"
+      },
+      "tiers": {
+        "essential": {
+          "pages": ["home", "menu", "about", "contact"],
+          "pageCount": 4,
+          "price": 49
+        },
+        "recommended": {
+          "pages": ["home", "menu", "about", "reservations", "gallery", "contact"],
+          "pageCount": 6,
+          "price": 99
+        },
+        "premium": {
+          "pages": ["home", "menu", "about", "reservations", "gallery", "events", "team", "contact"],
+          "pageCount": 8,
+          "price": 149
+        }
+      },
+      "portalPages": {
+        "basic": ["dashboard", "profile"],
+        "full": ["dashboard", "rewards", "earn", "wallet", "leaderboard", "profile"]
+      },
+      "businessData": {
+        "features": ["dine-in", "takeout", "catering", "private-events"],
+        "stats": { "customers": "10000+", "rating": 4.7, "experience": 8, "satisfaction": "97%" }
+      },
+      "variants": {
+        "fine-dining": { "name": "Fine Dining", "terminology": { "services": "Tasting Menu" } },
+        "fast-casual": { "name": "Fast Casual", "terminology": { "booking": "Order" } },
+        "food-truck": { "name": "Food Truck", "customPages": { "essential": ["home", "menu", "locations", "contact"] } },
+        "pizzeria": { "name": "Pizzeria", "terminology": { "services": "Pizza Menu" } }
+      }
+    },
+    "healthcare": {
+      "name": "Healthcare",
+      "icon": "heart-pulse",
+      "terminology": {
+        "services": "Services",
+        "service": "Treatment",
+        "team": "Our Providers",
+        "booking": "Appointment"
+      },
+      "tiers": {
+        "essential": {
+          "pages": ["home", "services", "about", "contact"],
+          "pageCount": 4,
+          "price": 79
+        },
+        "recommended": {
+          "pages": ["home", "services", "about", "providers", "testimonials", "contact"],
+          "pageCount": 6,
+          "price": 129
+        },
+        "premium": {
+          "pages": ["home", "services", "about", "providers", "testimonials", "booking", "insurance", "contact"],
+          "pageCount": 8,
+          "price": 199
+        }
+      },
+      "portalPages": {
+        "basic": ["dashboard", "profile"],
+        "full": ["dashboard", "appointments", "records", "messages", "billing", "profile"]
+      },
+      "businessData": {
+        "features": ["patient-portal", "online-booking", "insurance-accepted", "telehealth"],
+        "stats": { "patients": "5000+", "rating": 4.9, "experience": 10, "satisfaction": "99%" }
+      },
+      "variants": {
+        "dental": { "name": "Dental Practice", "terminology": { "service": "Procedure", "team": "Our Dentists" } },
+        "chiropractic": { "name": "Chiropractic", "terminology": { "service": "Adjustment" } },
+        "medspa": { "name": "Medical Spa", "terminology": { "services": "Treatments", "team": "Our Specialists" } },
+        "pharmacy": { "name": "Pharmacy", "terminology": { "services": "Prescriptions" } },
+        "mental-health": { "name": "Mental Health", "terminology": { "service": "Session", "team": "Our Therapists" } }
+      }
+    },
+    "fitness": {
+      "name": "Fitness",
+      "icon": "dumbbell",
+      "terminology": {
+        "services": "Programs",
+        "service": "Class",
+        "team": "Our Trainers",
+        "booking": "Book Class"
+      },
+      "tiers": {
+        "essential": {
+          "pages": ["home", "programs", "about", "contact"],
+          "pageCount": 4,
+          "price": 59
+        },
+        "recommended": {
+          "pages": ["home", "programs", "schedule", "about", "trainers", "contact"],
+          "pageCount": 6,
+          "price": 99
+        },
+        "premium": {
+          "pages": ["home", "programs", "schedule", "about", "trainers", "gallery", "pricing", "contact"],
+          "pageCount": 8,
+          "price": 149
+        }
+      },
+      "portalPages": {
+        "basic": ["dashboard", "profile"],
+        "full": ["dashboard", "schedule", "workouts", "progress", "rewards", "profile"]
+      },
+      "businessData": {
+        "features": ["personal-training", "group-classes", "nutrition-coaching", "member-app"],
+        "stats": { "members": "2000+", "rating": 4.8, "experience": 7, "satisfaction": "96%" }
+      },
+      "variants": {
+        "gym": { "name": "Gym", "terminology": { "services": "Memberships" } },
+        "yoga-studio": { "name": "Yoga Studio", "terminology": { "service": "Class", "team": "Our Instructors" } },
+        "crossfit": { "name": "CrossFit Box", "terminology": { "services": "WODs" } },
+        "pilates": { "name": "Pilates Studio", "terminology": { "team": "Our Instructors" } },
+        "martial-arts": { "name": "Martial Arts", "terminology": { "service": "Training" } }
+      }
+    },
+    "salon": {
+      "name": "Salon & Spa",
+      "icon": "scissors",
+      "terminology": {
+        "services": "Services",
+        "service": "Treatment",
+        "team": "Our Stylists",
+        "booking": "Book Appointment"
+      },
+      "tiers": {
+        "essential": {
+          "pages": ["home", "services", "about", "contact"],
+          "pageCount": 4,
+          "price": 59
+        },
+        "recommended": {
+          "pages": ["home", "services", "about", "team", "gallery", "contact"],
+          "pageCount": 6,
+          "price": 99
+        },
+        "premium": {
+          "pages": ["home", "services", "about", "team", "gallery", "booking", "pricing", "contact"],
+          "pageCount": 8,
+          "price": 149
+        }
+      },
+      "portalPages": {
+        "basic": ["dashboard", "profile"],
+        "full": ["dashboard", "appointments", "rewards", "products", "profile"]
+      },
+      "businessData": {
+        "features": ["online-booking", "loyalty-program", "product-sales", "gift-cards"],
+        "stats": { "clients": "3000+", "rating": 4.9, "experience": 12, "satisfaction": "98%" }
+      },
+      "variants": {
+        "hair-salon": { "name": "Hair Salon", "terminology": { "service": "Style" } },
+        "barbershop": { "name": "Barbershop", "terminology": { "team": "Our Barbers" } },
+        "nail-salon": { "name": "Nail Salon", "terminology": { "team": "Our Technicians" } },
+        "day-spa": { "name": "Day Spa", "terminology": { "service": "Treatment" } }
+      }
+    },
+    "professional": {
+      "name": "Professional Services",
+      "icon": "briefcase",
+      "terminology": {
+        "services": "Services",
+        "service": "Service",
+        "team": "Our Team",
+        "booking": "Consultation"
+      },
+      "tiers": {
+        "essential": {
+          "pages": ["home", "services", "about", "contact"],
+          "pageCount": 4,
+          "price": 79
+        },
+        "recommended": {
+          "pages": ["home", "services", "about", "team", "testimonials", "contact"],
+          "pageCount": 6,
+          "price": 129
+        },
+        "premium": {
+          "pages": ["home", "services", "about", "team", "testimonials", "case-studies", "faq", "contact"],
+          "pageCount": 8,
+          "price": 179
+        }
+      },
+      "portalPages": {
+        "basic": ["dashboard", "profile"],
+        "full": ["dashboard", "documents", "billing", "messages", "profile"]
+      },
+      "businessData": {
+        "features": ["free-consultation", "client-portal", "secure-documents", "online-payments"],
+        "stats": { "clients": "1000+", "rating": 4.9, "experience": 15, "satisfaction": "99%" }
+      },
+      "variants": {
+        "law-firm": { "name": "Law Firm", "terminology": { "team": "Our Attorneys", "service": "Practice Area" } },
+        "accounting": { "name": "Accounting Firm", "terminology": { "team": "Our CPAs" } },
+        "consulting": { "name": "Consulting", "terminology": { "service": "Solution" } },
+        "insurance": { "name": "Insurance Agency", "terminology": { "services": "Coverage Options", "team": "Our Agents" } },
+        "real-estate": { "name": "Real Estate", "terminology": { "services": "Listings", "team": "Our Agents" } }
+      }
+    },
+    "retail": {
+      "name": "Retail",
+      "icon": "store",
+      "terminology": {
+        "services": "Products",
+        "service": "Product",
+        "team": "Our Team",
+        "booking": "Shop Now"
+      },
+      "tiers": {
+        "essential": {
+          "pages": ["home", "products", "about", "contact"],
+          "pageCount": 4,
+          "price": 59
+        },
+        "recommended": {
+          "pages": ["home", "products", "about", "gallery", "testimonials", "contact"],
+          "pageCount": 6,
+          "price": 99
+        },
+        "premium": {
+          "pages": ["home", "products", "about", "gallery", "testimonials", "locations", "faq", "contact"],
+          "pageCount": 8,
+          "price": 149
+        }
+      },
+      "portalPages": {
+        "basic": ["dashboard", "profile"],
+        "full": ["dashboard", "orders", "wishlist", "rewards", "profile"]
+      },
+      "businessData": {
+        "features": ["online-store", "in-store-pickup", "loyalty-program", "gift-cards"],
+        "stats": { "customers": "8000+", "rating": 4.7, "experience": 10, "satisfaction": "96%" }
+      },
+      "variants": {
+        "boutique": { "name": "Boutique", "terminology": { "services": "Collections" } },
+        "gift-shop": { "name": "Gift Shop", "terminology": { "services": "Gifts" } },
+        "pet-store": { "name": "Pet Store", "terminology": { "services": "Pet Supplies" } },
+        "florist": { "name": "Florist", "terminology": { "services": "Arrangements" } }
+      }
+    },
+    "home-services": {
+      "name": "Home Services",
+      "icon": "home",
+      "terminology": {
+        "services": "Services",
+        "service": "Service",
+        "team": "Our Technicians",
+        "booking": "Get Quote"
+      },
+      "tiers": {
+        "essential": {
+          "pages": ["home", "services", "about", "contact"],
+          "pageCount": 4,
+          "price": 59
+        },
+        "recommended": {
+          "pages": ["home", "services", "about", "gallery", "testimonials", "contact"],
+          "pageCount": 6,
+          "price": 99
+        },
+        "premium": {
+          "pages": ["home", "services", "about", "gallery", "testimonials", "service-areas", "pricing", "contact"],
+          "pageCount": 8,
+          "price": 149
+        }
+      },
+      "portalPages": {
+        "basic": ["dashboard", "profile"],
+        "full": ["dashboard", "appointments", "quotes", "history", "profile"]
+      },
+      "businessData": {
+        "features": ["free-estimates", "licensed-insured", "same-day-service", "satisfaction-guarantee"],
+        "stats": { "jobs": "5000+", "rating": 4.8, "experience": 12, "satisfaction": "98%" }
+      },
+      "variants": {
+        "plumbing": { "name": "Plumbing", "terminology": { "team": "Our Plumbers" } },
+        "electrical": { "name": "Electrical", "terminology": { "team": "Our Electricians" } },
+        "hvac": { "name": "HVAC", "terminology": { "team": "Our Technicians" } },
+        "landscaping": { "name": "Landscaping", "terminology": { "services": "Lawn Care" } },
+        "cleaning": { "name": "Cleaning Service", "terminology": { "team": "Our Cleaners" } }
+      }
+    },
+    "automotive": {
+      "name": "Automotive",
+      "icon": "car",
+      "terminology": {
+        "services": "Services",
+        "service": "Service",
+        "team": "Our Technicians",
+        "booking": "Schedule Service"
+      },
+      "tiers": {
+        "essential": {
+          "pages": ["home", "services", "about", "contact"],
+          "pageCount": 4,
+          "price": 59
+        },
+        "recommended": {
+          "pages": ["home", "services", "about", "team", "testimonials", "contact"],
+          "pageCount": 6,
+          "price": 99
+        },
+        "premium": {
+          "pages": ["home", "services", "about", "team", "testimonials", "gallery", "pricing", "contact"],
+          "pageCount": 8,
+          "price": 149
+        }
+      },
+      "portalPages": {
+        "basic": ["dashboard", "profile"],
+        "full": ["dashboard", "appointments", "vehicle-history", "rewards", "profile"]
+      },
+      "businessData": {
+        "features": ["certified-technicians", "warranty-work", "loaner-vehicles", "online-booking"],
+        "stats": { "vehicles": "10000+", "rating": 4.8, "experience": 20, "satisfaction": "97%" }
+      },
+      "variants": {
+        "auto-repair": { "name": "Auto Repair", "terminology": { "team": "Our Mechanics" } },
+        "auto-detailing": { "name": "Auto Detailing", "terminology": { "services": "Detail Packages" } },
+        "tire-shop": { "name": "Tire Shop", "terminology": { "services": "Tire Services" } },
+        "car-wash": { "name": "Car Wash", "terminology": { "services": "Wash Packages" } }
+      }
+    },
+    "education": {
+      "name": "Education",
+      "icon": "graduation-cap",
+      "terminology": {
+        "services": "Programs",
+        "service": "Course",
+        "team": "Our Instructors",
+        "booking": "Enroll"
+      },
+      "tiers": {
+        "essential": {
+          "pages": ["home", "programs", "about", "contact"],
+          "pageCount": 4,
+          "price": 69
+        },
+        "recommended": {
+          "pages": ["home", "programs", "about", "instructors", "testimonials", "contact"],
+          "pageCount": 6,
+          "price": 119
+        },
+        "premium": {
+          "pages": ["home", "programs", "about", "instructors", "testimonials", "gallery", "faq", "contact"],
+          "pageCount": 8,
+          "price": 169
+        }
+      },
+      "portalPages": {
+        "basic": ["dashboard", "profile"],
+        "full": ["dashboard", "courses", "progress", "certificates", "community", "profile"]
+      },
+      "businessData": {
+        "features": ["online-learning", "certificates", "expert-instructors", "flexible-schedule"],
+        "stats": { "students": "5000+", "rating": 4.9, "experience": 10, "satisfaction": "98%" }
+      },
+      "variants": {
+        "tutoring": { "name": "Tutoring", "terminology": { "team": "Our Tutors" } },
+        "music-school": { "name": "Music School", "terminology": { "services": "Lessons", "team": "Our Teachers" } },
+        "dance-studio": { "name": "Dance Studio", "terminology": { "services": "Classes", "team": "Our Instructors" } },
+        "driving-school": { "name": "Driving School", "terminology": { "services": "Courses" } },
+        "language-school": { "name": "Language School", "terminology": { "services": "Language Courses" } }
+      }
+    },
+    "event-services": {
+      "name": "Event Services",
+      "icon": "calendar",
+      "terminology": {
+        "services": "Services",
+        "service": "Package",
+        "team": "Our Team",
+        "booking": "Book Event"
+      },
+      "tiers": {
+        "essential": {
+          "pages": ["home", "services", "about", "contact"],
+          "pageCount": 4,
+          "price": 69
+        },
+        "recommended": {
+          "pages": ["home", "services", "about", "gallery", "testimonials", "contact"],
+          "pageCount": 6,
+          "price": 119
+        },
+        "premium": {
+          "pages": ["home", "services", "about", "gallery", "testimonials", "pricing", "faq", "contact"],
+          "pageCount": 8,
+          "price": 169
+        }
+      },
+      "portalPages": {
+        "basic": ["dashboard", "profile"],
+        "full": ["dashboard", "events", "planning", "vendors", "profile"]
+      },
+      "businessData": {
+        "features": ["full-service-planning", "vendor-network", "day-of-coordination", "custom-packages"],
+        "stats": { "events": "500+", "rating": 4.9, "experience": 8, "satisfaction": "99%" }
+      },
+      "variants": {
+        "wedding-planner": { "name": "Wedding Planner", "terminology": { "services": "Wedding Packages" } },
+        "photographer": { "name": "Photography", "terminology": { "services": "Photo Packages", "team": "Our Photographers" } },
+        "catering": { "name": "Catering", "terminology": { "services": "Catering Menus" } },
+        "dj-entertainment": { "name": "DJ & Entertainment", "terminology": { "services": "Entertainment Packages" } },
+        "venue": { "name": "Event Venue", "terminology": { "services": "Venue Packages" } }
+      }
+    },
+    "pet-services": {
+      "name": "Pet Services",
+      "icon": "paw-print",
+      "terminology": {
+        "services": "Services",
+        "service": "Service",
+        "team": "Our Team",
+        "booking": "Book Appointment"
+      },
+      "tiers": {
+        "essential": {
+          "pages": ["home", "services", "about", "contact"],
+          "pageCount": 4,
+          "price": 49
+        },
+        "recommended": {
+          "pages": ["home", "services", "about", "team", "gallery", "contact"],
+          "pageCount": 6,
+          "price": 89
+        },
+        "premium": {
+          "pages": ["home", "services", "about", "team", "gallery", "testimonials", "pricing", "contact"],
+          "pageCount": 8,
+          "price": 129
+        }
+      },
+      "portalPages": {
+        "basic": ["dashboard", "profile"],
+        "full": ["dashboard", "appointments", "pet-profiles", "rewards", "profile"]
+      },
+      "businessData": {
+        "features": ["certified-staff", "safe-environment", "flexible-hours", "pet-cam"],
+        "stats": { "pets": "3000+", "rating": 4.9, "experience": 10, "satisfaction": "99%" }
+      },
+      "variants": {
+        "grooming": { "name": "Pet Grooming", "terminology": { "team": "Our Groomers" } },
+        "boarding": { "name": "Pet Boarding", "terminology": { "services": "Boarding Options" } },
+        "daycare": { "name": "Pet Daycare", "terminology": { "services": "Daycare Packages" } },
+        "training": { "name": "Pet Training", "terminology": { "team": "Our Trainers" } },
+        "veterinary": { "name": "Veterinary Clinic", "terminology": { "team": "Our Veterinarians" } }
+      }
+    }
+  },
+  "defaultMoodSliders": {
+    "vibe": 50,
+    "energy": 50,
+    "era": 50,
+    "density": 50,
+    "price": 50
+  },
+  "defaultColors": {
+    "primary": "#6366f1",
+    "accent": "#06b6d4",
+    "text": "#1a1a2e",
+    "background": "#ffffff"
+  }
+}

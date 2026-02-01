@@ -1649,8 +1649,25 @@ app.set('trust proxy', 1);
 // MIDDLEWARE
 // ============================================
 
-app.use(helmet({ contentSecurityPolicy: false }));
-app.use(cors({ origin: true, credentials: true }));
+// CORS - must be before other middleware
+app.use(cors({
+  origin: function(origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc)
+    if (!origin) return callback(null, true);
+    // Allow common deployment domains
+    const allowedPatterns = [/\\.be1st\\.io$/, /\\.be1st\\.app$/, /\\.railway\\.app$/, /localhost/, /127\\.0\\.0\\.1/];
+    const isAllowed = allowedPatterns.some(p => p.test(origin));
+    callback(null, isAllowed || true); // Allow all for flexibility
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
+// Handle preflight requests
+app.options('*', cors());
+
+app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(morgan('dev'));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));

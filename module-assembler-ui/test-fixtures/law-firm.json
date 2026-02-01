@@ -1,0 +1,159 @@
+{
+  "id": "law-firm",
+  "name": "Law Firm",
+  "icon": "⚖️",
+  "business": {
+    "name": "Harrison & Associates",
+    "location": "Chicago, IL",
+    "tagline": "Trusted Legal Counsel for Over 25 Years",
+    "industry": "law-firm",
+    "teamSize": "10-25",
+    "priceRange": "$$$",
+    "established": "1998",
+    "phone": "(555) 234-5678",
+    "email": "contact@harrisonlaw-demo.com",
+    "address": "100 Legal Plaza, Suite 500, Chicago, IL 60601",
+    "hours": {
+      "monday": "8:00 AM - 6:00 PM",
+      "tuesday": "8:00 AM - 6:00 PM",
+      "wednesday": "8:00 AM - 6:00 PM",
+      "thursday": "8:00 AM - 6:00 PM",
+      "friday": "8:00 AM - 5:00 PM",
+      "saturday": "By Appointment",
+      "sunday": "Closed"
+    }
+  },
+  "theme": {
+    "colors": {
+      "primary": "#1E3A5F",
+      "secondary": "#C9A227",
+      "accent": "#8B7355",
+      "background": "#F8F6F3",
+      "text": "#2D3748"
+    },
+    "fonts": {
+      "heading": "Playfair Display",
+      "body": "Source Sans Pro"
+    },
+    "style": "professional-classic"
+  },
+  "pages": {
+    "home": {
+      "hero": {
+        "headline": "Trusted Legal Counsel for Over 25 Years",
+        "subheadline": "Protecting your rights and fighting for the justice you deserve. Our experienced attorneys are here to guide you through every step.",
+        "cta": "Free Consultation",
+        "secondaryCta": "Call Now",
+        "backgroundImage": "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920"
+      },
+      "sections": [
+        {
+          "type": "stats",
+          "title": "Our Track Record",
+          "items": [
+            { "value": "500+", "label": "Cases Won" },
+            { "value": "$50M+", "label": "Recovered for Clients" },
+            { "value": "25+", "label": "Years Experience" },
+            { "value": "98%", "label": "Client Satisfaction" }
+          ]
+        },
+        {
+          "type": "practice-areas",
+          "title": "Practice Areas",
+          "items": [
+            { "name": "Personal Injury", "description": "Car accidents, slip & fall, medical malpractice", "icon": "Shield" },
+            { "name": "Family Law", "description": "Divorce, custody, adoption, prenuptial agreements", "icon": "Users" },
+            { "name": "Estate Planning", "description": "Wills, trusts, probate, asset protection", "icon": "FileText" },
+            { "name": "Business Law", "description": "Contracts, formations, disputes, compliance", "icon": "Briefcase" },
+            { "name": "Criminal Defense", "description": "DUI, misdemeanors, felonies, appeals", "icon": "Scale" },
+            { "name": "Real Estate", "description": "Closings, disputes, commercial transactions", "icon": "Home" }
+          ]
+        },
+        {
+          "type": "testimonials",
+          "title": "Client Testimonials",
+          "items": [
+            { "name": "James R.", "text": "Harrison & Associates fought for me when no one else would. They secured a settlement that changed my life.", "rating": 5, "case": "Personal Injury" },
+            { "name": "Maria S.", "text": "Compassionate and professional during my divorce. They made a difficult time much easier.", "rating": 5, "case": "Family Law" },
+            { "name": "David W.", "text": "Their business expertise saved my company. I recommend them to every entrepreneur I know.", "rating": 5, "case": "Business Law" }
+          ]
+        },
+        {
+          "type": "cta-banner",
+          "title": "Need Legal Help?",
+          "subtitle": "Get a free, confidential consultation with one of our experienced attorneys.",
+          "cta": "Schedule Free Consultation"
+        }
+      ]
+    },
+    "practice-areas": {
+      "hero": {
+        "headline": "Practice Areas",
+        "subheadline": "Comprehensive legal services for individuals and businesses"
+      },
+      "areas": [
+        {
+          "name": "Personal Injury",
+          "description": "When you've been injured due to someone else's negligence, you deserve compensation. We handle car accidents, workplace injuries, medical malpractice, and more.",
+          "services": ["Car Accidents", "Truck Accidents", "Slip & Fall", "Medical Malpractice", "Wrongful Death", "Product Liability"]
+        },
+        {
+          "name": "Family Law",
+          "description": "Family matters require sensitivity and expertise. Our attorneys guide you through divorce, custody battles, and other family legal issues with care.",
+          "services": ["Divorce", "Child Custody", "Child Support", "Adoption", "Prenuptial Agreements", "Domestic Violence"]
+        },
+        {
+          "name": "Estate Planning",
+          "description": "Protect your family's future with comprehensive estate planning. We help you create wills, trusts, and powers of attorney.",
+          "services": ["Wills", "Living Trusts", "Probate", "Power of Attorney", "Healthcare Directives", "Asset Protection"]
+        },
+        {
+          "name": "Business Law",
+          "description": "From startups to established corporations, we provide the legal foundation your business needs to thrive.",
+          "services": ["Business Formation", "Contracts", "Mergers & Acquisitions", "Employment Law", "Intellectual Property", "Litigation"]
+        }
+      ]
+    },
+    "about": {
+      "hero": {
+        "headline": "About Our Firm",
+        "subheadline": "A legacy of excellence in legal representation"
+      },
+      "sections": [
+        {
+          "type": "story",
+          "title": "Our History",
+          "content": "Founded in 1998 by Richard Harrison, our firm has grown from a small practice to one of Chicago's most respected law firms. Our commitment to client service and legal excellence has remained constant through our growth."
+        },
+        {
+          "type": "values",
+          "title": "Our Values",
+          "items": ["Integrity", "Excellence", "Compassion", "Results", "Accessibility"]
+        }
+      ],
+      "team": [
+        { "name": "Richard Harrison", "role": "Founding Partner", "bio": "30+ years of trial experience, specializing in personal injury", "image": "team1.jpg" },
+        { "name": "Elena Martinez", "role": "Senior Partner", "bio": "Leading our family law practice with compassion and expertise", "image": "team2.jpg" },
+        { "name": "Thomas Chen", "role": "Partner", "bio": "Business law specialist with Fortune 500 experience", "image": "team3.jpg" },
+        { "name": "Sarah Williams", "role": "Associate", "bio": "Estate planning expert focused on protecting families", "image": "team4.jpg" }
+      ]
+    },
+    "contact": {
+      "hero": {
+        "headline": "Contact Us",
+        "subheadline": "Schedule your free consultation today"
+      },
+      "info": {
+        "address": "100 Legal Plaza, Suite 500, Chicago, IL 60601",
+        "phone": "(555) 234-5678",
+        "email": "contact@harrisonlaw-demo.com",
+        "hours": "Mon-Fri: 8am-6pm, Sat: By Appointment"
+      },
+      "form": {
+        "fields": ["name", "email", "phone", "caseType", "message"],
+        "submitText": "Request Free Consultation"
+      },
+      "disclaimer": "The information on this website is for general information purposes only. Nothing on this site should be taken as legal advice for any individual case or situation."
+    }
+  }
+}

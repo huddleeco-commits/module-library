@@ -1,0 +1,38 @@
+{
+  "projectName": "QuickSlice-adab",
+  "savedAt": "2026-01-24T13:56:23.109Z",
+  "resources": {
+    "name": "QuickSlice-adab",
+    "sanitizedName": "quickslice-adab",
+    "github": {
+      "repos": [
+        {
+          "name": "quickslice-adab-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "quickslice-adab-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "quickslice-adab-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\QuickSlice-adab",
+      "exists": true
+    }
+  }
+}

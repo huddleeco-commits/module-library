@@ -1,0 +1,100 @@
+{
+  "id": "ChIJJ7Ki-wYZTIYR6_gstyLUa2E",
+  "name": "Park Mall Barber",
+  "address": "2460 K Ave, Plano, TX 75074, USA",
+  "phone": "(972) 212-4077",
+  "category": "barber_shop",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 4.4,
+  "reviewCount": 62,
+  "photo": "https://places.googleapis.com/v1/places/ChIJJ7Ki-wYZTIYR6_gstyLUa2E/photos/AcnlKN3CSJx8-M-aksHbTU56_Zp_PUJLfrh5ZJRsFeY5EtLTh6loaEGaNwxwcCGZaLu7XXpYaTyYRhJ9sDabUoqT6rHx8GIs5jvWtwL0qz5_gD-xOKJcyR0SyDbmMzf3OknP9uNaYBnMDUiYnWVY2BLkAozpzGrzTHWl8Qvt2VjthgEUhwJzE6kgO_IUT8O_VsBxfnrnGVPUNEGGIfc3ouAKjcG4e-ZQK6n8KWW-c3OiZIeEuWuKJU09n36Uej5NzZ3XOsc1rUJGGhTNEkrPbTQP9ybL7wOCiZn7ggcv8JQYCF-gUllxBmTWqYoKt7dsxPl0AV0V5HdrYjW3xspxwuBaj-WwZmkjJsh9cPc89GbAZxQB9g6y75abC6F1FXnFLFG93FAH4QdngtJlDEgfnW5RrifTFjjE8x92pjP_lP-oMhEbtg/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+  "photos": [
+    "https://places.googleapis.com/v1/places/ChIJJ7Ki-wYZTIYR6_gstyLUa2E/photos/AcnlKN3CSJx8-M-aksHbTU56_Zp_PUJLfrh5ZJRsFeY5EtLTh6loaEGaNwxwcCGZaLu7XXpYaTyYRhJ9sDabUoqT6rHx8GIs5jvWtwL0qz5_gD-xOKJcyR0SyDbmMzf3OknP9uNaYBnMDUiYnWVY2BLkAozpzGrzTHWl8Qvt2VjthgEUhwJzE6kgO_IUT8O_VsBxfnrnGVPUNEGGIfc3ouAKjcG4e-ZQK6n8KWW-c3OiZIeEuWuKJU09n36Uej5NzZ3XOsc1rUJGGhTNEkrPbTQP9ybL7wOCiZn7ggcv8JQYCF-gUllxBmTWqYoKt7dsxPl0AV0V5HdrYjW3xspxwuBaj-WwZmkjJsh9cPc89GbAZxQB9g6y75abC6F1FXnFLFG93FAH4QdngtJlDEgfnW5RrifTFjjE8x92pjP_lP-oMhEbtg/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k"
+  ],
+  "fixtureId": "restaurant",
+  "source": "google",
+  "googleMapsUrl": "https://maps.google.com/?cid=7019937689754204395&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+  "coordinates": {
+    "latitude": 33.030943199999996,
+    "longitude": -96.6973446
+  },
+  "raw": {
+    "id": "ChIJJ7Ki-wYZTIYR6_gstyLUa2E",
+    "types": [
+      "barber_shop",
+      "hair_care",
+      "health",
+      "point_of_interest",
+      "establishment"
+    ],
+    "nationalPhoneNumber": "(972) 212-4077",
+    "formattedAddress": "2460 K Ave, Plano, TX 75074, USA",
+    "location": {
+      "latitude": 33.030943199999996,
+      "longitude": -96.6973446
+    },
+    "rating": 4.4,
+    "googleMapsUri": "https://maps.google.com/?cid=7019937689754204395&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "userRatingCount": 62,
+    "displayName": {
+      "text": "Park Mall Barber",
+      "languageCode": "en"
+    },
+    "primaryType": "barber_shop",
+    "photos": [
+      {
+        "name": "places/ChIJJ7Ki-wYZTIYR6_gstyLUa2E/photos/AcnlKN3CSJx8-M-aksHbTU56_Zp_PUJLfrh5ZJRsFeY5EtLTh6loaEGaNwxwcCGZaLu7XXpYaTyYRhJ9sDabUoqT6rHx8GIs5jvWtwL0qz5_gD-xOKJcyR0SyDbmMzf3OknP9uNaYBnMDUiYnWVY2BLkAozpzGrzTHWl8Qvt2VjthgEUhwJzE6kgO_IUT8O_VsBxfnrnGVPUNEGGIfc3ouAKjcG4e-ZQK6n8KWW-c3OiZIeEuWuKJU09n36Uej5NzZ3XOsc1rUJGGhTNEkrPbTQP9ybL7wOCiZn7ggcv8JQYCF-gUllxBmTWqYoKt7dsxPl0AV0V5HdrYjW3xspxwuBaj-WwZmkjJsh9cPc89GbAZxQB9g6y75abC6F1FXnFLFG93FAH4QdngtJlDEgfnW5RrifTFjjE8x92pjP_lP-oMhEbtg",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Joelvis Antonio Ortiz",
+            "uri": "https://maps.google.com/maps/contrib/114575951185285205028",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjW4ayEBG0X1Lg6md-ehrx9E1irbQWn5rh6up_yluXTvP8VETOw=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgMCY5Ke0Mw&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgMCY5Ke0Mw!2e10!4m2!3m1!1s0x864c1906fba2b227:0x616bd422b72cf8eb"
+      }
+    ]
+  },
+  "detectedWebsite": null,
+  "scannedAt": "2026-01-25T19:11:47.156Z",
+  "readyForGeneration": true,
+  "research": {
+    "source": "yelp",
+    "enrichedAt": "2026-01-27T15:42:01.449Z",
+    "matched": true,
+    "yelpId": "2jn-1nSUtTq2Gg5SM0wa0Q",
+    "matchStatus": "found",
+    "rating": 3.8,
+    "reviewCount": 12,
+    "priceLevel": "$$",
+    "categories": [
+      "Barbers"
+    ],
+    "photos": [],
+    "hours": null,
+    "transactions": []
+  },
+  "opportunityScore": 60,
+  "scoreBreakdown": [
+    {
+      "factor": "No website (base)",
+      "points": 50,
+      "source": "Google"
+    },
+    {
+      "factor": "Decent rating (3.8★)",
+      "points": 5,
+      "source": "Yelp"
+    },
+    {
+      "factor": "Price level ($$)",
+      "points": 5,
+      "source": "Yelp"
+    }
+  ],
+  "city": "Plano"
+}

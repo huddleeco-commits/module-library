@@ -1,0 +1,83 @@
+{
+  "projectName": "cc-be1st6",
+  "deletedAt": "2026-01-21T20:47:22.875Z",
+  "resourcesFound": {
+    "name": "cc-be1st6",
+    "sanitizedName": "cc-be1st6",
+    "github": {
+      "repos": [
+        {
+          "name": "cc-be1st6-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "cc-be1st6-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "cc-be1st6-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\cc-be1st6",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/cc-be1st6-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/cc-be1st6-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/cc-be1st6-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\cc-be1st6"
+    },
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "cc-be1st6",
+          "verified": true
+        },
+        {
+          "subdomain": "api.cc-be1st6",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.cc-be1st6",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

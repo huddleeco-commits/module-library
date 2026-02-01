@@ -1,0 +1,38 @@
+{
+  "projectName": "test-mozart-bakery-cafe-luxury-appetizing-visual",
+  "savedAt": "2026-01-28T05:33:00.728Z",
+  "resources": {
+    "name": "test-mozart-bakery-cafe-luxury-appetizing-visual",
+    "sanitizedName": "test-mozart-bakery-cafe-luxury-appetizing-visual",
+    "github": {
+      "repos": [
+        {
+          "name": "test-mozart-bakery-cafe-luxury-appetizing-visual-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-mozart-bakery-cafe-luxury-appetizing-visual-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-mozart-bakery-cafe-luxury-appetizing-visual-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

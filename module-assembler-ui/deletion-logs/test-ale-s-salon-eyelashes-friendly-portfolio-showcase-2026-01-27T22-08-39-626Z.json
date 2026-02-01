@@ -1,0 +1,80 @@
+{
+  "projectName": "test-ale-s-salon-eyelashes-friendly-portfolio-showcase",
+  "deletedAt": "2026-01-27T22:08:39.626Z",
+  "resourcesFound": {
+    "name": "test-ale-s-salon-eyelashes-friendly-portfolio-showcase",
+    "sanitizedName": "test-ale-s-salon-eyelashes-friendly-portfolio-showcase",
+    "github": {
+      "repos": [
+        {
+          "name": "test-ale-s-salon-eyelashes-friendly-portfolio-showcase-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-ale-s-salon-eyelashes-friendly-portfolio-showcase-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-ale-s-salon-eyelashes-friendly-portfolio-showcase-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-ale-s-salon-eyelashes-friendly-portfolio-showcase-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-ale-s-salon-eyelashes-friendly-portfolio-showcase-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-ale-s-salon-eyelashes-friendly-portfolio-showcase-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "test-ale-s-salon-eyelashes-friendly-portfolio-showcase",
+          "verified": true
+        },
+        {
+          "subdomain": "api.test-ale-s-salon-eyelashes-friendly-portfolio-showcase",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.test-ale-s-salon-eyelashes-friendly-portfolio-showcase",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

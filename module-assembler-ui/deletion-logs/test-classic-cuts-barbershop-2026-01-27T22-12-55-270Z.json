@@ -1,0 +1,158 @@
+{
+  "projectName": "test-classic-cuts-barbershop",
+  "deletedAt": "2026-01-27T22:12:55.270Z",
+  "resourcesFound": {
+    "name": "test-classic-cuts-barbershop",
+    "sanitizedName": "test-classic-cuts-barbershop",
+    "github": {
+      "repos": [
+        {
+          "name": "test-classic-cuts-barbershop-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "test-classic-cuts-barbershop-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "test-classic-cuts-barbershop-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "27fbc742-d4a0-41d6-aa50-d99d04e32c33",
+        "name": "test-classic-cuts-barbershop",
+        "createdAt": "2026-01-27T00:27:39.473Z",
+        "environments": [
+          {
+            "id": "8cf8cfa1-fac8-4bcd-9f72-69505a5b0213",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "13f80154-0775-45d4-ae2b-f5724cc83512",
+          "name": "frontend"
+        },
+        {
+          "id": "71ab4405-39d5-4bd9-8dba-b1bc20db19b1",
+          "name": "backend"
+        },
+        {
+          "id": "d59c077f-21c9-431a-8b60-28ddc28e384e",
+          "name": "admin"
+        },
+        {
+          "id": "e74a21a0-4fe9-4be0-8584-4fcc01e7fb94",
+          "name": "postgres"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "28850389e34c66184fe03e7a80e2ba35",
+          "name": "test-classic-cuts-barbershop.be1st.io",
+          "type": "CNAME",
+          "content": "my86rr2o.up.railway.app"
+        },
+        {
+          "id": "29eb194881dfddafc59bed94c6ff39a6",
+          "name": "api.test-classic-cuts-barbershop.be1st.io",
+          "type": "CNAME",
+          "content": "nntr0slv.up.railway.app"
+        },
+        {
+          "id": "176e38d3e5a4573f9a6817385a7a1e20",
+          "name": "admin.test-classic-cuts-barbershop.be1st.io",
+          "type": "CNAME",
+          "content": "doohlheb.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-classic-cuts-barbershop-backend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/test-classic-cuts-barbershop-backend"
+      },
+      {
+        "repo": "huddleeco-commits/test-classic-cuts-barbershop-frontend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/test-classic-cuts-barbershop-frontend"
+      },
+      {
+        "repo": "huddleeco-commits/test-classic-cuts-barbershop-admin",
+        "success": true,
+        "message": "Deleted huddleeco-commits/test-classic-cuts-barbershop-admin"
+      }
+    ],
+    "railway": {
+      "success": true,
+      "message": "Deleted Railway project 27fbc742-d4a0-41d6-aa50-d99d04e32c33"
+    },
+    "cloudflare": [
+      {
+        "record": "test-classic-cuts-barbershop.be1st.io",
+        "success": true,
+        "message": "Deleted test-classic-cuts-barbershop.be1st.io"
+      },
+      {
+        "record": "api.test-classic-cuts-barbershop.be1st.io",
+        "success": true,
+        "message": "Deleted api.test-classic-cuts-barbershop.be1st.io"
+      },
+      {
+        "record": "admin.test-classic-cuts-barbershop.be1st.io",
+        "success": true,
+        "message": "Deleted admin.test-classic-cuts-barbershop.be1st.io"
+      }
+    ],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [
+        {
+          "repo": "huddleeco-commits/test-classic-cuts-barbershop-backend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/test-classic-cuts-barbershop-frontend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/test-classic-cuts-barbershop-admin",
+          "verified": true
+        }
+      ],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "test-classic-cuts-barbershop",
+          "verified": true
+        },
+        {
+          "subdomain": "api.test-classic-cuts-barbershop",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.test-classic-cuts-barbershop",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

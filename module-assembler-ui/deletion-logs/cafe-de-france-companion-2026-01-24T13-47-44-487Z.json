@@ -1,0 +1,80 @@
+{
+  "projectName": "cafe-de-france-companion",
+  "deletedAt": "2026-01-24T13:47:44.487Z",
+  "resourcesFound": {
+    "name": "cafe-de-france-companion",
+    "sanitizedName": "cafe-de-france-companion",
+    "github": {
+      "repos": [
+        {
+          "name": "cafe-de-france-companion-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "cafe-de-france-companion-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "cafe-de-france-companion-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/cafe-de-france-companion-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/cafe-de-france-companion-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/cafe-de-france-companion-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "cafe-de-france-companion",
+          "verified": true
+        },
+        {
+          "subdomain": "api.cafe-de-france-companion",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.cafe-de-france-companion",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

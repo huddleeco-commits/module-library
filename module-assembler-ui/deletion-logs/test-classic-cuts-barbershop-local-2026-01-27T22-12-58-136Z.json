@@ -1,0 +1,61 @@
+{
+  "projectName": "test-classic-cuts-barbershop-local",
+  "deletedAt": "2026-01-27T22:12:58.136Z",
+  "resourcesFound": {
+    "name": "test-classic-cuts-barbershop-local",
+    "sanitizedName": "test-classic-cuts-barbershop-local",
+    "github": {
+      "repos": [
+        {
+          "name": "test-classic-cuts-barbershop-local-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-classic-cuts-barbershop-local-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-classic-cuts-barbershop-local-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-classic-cuts-barbershop-local-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-classic-cuts-barbershop-local-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-classic-cuts-barbershop-local-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": []
+  }
+}

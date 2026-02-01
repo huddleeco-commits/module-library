@@ -1,0 +1,16 @@
+{
+  "key": "-luxury-story-driven",
+  "preset": "luxury",
+  "presetName": "luxury",
+  "presetColor": "#a78bfa",
+  "presetIcon": "crown",
+  "layout": "story-driven",
+  "layoutName": "story-driven",
+  "theme": "dark",
+  "pages": 13,
+  "linesOfCode": 103133,
+  "files": 277,
+  "generationTimeMs": 13823,
+  "success": true,
+  "previewUrl": "/api/scout/preview/cristy-s-cake-shop/full-test-luxury-story-driven/"
+}

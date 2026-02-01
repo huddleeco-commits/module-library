@@ -383,8 +383,10 @@ router.delete('/projects/:id', async (req, res) => {
     }
 
     // Remove from database regardless of external deletion results
+    // Delete in order respecting foreign key constraints
     await db.query('DELETE FROM api_usage WHERE project_id = $1', [projectId]);
     await db.query('DELETE FROM deployments WHERE project_id = $1', [projectId]);
+    await db.query('DELETE FROM generation_logs WHERE project_id = $1', [projectId]);
     await db.query('DELETE FROM generated_projects WHERE id = $1', [projectId]);
 
     res.json({

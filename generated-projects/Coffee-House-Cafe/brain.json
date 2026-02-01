@@ -1,0 +1,66 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-01-22T19:26:38.117Z",
+  "generationMode": "smart-template",
+  "business": {
+    "name": "Coffee House Cafe",
+    "tagline": "Where Dallas Comes Together",
+    "industry": "cafe",
+    "location": "Dallas, Texas",
+    "phone": "(214) 555-1234",
+    "email": "hello@coffeehousecafe.com",
+    "yearsInBusiness": "5"
+  },
+  "theme": {
+    "colors": {
+      "primary": "#8B4513",
+      "accent": "#D2691E",
+      "text": "#2C1810",
+      "background": "#FFF8F0"
+    },
+    "moodSliders": {
+      "vibe": 70,
+      "energy": 45,
+      "era": 55,
+      "density": 40,
+      "price": 50
+    },
+    "moodInterpretation": {
+      "tone": "friendly and warm",
+      "energy": "moderate",
+      "style": "contemporary",
+      "contentDensity": "balanced",
+      "marketPosition": "quality-focused"
+    }
+  },
+  "content": {
+    "hero": {
+      "tagline": "Where Every Cup Tells a Story",
+      "subtext": "Crafted with passion in the heart of Dallas, we serve exceptional coffee that brings neighbors together daily.",
+      "ctas": [
+        "Reserve Your Spot",
+        "Taste the Difference",
+        "Join Our Community"
+      ]
+    },
+    "testimonials": [],
+    "team": [
+      {
+        "name": "SARAH JOHNSON",
+        "bio": "Sarah combines her passion for exceptional coffee with warm hospitality as the heart and soul of Coffee House Cafe. With over eight years of barista experience and a dedication to sourcing the finest beans, she creates an inviting space where every cup tells a story. Her commitment to quality and community connection drives everything we do."
+      },
+      {
+        "name": "MIKE CHEN",
+        "bio": "Mike brings artistry and precision to every batch as our master roaster, transforming green beans into the complex, flavorful profiles that define our signature blends. With a background in culinary arts and five years specializing in small-batch roasting, he approaches each roast with meticulous attention to origin characteristics and flavor development. His expertise ensures every"
+      }
+    ]
+  },
+  "pages": [
+    "home",
+    "menu",
+    "about",
+    "team",
+    "contact"
+  ],
+  "features": []
+}

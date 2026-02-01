@@ -1,0 +1,135 @@
+{
+  "id": "ChIJzXsSPk8jTIYRarQi99ULuOY",
+  "name": "Florence Pizza",
+  "address": "4004 W Plano Pkwy #200, Plano, TX 75093, USA",
+  "phone": "(214) 440-2120",
+  "category": "pizza_restaurant",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 5,
+  "reviewCount": 3,
+  "photo": "https://places.googleapis.com/v1/places/ChIJzXsSPk8jTIYRarQi99ULuOY/photos/AcnlKN16lRIpbRPBiw7CzHxtGMtgI1H2TPbWNGBuPzUfQ8nxk69NTLlsO1-5iD0OXs7nf5ZvPwWgXAsXD4XuhHRBPLr6WYRIHjb_W8UPXCmKSlHhvltw-3pL293oKq5Yi-QUC9RULnzFOTWhs38TyxlJTpguUzRbmvJMssZBPD-KudHvPylZOJvq2bfcPeyAGhkilJqdyjMkbEj2Hm7e1oC6-1GGYPD07KTyv5T38taRxKRVHRkoPANPW1VQ6KdmCu8iNdIRe4w4FwiIPGa3mwelOX6qNcYddBIJIt0e3J4iTbM/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+  "photos": [
+    "https://places.googleapis.com/v1/places/ChIJzXsSPk8jTIYRarQi99ULuOY/photos/AcnlKN16lRIpbRPBiw7CzHxtGMtgI1H2TPbWNGBuPzUfQ8nxk69NTLlsO1-5iD0OXs7nf5ZvPwWgXAsXD4XuhHRBPLr6WYRIHjb_W8UPXCmKSlHhvltw-3pL293oKq5Yi-QUC9RULnzFOTWhs38TyxlJTpguUzRbmvJMssZBPD-KudHvPylZOJvq2bfcPeyAGhkilJqdyjMkbEj2Hm7e1oC6-1GGYPD07KTyv5T38taRxKRVHRkoPANPW1VQ6KdmCu8iNdIRe4w4FwiIPGa3mwelOX6qNcYddBIJIt0e3J4iTbM/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k"
+  ],
+  "fixtureId": "pizza-restaurant",
+  "source": "google",
+  "googleMapsUrl": "https://maps.google.com/?cid=16625051038040372330&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+  "coordinates": {
+    "latitude": 33.009475699999996,
+    "longitude": -96.76767989999999
+  },
+  "raw": {
+    "id": "ChIJzXsSPk8jTIYRarQi99ULuOY",
+    "types": [
+      "pizza_restaurant",
+      "restaurant",
+      "food",
+      "point_of_interest",
+      "establishment"
+    ],
+    "nationalPhoneNumber": "(214) 440-2120",
+    "formattedAddress": "4004 W Plano Pkwy #200, Plano, TX 75093, USA",
+    "location": {
+      "latitude": 33.009475699999996,
+      "longitude": -96.76767989999999
+    },
+    "rating": 5,
+    "googleMapsUri": "https://maps.google.com/?cid=16625051038040372330&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "userRatingCount": 3,
+    "displayName": {
+      "text": "Florence Pizza",
+      "languageCode": "en"
+    },
+    "primaryType": "pizza_restaurant",
+    "photos": [
+      {
+        "name": "places/ChIJzXsSPk8jTIYRarQi99ULuOY/photos/AcnlKN16lRIpbRPBiw7CzHxtGMtgI1H2TPbWNGBuPzUfQ8nxk69NTLlsO1-5iD0OXs7nf5ZvPwWgXAsXD4XuhHRBPLr6WYRIHjb_W8UPXCmKSlHhvltw-3pL293oKq5Yi-QUC9RULnzFOTWhs38TyxlJTpguUzRbmvJMssZBPD-KudHvPylZOJvq2bfcPeyAGhkilJqdyjMkbEj2Hm7e1oC6-1GGYPD07KTyv5T38taRxKRVHRkoPANPW1VQ6KdmCu8iNdIRe4w4FwiIPGa3mwelOX6qNcYddBIJIt0e3J4iTbM",
+        "widthPx": 1080,
+        "heightPx": 1350,
+        "authorAttributions": [
+          {
+            "displayName": "Florence Pizza",
+            "uri": "https://maps.google.com/maps/contrib/111080807592351462088",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUb4Z8OyjlFSgm8ec_04KrPcuVvArunSg6i-qpnoiqJW005Qw=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipMG40y0HckYI43AqXIPOIhbqZh8mBFqp-2PS-0&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipMG40y0HckYI43AqXIPOIhbqZh8mBFqp-2PS-0!2e10!4m2!3m1!1s0x864c234f3e127bcd:0xe6b80bd5f722b46a"
+      }
+    ]
+  },
+  "detectedWebsite": null,
+  "scannedAt": "2026-01-25T19:11:47.156Z",
+  "readyForGeneration": true,
+  "testTier": "premium",
+  "testPages": [
+    "Home",
+    "About",
+    "Services",
+    "Gallery",
+    "Testimonials",
+    "Contact"
+  ],
+  "testFeatures": [
+    "Services",
+    "Gallery",
+    "Reviews"
+  ],
+  "testLayout": "story-driven",
+  "industryGroup": "Food & Beverage",
+  "testArchetype": "local",
+  "generationTimeMs": 111658,
+  "siteAdminCredentials": {
+    "email": "admin@be1st.io",
+    "password": "5cc3b42a13024e35",
+    "note": "Credentials for the deployed business site admin panel"
+  },
+  "research": {
+    "source": "yelp",
+    "enrichedAt": "2026-01-27T15:40:44.096Z",
+    "matched": true,
+    "yelpId": "0YNaT3-UNy4sU3lyQDPNJg",
+    "yelpUrl": "https://www.yelp.com/biz/little-rome-plano-4?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+    "matchStatus": "found",
+    "rating": 4.1,
+    "reviewCount": 363,
+    "priceLevel": "$$",
+    "categories": [
+      "Italian",
+      "Pizza",
+      "Seafood"
+    ],
+    "photos": [],
+    "hours": null,
+    "transactions": [
+      "delivery",
+      "pickup"
+    ]
+  },
+  "opportunityScore": 75,
+  "scoreBreakdown": [
+    {
+      "factor": "No website (base)",
+      "points": 50,
+      "source": "Google"
+    },
+    {
+      "factor": "Good rating (4.1★)",
+      "points": 10,
+      "source": "Yelp"
+    },
+    {
+      "factor": "Many reviews (363)",
+      "points": 10,
+      "source": "Yelp"
+    },
+    {
+      "factor": "Price level ($$)",
+      "points": 5,
+      "source": "Yelp"
+    }
+  ],
+  "city": "Plano",
+  "status": "scouted"
+}

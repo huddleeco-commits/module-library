@@ -1,0 +1,80 @@
+{
+  "projectName": "test-ale-s-salon-eyelashes-friendly-booking-focused",
+  "deletedAt": "2026-01-27T22:08:32.085Z",
+  "resourcesFound": {
+    "name": "test-ale-s-salon-eyelashes-friendly-booking-focused",
+    "sanitizedName": "test-ale-s-salon-eyelashes-friendly-booking-focused",
+    "github": {
+      "repos": [
+        {
+          "name": "test-ale-s-salon-eyelashes-friendly-booking-focused-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-ale-s-salon-eyelashes-friendly-booking-focused-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-ale-s-salon-eyelashes-friendly-booking-focused-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-ale-s-salon-eyelashes-friendly-booking-focused-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-ale-s-salon-eyelashes-friendly-booking-focused-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-ale-s-salon-eyelashes-friendly-booking-focused-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "test-ale-s-salon-eyelashes-friendly-booking-focused",
+          "verified": true
+        },
+        {
+          "subdomain": "api.test-ale-s-salon-eyelashes-friendly-booking-focused",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.test-ale-s-salon-eyelashes-friendly-booking-focused",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

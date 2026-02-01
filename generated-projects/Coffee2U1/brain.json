@@ -1,0 +1,97 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-01-22T19:52:58.938Z",
+  "generationMode": "smart-template",
+  "business": {
+    "name": "Coffee2U1",
+    "tagline": "Where Dallas Comes Together",
+    "industry": "cafe",
+    "location": "Dallas, Texas",
+    "phone": "(214) 555-1234",
+    "email": "hello@coffeehousecafe.com",
+    "yearsInBusiness": "5"
+  },
+  "theme": {
+    "colors": {
+      "primary": "#6366f1",
+      "accent": "#06b6d4",
+      "text": "#1a1a2e",
+      "background": "#ffffff"
+    },
+    "moodSliders": {
+      "vibe": 50,
+      "energy": 50,
+      "era": 50,
+      "density": 50,
+      "price": 50
+    },
+    "moodInterpretation": {
+      "tone": "balanced",
+      "energy": "moderate",
+      "style": "contemporary",
+      "contentDensity": "balanced",
+      "marketPosition": "quality-focused"
+    }
+  },
+  "content": {
+    "hero": {
+      "tagline": "Premium Coffee Delivered to Your Dallas Doorstep",
+      "subtext": "Experience artisan-roasted beans and handcrafted beverages brought directly to you with the convenience you deserve.",
+      "ctas": [
+        "Reserve Your Brew",
+        "Order Premium Coffee",
+        "Secure Your Experience"
+      ]
+    },
+    "testimonials": [
+      {
+        "quote": "[Quote]",
+        "name": "Sarah",
+        "role": "Remote Worker"
+      },
+      {
+        "quote": "[Quote]",
+        "name": "Marcus",
+        "role": "Local Business Owner"
+      },
+      {
+        "quote": "[Quote]",
+        "name": "Jennifer",
+        "role": "Neighborhood Regular"
+      }
+    ],
+    "team": []
+  },
+  "pages": [
+    "home",
+    "menu",
+    "about",
+    "gallery",
+    "events",
+    "team",
+    "contact"
+  ],
+  "portalPages": [
+    "dashboard",
+    "rewards",
+    "earn",
+    "wallet",
+    "leaderboard",
+    "profile"
+  ],
+  "pageTier": "premium",
+  "industryConfig": {
+    "key": "cafe",
+    "terminology": {
+      "services": "Menu",
+      "service": "Item",
+      "team": "Our Team"
+    },
+    "availableTiers": [
+      "essential",
+      "recommended",
+      "premium"
+    ]
+  },
+  "features": []
+}

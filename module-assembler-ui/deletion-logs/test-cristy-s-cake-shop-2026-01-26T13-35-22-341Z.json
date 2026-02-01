@@ -1,0 +1,158 @@
+{
+  "projectName": "test-cristy-s-cake-shop",
+  "deletedAt": "2026-01-26T13:35:22.341Z",
+  "resourcesFound": {
+    "name": "test-cristy-s-cake-shop",
+    "sanitizedName": "test-cristy-s-cake-shop",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "test-cristy-s-cake-shop-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "test-cristy-s-cake-shop-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "1d6c6ce4-26ab-4907-8ccc-aa3c37c48ea9",
+        "name": "test-cristy-s-cake-shop",
+        "createdAt": "2026-01-26T12:31:18.073Z",
+        "environments": [
+          {
+            "id": "72edefb3-8ac6-4c8a-bf89-10addfeb3f32",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "4f4456bd-2244-46f9-a146-60bd5fb41fb3",
+          "name": "admin"
+        },
+        {
+          "id": "a416529e-16fc-4bbd-b30f-b64f50d6bba2",
+          "name": "backend"
+        },
+        {
+          "id": "e32319b3-4e57-45a3-9bf2-a2b3ff9cc592",
+          "name": "frontend"
+        },
+        {
+          "id": "fbdb9715-436a-4897-95d2-0e015cf22c01",
+          "name": "postgres"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "e6ebaaf97ffe95205ed4d159c39f068a",
+          "name": "test-cristy-s-cake-shop.be1st.io",
+          "type": "CNAME",
+          "content": "4ea4e78t.up.railway.app"
+        },
+        {
+          "id": "b4d3db256d2a9b617ff4489f1bc71228",
+          "name": "api.test-cristy-s-cake-shop.be1st.io",
+          "type": "CNAME",
+          "content": "fju3pfds.up.railway.app"
+        },
+        {
+          "id": "c02931f7b78d96e5959dbc52e59b306c",
+          "name": "admin.test-cristy-s-cake-shop.be1st.io",
+          "type": "CNAME",
+          "content": "e0p8a9mg.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-backend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/test-cristy-s-cake-shop-backend"
+      },
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-frontend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/test-cristy-s-cake-shop-frontend"
+      },
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-admin",
+        "success": true,
+        "message": "Deleted huddleeco-commits/test-cristy-s-cake-shop-admin"
+      }
+    ],
+    "railway": {
+      "success": true,
+      "message": "Deleted Railway project 1d6c6ce4-26ab-4907-8ccc-aa3c37c48ea9"
+    },
+    "cloudflare": [
+      {
+        "record": "test-cristy-s-cake-shop.be1st.io",
+        "success": true,
+        "message": "Deleted test-cristy-s-cake-shop.be1st.io"
+      },
+      {
+        "record": "api.test-cristy-s-cake-shop.be1st.io",
+        "success": true,
+        "message": "Deleted api.test-cristy-s-cake-shop.be1st.io"
+      },
+      {
+        "record": "admin.test-cristy-s-cake-shop.be1st.io",
+        "success": true,
+        "message": "Deleted admin.test-cristy-s-cake-shop.be1st.io"
+      }
+    ],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [
+        {
+          "repo": "huddleeco-commits/test-cristy-s-cake-shop-backend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/test-cristy-s-cake-shop-frontend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/test-cristy-s-cake-shop-admin",
+          "verified": true
+        }
+      ],
+      "railway": false,
+      "cloudflare": [
+        {
+          "subdomain": "test-cristy-s-cake-shop",
+          "verified": true
+        },
+        {
+          "subdomain": "api.test-cristy-s-cake-shop",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.test-cristy-s-cake-shop",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

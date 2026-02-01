@@ -1,0 +1,61 @@
+{
+  "projectName": "test-evolution-plumbing-llc-1-plumber-plano-tx-ecommerce",
+  "deletedAt": "2026-01-27T22:12:37.032Z",
+  "resourcesFound": {
+    "name": "test-evolution-plumbing-llc-1-plumber-plano-tx-ecommerce",
+    "sanitizedName": "test-evolution-plumbing-llc-1-plumber-plano-tx-ecommerce",
+    "github": {
+      "repos": [
+        {
+          "name": "test-evolution-plumbing-llc-1-plumber-plano-tx-ecommerce-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-evolution-plumbing-llc-1-plumber-plano-tx-ecommerce-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-evolution-plumbing-llc-1-plumber-plano-tx-ecommerce-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-evolution-plumbing-llc-1-plumber-plano-tx-ecommerce-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-evolution-plumbing-llc-1-plumber-plano-tx-ecommerce-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-evolution-plumbing-llc-1-plumber-plano-tx-ecommerce-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": []
+  }
+}

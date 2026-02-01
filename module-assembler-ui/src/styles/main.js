@@ -1015,8 +1015,8 @@ export const styles = {
   },
   formSelect: {
     padding: '14px 16px',
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: '#1a1a2e', // Solid dark background for dropdown visibility
+    border: '1px solid rgba(255,255,255,0.15)',
     borderRadius: '10px',
     color: '#fff',
     fontSize: '15px',

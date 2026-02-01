@@ -1,0 +1,16 @@
+{
+  "key": "-modern-minimal-menu-focused",
+  "preset": "modern-minimal",
+  "presetName": "modern-minimal",
+  "presetColor": "#38bdf8",
+  "presetIcon": "square",
+  "layout": "menu-focused",
+  "layoutName": "menu-focused",
+  "theme": "light",
+  "pages": 13,
+  "linesOfCode": 103247,
+  "files": 277,
+  "generationTimeMs": 12852,
+  "success": true,
+  "previewUrl": "/api/scout/preview/cristy-s-cake-shop/full-test-modern-minimal-menu-focused/"
+}

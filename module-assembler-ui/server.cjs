@@ -66,7 +66,8 @@ const {
   createConfigRoutes,
   createUtilityRoutes,
   createDeployRoutes,
-  createOrchestratorRoutes
+  createOrchestratorRoutes,
+  createStudioRoutes
 } = require('./lib/routes/index.cjs');
 
 
@@ -78,6 +79,11 @@ const {
   fetchPexelsVideo,
   getIndustryVideo
 } = require('./lib/services/index.cjs');
+
+// ===========================================
+// PLATFORM LEARNING SERVICE
+// ===========================================
+const learningService = require('./lib/services/learning-service.cjs');
 
 // ===========================================
 // EXTRACTED PROMPT BUILDERS
@@ -131,6 +137,12 @@ const auditService = require('./lib/services/audit-service.cjs');
 const ENABLE_PRE_DEPLOY_AUDIT = process.env.ENABLE_PRE_DEPLOY_AUDIT !== 'false'; // Default: enabled
 
 // ===========================================
+// QUEUE SERVICE (BullMQ for background jobs)
+// ===========================================
+const queueService = require('./lib/services/queue-service.cjs');
+const ENABLE_QUEUE = process.env.ENABLE_QUEUE !== 'false'; // Default: enabled if Redis available
+
+// ===========================================
 // MODULE VALIDATOR (icon imports, SQL syntax)
 // ===========================================
 const { validateProject, validateFrontendPages } = require('./lib/services/module-validator.cjs');
@@ -145,7 +157,7 @@ const handleValidationErrors = (req, res, next) => {
 };
 
 // Industry Layout System
-const { INDUSTRY_LAYOUTS, buildLayoutContext, getLayoutConfig } = require('./config/industry-layouts.cjs');
+const { INDUSTRY_LAYOUTS, buildLayoutContext, getLayoutConfig, getLayoutConfigFull } = require('./config/industry-layouts.cjs');
 
 // Database and Admin Routes
 let db = null;
@@ -164,6 +176,26 @@ async function initializeServices() {
       console.log('   ✅ Admin routes loaded (blink-admin)');
     } else {
       console.log('   ⚠️ DATABASE_URL not set - admin features disabled');
+    }
+
+    // Initialize queue service (BullMQ/Redis)
+    if (ENABLE_QUEUE) {
+      const queueReady = await queueService.initialize();
+      if (queueReady) {
+        console.log('   ✅ Queue service initialized (BullMQ/Redis)');
+      } else {
+        console.log('   ⚠️ Queue service unavailable - using sync assembly fallback');
+      }
+    } else {
+      console.log('   ⚠️ Queue service disabled via ENABLE_QUEUE=false');
+    }
+
+    // Initialize learning service (platform improvement tracking)
+    const learningReady = await learningService.initialize();
+    if (learningReady) {
+      console.log('   ✅ Learning service initialized (generation tracking)');
+    } else {
+      console.log('   ⚠️ Learning service unavailable - generation tracking disabled');
     }
   } catch (err) {
     console.error('   ⚠️ Service init error:', err.message);
@@ -425,7 +457,8 @@ const orchestratorRouter = createOrchestratorRoutes({
   db,
   INDUSTRY_LAYOUTS,
   buildLayoutContext,
-  getLayoutConfig
+  getLayoutConfig,
+  getLayoutConfigFull
 });
 app.use('/api', orchestratorRouter);
 
@@ -466,7 +499,8 @@ const demoRouter = createDemoRoutes({
   buildFallbackPage,
   buildFallbackThemeCss,
   validateGeneratedCode,
-  toComponentName
+  toComponentName,
+  getLayoutConfigFull
 });
 app.use('/api/demo', demoRouter);
 
@@ -478,9 +512,23 @@ app.use('/api/railway', railwayStatusRouter);
 const deploymentsRouter = require('./lib/routes/deployments.cjs');
 app.use('/api/deployments', deploymentsRouter);
 
+// Studio routes (unified generation interface)
+const studioRouter = createStudioRoutes({
+  GENERATED_PROJECTS,
+  STUDIO_SITES: path.join(__dirname, 'output/sites'),
+  MODULE_LIBRARY,
+  autoDeployProject,
+  db
+});
+app.use('/api/studio', studioRouter);
+
 // Backup/Rollback routes
 const backupRouter = require('./lib/routes/backup.cjs');
 app.use('/api/backups', backupRouter);
+
+// Queue routes (job status, SSE streaming)
+const { createQueueRoutes } = require('./lib/routes/queue.cjs');
+app.use('/api/queue', createQueueRoutes());
 
 // Test Mode routes (for testing pipeline without AI costs)
 const { createTestModeRoutes } = require('./lib/routes/test-mode.cjs');
@@ -492,12 +540,769 @@ const testModeRouter = createTestModeRoutes({
 });
 app.use('/api/test-mode', testModeRouter);
 
+// Style Preview routes (generate/compare/deploy multiple archetypes)
+const stylePreviewRouter = require('./lib/routes/style-preview.cjs');
+app.use('/api/style-preview', stylePreviewRouter);
+
+// Smart Template routes (hybrid: template structure + AI content)
+const { createSmartTemplateRouter } = require('./lib/routes/smart-template.cjs');
+app.use('/api/smart-template', createSmartTemplateRouter());
+
+// Business Generator routes (unified business generation - simplified approach)
+const businessGeneratorRouter = require('./lib/routes/business-generator.cjs');
+app.use('/api/business', businessGeneratorRouter);
+
+// Scout routes (find businesses without websites)
+const scoutRouter = require('./lib/routes/scout.cjs');
+app.use('/api/scout', scoutRouter);
+
+// Browser test routes (ClawdBot / Claude --chrome integration)
+const browserTestRouter = require('./lib/routes/browser-test.cjs');
+app.use('/api/browser-test', browserTestRouter);
+
+// Screenshot gallery routes (automated preview captures)
+const screenshotRouter = require('./lib/routes/screenshots.cjs');
+app.use('/api/screenshots', screenshotRouter);
+
+// Static file handler for prospect preview assets
+// Serves the generated site's dist folder directly
+const SCOUT_PROSPECTS_DIR = path.join(__dirname, 'output', 'prospects');
+
+// Track the current preview folder for asset serving
+let currentPreviewFolder = null;
+
+// Helper: Find the dist directory (check full-test first, then test)
+function findDistDir(folder, variantDir = null) {
+  // Support variant directories (e.g., full-test-luxury, full-test-local)
+  if (variantDir) {
+    const variantDistDir = path.join(SCOUT_PROSPECTS_DIR, folder, variantDir, 'frontend', 'dist');
+    if (fs.existsSync(path.join(variantDistDir, 'index.html'))) {
+      return variantDistDir;
+    }
+    // Fallback - maybe it's directly in variantDir without dist
+    const variantFrontendDir = path.join(SCOUT_PROSPECTS_DIR, folder, variantDir, 'frontend');
+    if (fs.existsSync(path.join(variantFrontendDir, 'index.html'))) {
+      return variantFrontendDir;
+    }
+    return null;
+  }
+
+  const fullTestDir = path.join(SCOUT_PROSPECTS_DIR, folder, 'full-test', 'frontend', 'dist');
+  const testDir = path.join(SCOUT_PROSPECTS_DIR, folder, 'test', 'frontend', 'dist');
+
+  if (fs.existsSync(path.join(fullTestDir, 'index.html'))) {
+    return fullTestDir;
+  }
+  if (fs.existsSync(path.join(testDir, 'index.html'))) {
+    return testDir;
+  }
+  return null;
+}
+
+// Serve prospect preview - sets the folder context and serves index.html
+app.get('/prospect-preview/:folder', (req, res) => {
+  const folder = req.params.folder;
+  const distDir = findDistDir(folder);
+
+  if (!distDir) {
+    return res.status(404).send(`
+      <!DOCTYPE html>
+      <html>
+      <head><title>Preview Not Found</title>
+      <style>
+        body { display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #1a1a2e; color: #fff; font-family: system-ui, sans-serif; text-align: center; }
+        h1 { font-size: 36px; margin: 0 0 16px; }
+        p { color: #888; }
+      </style>
+      </head>
+      <body>
+        <div>
+          <h1>Preview Not Ready</h1>
+          <p>Test site for "${folder}" hasn't been generated yet.</p>
+          <p>Click "Test" or "Full Stack" button to generate first.</p>
+        </div>
+      </body>
+      </html>
+    `);
+  }
+
+  const indexPath = path.join(distDir, 'index.html');
+
+  // Read and modify the HTML to use correct asset paths
+  let html = fs.readFileSync(indexPath, 'utf-8');
+  // Rewrite absolute asset paths to include the preview folder prefix
+  html = html.replace(/src="\/assets\//g, `src="/prospect-preview/${folder}/assets/`);
+  html = html.replace(/href="\/assets\//g, `href="/prospect-preview/${folder}/assets/`);
+
+  res.setHeader('Content-Type', 'text/html');
+  res.send(html);
+});
+
+// Serve assets for prospect preview
+app.get('/prospect-preview/:folder/assets/:filename', (req, res) => {
+  const { folder, filename } = req.params;
+  const distDir = findDistDir(folder);
+
+  if (!distDir) {
+    return res.status(404).send('Preview not found');
+  }
+
+  const assetPath = path.join(distDir, 'assets', filename);
+
+  if (fs.existsSync(assetPath)) {
+    res.sendFile(assetPath);
+  } else {
+    res.status(404).send('Asset not found');
+  }
+});
+
+// Serve variant preview - for archetype comparison (e.g., full-test-luxury, full-test-local)
+app.get('/prospect-preview/:folder/:variantDir/frontend/', (req, res) => {
+  const { folder, variantDir } = req.params;
+  const distDir = findDistDir(folder, variantDir);
+
+  if (!distDir) {
+    // Check if source files exist (skipBuild was used)
+    const srcDir = path.join(SCOUT_PROSPECTS_DIR, folder, variantDir, 'frontend', 'src');
+    const hasSrc = fs.existsSync(srcDir);
+
+    // Load variant metrics if available
+    let variantInfo = { preset: variantDir, layout: '' };
+    try {
+      const metricsFile = path.join(SCOUT_PROSPECTS_DIR, folder, variantDir, 'variant-metrics.json');
+      if (fs.existsSync(metricsFile)) {
+        variantInfo = JSON.parse(fs.readFileSync(metricsFile, 'utf-8'));
+      }
+    } catch (e) {}
+
+    return res.send(`
+      <!DOCTYPE html>
+      <html>
+      <head><title>Build Required - ${variantInfo.presetName || variantDir}</title>
+      <style>
+        body { display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #fff; font-family: system-ui, sans-serif; text-align: center; }
+        .card { background: rgba(255,255,255,0.1); padding: 40px; border-radius: 16px; max-width: 500px; }
+        h1 { font-size: 28px; margin: 0 0 8px; }
+        .subtitle { color: #94a3b8; margin-bottom: 24px; }
+        .info { background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; margin-bottom: 24px; text-align: left; }
+        .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .info-row:last-child { border-bottom: none; }
+        .label { color: #94a3b8; }
+        .btn { display: inline-block; padding: 12px 24px; background: #3b82f6; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; margin: 8px; }
+        .btn:hover { background: #2563eb; }
+        .btn-secondary { background: #475569; }
+        .btn-secondary:hover { background: #64748b; }
+        code { background: #0f172a; padding: 12px 16px; border-radius: 6px; display: block; margin: 16px 0; font-size: 12px; text-align: left; overflow-x: auto; }
+        .status { display: inline-block; padding: 4px 12px; background: ${hasSrc ? '#22c55e' : '#ef4444'}; border-radius: 20px; font-size: 12px; margin-bottom: 16px; }
+      </style>
+      </head>
+      <body>
+        <div class="card">
+          <div class="status">${hasSrc ? '✅ Source Ready' : '❌ No Source'}</div>
+          <h1>${variantInfo.presetName || 'Variant'} - ${variantInfo.layoutName || variantInfo.layout || ''}</h1>
+          <p class="subtitle">${folder} / ${variantDir}</p>
+
+          <div class="info">
+            <div class="info-row"><span class="label">Preset</span><span>${variantInfo.presetName || variantInfo.preset || '-'}</span></div>
+            <div class="info-row"><span class="label">Layout</span><span>${variantInfo.layoutName || variantInfo.layout || '-'}</span></div>
+            <div class="info-row"><span class="label">Pages</span><span>${variantInfo.pages || '-'}</span></div>
+            <div class="info-row"><span class="label">Lines of Code</span><span>${(variantInfo.linesOfCode || 0).toLocaleString()}</span></div>
+          </div>
+
+          ${hasSrc ? `
+            <p style="color: #94a3b8; font-size: 13px;">This variant was generated with <strong>Skip Build</strong>. To preview it, run:</p>
+            <code>cd "${path.join(SCOUT_PROSPECTS_DIR, folder, variantDir, 'frontend').replace(/\\/g, '/')}"<br>npm install && npm run dev</code>
+            <p style="color: #94a3b8; font-size: 13px; margin-top: 16px;">Or build it for static preview:</p>
+            <code>npm install && npm run build</code>
+          ` : `
+            <p style="color: #ef4444;">Source files not found. Regenerate this variant.</p>
+          `}
+
+          <div style="margin-top: 24px;">
+            <a href="/prospect-compare/${folder}" class="btn btn-secondary">← Back to Compare</a>
+          </div>
+        </div>
+      </body>
+      </html>
+    `);
+  }
+
+  const indexPath = path.join(distDir, 'index.html');
+
+  // Read and modify the HTML to use correct asset paths
+  let html = fs.readFileSync(indexPath, 'utf-8');
+  // Rewrite absolute asset paths to include the full preview path
+  html = html.replace(/src="\/assets\//g, `src="/prospect-preview/${folder}/${variantDir}/frontend/assets/`);
+  html = html.replace(/href="\/assets\//g, `href="/prospect-preview/${folder}/${variantDir}/frontend/assets/`);
+
+  res.setHeader('Content-Type', 'text/html');
+  res.send(html);
+});
+
+// Serve assets for variant preview
+app.get('/prospect-preview/:folder/:variantDir/frontend/assets/:filename', (req, res) => {
+  const { folder, variantDir, filename } = req.params;
+  const distDir = findDistDir(folder, variantDir);
+
+  if (!distDir) {
+    return res.status(404).send('Variant preview not found');
+  }
+
+  const assetPath = path.join(distDir, 'assets', filename);
+
+  if (fs.existsSync(assetPath)) {
+    res.sendFile(assetPath);
+  } else {
+    res.status(404).send('Asset not found');
+  }
+});
+
+// SPA fallback for variant preview - serves index.html for any route (React Router support)
+app.get(/^\/prospect-preview\/([^\/]+)\/([^\/]+)\/frontend\/(.+)$/, (req, res) => {
+  const folder = req.params[0];
+  const variantDir = req.params[1];
+  const distDir = findDistDir(folder, variantDir);
+
+  if (!distDir) {
+    return res.status(404).send('Variant preview not found');
+  }
+
+  const indexPath = path.join(distDir, 'index.html');
+
+  if (!fs.existsSync(indexPath)) {
+    return res.status(404).send('Index not found');
+  }
+
+  // Read and modify the HTML to use correct asset paths
+  let html = fs.readFileSync(indexPath, 'utf-8');
+  html = html.replace(/src="\/assets\//g, `src="/prospect-preview/${folder}/${variantDir}/frontend/assets/`);
+  html = html.replace(/href="\/assets\//g, `href="/prospect-preview/${folder}/${variantDir}/frontend/assets/`);
+
+  res.setHeader('Content-Type', 'text/html');
+  res.send(html);
+});
+
+// Comparison page - shows all variants side-by-side for easy switching
+app.get('/prospect-compare/:folder', (req, res) => {
+  const { folder } = req.params;
+  const prospectDir = path.join(SCOUT_PROSPECTS_DIR, folder);
+
+  if (!fs.existsSync(prospectDir)) {
+    return res.status(404).send('Prospect not found');
+  }
+
+  // Get optional variants filter from query
+  const variantsFilter = req.query.variants ? req.query.variants.split(',') : null;
+
+  // Find all variant directories
+  const dirs = fs.readdirSync(prospectDir);
+  const variants = [];
+
+  // Preset colors for new format variants
+  const presetColors = {
+    'luxury': '#8B5CF6',
+    'friendly': '#22C55E',
+    'modern-minimal': '#64748B',
+    'sharp-corporate': '#3B82F6',
+    'bold-energetic': '#F59E0B',
+    'classic-elegant': '#78350F'
+  };
+
+  // Check for standard full-test first
+  if (dirs.includes('full-test') && (!variantsFilter || variantsFilter.includes('default'))) {
+    const distDir = findDistDir(folder);
+    if (distDir) {
+      variants.push({
+        id: 'default',
+        name: 'Default',
+        color: '#6B7280',
+        previewUrl: `/prospect-preview/${folder}`
+      });
+    }
+  }
+
+  // Check for archetype variants (old format)
+  const archetypeConfig = {
+    'full-test-local': { id: 'local', name: 'Local / Community', color: '#22c55e', icon: '🏘️' },
+    'full-test-luxury': { id: 'luxury', name: 'Brand Story / Luxury', color: '#8b5cf6', icon: '✨' },
+    'full-test-ecommerce': { id: 'ecommerce', name: 'E-Commerce Focus', color: '#3b82f6', icon: '🛒' }
+  };
+
+  // Check for new preset-layout variants (format: full-test-{preset}-{layout})
+  for (const dir of dirs) {
+    if (dir.startsWith('full-test-') && dir !== 'full-test') {
+      // Check if this is an old archetype format
+      if (archetypeConfig[dir]) {
+        if (!variantsFilter || variantsFilter.includes(archetypeConfig[dir].id)) {
+          const hasFrontend = fs.existsSync(path.join(prospectDir, dir, 'frontend'));
+          if (hasFrontend) {
+            variants.push({
+              ...archetypeConfig[dir],
+              dir: dir,
+              previewUrl: `/prospect-preview/${folder}/${dir}/frontend/`
+            });
+          }
+        }
+      } else {
+        // New preset-layout format
+        const variantKey = dir.replace('full-test-', '');
+
+        // Filter if variantsFilter is provided
+        if (variantsFilter && !variantsFilter.includes(variantKey)) continue;
+
+        // Parse preset from variant key (e.g., "luxury-appetizing-visual" -> "luxury")
+        let presetId = null;
+        for (const preset of Object.keys(presetColors)) {
+          if (variantKey.startsWith(preset + '-') || variantKey === preset) {
+            presetId = preset;
+            break;
+          }
+        }
+
+        const hasFrontend = fs.existsSync(path.join(prospectDir, dir, 'frontend'));
+        if (hasFrontend) {
+          // Try to load variant metrics for name
+          let variantName = variantKey;
+          let layoutName = '';
+          try {
+            const metricsFile = path.join(prospectDir, dir, 'variant-metrics.json');
+            if (fs.existsSync(metricsFile)) {
+              const metrics = JSON.parse(fs.readFileSync(metricsFile, 'utf-8'));
+              variantName = `${metrics.presetName || presetId} - ${metrics.layoutName || metrics.layout || ''}`;
+              layoutName = metrics.layoutName || metrics.layout || '';
+            }
+          } catch (e) {}
+
+          variants.push({
+            id: variantKey,
+            name: variantName,
+            layout: layoutName,
+            color: presetColors[presetId] || '#6B7280',
+            icon: presetId === 'luxury' ? '💎' : presetId === 'friendly' ? '🏠' : presetId === 'modern-minimal' ? '◼️' : presetId === 'sharp-corporate' ? '📐' : presetId === 'bold-energetic' ? '🎉' : '🏛️',
+            dir: dir,
+            previewUrl: `/prospect-preview/${folder}/${dir}/frontend/`
+          });
+        }
+      }
+    }
+  }
+
+  if (variants.length === 0) {
+    return res.status(404).send(`
+      <!DOCTYPE html>
+      <html><head><title>No Variants Found</title>
+      <style>body{display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#1a1a2e;color:#fff;font-family:system-ui;text-align:center}</style>
+      </head><body><div><h1>No Variants Found</h1><p>Generate test variants first using the Scout pipeline.</p></div></body></html>
+    `);
+  }
+
+  // Load prospect info for display
+  let prospectName = folder;
+  try {
+    const prospectFile = path.join(prospectDir, 'prospect.json');
+    if (fs.existsSync(prospectFile)) {
+      const prospect = JSON.parse(fs.readFileSync(prospectFile, 'utf-8'));
+      prospectName = prospect.name || folder;
+    }
+  } catch (e) {}
+
+  // Standard pages for bakery/food industry
+  const standardPages = [
+    { name: 'Home', path: '/', icon: '🏠' },
+    { name: 'Menu', path: '/menu', icon: '📋' },
+    { name: 'About', path: '/about', icon: 'ℹ️' },
+    { name: 'Gallery', path: '/gallery', icon: '🖼️' },
+    { name: 'Contact', path: '/contact', icon: '📞' },
+    { name: 'Order Online', path: '/order-online', icon: '🛒' },
+    { name: 'Catering', path: '/catering', icon: '🍽️' },
+    { name: 'Dashboard', path: '/dashboard', icon: '📊' }
+  ];
+
+  // Generate comparison HTML
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compare Variants - ${prospectName}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #fff; min-height: 100vh; }
+    .header { background: #1e293b; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #334155; }
+    .header h1 { font-size: 20px; font-weight: 600; }
+    .header .business-name { color: #94a3b8; font-size: 14px; margin-top: 4px; }
+    .view-tabs { display: flex; gap: 4px; background: #0f172a; padding: 12px 24px; border-bottom: 1px solid #334155; }
+    .view-tab { padding: 8px 16px; border-radius: 6px; background: transparent; color: #94a3b8; cursor: pointer; font-size: 13px; font-weight: 500; border: 1px solid transparent; transition: all 0.2s; }
+    .view-tab:hover { color: #fff; background: #1e293b; }
+    .view-tab.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+    .tabs { display: flex; gap: 8px; background: #1e293b; padding: 12px 24px; border-bottom: 1px solid #334155; overflow-x: auto; }
+    .tab { padding: 10px 20px; border-radius: 8px; border: 2px solid transparent; background: #334155; color: #fff; cursor: pointer; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px; transition: all 0.2s; white-space: nowrap; }
+    .tab:hover { background: #475569; }
+    .tab.active { border-color: var(--color); background: color-mix(in srgb, var(--color) 20%, #1e293b); }
+    .tab .icon { font-size: 18px; }
+    .preview-container { height: calc(100vh - 190px); position: relative; }
+    .preview-frame { width: 100%; height: 100%; border: none; display: none; }
+    .preview-frame.active { display: block; }
+    .actions { display: flex; gap: 12px; }
+    .btn { padding: 8px 16px; border-radius: 6px; border: none; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+    .btn-deploy { background: #10b981; color: #fff; }
+    .btn-deploy:hover { background: #059669; }
+    .btn-deploy:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-open { background: #3b82f6; color: #fff; }
+    .btn-open:hover { background: #2563eb; }
+    .btn-back { background: #475569; color: #fff; }
+    .btn-back:hover { background: #64748b; }
+    .status { padding: 4px 12px; background: #334155; border-radius: 20px; font-size: 12px; color: #94a3b8; }
+    .deploy-status { position: fixed; bottom: 24px; right: 24px; background: #1e293b; border: 1px solid #334155; padding: 16px 24px; border-radius: 12px; display: none; }
+    .deploy-status.show { display: block; }
+    .deploy-status.success { border-color: #10b981; }
+    .deploy-status.error { border-color: #ef4444; }
+    .view-content { display: none; }
+    .view-content.active { display: block; }
+    .pages-grid { display: grid; grid-template-columns: repeat(${variants.length}, 1fr); gap: 16px; padding: 24px; }
+    .variant-column { background: #1e293b; border-radius: 12px; overflow: hidden; }
+    .variant-header { padding: 16px; color: #fff; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+    .page-list { padding: 8px; }
+    .page-link { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #0f172a; border-radius: 6px; margin-bottom: 6px; color: #e2e8f0; text-decoration: none; transition: all 0.15s; font-size: 13px; }
+    .page-link:hover { background: #334155; }
+    .page-link .arrow { opacity: 0.5; margin-left: auto; }
+    .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 24px; }
+    .metric-card { background: #1e293b; border-radius: 12px; padding: 20px; text-align: center; }
+    .metric-value { font-size: 32px; font-weight: 700; margin-bottom: 4px; }
+    .metric-label { font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+    .variants-table { width: 100%; margin: 24px; max-width: calc(100% - 48px); background: #1e293b; border-radius: 12px; overflow: hidden; }
+    .variants-table th { text-align: left; padding: 12px 16px; background: #0f172a; color: #94a3b8; font-size: 12px; text-transform: uppercase; }
+    .variants-table td { padding: 12px 16px; border-bottom: 1px solid #334155; }
+    .variants-table tr:last-child td { border-bottom: none; }
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <h1>🎨 Style Comparison</h1>
+      <div class="business-name">${prospectName}</div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-back" onclick="window.location.href='/admin#/scout'">← Back to Scout</button>
+      <button class="btn btn-open" id="openNewTab">Open in New Tab</button>
+      <button class="btn btn-deploy" id="deployBtn">🚀 Deploy Selected</button>
+    </div>
+  </div>
+
+  <div class="view-tabs">
+    <button class="view-tab active" data-view="preview">🖥️ Live Preview</button>
+    <button class="view-tab" data-view="pages">📑 All Pages Index</button>
+    <button class="view-tab" data-view="metrics">📊 Metrics</button>
+  </div>
+
+  <!-- Preview View -->
+  <div class="view-content active" id="preview-view">
+    <div class="tabs">
+    ${variants.map((v, i) => `
+      <button class="tab ${i === 0 ? 'active' : ''}" data-variant="${v.id}" data-url="${v.previewUrl}" data-dir="${v.dir || ''}" style="--color: ${v.color}">
+        <span class="icon">${v.icon || '📄'}</span>
+        ${v.name}
+      </button>
+    `).join('')}
+    <span class="status">${variants.length} variant${variants.length > 1 ? 's' : ''} available</span>
+  </div>
+
+  <div class="preview-container">
+    ${variants.map((v, i) => `
+      <iframe class="preview-frame ${i === 0 ? 'active' : ''}" data-variant="${v.id}" src="${v.previewUrl}"></iframe>
+    `).join('')}
+  </div>
+
+  <div class="deploy-status" id="deployStatus"></div>
+  </div>
+
+  <!-- Pages Index View -->
+  <div class="view-content" id="pages-view">
+    <div class="pages-grid">
+      ${variants.map(v => `
+        <div class="variant-column">
+          <div class="variant-header" style="background: ${v.color}">
+            <span style="font-size: 24px">${v.icon || '📄'}</span>
+            ${v.name}
+          </div>
+          <div class="page-list">
+            ${standardPages.map(page => `
+              <a href="${v.previewUrl}#${page.path}" target="_blank" class="page-link">
+                <span>${page.icon}</span>
+                ${page.name}
+                <span class="arrow">→</span>
+              </a>
+            `).join('')}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  </div>
+
+  <!-- Metrics View -->
+  <div class="view-content" id="metrics-view">
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-value" style="color: #3b82f6">${variants.length}</div>
+        <div class="metric-label">Variants Generated</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: #22c55e">${variants.length * standardPages.length}</div>
+        <div class="metric-label">Total Pages</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: #f59e0b">1</div>
+        <div class="metric-label">Video Generated</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: #ec4899">7</div>
+        <div class="metric-label">Logo Variants</div>
+      </div>
+    </div>
+
+    <table class="variants-table">
+      <thead>
+        <tr>
+          <th>Variant</th>
+          <th>Style</th>
+          <th>Pages</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${variants.map(v => `
+          <tr>
+            <td>
+              <span style="display: flex; align-items: center; gap: 8px">
+                <span style="font-size: 20px">${v.icon || '📄'}</span>
+                <strong>${v.name}</strong>
+              </span>
+            </td>
+            <td>
+              <span class="badge" style="background: ${v.color}; color: #fff">${v.id}</span>
+            </td>
+            <td>${standardPages.length}</td>
+            <td><span style="color: #22c55e">✓ Ready</span></td>
+            <td>
+              <a href="${v.previewUrl}" target="_blank" class="btn btn-open" style="margin-right: 8px; text-decoration: none; display: inline-block">Preview</a>
+              <a href="${v.previewUrl}_index" target="_blank" class="btn btn-back" style="text-decoration: none; display: inline-block">Stats</a>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // View tab switching
+    const viewTabs = document.querySelectorAll('.view-tab');
+    const viewContents = document.querySelectorAll('.view-content');
+
+    viewTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const viewId = tab.dataset.view + '-view';
+        viewTabs.forEach(t => t.classList.remove('active'));
+        viewContents.forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(viewId).classList.add('active');
+      });
+    });
+
+    // Preview variant switching
+    const tabs = document.querySelectorAll('.tab');
+    const frames = document.querySelectorAll('.preview-frame');
+    let activeVariant = '${variants[0]?.id}';
+    let activeUrl = '${variants[0]?.previewUrl}';
+    let activeDir = '${variants[0]?.dir || ''}';
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const variantId = tab.dataset.variant;
+        const url = tab.dataset.url;
+        const dir = tab.dataset.dir;
+
+        tabs.forEach(t => t.classList.remove('active'));
+        frames.forEach(f => f.classList.remove('active'));
+
+        tab.classList.add('active');
+        document.querySelector(\`.preview-frame[data-variant="\${variantId}"]\`).classList.add('active');
+
+        activeVariant = variantId;
+        activeUrl = url;
+        activeDir = dir;
+      });
+    });
+
+    document.getElementById('openNewTab').addEventListener('click', () => {
+      window.open(activeUrl, '_blank');
+    });
+
+    document.getElementById('deployBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('deployBtn');
+      const status = document.getElementById('deployStatus');
+
+      btn.disabled = true;
+      btn.textContent = '⏳ Deploying...';
+      status.className = 'deploy-status show';
+      status.textContent = 'Deploying ' + activeVariant + ' variant...';
+
+      try {
+        const variantSuffix = activeDir ? '-' + activeVariant : '';
+        const res = await fetch('/api/scout/prospects/${folder}/deploy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            variantSuffix: variantSuffix,
+            projectName: 'test-${folder}' + variantSuffix
+          })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          status.className = 'deploy-status show success';
+          status.innerHTML = '✅ Deployed! <a href="' + data.url + '" target="_blank" style="color:#10b981">' + data.url + '</a>';
+        } else {
+          status.className = 'deploy-status show error';
+          status.textContent = '❌ ' + (data.error || 'Deploy failed');
+        }
+      } catch (err) {
+        status.className = 'deploy-status show error';
+        status.textContent = '❌ ' + err.message;
+      }
+
+      btn.disabled = false;
+      btn.textContent = '🚀 Deploy Selected';
+    });
+  </script>
+</body>
+</html>`;
+
+  res.setHeader('Content-Type', 'text/html');
+  res.send(html);
+});
+
 // ============================================
 // API ENDPOINTS (remaining inline routes)
 // ============================================
 
 // ============================================
-// ASSEMBLY ENDPOINT
+// ASYNC ASSEMBLY ENDPOINT (Queue-based)
+// ============================================
+
+/**
+ * POST /api/assemble-async
+ *
+ * Queue-based project assembly that returns immediately with a job ID.
+ * Use /api/queue/job/:jobId to check status or /api/queue/job/:jobId/stream for SSE updates.
+ *
+ * This is the preferred endpoint for production - allows concurrent builds
+ * without blocking the API server.
+ */
+app.post('/api/assemble-async', async (req, res) => {
+  // Check if queue is available
+  if (!queueService.isAvailable()) {
+    return res.status(503).json({
+      success: false,
+      error: 'Queue service unavailable',
+      hint: 'Redis may be down. Use /api/assemble for synchronous fallback.',
+      queueError: queueService.getInitError()?.message
+    });
+  }
+
+  const { name, industry, references, theme, description, autoDeploy, adminTier, adminModules, testMode } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ success: false, error: 'Project name required' });
+  }
+
+  // Sanitize project name - same logic as sync endpoint
+  const sanitizedName = name
+    .replace(/&/g, ' and ')
+    .replace(/[^a-zA-Z0-9\s-]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .substring(0, 100);
+
+  if (!sanitizedName || sanitizedName.length < 2) {
+    return res.status(400).json({ success: false, error: 'Project name must be at least 2 characters (alphanumeric only)' });
+  }
+
+  // Validate required fields
+  if (!industry && (!req.body.bundles || req.body.bundles.length === 0) && (!req.body.modules || req.body.modules.length === 0)) {
+    return res.status(400).json({ success: false, error: 'Must provide industry, bundles, or modules' });
+  }
+
+  // Track generation start in database
+  let generationId = null;
+  if (db && db.trackGenerationStart) {
+    try {
+      generationId = await db.trackGenerationStart({
+        siteName: sanitizedName,
+        industry: industry,
+        templateUsed: 'blink-assembler',
+        modulesSelected: req.body.modules || [],
+        pagesGenerated: description?.pages?.length || 0
+      });
+      console.log(`   📊 Generation tracked: ID ${generationId}`);
+    } catch (trackErr) {
+      console.warn('   ⚠️ Generation tracking failed:', trackErr.message);
+    }
+  }
+
+  try {
+    // Add job to queue
+    const jobId = await queueService.addAssemblyJob({
+      name: sanitizedName,
+      industry,
+      references,
+      theme,
+      description,
+      autoDeploy,
+      adminTier,
+      adminModules,
+      testMode,
+      generationId,
+      bundles: req.body.bundles,
+      modules: req.body.modules
+    });
+
+    console.log(`\n🚀 Project queued: ${sanitizedName} (Job: ${jobId})`);
+
+    // Return immediately with job info
+    res.json({
+      success: true,
+      message: 'Project queued for assembly',
+      queued: true,
+      jobId,
+      generationId,
+      statusUrl: `/api/queue/job/${jobId}`,
+      streamUrl: `/api/queue/job/${jobId}/stream`,
+      project: {
+        name: sanitizedName,
+        industry
+      }
+    });
+
+  } catch (queueErr) {
+    console.error('Queue error:', queueErr.message);
+
+    // Update generation status to failed
+    if (generationId && db && db.trackGenerationFailed) {
+      await db.trackGenerationFailed(generationId, { message: `Queue error: ${queueErr.message}` });
+    }
+
+    res.status(500).json({
+      success: false,
+      error: 'Failed to queue project',
+      details: queueErr.message
+    });
+  }
+});
+
+// ============================================
+// ASSEMBLY ENDPOINT (Synchronous fallback)
 // ============================================
 
 app.post('/api/assemble', async (req, res) => {
@@ -523,7 +1328,22 @@ app.post('/api/assemble', async (req, res) => {
   if (!sanitizedName || sanitizedName.length < 2) {
     return res.status(400).json({ success: false, error: 'Project name must be at least 2 characters (alphanumeric only)' });
   }
-  
+
+  // Start learning log (non-blocking) - tracks generation for platform improvement
+  const learningLogId = await learningService.startGenerationLog({
+    businessName: sanitizedName,
+    industryKey: industry,
+    descriptionText: description?.text || '',
+    moodSliders: description?.moodSliders || null,
+    pagesRequested: description?.pages || [],
+    adminTier: adminTier || 'standard',
+    adminModules: adminModules || [],
+    layoutKey: description?.layoutKey || description?.layoutStyleId || null,
+    effects: description?.effects || [],
+    testMode: skipAI,
+    enhanceMode: !!description?.existingSite
+  }).catch(() => null); // Don't block on logging errors
+
   // Build command arguments
   const args = ['--name', sanitizedName];
 
@@ -997,8 +1817,22 @@ app.post('/api/assemble', async (req, res) => {
       // Get industry config for brain.json
       const industryConfig = INDUSTRIES[resolvedIndustryKey] || null;
 
+      // Build additional config with user-provided data
+      const brainAdditionalConfig = {
+        adminTier: adminTier || 'standard',
+        adminModules: adminModules || [],
+        // User business data
+        businessLocation: description?.location || description?.businessLocation || '',
+        businessHours: description?.hours || null,
+        businessPhone: description?.phone || '',
+        businessEmail: description?.email || '',
+        tagline: description?.tagline || '',
+        menuText: description?.menuText || '',
+        features: description?.features || []
+      };
+
       // Generate brain.json at project root
-      const brainJsonContent = generateBrainJson(name, resolvedIndustryKey, industryConfig);
+      const brainJsonContent = generateBrainJson(name, resolvedIndustryKey, industryConfig, brainAdditionalConfig);
       fs.writeFileSync(path.join(projectPath, 'brain.json'), brainJsonContent);
       console.log('   🧠 brain.json generated');
 
@@ -1695,6 +2529,22 @@ console.log(`   ⏱️ Total generation time: ${((Date.now() - startTime) / 1000
         }
       }
 
+      // Complete learning log (non-blocking) - success case
+      learningService.completeGenerationLog(learningLogId, {
+        success: true,
+        projectId: generationId,
+        pagesGenerated: description?.pages?.length || 0,
+        auditPassed: auditPassed,
+        auditErrors: auditResult?.errors?.length || 0,
+        auditWarnings: auditResult?.warnings?.length || 0,
+        auditFixes: auditResult?.autoFixesApplied?.length || 0,
+        generationTimeMs: Date.now() - startTime,
+        auditTimeMs: auditResult?.durationMs || 0,
+        inputTokens: totalInputTokens || 0,
+        outputTokens: totalOutputTokens || 0,
+        cost: totalCost || 0
+      }).catch(() => {}); // Don't block on logging errors
+
       responded = true;
       res.json({
         success: true,
@@ -1731,7 +2581,9 @@ console.log(`   ⏱️ Total generation time: ${((Date.now() - startTime) / 1000
         // Tier recommendation (L1-L4) - for frontend upsell/suggestion UI
         tierRecommendation: tierRecommendation,
         duration: Date.now() - startTime,
-        generationId: generationId
+        generationId: generationId,
+        // Include learning log ID for potential feedback later
+        learningLogId: learningLogId
       });
     } else {
       // ========================================
@@ -1745,13 +2597,22 @@ console.log(`   ⏱️ Total generation time: ${((Date.now() - startTime) / 1000
         }
       }
 
+      // Complete learning log (non-blocking) - failure case
+      learningService.completeGenerationLog(learningLogId, {
+        success: false,
+        errorType: 'ASSEMBLY_FAILED',
+        errorMessage: errorOutput?.substring(0, 1000) || 'Assembly failed',
+        generationTimeMs: Date.now() - startTime
+      }).catch(() => {}); // Don't block on logging errors
+
       responded = true;
       res.status(500).json({
         success: false,
         error: 'Assembly failed',
         output: output,
         errorOutput: errorOutput,
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
+        learningLogId: learningLogId
       });
     }
   });

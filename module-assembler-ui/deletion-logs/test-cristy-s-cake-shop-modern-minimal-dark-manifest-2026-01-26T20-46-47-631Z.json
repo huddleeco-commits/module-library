@@ -1,0 +1,38 @@
+{
+  "projectName": "test-cristy-s-cake-shop-modern-minimal-dark",
+  "savedAt": "2026-01-26T20:46:47.631Z",
+  "resources": {
+    "name": "test-cristy-s-cake-shop-modern-minimal-dark",
+    "sanitizedName": "test-cristy-s-cake-shop-modern-minimal-dark",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-modern-minimal-dark-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-modern-minimal-dark-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-modern-minimal-dark-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

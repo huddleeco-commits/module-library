@@ -1,0 +1,38 @@
+{
+  "projectName": "test-florence-pizza-ecommerce",
+  "savedAt": "2026-01-27T22:12:04.653Z",
+  "resources": {
+    "name": "test-florence-pizza-ecommerce",
+    "sanitizedName": "test-florence-pizza-ecommerce",
+    "github": {
+      "repos": [
+        {
+          "name": "test-florence-pizza-ecommerce-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-florence-pizza-ecommerce-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-florence-pizza-ecommerce-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

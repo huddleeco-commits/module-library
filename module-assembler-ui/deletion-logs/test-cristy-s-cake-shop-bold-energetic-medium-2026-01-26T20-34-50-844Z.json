@@ -1,0 +1,80 @@
+{
+  "projectName": "test-cristy-s-cake-shop-bold-energetic-medium",
+  "deletedAt": "2026-01-26T20:34:50.844Z",
+  "resourcesFound": {
+    "name": "test-cristy-s-cake-shop-bold-energetic-medium",
+    "sanitizedName": "test-cristy-s-cake-shop-bold-energetic-medium",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-bold-energetic-medium-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-bold-energetic-medium-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-bold-energetic-medium-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-bold-energetic-medium-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-bold-energetic-medium-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-bold-energetic-medium-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "test-cristy-s-cake-shop-bold-energetic-medium",
+          "verified": true
+        },
+        {
+          "subdomain": "api.test-cristy-s-cake-shop-bold-energetic-medium",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.test-cristy-s-cake-shop-bold-energetic-medium",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

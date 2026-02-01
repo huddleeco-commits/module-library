@@ -77,7 +77,25 @@
       "WebFetch(domain:backend-production-641e.up.railway.app)",
       "WebFetch(domain:admin.solevault.be1st.io)",
       "WebFetch(domain:lbkah3pl.up.railway.app)",
-      "Bash(xxd:*)"
+      "Bash(xxd:*)",
+      "Bash(pkill:*)",
+      "Bash(while read dir)",
+      "Bash(do find \"$dir\" -maxdepth 1 -name \"*.js\" -exec sh -c 'echo \"\"=== $1 ===\"\"; grep -c \"\"router\\\\.\\\\\\(get\\\\|post\\\\|put\\\\|delete\\\\|patch\\\\\\)\"\" \"\"$1\"\" || echo \"\"0\"\"' _ {} ;)",
+      "Bash(ss:*)",
+      "Bash(cmd //c \"taskkill /PID 27412 /F\")",
+      "WebFetch(domain:www.orgo.ai)",
+      "WebFetch(domain:aiagentsdirectory.com)",
+      "Bash(cat:*)",
+      "WebFetch(domain:claude.bot)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:docs.clawd.bot)",
+      "Bash(wmic process:*)",
+      "Bash(more:*)",
+      "Bash(Select-String -Pattern \"node\")",
+      "Bash(cmd //c \"taskkill /F /IM node.exe\")",
+      "Bash(for d in appetizing-visual menu-focused story-driven)",
+      "Bash(do echo \"=== $d ===\" cat \"C:\\\\Users\\\\huddl\\\\OneDrive\\\\Desktop\\\\module-library\\\\module-assembler-ui\\\\output\\\\prospects\\\\cristy-s-cake-shop\\\\full-test-friendly-$d\\\\brain.json\")",
+      "Bash(npx kill-port 3001)"
     ]
   }
 }

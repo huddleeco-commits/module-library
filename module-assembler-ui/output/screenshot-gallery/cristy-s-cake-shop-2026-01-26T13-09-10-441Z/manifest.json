@@ -1,0 +1,51 @@
+{
+  "projectPath": "output\\prospects\\cristy-s-cake-shop\\full-test",
+  "capturedAt": "2026-01-26T13:08:58.435Z",
+  "screenshots": [
+    {
+      "page": "/home",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "filename": "home-desktop.jpeg",
+      "filepath": "output\\prospects\\cristy-s-cake-shop\\full-test\\screenshots\\home-desktop.jpeg",
+      "url": "http://localhost:5263/home"
+    },
+    {
+      "page": "/menu",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "filename": "menu-desktop.jpeg",
+      "filepath": "output\\prospects\\cristy-s-cake-shop\\full-test\\screenshots\\menu-desktop.jpeg",
+      "url": "http://localhost:5263/menu"
+    },
+    {
+      "page": "/about",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "filename": "about-desktop.jpeg",
+      "filepath": "output\\prospects\\cristy-s-cake-shop\\full-test\\screenshots\\about-desktop.jpeg",
+      "url": "http://localhost:5263/about"
+    },
+    {
+      "page": "/contact",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "filename": "contact-desktop.jpeg",
+      "filepath": "output\\prospects\\cristy-s-cake-shop\\full-test\\screenshots\\contact-desktop.jpeg",
+      "url": "http://localhost:5263/contact"
+    }
+  ],
+  "errors": [],
+  "summary": {
+    "totalPages": 4,
+    "totalScreenshots": 4,
+    "totalErrors": 0,
+    "viewports": [
+      "desktop"
+    ]
+  }
+}

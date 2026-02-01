@@ -1,0 +1,171 @@
+{
+  "id": "plumber",
+  "name": "Plumber",
+  "icon": "🔧",
+  "business": {
+    "name": "Reliable Plumbing Co.",
+    "location": "Phoenix, AZ",
+    "tagline": "Fast, Reliable, Affordable Plumbing",
+    "industry": "plumber",
+    "teamSize": "10-20",
+    "priceRange": "$$",
+    "established": "2008",
+    "phone": "(555) 911-PIPE",
+    "email": "service@reliableplumbing-demo.com",
+    "address": "567 Industrial Blvd, Phoenix, AZ 85004",
+    "hours": {
+      "monday": "7:00 AM - 6:00 PM",
+      "tuesday": "7:00 AM - 6:00 PM",
+      "wednesday": "7:00 AM - 6:00 PM",
+      "thursday": "7:00 AM - 6:00 PM",
+      "friday": "7:00 AM - 6:00 PM",
+      "saturday": "8:00 AM - 4:00 PM",
+      "sunday": "Emergency Only"
+    },
+    "emergency": "24/7 Emergency Service Available"
+  },
+  "theme": {
+    "colors": {
+      "primary": "#1E40AF",
+      "secondary": "#3B82F6",
+      "accent": "#F59E0B",
+      "background": "#F8FAFC",
+      "text": "#1E293B"
+    },
+    "fonts": {
+      "heading": "Roboto",
+      "body": "Open Sans"
+    },
+    "style": "professional-trust"
+  },
+  "pages": {
+    "home": {
+      "hero": {
+        "headline": "Fast, Reliable, Affordable Plumbing",
+        "subheadline": "Phoenix's trusted plumber since 2008. Licensed, insured, and ready to help 24/7.",
+        "cta": "Get Free Estimate",
+        "secondaryCta": "Emergency Service",
+        "backgroundImage": "https://images.unsplash.com/photo-1585704032915-c3400ca199e7?w=1920"
+      },
+      "sections": [
+        {
+          "type": "emergency-banner",
+          "title": "🚨 24/7 Emergency Service",
+          "subtitle": "Burst pipe? Flooding? Call now for immediate help.",
+          "phone": "(555) 911-PIPE",
+          "cta": "Call Now"
+        },
+        {
+          "type": "features",
+          "title": "Why Choose Reliable Plumbing",
+          "items": [
+            { "icon": "Clock", "title": "Same-Day Service", "description": "Most calls answered within 2 hours" },
+            { "icon": "Shield", "title": "Licensed & Insured", "description": "Fully licensed ROC #123456, insured for your protection" },
+            { "icon": "DollarSign", "title": "Upfront Pricing", "description": "No surprise charges, free estimates" },
+            { "icon": "Award", "title": "Satisfaction Guaranteed", "description": "100% satisfaction or your money back" }
+          ]
+        },
+        {
+          "type": "services-preview",
+          "title": "Our Services",
+          "items": [
+            { "name": "Drain Cleaning", "price": "From $99", "description": "Clogged drains cleared fast with professional equipment" },
+            { "name": "Water Heater", "price": "From $150", "description": "Repair or replacement, tankless specialists" },
+            { "name": "Leak Repair", "price": "From $125", "description": "Find and fix leaks before they cause damage" },
+            { "name": "Sewer Line", "price": "From $200", "description": "Camera inspection, repair, and replacement" }
+          ]
+        },
+        {
+          "type": "stats",
+          "title": "Our Track Record",
+          "items": [
+            { "value": "15+", "label": "Years in Business" },
+            { "value": "50,000+", "label": "Jobs Completed" },
+            { "value": "4.9★", "label": "Google Rating" },
+            { "value": "2hr", "label": "Avg Response Time" }
+          ]
+        },
+        {
+          "type": "testimonials",
+          "title": "Customer Reviews",
+          "items": [
+            { "name": "Robert M.", "text": "They came out on a Sunday when our water heater burst. Fixed it same day at a fair price.", "rating": 5 },
+            { "name": "Lisa T.", "text": "Professional, clean, and explained everything. Finally found a plumber I can trust!", "rating": 5 },
+            { "name": "Carlos G.", "text": "Upfront pricing, no surprises. They've done all our plumbing for 5 years now.", "rating": 5 }
+          ]
+        }
+      ]
+    },
+    "services": {
+      "hero": {
+        "headline": "Plumbing Services",
+        "subheadline": "Residential and commercial plumbing solutions"
+      },
+      "categories": [
+        {
+          "name": "Residential Services",
+          "items": [
+            { "name": "Drain Cleaning", "price": 99, "description": "Professional drain clearing with camera inspection" },
+            { "name": "Leak Detection & Repair", "price": 125, "description": "Find and fix hidden leaks" },
+            { "name": "Toilet Repair/Replace", "price": 150, "description": "All toilet issues, installations included" },
+            { "name": "Faucet Installation", "price": 125, "description": "Kitchen and bathroom faucet services" },
+            { "name": "Garbage Disposal", "price": 175, "description": "Repair or replacement" }
+          ]
+        },
+        {
+          "name": "Water Heater",
+          "items": [
+            { "name": "Water Heater Repair", "price": 150, "description": "Diagnose and repair all brands" },
+            { "name": "Tank Replacement", "price": 1200, "description": "Remove old, install new tank water heater" },
+            { "name": "Tankless Installation", "price": 2500, "description": "Energy-efficient tankless water heater" },
+            { "name": "Annual Maintenance", "price": 99, "description": "Flush, inspect, extend water heater life" }
+          ]
+        },
+        {
+          "name": "Emergency Services",
+          "items": [
+            { "name": "Burst Pipe Repair", "price": 200, "description": "24/7 emergency pipe repair" },
+            { "name": "Sewer Backup", "price": 250, "description": "Emergency sewer line clearing" },
+            { "name": "Gas Leak Detection", "price": 175, "description": "Safety inspection and repair" },
+            { "name": "Flooding Response", "price": 300, "description": "Emergency water shutoff and repair" }
+          ]
+        }
+      ]
+    },
+    "about": {
+      "hero": {
+        "headline": "About Reliable Plumbing",
+        "subheadline": "Phoenix's trusted plumber since 2008"
+      },
+      "sections": [
+        {
+          "type": "story",
+          "title": "Our Story",
+          "content": "Reliable Plumbing was founded in 2008 by master plumber Joe Martinez. Starting with just one truck and a commitment to honest service, we've grown to a team of 15 licensed plumbers serving the entire Phoenix metro area. Our values remain the same: show up on time, do quality work, and charge fair prices."
+        }
+      ],
+      "certifications": ["Licensed ROC #123456", "BBB A+ Rating", "EPA Lead-Safe Certified", "Bonded & Insured"],
+      "team": [
+        { "name": "Joe Martinez", "role": "Owner/Master Plumber", "bio": "30+ years experience, started the company in 2008", "image": "team1.jpg" },
+        { "name": "Mike Johnson", "role": "Service Manager", "bio": "Ensures every job meets our quality standards", "image": "team2.jpg" }
+      ]
+    },
+    "contact": {
+      "hero": {
+        "headline": "Contact Us",
+        "subheadline": "Get your free estimate today"
+      },
+      "info": {
+        "address": "567 Industrial Blvd, Phoenix, AZ 85004",
+        "phone": "(555) 911-PIPE",
+        "email": "service@reliableplumbing-demo.com",
+        "hours": "Mon-Fri: 7am-6pm, Sat: 8am-4pm, Sun: Emergency Only"
+      },
+      "serviceArea": ["Phoenix", "Scottsdale", "Tempe", "Mesa", "Glendale", "Chandler", "Gilbert"],
+      "form": {
+        "fields": ["name", "email", "phone", "serviceType", "message"],
+        "submitText": "Request Free Estimate"
+      }
+    }
+  }
+}

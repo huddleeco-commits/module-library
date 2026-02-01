@@ -1,0 +1,16 @@
+{
+  "key": "-sharp-corporate-story-driven",
+  "preset": "sharp-corporate",
+  "presetName": "sharp-corporate",
+  "presetColor": "#6366f1",
+  "presetIcon": "briefcase",
+  "layout": "story-driven",
+  "layoutName": "story-driven",
+  "theme": "light",
+  "pages": 13,
+  "linesOfCode": 103133,
+  "files": 277,
+  "generationTimeMs": 17604,
+  "success": true,
+  "previewUrl": "/api/scout/preview/cristy-s-cake-shop/full-test-sharp-corporate-story-driven/"
+}

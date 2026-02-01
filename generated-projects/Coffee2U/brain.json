@@ -1,0 +1,72 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-01-22T19:28:22.205Z",
+  "generationMode": "smart-template",
+  "business": {
+    "name": "Coffee2U",
+    "tagline": "Where Dallas Comes Together",
+    "industry": "cafe",
+    "location": "Dallas, Texas",
+    "phone": "(214) 555-1234",
+    "email": "hello@coffeehousecafe.com",
+    "yearsInBusiness": "5"
+  },
+  "theme": {
+    "colors": {
+      "primary": "#8B4513",
+      "accent": "#D2691E",
+      "text": "#2C1810",
+      "background": "#FFF8F0"
+    },
+    "moodSliders": {
+      "vibe": 70,
+      "energy": 45,
+      "era": 55,
+      "density": 40,
+      "price": 50
+    },
+    "moodInterpretation": {
+      "tone": "friendly and warm",
+      "energy": "moderate",
+      "style": "contemporary",
+      "contentDensity": "balanced",
+      "marketPosition": "quality-focused"
+    }
+  },
+  "content": {
+    "hero": {
+      "tagline": "Your Perfect Cup, Delivered With Care",
+      "subtext": "Experience Dallas's finest artisan coffee crafted with premium beans and served with genuine warmth every single time.",
+      "ctas": [
+        "Reserve Your Brew",
+        "Taste Quality Now",
+        "Find Your Perfect Cup"
+      ]
+    },
+    "testimonials": [
+      {
+        "quote": "[Coffee2U has become my Monday-through-Friday ritual! As someone who's incredibly picky about my morning latte, I can honestly say their baristas nail it every single time. The beans have this amazing rich flavor without any bitterness, and they actually remember how I like my drink prepared. It's those little touches that make rushing between meetings so much better.]",
+        "name": "Sarah",
+        "role": "Marketing Executive"
+      }
+    ],
+    "team": [
+      {
+        "name": "**SARAH JOHNSON",
+        "bio": "** Sarah founded Coffee2U with a passion for creating exceptional coffee experiences and building genuine connections with every customer. With over eight years of barista expertise and specialty coffee certifications, she leads by example behind the espresso machine while ensuring each cup meets her exacting standards. Her warm leadership style and commitment to quality have made Coffee2U a beloved community gathering place."
+      },
+      {
+        "name": "**MIKE CHEN",
+        "bio": "** Mike brings artisanal roasting expertise to Coffee2U, carefully sourcing premium beans from sustainable farms around the world. His precise roasting techniques and deep understanding of flavor profiles ensure every batch delivers the perfect balance of complexity and smoothness. With a background in coffee science and years of hands-on experience,"
+      }
+    ]
+  },
+  "pages": [
+    "home",
+    "menu",
+    "about",
+    "team",
+    "contact"
+  ],
+  "features": []
+}

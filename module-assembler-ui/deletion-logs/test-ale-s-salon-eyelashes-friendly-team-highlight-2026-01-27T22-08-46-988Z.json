@@ -1,0 +1,80 @@
+{
+  "projectName": "test-ale-s-salon-eyelashes-friendly-team-highlight",
+  "deletedAt": "2026-01-27T22:08:46.988Z",
+  "resourcesFound": {
+    "name": "test-ale-s-salon-eyelashes-friendly-team-highlight",
+    "sanitizedName": "test-ale-s-salon-eyelashes-friendly-team-highlight",
+    "github": {
+      "repos": [
+        {
+          "name": "test-ale-s-salon-eyelashes-friendly-team-highlight-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-ale-s-salon-eyelashes-friendly-team-highlight-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-ale-s-salon-eyelashes-friendly-team-highlight-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-ale-s-salon-eyelashes-friendly-team-highlight-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-ale-s-salon-eyelashes-friendly-team-highlight-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-ale-s-salon-eyelashes-friendly-team-highlight-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "test-ale-s-salon-eyelashes-friendly-team-highlight",
+          "verified": true
+        },
+        {
+          "subdomain": "api.test-ale-s-salon-eyelashes-friendly-team-highlight",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.test-ale-s-salon-eyelashes-friendly-team-highlight",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

@@ -1,0 +1,277 @@
+{
+  "id": "ChIJRQM4ueMvTIYR7Jkr424Ea_E",
+  "name": "Minchello's Pizzeria",
+  "address": "INSIDE MALL 2nd floor, 2401 S Stemmons Fwy, Lewisville, TX 75067, USA",
+  "phone": "(972) 459-5565",
+  "category": "pizza_restaurant",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 4.7,
+  "reviewCount": 61,
+  "photos": [
+    "places/ChIJRQM4ueMvTIYR7Jkr424Ea_E/photos/AcnlKN04iYfdi-CgvHjsxgulmEC5P5JlZQXDbk-hKeEv-bshnqsCsGshlJ0w-irb0SYWuMtKVNBm2cRuNe1rDVsL1cw5aabABjfJnNVJPN_zj_d7fk8SAmUNANafD1rFWoNaB8BlC5smkrXndjV11IS3xV-cIoiaJjqjJs0NmuBEpPBIdL6I6-uiAhp64XuxkQKc1Revk39UY5m1uDyhIsTO7VhIFYq1zfT7sd92rXU75KJ640dYAWGtKspydMLPCYj--rmZD7qilfaGttuoyGqLcLgxWM53TdOo25SwI8G0YIS-7iSyeGjuTvml-dxNe51OGYeDnyCpPSvpFpVBbyIdCQTVLErqTsKPn6elDOzej83JpQS0qPtu7-ixkEDxZ5CxCq0MqK6_uoLH2bL1oLZvfs0u8X6UIaWa8sIFtfzFc_-v0ha_",
+    "places/ChIJRQM4ueMvTIYR7Jkr424Ea_E/photos/AcnlKN3TF4W6gxIuX5Prq6VvU02EWrH-PLMhsKMMYUdV1wKWJvholuXxUO4FdcLIwD2e2xC-7xkLNzDK3zGYkYf_q3f_1FNAuTsytnhcLBBOAIWczyVJNh9jeJumV7uxA0VFMUD28XdIgWv4XcKYmmG9Rb0TeDV6WOiU-HbC8Yqpic-nZOeJhShEIHAmbLkfXx52QoIrepr-CaVAYGyIKGvOJh6D_jM9_agb2fZV2SHIPEmxRMuA57b_LKeDzNm7WT1GE_5l-0jtbz1adAcaN_G9gXJm45HBMeJpWppWbV-DU5sMl2lmKh56jDYNn99hmTAkcNi2AAcbIPVVXPregXeNxs0RoBXJo4GZdCFiKU_dDC7b_pUPUCfN9jc46bYLjFExLmvPuL2gRUoeUu1H7NQiRPjQ1lT83WbCDBe7qAZf3t2c3sX1",
+    "places/ChIJRQM4ueMvTIYR7Jkr424Ea_E/photos/AcnlKN0oLdLiwQFhkMh00P-3jlqOEfPWtj5-PnIj39Ha_CutP6Fm_IhIDdTswcx6cxwt7ggsuLiUVyIyVjAVbiaoKdE9X_20y81gplcwpVo2DbBQYUvTHUk4g6JhOehbvhFo5l0tSGsWzIKFd0b_-eZ2pFcEoFZCmG5ahuiMxKhe9psCkGpq824A1LEszyBrpVnyvmag26TwrQWiDGMjn-z3BFFEubiB6hlw1pxLFMuMjGvkXyeE_84OP0fTbTxAsumW7yeSmacLuO4IQDunXRLn72R8ynDSWKFuZUPYd1-1U0iBm5tp4JlJQ_nK_8QN65JFcjkjHegY4H_v4KvzV5JGpI5ctXd7967x7ST1-JV16Sfi7rz7NvVesTCs6eo7S6pPER6ri6-xYz78X_0vArOJ4V5nC-WnD3-DiKrq3AR6S8wOhQ",
+    "places/ChIJRQM4ueMvTIYR7Jkr424Ea_E/photos/AcnlKN2mAICEW_WsrbeEnZk9Dl6hIkUkULE6ia7eqDUluRm1XJLL5bs7kfVmzOWBxlpDCERozU8V3wzuPDHEbmxgWqylmM9DWYHbeYMkZsT5RFPkSIR4ZaBcSBJiu3OOT-PI4Q94XxuAYKgmXpI-P0hJniadnEw1C1XQ2343aTWNAn3Sai-WtrrEqoxraN2ca0Clhiy4l9QvBmbSfNPFgz5A1wTRIcIGlMJx1xXWkkbGFOJMffWmEHS1-1WWdSwJNcmBzzpaDyn7wiBGbWW6KUuz7T5fE8xKkuaMvQHs7ICzLnZVEhYJ_cUw72HvpUq6Jddpfef768Ag3Ine1ui-Zsyf4MCLFi5b2NDeJXDauAfKC-ITx0rw1Y0ts9mSsXT-9T-RIHUSbl9xe27emuS7SOdG8N0HAzDFi5XaLrllJT50RYAf3-60",
+    "places/ChIJRQM4ueMvTIYR7Jkr424Ea_E/photos/AcnlKN1JzJKr4GYXCAt1DZ2z10wt6tUAx4jLibbjdvtPpOxZUrjSsTLPJJN2uKIG7F-ZHo76xXYvf8uxSIQejo6xtA2YmxRLbT9Vzw2HK9g6Mh8bYycWoILTwgL5XsJy9Z2L0zucyUUpASm_FwPiWsthKF5BjGa3e8WRA7yKg0eQ7PJPta6qnNYsNhtJV6ArAMAyhjQlpc8zXaF5XHoNlOpS37BWxfcM7lNxPBvC-KcK97m4gOmgQtxy9E5XC6jZp-oLJFW8xp3zSyIkj9B7EFIBoZeck-b2V6jj03RAya7nj4lSPqEN7jsrGFRvpgwkDtlYZ6hil61j0XnGgPp4A5EkrJk98WGcZBIEQAOJIjbUB31xt8UNCGkn5q_fRhjfpXd_muT9eppWl8JVyZ1cF5ICp0aAaGjh8yrrYbAwK4mjsNFlfpBZZzRwEt-6-PdPFIsm",
+    "places/ChIJRQM4ueMvTIYR7Jkr424Ea_E/photos/AcnlKN1c5yAe_gkHFRzeuuSBj6A1LZJ9JBgh0HJWH6FJpBF1pr5d4LMWfWhiQlRu1m-x2DRctD7rXJrj6yionwghixOf_5tTg0nbua9oMun3Nt9u1PyflMtYqPPsSffcsjeyxckwwleD50kCwMLALPI2QHtCZ-IdrdKOuJrOZjT_68sknxqzJn4EyyjTmdfF9ljSunsZ0oahhVqJOoGkiT6wUyLgD8nNowsurTg4eqTT8FqT3nNHdj_rc5hyGexSQGstLc9gxqyuybR4tEqaFg161i_C2B9E8MFs0uSeKyVHeovHbQJIvahiPyyU_toHxizWW0u7tLDtM0im5EaOP5nKwqcX7eF0pBszVndw45GEFU4L98s8Wc6Zeo1pSTQF7-GQMRltydW3zliJXndAJKhNEG2b3ayrjA1j079NJwssLlM22Q",
+    "places/ChIJRQM4ueMvTIYR7Jkr424Ea_E/photos/AcnlKN30e2QcXTLTnBR-QgP85iB65b647hMhQiOtXp0w_Ha1S-8EiGK59piVmGGi7gAhDz4qL2-_K_beM8-IicqkFgGlQP3FBbkjnomBZ3mqSu1cI_HqPD_FO57czU86H04fHZuH8Ugqanshna6N7Y8zVqGaUuwqTmS91tWx7Adw0M_7SGvDArai2a8fijFARwb5OAp43shZ5cXVUrDGxQ5VvjyA2aoSGZcBQO9mCf5_y9mub8G6Y1ADbTRhpzCpcnStBfK8BJlO_XJj_CNKYUhXDEHYEsstJFevFeZXbbrMbqJ-ezMJqeGz-7EIj2Ujq444Wxcpi1x27OKepKR6VqcYfew0zUMPKTtZloO1v50VI6fI-j3lXEMDU1d-6Mx_iWijyYmAvAYxm0_rEEuiG3XHjyAIDcjA7dnqAIHyWxJo2JbaPQ",
+    "places/ChIJRQM4ueMvTIYR7Jkr424Ea_E/photos/AcnlKN1f7npBJZ9J8OyFtSHaoqStr5_Eh5E-7cgVGJaDP64FKzlBVag2MsGIwXCWtWvqXhpy2N7u3mNGBrvnjz1hboDxmHEvFTCi3SnQ5QPXKT94Lz_vQoIikuN6c11GH_DnO3VLIQDUBcgduZvowTi6mgOyl2sqcGTLY1KUnn1X2y-ptukn6bPoVIvNnTYhEyo7sghDck5Ti9ZL6xIlhykIttp0T08T-RXKNBRqMLzrWuVRv1xiIKPGfc3G6U1tmC3xtFLXGoX13S5IkxNmuyT9Cm_kqzd9DKYaQcu54ocoY7hOP7Rp3IezIV8vwtw60ynRH4GF97Z67YVKGVxykx6hRFGS6pfb4tfYF8ZZM2U_GHoq3BxNeraNuBZDH3xtwEelD2nxx2BZBe5OvForuXq73pgrBRtIg09IdD4-bfiy55h_2Q",
+    "places/ChIJRQM4ueMvTIYR7Jkr424Ea_E/photos/AcnlKN0osYhicBxbsP6NZQ8lkrlAw_f1ydCWGIgMD3TPQD8a8Rn_1i6hfbspVVhkMxQwIG_vLOZpUd_qqFKeQi0lu-SZ5qcfZKlHDyqgm1M5UqQH6wkCQeViy-kx0O7A-M2qnLe5Yhj9yUAP0Md5-o-zOWqeMs_dgqJK6e5kzYKrZ_G70x4Ee49AT5p8IdrFCl6LsIa0oxfaIBBiblfsa1uhVUwENLEBdK09QkiDehwBRSIiUFM33vpnQ9DyxiOvXYVIQ12Gzq1h7-N_02PjGJG6HX2FQHHd1jBNVAnl8dxmrdjHSP0RfhC4s3KXP1k1Yq3_TKJvovAHFZqlSCsl5kM3D9IVZzCSRi2IpHkmd9fePtiM0GPtHI1BJuRSYzFboU4659sF13BltqnPReawuBiNpQ1jCRR7OsPFUcdMh2Ji6-n0Gg",
+    "places/ChIJRQM4ueMvTIYR7Jkr424Ea_E/photos/AcnlKN1KkkoMWAwPFNtEEnBnKCG7xfW4tLPHUqPV7kW3N0VC7eQ94j17YlSiVqmoiUM3c2GP00PLNUEwyO81VtXybqbMhD34yBIXPtAN34P7N6lzkAOl4DwkDQBebtt5AKFvtrpY3cgDtW3Rgg3gkrawXNEKAVhm8rR-S2UQgZp6J7HBRxsGM3bu4j5wl--k501_2tRUSTPRPGYV-CihsitIZr0AkgGxQ-aPXLnK0KX2hMVpKAMQ_hQ5JNvbm5rdM2cpK2gTAEU9o64_6nVknVM3YGCQz88qEI6ZDFsQx63fQFsoZRLiCndPVKOm2azQF14ROsNdSvBqxo2ywiN3Dp-LCYBqbnUUsA_BZuYZUVn8kQLhWsVNRxrVzftaL_X9ERGcafnefBkjaV9GQMSzmhREKONZFHjVz7SMkYc29KmFH64"
+  ],
+  "fixtureId": "pizza-restaurant",
+  "source": "google",
+  "googleMapsUrl": "https://maps.google.com/?cid=17396002859952871916&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+  "coordinates": {
+    "latitude": 33.0022926,
+    "longitude": -96.9717506
+  },
+  "raw": {
+    "id": "ChIJRQM4ueMvTIYR7Jkr424Ea_E",
+    "types": [
+      "pizza_restaurant",
+      "meal_delivery",
+      "food_delivery",
+      "restaurant",
+      "food",
+      "point_of_interest",
+      "establishment"
+    ],
+    "nationalPhoneNumber": "(972) 459-5565",
+    "formattedAddress": "INSIDE MALL 2nd floor, 2401 S Stemmons Fwy, Lewisville, TX 75067, USA",
+    "location": {
+      "latitude": 33.0022926,
+      "longitude": -96.9717506
+    },
+    "rating": 4.7,
+    "googleMapsUri": "https://maps.google.com/?cid=17396002859952871916&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "userRatingCount": 61,
+    "displayName": {
+      "text": "Minchello's Pizzeria",
+      "languageCode": "en"
+    },
+    "primaryType": "pizza_restaurant",
+    "photos": [
+      {
+        "name": "places/ChIJRQM4ueMvTIYR7Jkr424Ea_E/photos/AcnlKN04iYfdi-CgvHjsxgulmEC5P5JlZQXDbk-hKeEv-bshnqsCsGshlJ0w-irb0SYWuMtKVNBm2cRuNe1rDVsL1cw5aabABjfJnNVJPN_zj_d7fk8SAmUNANafD1rFWoNaB8BlC5smkrXndjV11IS3xV-cIoiaJjqjJs0NmuBEpPBIdL6I6-uiAhp64XuxkQKc1Revk39UY5m1uDyhIsTO7VhIFYq1zfT7sd92rXU75KJ640dYAWGtKspydMLPCYj--rmZD7qilfaGttuoyGqLcLgxWM53TdOo25SwI8G0YIS-7iSyeGjuTvml-dxNe51OGYeDnyCpPSvpFpVBbyIdCQTVLErqTsKPn6elDOzej83JpQS0qPtu7-ixkEDxZ5CxCq0MqK6_uoLH2bL1oLZvfs0u8X6UIaWa8sIFtfzFc_-v0ha_",
+        "widthPx": 4032,
+        "heightPx": 3024,
+        "authorAttributions": [
+          {
+            "displayName": "Ricardo Rossi",
+            "uri": "https://maps.google.com/maps/contrib/101041037312207644046",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVxAh7wmt_24zBi7mg-BygMy0hGtz_hFcBvp5k57j6tAs3haaEB=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIClxY6J2QE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIClxY6J2QE!2e10!4m2!3m1!1s0x864c2fe3b9380345:0xf16b046ee32b99ec"
+      },
+      {
+        "name": "places/ChIJRQM4ueMvTIYR7Jkr424Ea_E/photos/AcnlKN3TF4W6gxIuX5Prq6VvU02EWrH-PLMhsKMMYUdV1wKWJvholuXxUO4FdcLIwD2e2xC-7xkLNzDK3zGYkYf_q3f_1FNAuTsytnhcLBBOAIWczyVJNh9jeJumV7uxA0VFMUD28XdIgWv4XcKYmmG9Rb0TeDV6WOiU-HbC8Yqpic-nZOeJhShEIHAmbLkfXx52QoIrepr-CaVAYGyIKGvOJh6D_jM9_agb2fZV2SHIPEmxRMuA57b_LKeDzNm7WT1GE_5l-0jtbz1adAcaN_G9gXJm45HBMeJpWppWbV-DU5sMl2lmKh56jDYNn99hmTAkcNi2AAcbIPVVXPregXeNxs0RoBXJo4GZdCFiKU_dDC7b_pUPUCfN9jc46bYLjFExLmvPuL2gRUoeUu1H7NQiRPjQ1lT83WbCDBe7qAZf3t2c3sX1",
+        "widthPx": 4032,
+        "heightPx": 3024,
+        "authorAttributions": [
+          {
+            "displayName": "Kahyun Ahn",
+            "uri": "https://maps.google.com/maps/contrib/100435951256678599479",
+            "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocIGdl6GIAasAQeMMp0ILfAAWX1HR8EvE86n0ubOzwXwgxfZ9Q=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDjzbrFowE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDjzbrFowE!2e10!4m2!3m1!1s0x864c2fe3b9380345:0xf16b046ee32b99ec"
+      },
+      {
+        "name": "places/ChIJRQM4ueMvTIYR7Jkr424Ea_E/photos/AcnlKN0oLdLiwQFhkMh00P-3jlqOEfPWtj5-PnIj39Ha_CutP6Fm_IhIDdTswcx6cxwt7ggsuLiUVyIyVjAVbiaoKdE9X_20y81gplcwpVo2DbBQYUvTHUk4g6JhOehbvhFo5l0tSGsWzIKFd0b_-eZ2pFcEoFZCmG5ahuiMxKhe9psCkGpq824A1LEszyBrpVnyvmag26TwrQWiDGMjn-z3BFFEubiB6hlw1pxLFMuMjGvkXyeE_84OP0fTbTxAsumW7yeSmacLuO4IQDunXRLn72R8ynDSWKFuZUPYd1-1U0iBm5tp4JlJQ_nK_8QN65JFcjkjHegY4H_v4KvzV5JGpI5ctXd7967x7ST1-JV16Sfi7rz7NvVesTCs6eo7S6pPER6ri6-xYz78X_0vArOJ4V5nC-WnD3-DiKrq3AR6S8wOhQ",
+        "widthPx": 4032,
+        "heightPx": 3024,
+        "authorAttributions": [
+          {
+            "displayName": "Ricardo Rossi",
+            "uri": "https://maps.google.com/maps/contrib/101041037312207644046",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVxAh7wmt_24zBi7mg-BygMy0hGtz_hFcBvp5k57j6tAs3haaEB=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIClxY7JIg&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIClxY7JIg!2e10!4m2!3m1!1s0x864c2fe3b9380345:0xf16b046ee32b99ec"
+      },
+      {
+        "name": "places/ChIJRQM4ueMvTIYR7Jkr424Ea_E/photos/AcnlKN2mAICEW_WsrbeEnZk9Dl6hIkUkULE6ia7eqDUluRm1XJLL5bs7kfVmzOWBxlpDCERozU8V3wzuPDHEbmxgWqylmM9DWYHbeYMkZsT5RFPkSIR4ZaBcSBJiu3OOT-PI4Q94XxuAYKgmXpI-P0hJniadnEw1C1XQ2343aTWNAn3Sai-WtrrEqoxraN2ca0Clhiy4l9QvBmbSfNPFgz5A1wTRIcIGlMJx1xXWkkbGFOJMffWmEHS1-1WWdSwJNcmBzzpaDyn7wiBGbWW6KUuz7T5fE8xKkuaMvQHs7ICzLnZVEhYJ_cUw72HvpUq6Jddpfef768Ag3Ine1ui-Zsyf4MCLFi5b2NDeJXDauAfKC-ITx0rw1Y0ts9mSsXT-9T-RIHUSbl9xe27emuS7SOdG8N0HAzDFi5XaLrllJT50RYAf3-60",
+        "widthPx": 4032,
+        "heightPx": 3024,
+        "authorAttributions": [
+          {
+            "displayName": "Elli Baker",
+            "uri": "https://maps.google.com/maps/contrib/100640629224005491412",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUVFlV3zyAPvzM6GEVf2CHDW5B6fKfOWCEW676zBIOuKj55KF2U=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDWyM-hoAE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDWyM-hoAE!2e10!4m2!3m1!1s0x864c2fe3b9380345:0xf16b046ee32b99ec"
+      },
+      {
+        "name": "places/ChIJRQM4ueMvTIYR7Jkr424Ea_E/photos/AcnlKN1JzJKr4GYXCAt1DZ2z10wt6tUAx4jLibbjdvtPpOxZUrjSsTLPJJN2uKIG7F-ZHo76xXYvf8uxSIQejo6xtA2YmxRLbT9Vzw2HK9g6Mh8bYycWoILTwgL5XsJy9Z2L0zucyUUpASm_FwPiWsthKF5BjGa3e8WRA7yKg0eQ7PJPta6qnNYsNhtJV6ArAMAyhjQlpc8zXaF5XHoNlOpS37BWxfcM7lNxPBvC-KcK97m4gOmgQtxy9E5XC6jZp-oLJFW8xp3zSyIkj9B7EFIBoZeck-b2V6jj03RAya7nj4lSPqEN7jsrGFRvpgwkDtlYZ6hil61j0XnGgPp4A5EkrJk98WGcZBIEQAOJIjbUB31xt8UNCGkn5q_fRhjfpXd_muT9eppWl8JVyZ1cF5ICp0aAaGjh8yrrYbAwK4mjsNFlfpBZZzRwEt-6-PdPFIsm",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Vinh-Luan Luu",
+            "uri": "https://maps.google.com/maps/contrib/105409270279994890364",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWfOxQc5v69B9r4nvsPF5URrSuQLKnrKsPzQuxlXAD_Qkiir6Y=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhADyc5UXyKuwGezlEYAAKX5&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhADyc5UXyKuwGezlEYAAKX5!2e10!4m2!3m1!1s0x864c2fe3b9380345:0xf16b046ee32b99ec"
+      },
+      {
+        "name": "places/ChIJRQM4ueMvTIYR7Jkr424Ea_E/photos/AcnlKN1c5yAe_gkHFRzeuuSBj6A1LZJ9JBgh0HJWH6FJpBF1pr5d4LMWfWhiQlRu1m-x2DRctD7rXJrj6yionwghixOf_5tTg0nbua9oMun3Nt9u1PyflMtYqPPsSffcsjeyxckwwleD50kCwMLALPI2QHtCZ-IdrdKOuJrOZjT_68sknxqzJn4EyyjTmdfF9ljSunsZ0oahhVqJOoGkiT6wUyLgD8nNowsurTg4eqTT8FqT3nNHdj_rc5hyGexSQGstLc9gxqyuybR4tEqaFg161i_C2B9E8MFs0uSeKyVHeovHbQJIvahiPyyU_toHxizWW0u7tLDtM0im5EaOP5nKwqcX7eF0pBszVndw45GEFU4L98s8Wc6Zeo1pSTQF7-GQMRltydW3zliJXndAJKhNEG2b3ayrjA1j079NJwssLlM22Q",
+        "widthPx": 4032,
+        "heightPx": 3024,
+        "authorAttributions": [
+          {
+            "displayName": "Ricardo Rossi",
+            "uri": "https://maps.google.com/maps/contrib/101041037312207644046",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVxAh7wmt_24zBi7mg-BygMy0hGtz_hFcBvp5k57j6tAs3haaEB=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDX-JiBXA&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDX-JiBXA!2e10!4m2!3m1!1s0x864c2fe3b9380345:0xf16b046ee32b99ec"
+      },
+      {
+        "name": "places/ChIJRQM4ueMvTIYR7Jkr424Ea_E/photos/AcnlKN30e2QcXTLTnBR-QgP85iB65b647hMhQiOtXp0w_Ha1S-8EiGK59piVmGGi7gAhDz4qL2-_K_beM8-IicqkFgGlQP3FBbkjnomBZ3mqSu1cI_HqPD_FO57czU86H04fHZuH8Ugqanshna6N7Y8zVqGaUuwqTmS91tWx7Adw0M_7SGvDArai2a8fijFARwb5OAp43shZ5cXVUrDGxQ5VvjyA2aoSGZcBQO9mCf5_y9mub8G6Y1ADbTRhpzCpcnStBfK8BJlO_XJj_CNKYUhXDEHYEsstJFevFeZXbbrMbqJ-ezMJqeGz-7EIj2Ujq444Wxcpi1x27OKepKR6VqcYfew0zUMPKTtZloO1v50VI6fI-j3lXEMDU1d-6Mx_iWijyYmAvAYxm0_rEEuiG3XHjyAIDcjA7dnqAIHyWxJo2JbaPQ",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "martin steigler",
+            "uri": "https://maps.google.com/maps/contrib/107797302904527001918",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUnj19U9s0ZLQi3pZtbZjmyD9fIxUBAT0QvSI3ZAVk22gv9Ll2Y=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDM_LW3FQ&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDM_LW3FQ!2e10!4m2!3m1!1s0x864c2fe3b9380345:0xf16b046ee32b99ec"
+      },
+      {
+        "name": "places/ChIJRQM4ueMvTIYR7Jkr424Ea_E/photos/AcnlKN1f7npBJZ9J8OyFtSHaoqStr5_Eh5E-7cgVGJaDP64FKzlBVag2MsGIwXCWtWvqXhpy2N7u3mNGBrvnjz1hboDxmHEvFTCi3SnQ5QPXKT94Lz_vQoIikuN6c11GH_DnO3VLIQDUBcgduZvowTi6mgOyl2sqcGTLY1KUnn1X2y-ptukn6bPoVIvNnTYhEyo7sghDck5Ti9ZL6xIlhykIttp0T08T-RXKNBRqMLzrWuVRv1xiIKPGfc3G6U1tmC3xtFLXGoX13S5IkxNmuyT9Cm_kqzd9DKYaQcu54ocoY7hOP7Rp3IezIV8vwtw60ynRH4GF97Z67YVKGVxykx6hRFGS6pfb4tfYF8ZZM2U_GHoq3BxNeraNuBZDH3xtwEelD2nxx2BZBe5OvForuXq73pgrBRtIg09IdD4-bfiy55h_2Q",
+        "widthPx": 1920,
+        "heightPx": 1080,
+        "authorAttributions": [
+          {
+            "displayName": "J",
+            "uri": "https://maps.google.com/maps/contrib/116973564470168919119",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjXgEbg0sdAfuq6b0NDsLDe9eb8Wj2jFVnvgwJYE2mV4qVj7JjaKdw=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICB9PejcA&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICB9PejcA!2e10!4m2!3m1!1s0x864c2fe3b9380345:0xf16b046ee32b99ec"
+      },
+      {
+        "name": "places/ChIJRQM4ueMvTIYR7Jkr424Ea_E/photos/AcnlKN0osYhicBxbsP6NZQ8lkrlAw_f1ydCWGIgMD3TPQD8a8Rn_1i6hfbspVVhkMxQwIG_vLOZpUd_qqFKeQi0lu-SZ5qcfZKlHDyqgm1M5UqQH6wkCQeViy-kx0O7A-M2qnLe5Yhj9yUAP0Md5-o-zOWqeMs_dgqJK6e5kzYKrZ_G70x4Ee49AT5p8IdrFCl6LsIa0oxfaIBBiblfsa1uhVUwENLEBdK09QkiDehwBRSIiUFM33vpnQ9DyxiOvXYVIQ12Gzq1h7-N_02PjGJG6HX2FQHHd1jBNVAnl8dxmrdjHSP0RfhC4s3KXP1k1Yq3_TKJvovAHFZqlSCsl5kM3D9IVZzCSRi2IpHkmd9fePtiM0GPtHI1BJuRSYzFboU4659sF13BltqnPReawuBiNpQ1jCRR7OsPFUcdMh2Ji6-n0Gg",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Emery Nova",
+            "uri": "https://maps.google.com/maps/contrib/103222514894237188168",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWjJa0_Jbuj-kVMbPjh1mo_w8z6Fl84JjrGTeRS_wlSXK5IVl-c=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIC754z9aQ&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIC754z9aQ!2e10!4m2!3m1!1s0x864c2fe3b9380345:0xf16b046ee32b99ec"
+      },
+      {
+        "name": "places/ChIJRQM4ueMvTIYR7Jkr424Ea_E/photos/AcnlKN1KkkoMWAwPFNtEEnBnKCG7xfW4tLPHUqPV7kW3N0VC7eQ94j17YlSiVqmoiUM3c2GP00PLNUEwyO81VtXybqbMhD34yBIXPtAN34P7N6lzkAOl4DwkDQBebtt5AKFvtrpY3cgDtW3Rgg3gkrawXNEKAVhm8rR-S2UQgZp6J7HBRxsGM3bu4j5wl--k501_2tRUSTPRPGYV-CihsitIZr0AkgGxQ-aPXLnK0KX2hMVpKAMQ_hQ5JNvbm5rdM2cpK2gTAEU9o64_6nVknVM3YGCQz88qEI6ZDFsQx63fQFsoZRLiCndPVKOm2azQF14ROsNdSvBqxo2ywiN3Dp-LCYBqbnUUsA_BZuYZUVn8kQLhWsVNRxrVzftaL_X9ERGcafnefBkjaV9GQMSzmhREKONZFHjVz7SMkYc29KmFH64",
+        "widthPx": 4032,
+        "heightPx": 3024,
+        "authorAttributions": [
+          {
+            "displayName": "Elli Baker",
+            "uri": "https://maps.google.com/maps/contrib/100640629224005491412",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUVFlV3zyAPvzM6GEVf2CHDW5B6fKfOWCEW676zBIOuKj55KF2U=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDWyM-hYA&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDWyM-hYA!2e10!4m2!3m1!1s0x864c2fe3b9380345:0xf16b046ee32b99ec"
+      }
+    ]
+  },
+  "detectedWebsite": null,
+  "scannedAt": "2026-01-25T16:21:49.926Z",
+  "readyForGeneration": true,
+  "research": {
+    "source": "yelp",
+    "enrichedAt": "2026-01-27T15:41:38.727Z",
+    "matched": true,
+    "yelpId": "p5QlamzJ2Bg5sHPbWuKPwg",
+    "yelpUrl": "https://www.yelp.com/biz/minchellos-pizzaria-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+    "matchStatus": "found",
+    "rating": 4.8,
+    "reviewCount": 37,
+    "categories": [
+      "Pizza"
+    ],
+    "photos": [],
+    "hours": [
+      {
+        "is_overnight": false,
+        "start": "1100",
+        "end": "1900",
+        "day": 0
+      },
+      {
+        "is_overnight": false,
+        "start": "1100",
+        "end": "1900",
+        "day": 1
+      },
+      {
+        "is_overnight": false,
+        "start": "1100",
+        "end": "1900",
+        "day": 2
+      },
+      {
+        "is_overnight": false,
+        "start": "1100",
+        "end": "1900",
+        "day": 3
+      },
+      {
+        "is_overnight": false,
+        "start": "1100",
+        "end": "1900",
+        "day": 4
+      },
+      {
+        "is_overnight": false,
+        "start": "1100",
+        "end": "1900",
+        "day": 5
+      }
+    ],
+    "isOpen": false,
+    "transactions": [
+      "delivery",
+      "pickup"
+    ]
+  },
+  "opportunityScore": 70,
+  "scoreBreakdown": [
+    {
+      "factor": "No website (base)",
+      "points": 50,
+      "source": "Google"
+    },
+    {
+      "factor": "Excellent rating (4.8★)",
+      "points": 15,
+      "source": "Yelp"
+    },
+    {
+      "factor": "Some reviews (37)",
+      "points": 5,
+      "source": "Yelp"
+    }
+  ],
+  "city": "Lewisville"
+}

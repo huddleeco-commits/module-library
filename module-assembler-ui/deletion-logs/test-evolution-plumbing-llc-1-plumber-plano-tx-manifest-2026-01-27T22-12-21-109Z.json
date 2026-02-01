@@ -1,0 +1,57 @@
+{
+  "projectName": "test-evolution-plumbing-llc-1-plumber-plano-tx",
+  "savedAt": "2026-01-27T22:12:21.109Z",
+  "resources": {
+    "name": "test-evolution-plumbing-llc-1-plumber-plano-tx",
+    "sanitizedName": "test-evolution-plumbing-llc-1-plumber-plano-tx",
+    "github": {
+      "repos": [
+        {
+          "name": "test-evolution-plumbing-llc-1-plumber-plano-tx-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "test-evolution-plumbing-llc-1-plumber-plano-tx-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "test-evolution-plumbing-llc-1-plumber-plano-tx-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "b9684fa46d923fc41c890b84f11daede",
+          "name": "test-evolution-plumbing-llc-1-plumber-plano-tx.be1st.io",
+          "type": "CNAME",
+          "content": "3o17f1ox.up.railway.app"
+        },
+        {
+          "id": "4efc04d118562d6c2bcdc7f4d63de667",
+          "name": "api.test-evolution-plumbing-llc-1-plumber-plano-tx.be1st.io",
+          "type": "CNAME",
+          "content": "h68q04tz.up.railway.app"
+        },
+        {
+          "id": "82aa542f88aa23f2dd313836bf97fb98",
+          "name": "admin.test-evolution-plumbing-llc-1-plumber-plano-tx.be1st.io",
+          "type": "CNAME",
+          "content": "8abjfjux.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

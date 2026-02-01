@@ -202,7 +202,8 @@ function createDemoRoutes(deps) {
     buildFallbackPage,
     buildFallbackThemeCss,
     validateGeneratedCode,
-    toComponentName
+    toComponentName,
+    getLayoutConfigFull
   } = deps;
 
   /**
@@ -504,6 +505,9 @@ function createDemoRoutes(deps) {
             const client = new Anthropic({ apiKey });
             const MODEL_NAME = 'claude-sonnet-4-20250514';
 
+            // Get layout intelligence for this industry
+            const layoutConfig = getLayoutConfigFull ? getLayoutConfigFull(business.industry, null) : null;
+
             // Generate pages in parallel
             const pagePromises = business.pages.map(async (pageId) => {
               const componentName = toComponentName(pageId);
@@ -518,7 +522,7 @@ function createDemoRoutes(deps) {
               const otherPages = business.pages.filter(p => p !== pageId).map(p => `/${p}`).join(', ');
 
               try {
-                const pagePrompt = buildOrchestratorPagePrompt(pageId, componentName, otherPages, description, promptConfig);
+                const pagePrompt = buildOrchestratorPagePrompt(pageId, componentName, otherPages, description, promptConfig, layoutConfig);
                 const pageResponse = await client.messages.create({
                   model: MODEL_NAME,
                   max_tokens: 8000,

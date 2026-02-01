@@ -1,0 +1,80 @@
+{
+  "projectName": "coffee-house-cafe-companion",
+  "deletedAt": "2026-01-22T23:14:48.913Z",
+  "resourcesFound": {
+    "name": "coffee-house-cafe-companion",
+    "sanitizedName": "coffee-house-cafe-companion",
+    "github": {
+      "repos": [
+        {
+          "name": "coffee-house-cafe-companion-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "coffee-house-cafe-companion-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "coffee-house-cafe-companion-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/coffee-house-cafe-companion-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/coffee-house-cafe-companion-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/coffee-house-cafe-companion-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "coffee-house-cafe-companion",
+          "verified": true
+        },
+        {
+          "subdomain": "api.coffee-house-cafe-companion",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.coffee-house-cafe-companion",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

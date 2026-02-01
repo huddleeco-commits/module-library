@@ -1,0 +1,61 @@
+{
+  "projectName": "test-florence-pizza-luxury",
+  "deletedAt": "2026-01-27T22:12:03.178Z",
+  "resourcesFound": {
+    "name": "test-florence-pizza-luxury",
+    "sanitizedName": "test-florence-pizza-luxury",
+    "github": {
+      "repos": [
+        {
+          "name": "test-florence-pizza-luxury-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-florence-pizza-luxury-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-florence-pizza-luxury-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-florence-pizza-luxury-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-florence-pizza-luxury-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-florence-pizza-luxury-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": []
+  }
+}

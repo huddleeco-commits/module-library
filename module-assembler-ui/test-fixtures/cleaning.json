@@ -1,0 +1,167 @@
+{
+  "id": "cleaning",
+  "name": "Cleaning Service",
+  "icon": "🧹",
+  "business": {
+    "name": "Sparkle Clean Co.",
+    "location": "Seattle, WA",
+    "tagline": "Professional Cleaning You Can Trust",
+    "industry": "cleaning",
+    "teamSize": "15-30",
+    "priceRange": "$$",
+    "established": "2016",
+    "phone": "(555) 456-CLEAN",
+    "email": "book@sparkleclean-demo.com",
+    "address": "890 Pine Street, Seattle, WA 98101",
+    "hours": {
+      "monday": "7:00 AM - 7:00 PM",
+      "tuesday": "7:00 AM - 7:00 PM",
+      "wednesday": "7:00 AM - 7:00 PM",
+      "thursday": "7:00 AM - 7:00 PM",
+      "friday": "7:00 AM - 7:00 PM",
+      "saturday": "8:00 AM - 5:00 PM",
+      "sunday": "Closed"
+    }
+  },
+  "theme": {
+    "colors": {
+      "primary": "#0D9488",
+      "secondary": "#5EEAD4",
+      "accent": "#F0FDF4",
+      "background": "#F8FFFC",
+      "text": "#134E4A"
+    },
+    "fonts": {
+      "heading": "Poppins",
+      "body": "Inter"
+    },
+    "style": "fresh-clean"
+  },
+  "pages": {
+    "home": {
+      "hero": {
+        "headline": "Professional Cleaning You Can Trust",
+        "subheadline": "Eco-friendly, detail-oriented cleaning services for homes and offices. Book in 60 seconds.",
+        "cta": "Get Instant Quote",
+        "secondaryCta": "Call Us",
+        "backgroundImage": "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=1920"
+      },
+      "sections": [
+        {
+          "type": "features",
+          "title": "The Sparkle Clean Difference",
+          "items": [
+            { "icon": "Leaf", "title": "Eco-Friendly Products", "description": "Safe for kids, pets, and the planet" },
+            { "icon": "CheckCircle", "title": "Background Checked", "description": "Every cleaner vetted and verified" },
+            { "icon": "Shield", "title": "Insured & Bonded", "description": "Your home is fully protected" },
+            { "icon": "Star", "title": "Satisfaction Guaranteed", "description": "Not happy? We'll re-clean for free" }
+          ]
+        },
+        {
+          "type": "services-preview",
+          "title": "Our Services",
+          "items": [
+            { "name": "Standard Clean", "price": "From $120", "description": "Regular maintenance cleaning for a fresh home" },
+            { "name": "Deep Clean", "price": "From $200", "description": "Top-to-bottom thorough cleaning" },
+            { "name": "Move In/Out Clean", "price": "From $300", "description": "Get your deposit back or start fresh" },
+            { "name": "Office Cleaning", "price": "Custom Quote", "description": "Commercial cleaning solutions" }
+          ]
+        },
+        {
+          "type": "how-it-works",
+          "title": "How It Works",
+          "steps": [
+            { "step": 1, "title": "Book Online", "description": "Get an instant quote in 60 seconds" },
+            { "step": 2, "title": "We Clean", "description": "Our vetted professionals arrive on time" },
+            { "step": 3, "title": "You Relax", "description": "Enjoy your sparkling clean space" }
+          ]
+        },
+        {
+          "type": "testimonials",
+          "title": "What Customers Say",
+          "items": [
+            { "name": "Amanda K.", "text": "I've tried 5 cleaning services and Sparkle Clean is by far the best. Consistent, thorough, trustworthy.", "rating": 5 },
+            { "name": "Jason M.", "text": "They deep cleaned our new house before we moved in. It was spotless! Worth every penny.", "rating": 5 },
+            { "name": "Rachel S.", "text": "Love their eco-friendly products. My allergies have improved since switching to them.", "rating": 5 }
+          ]
+        }
+      ]
+    },
+    "services": {
+      "hero": {
+        "headline": "Cleaning Services",
+        "subheadline": "Find the perfect clean for your needs"
+      },
+      "categories": [
+        {
+          "name": "Residential Cleaning",
+          "items": [
+            { "name": "Standard Clean", "price": 120, "description": "Kitchen, bathrooms, floors, dusting - the essentials", "duration": "2-3 hours" },
+            { "name": "Deep Clean", "price": 200, "description": "Everything in standard plus inside appliances, baseboards, detailed cleaning", "duration": "4-5 hours" },
+            { "name": "Move In/Out Clean", "price": 300, "description": "Empty home deep clean, inside cabinets, all surfaces", "duration": "5-7 hours" },
+            { "name": "Post-Construction", "price": 400, "description": "Dust removal, debris cleanup, polish and shine", "duration": "6-8 hours" }
+          ]
+        },
+        {
+          "name": "Add-On Services",
+          "items": [
+            { "name": "Inside Fridge", "price": 35, "description": "Empty, clean, sanitize refrigerator" },
+            { "name": "Inside Oven", "price": 45, "description": "Deep clean oven interior" },
+            { "name": "Interior Windows", "price": 5, "description": "Per window, interior only" },
+            { "name": "Laundry", "price": 25, "description": "Per load, wash, dry, fold" },
+            { "name": "Organizing", "price": 50, "description": "Per hour, closet or pantry organizing" }
+          ]
+        },
+        {
+          "name": "Commercial Cleaning",
+          "items": [
+            { "name": "Office Cleaning", "price": null, "description": "Daily, weekly, or monthly office maintenance", "note": "Custom Quote" },
+            { "name": "Retail Cleaning", "price": null, "description": "Storefronts, fitting rooms, display areas", "note": "Custom Quote" },
+            { "name": "Medical Office", "price": null, "description": "Sanitization-focused cleaning for medical spaces", "note": "Custom Quote" }
+          ]
+        }
+      ]
+    },
+    "about": {
+      "hero": {
+        "headline": "About Sparkle Clean",
+        "subheadline": "Cleaning Seattle homes since 2016"
+      },
+      "sections": [
+        {
+          "type": "story",
+          "title": "Our Story",
+          "content": "Sparkle Clean was founded in 2016 by Maria Santos, a busy mom who couldn't find a cleaning service she could trust with her home and kids. She built the company she wished existed: reliable, thorough, and using only safe, eco-friendly products. Today, we clean over 500 homes monthly across Seattle."
+        },
+        {
+          "type": "values",
+          "title": "Our Values",
+          "items": ["Trust & Reliability", "Eco-Friendly Always", "Attention to Detail", "Customer Satisfaction", "Fair Treatment of Staff"]
+        }
+      ],
+      "stats": [
+        { "value": "500+", "label": "Homes Cleaned Monthly" },
+        { "value": "50+", "label": "Team Members" },
+        { "value": "4.9★", "label": "Average Rating" },
+        { "value": "8+", "label": "Years in Business" }
+      ]
+    },
+    "contact": {
+      "hero": {
+        "headline": "Book Your Clean",
+        "subheadline": "Get an instant quote online or give us a call"
+      },
+      "info": {
+        "address": "890 Pine Street, Seattle, WA 98101",
+        "phone": "(555) 456-CLEAN",
+        "email": "book@sparkleclean-demo.com",
+        "hours": "Mon-Fri: 7am-7pm, Sat: 8am-5pm"
+      },
+      "serviceArea": ["Seattle", "Bellevue", "Kirkland", "Redmond", "Bothell", "Shoreline", "Renton"],
+      "booking": {
+        "enabled": true,
+        "buttonText": "Get Instant Quote"
+      }
+    }
+  }
+}

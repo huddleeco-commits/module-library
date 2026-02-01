@@ -1,0 +1,161 @@
+{
+  "projectName": "Cafe-de-France",
+  "deletedAt": "2026-01-24T13:47:57.891Z",
+  "resourcesFound": {
+    "name": "Cafe-de-France",
+    "sanitizedName": "cafe-de-france",
+    "github": {
+      "repos": [
+        {
+          "name": "cafe-de-france-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "cafe-de-france-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "cafe-de-france-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "79c6c619-713a-4553-a3a9-8ec3810279ee",
+        "name": "cafe-de-france",
+        "createdAt": "2026-01-21T01:47:09.805Z",
+        "environments": [
+          {
+            "id": "f40a0fb6-8204-4bfd-9056-bf31712f4da1",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "76cbcf40-0b40-4501-9335-29be5ce10c86",
+          "name": "postgres"
+        },
+        {
+          "id": "aee067cb-6f04-4604-8aed-99e8577c9b70",
+          "name": "admin"
+        },
+        {
+          "id": "b50adeba-9b49-41ef-bf62-d670f9189782",
+          "name": "frontend"
+        },
+        {
+          "id": "df9c8ace-34fb-4a84-893c-7fd315a79da2",
+          "name": "backend"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "c3417ff2fba95f9dbc52cadd87ad6d62",
+          "name": "cafe-de-france.be1st.io",
+          "type": "CNAME",
+          "content": "7shz6grp.up.railway.app"
+        },
+        {
+          "id": "7ba8a495515888e894595fdf116855f6",
+          "name": "api.cafe-de-france.be1st.io",
+          "type": "CNAME",
+          "content": "2ejtbhxf.up.railway.app"
+        },
+        {
+          "id": "cf5b21b6343eb239ea4bd5ad3297b20b",
+          "name": "admin.cafe-de-france.be1st.io",
+          "type": "CNAME",
+          "content": "u2yh7875.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Cafe-de-France",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/cafe-de-france-backend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/cafe-de-france-backend"
+      },
+      {
+        "repo": "huddleeco-commits/cafe-de-france-frontend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/cafe-de-france-frontend"
+      },
+      {
+        "repo": "huddleeco-commits/cafe-de-france-admin",
+        "success": true,
+        "message": "Deleted huddleeco-commits/cafe-de-france-admin"
+      }
+    ],
+    "railway": {
+      "success": true,
+      "message": "Deleted Railway project 79c6c619-713a-4553-a3a9-8ec3810279ee"
+    },
+    "cloudflare": [
+      {
+        "record": "cafe-de-france.be1st.io",
+        "success": true,
+        "message": "Deleted cafe-de-france.be1st.io"
+      },
+      {
+        "record": "api.cafe-de-france.be1st.io",
+        "success": true,
+        "message": "Deleted api.cafe-de-france.be1st.io"
+      },
+      {
+        "record": "admin.cafe-de-france.be1st.io",
+        "success": true,
+        "message": "Deleted admin.cafe-de-france.be1st.io"
+      }
+    ],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\Cafe-de-France"
+    },
+    "errors": [],
+    "verification": {
+      "github": [
+        {
+          "repo": "huddleeco-commits/cafe-de-france-backend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/cafe-de-france-frontend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/cafe-de-france-admin",
+          "verified": true
+        }
+      ],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "cafe-de-france",
+          "verified": true
+        },
+        {
+          "subdomain": "api.cafe-de-france",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.cafe-de-france",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

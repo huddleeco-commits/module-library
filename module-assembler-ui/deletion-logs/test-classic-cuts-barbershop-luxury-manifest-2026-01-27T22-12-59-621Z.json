@@ -1,0 +1,38 @@
+{
+  "projectName": "test-classic-cuts-barbershop-luxury",
+  "savedAt": "2026-01-27T22:12:59.621Z",
+  "resources": {
+    "name": "test-classic-cuts-barbershop-luxury",
+    "sanitizedName": "test-classic-cuts-barbershop-luxury",
+    "github": {
+      "repos": [
+        {
+          "name": "test-classic-cuts-barbershop-luxury-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-classic-cuts-barbershop-luxury-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-classic-cuts-barbershop-luxury-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

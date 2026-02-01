@@ -1,0 +1,96 @@
+{
+  "projectName": "QuickSlice-adab",
+  "deletedAt": "2026-01-24T13:56:33.659Z",
+  "resourcesFound": {
+    "name": "QuickSlice-adab",
+    "sanitizedName": "quickslice-adab",
+    "github": {
+      "repos": [
+        {
+          "name": "quickslice-adab-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "quickslice-adab-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "quickslice-adab-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\QuickSlice-adab",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/quickslice-adab-backend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/quickslice-adab-backend"
+      },
+      {
+        "repo": "huddleeco-commits/quickslice-adab-frontend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/quickslice-adab-frontend"
+      },
+      {
+        "repo": "huddleeco-commits/quickslice-adab-admin",
+        "success": true,
+        "message": "Deleted huddleeco-commits/quickslice-adab-admin"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\QuickSlice-adab"
+    },
+    "errors": [],
+    "verification": {
+      "github": [
+        {
+          "repo": "huddleeco-commits/quickslice-adab-backend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/quickslice-adab-frontend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/quickslice-adab-admin",
+          "verified": true
+        }
+      ],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "quickslice-adab",
+          "verified": true
+        },
+        {
+          "subdomain": "api.quickslice-adab",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.quickslice-adab",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

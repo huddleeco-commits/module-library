@@ -1,0 +1,96 @@
+{
+  "projectName": "QuickSlice-nmea",
+  "deletedAt": "2026-01-24T13:56:15.384Z",
+  "resourcesFound": {
+    "name": "QuickSlice-nmea",
+    "sanitizedName": "quickslice-nmea",
+    "github": {
+      "repos": [
+        {
+          "name": "quickslice-nmea-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "quickslice-nmea-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "quickslice-nmea-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\QuickSlice-nmea",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/quickslice-nmea-backend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/quickslice-nmea-backend"
+      },
+      {
+        "repo": "huddleeco-commits/quickslice-nmea-frontend",
+        "success": true,
+        "message": "Deleted huddleeco-commits/quickslice-nmea-frontend"
+      },
+      {
+        "repo": "huddleeco-commits/quickslice-nmea-admin",
+        "success": true,
+        "message": "Deleted huddleeco-commits/quickslice-nmea-admin"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\QuickSlice-nmea"
+    },
+    "errors": [],
+    "verification": {
+      "github": [
+        {
+          "repo": "huddleeco-commits/quickslice-nmea-backend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/quickslice-nmea-frontend",
+          "verified": true
+        },
+        {
+          "repo": "huddleeco-commits/quickslice-nmea-admin",
+          "verified": true
+        }
+      ],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "quickslice-nmea",
+          "verified": true
+        },
+        {
+          "subdomain": "api.quickslice-nmea",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.quickslice-nmea",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

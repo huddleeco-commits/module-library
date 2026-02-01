@@ -61,3 +61,12 @@ export { DemoBatchStep } from './DemoBatchStep.jsx';
 
 // Landing Page
 export { default as LandingPage } from './LandingPage.jsx';
+
+// Admin Tools
+export { StylePreviewAdmin } from './StylePreviewAdmin.jsx';
+
+// Studio Mode (Full Visual Control)
+export { default as StudioMode } from './StudioMode.jsx';
+
+// Generation Studio (New Unified Interface)
+export { default as StudioPage } from './StudioPage.jsx';

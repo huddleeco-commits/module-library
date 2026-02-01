@@ -1,0 +1,107 @@
+{
+  "id": "Thw6bBnK6YJmOmeUxTbl6g",
+  "name": "Blade Babe Barbering",
+  "address": "120 S Denton Tap Rd, Coppell, TX, 75019",
+  "phone": "+14695120154",
+  "category": "barbers",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 0,
+  "reviewCount": 0,
+  "photos": [
+    "https://s3-media0.fl.yelpcdn.com/bphoto/Gn37Cf3p8aJ-oj-P9_CN7A/o.jpg"
+  ],
+  "hours": null,
+  "fixtureId": "barbershop",
+  "source": "yelp",
+  "yelpUrl": "https://www.yelp.com/biz/blade-babe-barbering-coppell?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+  "raw": {
+    "id": "Thw6bBnK6YJmOmeUxTbl6g",
+    "alias": "blade-babe-barbering-coppell",
+    "name": "Blade Babe Barbering",
+    "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/Gn37Cf3p8aJ-oj-P9_CN7A/o.jpg",
+    "is_closed": false,
+    "url": "https://www.yelp.com/biz/blade-babe-barbering-coppell?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+    "review_count": 0,
+    "categories": [
+      {
+        "alias": "barbers",
+        "title": "Barbers"
+      }
+    ],
+    "rating": 0,
+    "coordinates": {
+      "latitude": 32.96899,
+      "longitude": -96.99316
+    },
+    "transactions": [],
+    "location": {
+      "address1": "120 S Denton Tap Rd",
+      "address2": "Ste 305",
+      "address3": "",
+      "city": "Coppell",
+      "zip_code": "75019",
+      "country": "US",
+      "state": "TX",
+      "display_address": [
+        "120 S Denton Tap Rd",
+        "Ste 305",
+        "Coppell, TX 75019"
+      ]
+    },
+    "phone": "+14695120154",
+    "display_phone": "(469) 512-0154",
+    "distance": 7690.434014513197,
+    "business_hours": [
+      {
+        "open": [
+          {
+            "is_overnight": false,
+            "start": "1200",
+            "end": "0000",
+            "day": 0
+          },
+          {
+            "is_overnight": false,
+            "start": "1800",
+            "end": "0000",
+            "day": 1
+          },
+          {
+            "is_overnight": false,
+            "start": "1800",
+            "end": "0000",
+            "day": 2
+          },
+          {
+            "is_overnight": false,
+            "start": "1800",
+            "end": "0000",
+            "day": 3
+          },
+          {
+            "is_overnight": false,
+            "start": "1800",
+            "end": "2200",
+            "day": 4
+          },
+          {
+            "is_overnight": false,
+            "start": "1800",
+            "end": "2200",
+            "day": 5
+          }
+        ],
+        "hours_type": "REGULAR",
+        "is_open_now": false
+      }
+    ],
+    "attributes": {
+      "business_temp_closed": null,
+      "menu_url": null,
+      "waitlist_reservation": null
+    }
+  },
+  "scannedAt": "2026-01-25T14:23:35.929Z",
+  "readyForGeneration": true
+}

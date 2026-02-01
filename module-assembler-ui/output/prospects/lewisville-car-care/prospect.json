@@ -1,0 +1,226 @@
+{
+  "id": "ChIJK6Hw9xIuTIYRjtCNGJq6SIE",
+  "name": "Lewisville Car Care",
+  "address": "434 S Mill St, Lewisville, TX 75057, USA",
+  "phone": "(972) 436-8166",
+  "category": "car_repair",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 4.8,
+  "reviewCount": 52,
+  "photos": [
+    "places/ChIJK6Hw9xIuTIYRjtCNGJq6SIE/photos/AcnlKN16tfuBfmgPNKwfz5GldZdKZyDvGr80mMRikwuzzI1Ci3UMBZ2cKVZOGjsfLw40H-ZYEJXciqOFDyncj3cqP6s82d1Xle_cC61Eg2x3sXvGlmrkxrKeOZGtXyqLPlnNYb50ne3bi7FTdIAcxepTK5rXVqDO_wt-hzjctMRyZs9MX4Yp7_HGF5ZcpIX4AmuTl2Khw2bv3MCr-Pf8c9qfHYGuSEISsyyqHvf0Cyu6n7OzgyVdZQhm5qyoEMg08Da2LNMQg5bBFt5qLsNJtbaq9wS2kKY22_HhaGXrryPFdQX53HLXs8ndd-P9xDwDGvbEnIwVCNlTwXKfG0vAkEq9k8gH2_0YdBtvUZ4W5AVx95HJIg44_ICFamKnClma646CvzDW-puhsfDK_WgcOP4F3qfyEkd-lUxe_iF-nAAZQRB92EGAawWza2GjKXa-yw",
+    "places/ChIJK6Hw9xIuTIYRjtCNGJq6SIE/photos/AcnlKN2xXindYalZ7YFIKG8Tvd1vHuB4D3zZT2WymSuOAwN30F19_w1SS6xPalPjwbsTMy5O7DheckuCzKa9IM-1PnS2LYU5FzKjLFaCqTiLs9p8f4kzDTfyoCGo_FtbCCqR5zzBhcaMZYjBIdm9G5QGoY2SUa4kELGk_eZfAyPSCXVQGlHtMUTtvsoArlJMWfmehl7sSiiVIf898mC9EpVg4N1_wFIwkoch9xf1ij6gArVCeM8ILGi667E4jNfd0LRnCZpJsZAc55-xrK0FPyQP_4V4ovE7b_rcNjRA1l46tsG8FOnIM1ihIRbHgY4r_EUJFD5uDV7ry4_OSJJICIQbJW-dQpxZpadXfd4k0WclgC67TW4A8-xk2rv9caPHHxB7VgarB2DnTLhSf4B-Vp1sD3IwZSxuirS_VY0bPxmzT-ehfhFa_zR9wA1Urs8RM2V5",
+    "places/ChIJK6Hw9xIuTIYRjtCNGJq6SIE/photos/AcnlKN3sDhmcY-7kiRKsG9EvkbB4K_WdiwzUKJDwTWEemoHe-DjB_B0dYSgb35t0kPhLErJDpZO6ke5bgqfIUt2BjB7lszfNrvU50rit8IrWEdVR0Hb-VnwOaPJGC0fwmfHZZf4xn43uFKkiVYaEnHYYf1fq2sU1xPUG4lv9o36PGFpWKgPw7xriZz-9RTiA4uxxSaTVttAqqh9fqX0R5lqZVZCZzFGfiYy1dCiPca9WaEo1pa7jYcVFiWAhYXKtzgxOz2uTNML4NUsilkLne89Pa-5gmJ8xQHH1cBCsSB9v23-WJ46je60TBVIVR4IMGlev6THubQQayHy2aSjtB2duD5LyF0NZ3ZRCz4rC-aaXGUGRYGjIg74mLWgr06_G9JAnXJWQYDx55ClLLE9pbaQ3VunVRHOEvE-B1sIJRSFkRMti5fWgGpDs4OMT5W0GGpCo",
+    "places/ChIJK6Hw9xIuTIYRjtCNGJq6SIE/photos/AcnlKN0B1ekdEcD2ve809EJoes4v2pz2dPaONTaSdrLYgBvoVuLfsoswK4p-TClV7x2hG98m36hZDZ6Klnrn74zGFQC1BQVR5AydVdEbhNdBVT_Gekj0r6nuai9hqMcpzB0yVDnZmZoGisICqedfo4KdAKCwyvUGCOWQG-5buoNr89Uyw2E8bKBfUzfPdM187pCKgaJ2EN-IXDwlEaGLCdDBe0aZkulK6CVXq4H6STeAwaDLdS-xWLojrzJsVpnwj2WqzgVJ0XLmS1OfA5q42DSWYRRAeJKRX9VZvGvQLyJCqUqDHG2Y5oDJSWETT-g-f-oQJ2_wX9b1Ho2NhTItM8ytsA_gbisRinJPb3YlRwXujvsgc_kok6goRbPvdZbz5NMqhZJukg2_ofapUL4vnGfOHIOuBKQ9Ijdg7BKi_YpCbiABx_W5VF_wHURxVG7tc0KB",
+    "places/ChIJK6Hw9xIuTIYRjtCNGJq6SIE/photos/AcnlKN1ZeBVQ9RZ0eXjTe-9EX5BwFh4akzRLwqjXEb0ZU8F4OcBQGjc8OBUMR_BLcIHt8AUyaYVN5N7sf7eI0kFuXOuv6KmBz6uR0_PfBdwT7DXQHGE9FpEt_NM643vtd1tEuEDn5PFzmNvuQlZM6-LsfiaSWldS0XxL3sZ3hmCY7F7ZfzmXuDWqS312MtzVbesK8acUznc_NqpJmZ03LD1VB6VDjCMvaSdbOX6Lc4Uepe_K3-IhZ4p23GWDhHxr8mf6kkB9fYoAl6rekj8fTa9edpKSfOpizuO-RNzsit-v_Rjy3DZRYFELPaGbODVf9Zbm5LorAyo0bVOXUE8S2tkUtPD9AgLiglg9C25zCMxGludU8b_kPvOnmMQ1asqe0BvfmNnIjkalqviW_ePMs1YJGTytINvFAd4fPa9U2pMkwv6H0PE9idEmgcHF-FLbq0kl",
+    "places/ChIJK6Hw9xIuTIYRjtCNGJq6SIE/photos/AcnlKN1sDL_GHupUcEtYBM9zn9fors7pISUu4fEbTAqiEj5tXC9x8yLFxAzIInB9jOiK5w0t7scwNzPIeSvRGxixb6TIuaf30FLlCd0_fZG7LvHFeq1rsHHl8MlvjUK6t1_-1YFcv8faU3G7TlOI4Y-La4TVazXYVFqjlclRUzFl3Z4prZK2n2qIDdJfdKpApiXBISqcp9MWZGbpAwRz-IriHBTXIs7WTNz9TpPS5OFe8OQGKFjRi2nZC8Wjb8H-b-JDXgLpNwEfwaRpgVzjqLwKfy17u6ZTuiq2_24ySqZBr4OhAU5VYdpP4RDlmJQd6vKkvCznRrJMxDXjas5hPE_RyWX7gAZvwlI7kOuE_6bjCmLGlKOyj6dqsOYJnaNNtKZuywfLTTWGI4ZteAKgr8K_Y3S0aRh-JOeh-Edgyv_BnLIYZHks4_M_NHzeS9blV6U3",
+    "places/ChIJK6Hw9xIuTIYRjtCNGJq6SIE/photos/AcnlKN0t55G_0qxBKy73fNx_dmPpRsxNA3R0lB5eLkpWtrWglQm7T9rQhhACkH55SvuqSI8IyvpBFRyBpl0634-592dJELXjGbht9Ohd41m3Kz9FMZwemcoD7ETDUMKRYMnlerwLanw0lBXlkQ5ThhrdlYqJ8ahB_CMRFTvjwXqqv68NqvNONxKY1cdXOvaeewNWzVd-xUBebSPkPES0cbSGKSAh7-plMWaN061_XUnNTxdlyzGyI4fpyPQ4mdAOtXx7AjQuRxBKTfauqi0cUkN9sq4-NxwnlUL82qranWoUcgsZJos6cNklCRNU0i1g2GQTgxKxleUZ1q7hiP7mCdccTs-1OkUnxR9nSFgu2IXkD-4QXhvAMb-82jJtlqwb31Ax7ix4pNsKVHRKa_ogwYyEFQbECEV010gwzHGTvIq3w0Cjk-q6LY07ZZnbJ-VEs_w-",
+    "places/ChIJK6Hw9xIuTIYRjtCNGJq6SIE/photos/AcnlKN3Zu1jd-lCuyYcmevo8RD7wLhphf74U7zyk7I5ej-B56asnMyPOUVdmM6JLzLFafWIBbxgpK0-NESVWA6SKByfBQCtqgwiGA3aUCOlbaQEsNLvM5cnPVdxJdAHbR-9mLTocO6YM72aZy_lIIh69KfkiNF-0tf2EGOs2HFJtbRL94WpVfS5hjvBfSGIruhUFLHWIGJaui9pBxdjAYK5fUKzIkezx9SbLPVgmNDJGUQc6XbesXEG30uZ6JCaqpAYDZ0ZHPV_HMllbrxSNUZCn5jTUHNlppEgixap19Dcj2ppZexjOzdbvHx8KhP-8wsJX6p5uHt3MIkr0Edcyl-UU9Zfp1ddyGQs2D3LF6BjP4PRIfXsMnE5ZDBWAQhwzMBYeSW5-SEucWG2DmX05PqitHjd3K0JOBtibpW-dvUCTt6m0m6klN7rdpQGPub3vhQ",
+    "places/ChIJK6Hw9xIuTIYRjtCNGJq6SIE/photos/AcnlKN2eeXHpVsqK-6exhJAzdBHzqIb5GOXwTWFmXj9R4Ui_-K9___AQd8fZnHyvZrFcFrPvq1ceni1WqWBBVwkwaIb0PRLPzrnGj9Iz4YiILYKyeUtVRmBo5zp6EwLYFRfDTD551MgLJh0CkEBrylkxEgH4s9YKJ-OB1EhF_3vgYkiXwS4NlqCX6y1FdNcvCSygTGn575VxWuqiD6SlzYbS35b4Np2Sw4zOlVQX6WrHPQOf6LJo0dd3sII3i0QeL6GppCpTyNAhCZ9YNESCJEuf6cttnInbZ2oCh7a-yzJM2UWG16IgGQDOs0f1CxyaHFBmGZ2FbY5Su2gHGTjfQzou1G0n13DB1_E8-PNYmRY5Gm0SiWW2CoDMt2zO38oBM9BcKc1ht7lgUY1KYYeEStJ4w377ReQkMpDswl1TuTfD5jYhb1gK",
+    "places/ChIJK6Hw9xIuTIYRjtCNGJq6SIE/photos/AcnlKN2wk3YNOxWE3hXqWYctm3fTtRni2YEScmcC3qXE1TBUKpfgGGZZ_wvgkCJvShuPgTZlVhW-Yu3dr6KektsIkyo2YlQeQQHcYzkjm3EVDomNYFGaMtwecd-UOnz8a-YFOrZVxpIBD4Ole5MmNDO_IcjwVEUUNc8v2AdRSEKD1khAoUK58j0RPO50B-PzfL442F2_oWcnfTgxWMsnj6wPbcw7LlR0Cu-gsLfJuuDtYAIu2819KFDr5nbRAD80jWmzodjHEe88_Uk7mWnFp6OsucDGXB9Jjs7MVVYfD0nCriJPqqwX3fg1BsF2DQlITFDkXz5J9MBPFC4ylgoKFBz2QztkB7vA3nqC4z8cMhfiD58J1QxeJhHeLzI3mL6UhESDPUJJqygtgupRr5NoXwnDeps7kX-GnFxZk8CacIyrw0tzD-nrveGQ04A-f7u9CgtX"
+  ],
+  "fixtureId": "restaurant",
+  "source": "google",
+  "googleMapsUrl": "https://maps.google.com/?cid=9315901000215548046&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+  "coordinates": {
+    "latitude": 33.0431445,
+    "longitude": -96.9938992
+  },
+  "raw": {
+    "id": "ChIJK6Hw9xIuTIYRjtCNGJq6SIE",
+    "types": [
+      "car_repair",
+      "point_of_interest",
+      "establishment"
+    ],
+    "nationalPhoneNumber": "(972) 436-8166",
+    "formattedAddress": "434 S Mill St, Lewisville, TX 75057, USA",
+    "location": {
+      "latitude": 33.0431445,
+      "longitude": -96.9938992
+    },
+    "rating": 4.8,
+    "googleMapsUri": "https://maps.google.com/?cid=9315901000215548046&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "userRatingCount": 52,
+    "displayName": {
+      "text": "Lewisville Car Care",
+      "languageCode": "en"
+    },
+    "primaryType": "car_repair",
+    "photos": [
+      {
+        "name": "places/ChIJK6Hw9xIuTIYRjtCNGJq6SIE/photos/AcnlKN16tfuBfmgPNKwfz5GldZdKZyDvGr80mMRikwuzzI1Ci3UMBZ2cKVZOGjsfLw40H-ZYEJXciqOFDyncj3cqP6s82d1Xle_cC61Eg2x3sXvGlmrkxrKeOZGtXyqLPlnNYb50ne3bi7FTdIAcxepTK5rXVqDO_wt-hzjctMRyZs9MX4Yp7_HGF5ZcpIX4AmuTl2Khw2bv3MCr-Pf8c9qfHYGuSEISsyyqHvf0Cyu6n7OzgyVdZQhm5qyoEMg08Da2LNMQg5bBFt5qLsNJtbaq9wS2kKY22_HhaGXrryPFdQX53HLXs8ndd-P9xDwDGvbEnIwVCNlTwXKfG0vAkEq9k8gH2_0YdBtvUZ4W5AVx95HJIg44_ICFamKnClma646CvzDW-puhsfDK_WgcOP4F3qfyEkd-lUxe_iF-nAAZQRB92EGAawWza2GjKXa-yw",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Anthony “AgS 1’S o N” G Sison",
+            "uri": "https://maps.google.com/maps/contrib/102767560792837029827",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWOmsQF-ySH4_oFsodkAEKsTETX7Mn5kVh-2GUwdg7zZFxMSP0=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhBEn_b5BzSOmv7SoCrFVFli&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhBEn_b5BzSOmv7SoCrFVFli!2e10!4m2!3m1!1s0x864c2e12f7f0a12b:0x8148ba9a188dd08e"
+      },
+      {
+        "name": "places/ChIJK6Hw9xIuTIYRjtCNGJq6SIE/photos/AcnlKN2xXindYalZ7YFIKG8Tvd1vHuB4D3zZT2WymSuOAwN30F19_w1SS6xPalPjwbsTMy5O7DheckuCzKa9IM-1PnS2LYU5FzKjLFaCqTiLs9p8f4kzDTfyoCGo_FtbCCqR5zzBhcaMZYjBIdm9G5QGoY2SUa4kELGk_eZfAyPSCXVQGlHtMUTtvsoArlJMWfmehl7sSiiVIf898mC9EpVg4N1_wFIwkoch9xf1ij6gArVCeM8ILGi667E4jNfd0LRnCZpJsZAc55-xrK0FPyQP_4V4ovE7b_rcNjRA1l46tsG8FOnIM1ihIRbHgY4r_EUJFD5uDV7ry4_OSJJICIQbJW-dQpxZpadXfd4k0WclgC67TW4A8-xk2rv9caPHHxB7VgarB2DnTLhSf4B-Vp1sD3IwZSxuirS_VY0bPxmzT-ehfhFa_zR9wA1Urs8RM2V5",
+        "widthPx": 4032,
+        "heightPx": 3024,
+        "authorAttributions": [
+          {
+            "displayName": "Anthony “AgS 1’S o N” G Sison",
+            "uri": "https://maps.google.com/maps/contrib/102767560792837029827",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWOmsQF-ySH4_oFsodkAEKsTETX7Mn5kVh-2GUwdg7zZFxMSP0=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhB8xmQ8Na-MifdRXKKAJNzn&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhB8xmQ8Na-MifdRXKKAJNzn!2e10!4m2!3m1!1s0x864c2e12f7f0a12b:0x8148ba9a188dd08e"
+      },
+      {
+        "name": "places/ChIJK6Hw9xIuTIYRjtCNGJq6SIE/photos/AcnlKN3sDhmcY-7kiRKsG9EvkbB4K_WdiwzUKJDwTWEemoHe-DjB_B0dYSgb35t0kPhLErJDpZO6ke5bgqfIUt2BjB7lszfNrvU50rit8IrWEdVR0Hb-VnwOaPJGC0fwmfHZZf4xn43uFKkiVYaEnHYYf1fq2sU1xPUG4lv9o36PGFpWKgPw7xriZz-9RTiA4uxxSaTVttAqqh9fqX0R5lqZVZCZzFGfiYy1dCiPca9WaEo1pa7jYcVFiWAhYXKtzgxOz2uTNML4NUsilkLne89Pa-5gmJ8xQHH1cBCsSB9v23-WJ46je60TBVIVR4IMGlev6THubQQayHy2aSjtB2duD5LyF0NZ3ZRCz4rC-aaXGUGRYGjIg74mLWgr06_G9JAnXJWQYDx55ClLLE9pbaQ3VunVRHOEvE-B1sIJRSFkRMti5fWgGpDs4OMT5W0GGpCo",
+        "widthPx": 4800,
+        "heightPx": 3600,
+        "authorAttributions": [
+          {
+            "displayName": "Anthony “AgS 1’S o N” G Sison",
+            "uri": "https://maps.google.com/maps/contrib/102767560792837029827",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWOmsQF-ySH4_oFsodkAEKsTETX7Mn5kVh-2GUwdg7zZFxMSP0=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhARrvaQ8Ap-6WwyC51bXJ1P&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhARrvaQ8Ap-6WwyC51bXJ1P!2e10!4m2!3m1!1s0x864c2e12f7f0a12b:0x8148ba9a188dd08e"
+      },
+      {
+        "name": "places/ChIJK6Hw9xIuTIYRjtCNGJq6SIE/photos/AcnlKN0B1ekdEcD2ve809EJoes4v2pz2dPaONTaSdrLYgBvoVuLfsoswK4p-TClV7x2hG98m36hZDZ6Klnrn74zGFQC1BQVR5AydVdEbhNdBVT_Gekj0r6nuai9hqMcpzB0yVDnZmZoGisICqedfo4KdAKCwyvUGCOWQG-5buoNr89Uyw2E8bKBfUzfPdM187pCKgaJ2EN-IXDwlEaGLCdDBe0aZkulK6CVXq4H6STeAwaDLdS-xWLojrzJsVpnwj2WqzgVJ0XLmS1OfA5q42DSWYRRAeJKRX9VZvGvQLyJCqUqDHG2Y5oDJSWETT-g-f-oQJ2_wX9b1Ho2NhTItM8ytsA_gbisRinJPb3YlRwXujvsgc_kok6goRbPvdZbz5NMqhZJukg2_ofapUL4vnGfOHIOuBKQ9Ijdg7BKi_YpCbiABx_W5VF_wHURxVG7tc0KB",
+        "widthPx": 4800,
+        "heightPx": 3600,
+        "authorAttributions": [
+          {
+            "displayName": "Anthony “AgS 1’S o N” G Sison",
+            "uri": "https://maps.google.com/maps/contrib/102767560792837029827",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWOmsQF-ySH4_oFsodkAEKsTETX7Mn5kVh-2GUwdg7zZFxMSP0=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhDjQB-GQe14L6iu4ovBTZXJ&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhDjQB-GQe14L6iu4ovBTZXJ!2e10!4m2!3m1!1s0x864c2e12f7f0a12b:0x8148ba9a188dd08e"
+      },
+      {
+        "name": "places/ChIJK6Hw9xIuTIYRjtCNGJq6SIE/photos/AcnlKN1ZeBVQ9RZ0eXjTe-9EX5BwFh4akzRLwqjXEb0ZU8F4OcBQGjc8OBUMR_BLcIHt8AUyaYVN5N7sf7eI0kFuXOuv6KmBz6uR0_PfBdwT7DXQHGE9FpEt_NM643vtd1tEuEDn5PFzmNvuQlZM6-LsfiaSWldS0XxL3sZ3hmCY7F7ZfzmXuDWqS312MtzVbesK8acUznc_NqpJmZ03LD1VB6VDjCMvaSdbOX6Lc4Uepe_K3-IhZ4p23GWDhHxr8mf6kkB9fYoAl6rekj8fTa9edpKSfOpizuO-RNzsit-v_Rjy3DZRYFELPaGbODVf9Zbm5LorAyo0bVOXUE8S2tkUtPD9AgLiglg9C25zCMxGludU8b_kPvOnmMQ1asqe0BvfmNnIjkalqviW_ePMs1YJGTytINvFAd4fPa9U2pMkwv6H0PE9idEmgcHF-FLbq0kl",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Anthony “AgS 1’S o N” G Sison",
+            "uri": "https://maps.google.com/maps/contrib/102767560792837029827",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWOmsQF-ySH4_oFsodkAEKsTETX7Mn5kVh-2GUwdg7zZFxMSP0=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhDW7J1D9BeRzlEHCGOUVpq-&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhDW7J1D9BeRzlEHCGOUVpq-!2e10!4m2!3m1!1s0x864c2e12f7f0a12b:0x8148ba9a188dd08e"
+      },
+      {
+        "name": "places/ChIJK6Hw9xIuTIYRjtCNGJq6SIE/photos/AcnlKN1sDL_GHupUcEtYBM9zn9fors7pISUu4fEbTAqiEj5tXC9x8yLFxAzIInB9jOiK5w0t7scwNzPIeSvRGxixb6TIuaf30FLlCd0_fZG7LvHFeq1rsHHl8MlvjUK6t1_-1YFcv8faU3G7TlOI4Y-La4TVazXYVFqjlclRUzFl3Z4prZK2n2qIDdJfdKpApiXBISqcp9MWZGbpAwRz-IriHBTXIs7WTNz9TpPS5OFe8OQGKFjRi2nZC8Wjb8H-b-JDXgLpNwEfwaRpgVzjqLwKfy17u6ZTuiq2_24ySqZBr4OhAU5VYdpP4RDlmJQd6vKkvCznRrJMxDXjas5hPE_RyWX7gAZvwlI7kOuE_6bjCmLGlKOyj6dqsOYJnaNNtKZuywfLTTWGI4ZteAKgr8K_Y3S0aRh-JOeh-Edgyv_BnLIYZHks4_M_NHzeS9blV6U3",
+        "widthPx": 3600,
+        "heightPx": 4800,
+        "authorAttributions": [
+          {
+            "displayName": "Anthony “AgS 1’S o N” G Sison",
+            "uri": "https://maps.google.com/maps/contrib/102767560792837029827",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWOmsQF-ySH4_oFsodkAEKsTETX7Mn5kVh-2GUwdg7zZFxMSP0=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhAH0p5XmZ5PNtcQrjh2QWSY&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhAH0p5XmZ5PNtcQrjh2QWSY!2e10!4m2!3m1!1s0x864c2e12f7f0a12b:0x8148ba9a188dd08e"
+      },
+      {
+        "name": "places/ChIJK6Hw9xIuTIYRjtCNGJq6SIE/photos/AcnlKN0t55G_0qxBKy73fNx_dmPpRsxNA3R0lB5eLkpWtrWglQm7T9rQhhACkH55SvuqSI8IyvpBFRyBpl0634-592dJELXjGbht9Ohd41m3Kz9FMZwemcoD7ETDUMKRYMnlerwLanw0lBXlkQ5ThhrdlYqJ8ahB_CMRFTvjwXqqv68NqvNONxKY1cdXOvaeewNWzVd-xUBebSPkPES0cbSGKSAh7-plMWaN061_XUnNTxdlyzGyI4fpyPQ4mdAOtXx7AjQuRxBKTfauqi0cUkN9sq4-NxwnlUL82qranWoUcgsZJos6cNklCRNU0i1g2GQTgxKxleUZ1q7hiP7mCdccTs-1OkUnxR9nSFgu2IXkD-4QXhvAMb-82jJtlqwb31Ax7ix4pNsKVHRKa_ogwYyEFQbECEV010gwzHGTvIq3w0Cjk-q6LY07ZZnbJ-VEs_w-",
+        "widthPx": 4032,
+        "heightPx": 3024,
+        "authorAttributions": [
+          {
+            "displayName": "Anthony “AgS 1’S o N” G Sison",
+            "uri": "https://maps.google.com/maps/contrib/102767560792837029827",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWOmsQF-ySH4_oFsodkAEKsTETX7Mn5kVh-2GUwdg7zZFxMSP0=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhDEk1-BxRIm4SdGtEFkn5IG&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhDEk1-BxRIm4SdGtEFkn5IG!2e10!4m2!3m1!1s0x864c2e12f7f0a12b:0x8148ba9a188dd08e"
+      },
+      {
+        "name": "places/ChIJK6Hw9xIuTIYRjtCNGJq6SIE/photos/AcnlKN3Zu1jd-lCuyYcmevo8RD7wLhphf74U7zyk7I5ej-B56asnMyPOUVdmM6JLzLFafWIBbxgpK0-NESVWA6SKByfBQCtqgwiGA3aUCOlbaQEsNLvM5cnPVdxJdAHbR-9mLTocO6YM72aZy_lIIh69KfkiNF-0tf2EGOs2HFJtbRL94WpVfS5hjvBfSGIruhUFLHWIGJaui9pBxdjAYK5fUKzIkezx9SbLPVgmNDJGUQc6XbesXEG30uZ6JCaqpAYDZ0ZHPV_HMllbrxSNUZCn5jTUHNlppEgixap19Dcj2ppZexjOzdbvHx8KhP-8wsJX6p5uHt3MIkr0Edcyl-UU9Zfp1ddyGQs2D3LF6BjP4PRIfXsMnE5ZDBWAQhwzMBYeSW5-SEucWG2DmX05PqitHjd3K0JOBtibpW-dvUCTt6m0m6klN7rdpQGPub3vhQ",
+        "widthPx": 4032,
+        "heightPx": 3024,
+        "authorAttributions": [
+          {
+            "displayName": "Anthony “AgS 1’S o N” G Sison",
+            "uri": "https://maps.google.com/maps/contrib/102767560792837029827",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWOmsQF-ySH4_oFsodkAEKsTETX7Mn5kVh-2GUwdg7zZFxMSP0=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhCfLXwcl_0m8zjVzlW1V0I9&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhCfLXwcl_0m8zjVzlW1V0I9!2e10!4m2!3m1!1s0x864c2e12f7f0a12b:0x8148ba9a188dd08e"
+      },
+      {
+        "name": "places/ChIJK6Hw9xIuTIYRjtCNGJq6SIE/photos/AcnlKN2eeXHpVsqK-6exhJAzdBHzqIb5GOXwTWFmXj9R4Ui_-K9___AQd8fZnHyvZrFcFrPvq1ceni1WqWBBVwkwaIb0PRLPzrnGj9Iz4YiILYKyeUtVRmBo5zp6EwLYFRfDTD551MgLJh0CkEBrylkxEgH4s9YKJ-OB1EhF_3vgYkiXwS4NlqCX6y1FdNcvCSygTGn575VxWuqiD6SlzYbS35b4Np2Sw4zOlVQX6WrHPQOf6LJo0dd3sII3i0QeL6GppCpTyNAhCZ9YNESCJEuf6cttnInbZ2oCh7a-yzJM2UWG16IgGQDOs0f1CxyaHFBmGZ2FbY5Su2gHGTjfQzou1G0n13DB1_E8-PNYmRY5Gm0SiWW2CoDMt2zO38oBM9BcKc1ht7lgUY1KYYeEStJ4w377ReQkMpDswl1TuTfD5jYhb1gK",
+        "widthPx": 2576,
+        "heightPx": 1932,
+        "authorAttributions": [
+          {
+            "displayName": "Jeffrey Beard",
+            "uri": "https://maps.google.com/maps/contrib/116482676183220611441",
+            "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocJUx0ROVp5mA70ES1qiiNCYaGE5M5u1S3zqFECcVSLFl9BMJw=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDEraDx-AE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDEraDx-AE!2e10!4m2!3m1!1s0x864c2e12f7f0a12b:0x8148ba9a188dd08e"
+      },
+      {
+        "name": "places/ChIJK6Hw9xIuTIYRjtCNGJq6SIE/photos/AcnlKN2wk3YNOxWE3hXqWYctm3fTtRni2YEScmcC3qXE1TBUKpfgGGZZ_wvgkCJvShuPgTZlVhW-Yu3dr6KektsIkyo2YlQeQQHcYzkjm3EVDomNYFGaMtwecd-UOnz8a-YFOrZVxpIBD4Ole5MmNDO_IcjwVEUUNc8v2AdRSEKD1khAoUK58j0RPO50B-PzfL442F2_oWcnfTgxWMsnj6wPbcw7LlR0Cu-gsLfJuuDtYAIu2819KFDr5nbRAD80jWmzodjHEe88_Uk7mWnFp6OsucDGXB9Jjs7MVVYfD0nCriJPqqwX3fg1BsF2DQlITFDkXz5J9MBPFC4ylgoKFBz2QztkB7vA3nqC4z8cMhfiD58J1QxeJhHeLzI3mL6UhESDPUJJqygtgupRr5NoXwnDeps7kX-GnFxZk8CacIyrw0tzD-nrveGQ04A-f7u9CgtX",
+        "widthPx": 4032,
+        "heightPx": 3024,
+        "authorAttributions": [
+          {
+            "displayName": "Anthony “AgS 1’S o N” G Sison",
+            "uri": "https://maps.google.com/maps/contrib/102767560792837029827",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWOmsQF-ySH4_oFsodkAEKsTETX7Mn5kVh-2GUwdg7zZFxMSP0=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIABIhB9WEIiDaaHqAWkMxqgdQNS&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhB9WEIiDaaHqAWkMxqgdQNS!2e10!4m2!3m1!1s0x864c2e12f7f0a12b:0x8148ba9a188dd08e"
+      }
+    ]
+  },
+  "detectedWebsite": null,
+  "scannedAt": "2026-01-25T16:21:49.926Z",
+  "readyForGeneration": true,
+  "research": {
+    "source": "yelp",
+    "enrichedAt": "2026-01-27T15:41:13.055Z",
+    "matched": true,
+    "yelpId": "syn7W97oRoA29GeNibq8Og",
+    "matchStatus": "found",
+    "rating": 5,
+    "reviewCount": 10,
+    "categories": [
+      "Auto Repair"
+    ],
+    "photos": [],
+    "hours": null,
+    "transactions": []
+  },
+  "opportunityScore": 65,
+  "scoreBreakdown": [
+    {
+      "factor": "No website (base)",
+      "points": 50,
+      "source": "Google"
+    },
+    {
+      "factor": "Excellent rating (5★)",
+      "points": 15,
+      "source": "Yelp"
+    }
+  ],
+  "city": "Lewisville"
+}

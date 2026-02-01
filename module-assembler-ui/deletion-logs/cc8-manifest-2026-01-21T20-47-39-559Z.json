@@ -1,0 +1,38 @@
+{
+  "projectName": "cc8",
+  "savedAt": "2026-01-21T20:47:39.559Z",
+  "resources": {
+    "name": "cc8",
+    "sanitizedName": "cc8",
+    "github": {
+      "repos": [
+        {
+          "name": "cc8-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "cc8-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "cc8-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\cc8",
+      "exists": true
+    }
+  }
+}

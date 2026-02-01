@@ -492,6 +492,75 @@ const uploadStyles = {
     color: '#22c55e',
     margin: '8px 0'
   },
+  // Menu input tabs
+  menuInputTabs: {
+    display: 'flex',
+    gap: '8px',
+    marginBottom: '16px'
+  },
+  menuInputTab: {
+    flex: 1,
+    padding: '10px 16px',
+    background: 'rgba(255,255,255,0.03)',
+    border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: '8px',
+    color: '#888',
+    fontSize: '14px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    transition: 'all 0.2s ease'
+  },
+  menuInputTabActive: {
+    background: 'rgba(34, 197, 94, 0.1)',
+    borderColor: '#22c55e',
+    color: '#22c55e'
+  },
+  menuPasteContainer: {
+    display: 'flex',
+    gap: '20px'
+  },
+  menuPasteLeft: {
+    flex: 2
+  },
+  menuPasteRight: {
+    flex: 1,
+    padding: '16px',
+    background: 'rgba(255,255,255,0.02)',
+    borderRadius: '8px'
+  },
+  menuTextarea: {
+    width: '100%',
+    minHeight: '200px',
+    padding: '16px',
+    background: 'rgba(0,0,0,0.2)',
+    border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: '10px',
+    color: '#fff',
+    fontSize: '14px',
+    fontFamily: 'inherit',
+    lineHeight: '1.6',
+    outline: 'none',
+    resize: 'vertical'
+  },
+  menuPasteHint: {
+    fontSize: '12px',
+    color: '#666',
+    marginTop: '8px'
+  },
+  menuFormatExample: {
+    fontSize: '12px',
+    color: '#888',
+    lineHeight: '1.6',
+    fontFamily: 'monospace',
+    whiteSpace: 'pre-wrap',
+    padding: '12px',
+    background: 'rgba(0,0,0,0.2)',
+    borderRadius: '6px',
+    marginTop: '8px'
+  },
   // Style chips
   styleChips: {
     display: 'flex',
@@ -630,6 +699,7 @@ export function UploadAssetsStep({ projectData, updateProject, onContinue, onBac
   const [detectedStyle, setDetectedStyle] = useState(null);
   const [dragOver, setDragOver] = useState({ logo: false, photos: false, menu: false });
   const [showAIGenerator, setShowAIGenerator] = useState(false);
+  const [menuInputMode, setMenuInputMode] = useState('upload'); // 'upload' or 'paste'
 
   // Responsive layout detection
   const { width } = useWindowSize();
@@ -886,7 +956,7 @@ export function UploadAssetsStep({ projectData, updateProject, onContinue, onBac
   };
 
   const assets = projectData.uploadedAssets || {};
-  const hasAnyAssets = assets.logo || (assets.photos && assets.photos.length > 0) || assets.menu;
+  const hasAnyAssets = assets.logo || (assets.photos && assets.photos.length > 0) || assets.menu || projectData.menuText;
 
   // Responsive styles for upload step
   const uploadResponsiveStyles = {
@@ -1153,6 +1223,30 @@ export function UploadAssetsStep({ projectData, updateProject, onContinue, onBac
             </div>
           </div>
 
+          {/* Menu input tabs - only show if no menu uploaded */}
+          {!assets.menu && !projectData.menuText && (
+            <div style={uploadStyles.menuInputTabs}>
+              <button
+                style={{
+                  ...uploadStyles.menuInputTab,
+                  ...(menuInputMode === 'upload' ? uploadStyles.menuInputTabActive : {})
+                }}
+                onClick={() => setMenuInputMode('upload')}
+              >
+                📤 Upload File
+              </button>
+              <button
+                style={{
+                  ...uploadStyles.menuInputTab,
+                  ...(menuInputMode === 'paste' ? uploadStyles.menuInputTabActive : {})
+                }}
+                onClick={() => setMenuInputMode('paste')}
+              >
+                📝 Paste Text
+              </button>
+            </div>
+          )}
+
           {assets.menu ? (
             <div style={uploadStyles.menuUploaded}>
               <div style={uploadStyles.menuPreviewLarge}>
@@ -1176,6 +1270,65 @@ export function UploadAssetsStep({ projectData, updateProject, onContinue, onBac
                 <button style={uploadStyles.removeButton} onClick={removeMenu}>
                   <span>✕</span> Remove
                 </button>
+              </div>
+            </div>
+          ) : projectData.menuText ? (
+            <div style={uploadStyles.menuUploaded}>
+              <div style={{...uploadStyles.menuPreviewLarge, background: 'rgba(34, 197, 94, 0.1)'}}>
+                <span style={{fontSize: '48px'}}>📝</span>
+              </div>
+              <div style={uploadStyles.menuDetails}>
+                <span style={uploadStyles.fileName}>Menu Text Pasted</span>
+                <span style={uploadStyles.menuType}>
+                  {projectData.menuText.split('\n').filter(l => l.trim()).length} items detected
+                </span>
+                <p style={uploadStyles.menuHint}>
+                  ✨ AI will use this text to build your menu
+                </p>
+                <button style={uploadStyles.removeButton} onClick={() => updateProject({ menuText: null })}>
+                  <span>✕</span> Clear & Start Over
+                </button>
+              </div>
+            </div>
+          ) : menuInputMode === 'paste' ? (
+            <div style={uploadStyles.menuPasteContainer}>
+              <div style={uploadStyles.menuPasteLeft}>
+                <textarea
+                  style={uploadStyles.menuTextarea}
+                  placeholder="Paste your menu items here...
+
+Example:
+Espresso - $3.50
+Cappuccino - $4.50
+Latte - $4.75
+Mocha - $5.00
+
+Pastries:
+Croissant - $3.25
+Muffin - $2.75"
+                  value={projectData.menuText || ''}
+                  onChange={(e) => updateProject({ menuText: e.target.value })}
+                />
+                <p style={uploadStyles.menuPasteHint}>
+                  Tip: Include item names, descriptions, and prices. Categories help organize your menu.
+                </p>
+              </div>
+              <div style={uploadStyles.menuPasteRight}>
+                <span style={uploadStyles.menuExamplesTitle}>Accepted formats:</span>
+                <ul style={uploadStyles.menuExamplesList}>
+                  <li>✓ Item Name - $Price</li>
+                  <li>✓ Item Name: $Price</li>
+                  <li>✓ Item Name ... $Price</li>
+                  <li>✓ Categories as headers</li>
+                </ul>
+                <div style={uploadStyles.menuFormatExample}>
+{`DRINKS
+Drip Coffee - $2.50
+Cold Brew - $4.00
+
+FOOD
+Avocado Toast - $8.50`}
+                </div>
               </div>
             </div>
           ) : (
@@ -1265,8 +1418,9 @@ export function UploadAssetsStep({ projectData, updateProject, onContinue, onBac
             {assets.logo && '1 logo'}
             {assets.logo && assets.photos?.length ? ', ' : ''}
             {assets.photos?.length ? `${assets.photos.length} photo${assets.photos.length > 1 ? 's' : ''}` : ''}
-            {(assets.logo || assets.photos?.length) && assets.menu ? ', ' : ''}
+            {(assets.logo || assets.photos?.length) && (assets.menu || projectData.menuText) ? ', ' : ''}
             {assets.menu && '1 menu/price list'}
+            {projectData.menuText && !assets.menu && 'menu items pasted'}
             {' ready to use'}
           </span>
         </div>

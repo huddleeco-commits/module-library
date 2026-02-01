@@ -1,0 +1,205 @@
+{
+  "id": "school",
+  "name": "School / Academy",
+  "icon": "🏫",
+  "business": {
+    "name": "Bright Futures Academy",
+    "location": "Denver, CO",
+    "tagline": "Where Learning Meets Excellence",
+    "industry": "school",
+    "teamSize": "50-100",
+    "priceRange": "$$$",
+    "established": "1995",
+    "phone": "(555) 234-5678",
+    "email": "admissions@brightfuturesacademy.edu",
+    "address": "500 Education Way, Denver, CO 80202",
+    "hours": {
+      "monday": "7:30 AM - 4:00 PM",
+      "tuesday": "7:30 AM - 4:00 PM",
+      "wednesday": "7:30 AM - 4:00 PM",
+      "thursday": "7:30 AM - 4:00 PM",
+      "friday": "7:30 AM - 3:00 PM",
+      "saturday": "Closed",
+      "sunday": "Closed"
+    }
+  },
+  "theme": {
+    "colors": {
+      "primary": "#1E3A5F",
+      "secondary": "#C9A227",
+      "accent": "#4A90A4",
+      "background": "#F5F7FA",
+      "text": "#2D3748"
+    },
+    "fonts": {
+      "heading": "Playfair Display",
+      "body": "Open Sans"
+    },
+    "style": "professional-academic"
+  },
+  "pages": {
+    "home": {
+      "hero": {
+        "headline": "Where Learning Meets Excellence",
+        "subheadline": "A leading private school committed to academic excellence and character development since 1995",
+        "cta": "Schedule a Tour",
+        "backgroundImage": "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1920"
+      },
+      "sections": [
+        {
+          "type": "stats",
+          "title": "By The Numbers",
+          "items": [
+            { "value": "1,070", "label": "Students Enrolled" },
+            { "value": "85", "label": "Dedicated Teachers" },
+            { "value": "18:1", "label": "Student-Teacher Ratio" },
+            { "value": "98%", "label": "College Placement" }
+          ]
+        },
+        {
+          "type": "features",
+          "title": "Why Choose Bright Futures",
+          "items": [
+            { "icon": "GraduationCap", "title": "Academic Excellence", "description": "Rigorous college-prep curriculum with AP courses and honors programs" },
+            { "icon": "Users", "title": "Small Class Sizes", "description": "Average class size of 18 students ensures personalized attention" },
+            { "icon": "Trophy", "title": "Award-Winning Programs", "description": "State champions in robotics, debate, and athletics" },
+            { "icon": "Heart", "title": "Character Development", "description": "Emphasis on integrity, leadership, and community service" }
+          ]
+        },
+        {
+          "type": "programs",
+          "title": "Our Programs",
+          "items": [
+            { "name": "Early Childhood", "grades": "Pre-K - K", "description": "Play-based learning foundation with nurturing environment", "students": 120 },
+            { "name": "Elementary School", "grades": "1st - 5th", "description": "Core academics with enrichment in arts, music, and STEM", "students": 350 },
+            { "name": "Middle School", "grades": "6th - 8th", "description": "College prep curriculum with exploratory electives", "students": 280 },
+            { "name": "High School", "grades": "9th - 12th", "description": "Advanced placement courses and dual enrollment options", "students": 320 }
+          ]
+        },
+        {
+          "type": "testimonials",
+          "title": "What Parents Say",
+          "items": [
+            { "name": "Sarah Mitchell", "role": "Parent", "text": "The teachers truly care about each student's success. My children have thrived here.", "rating": 5 },
+            { "name": "James Wilson", "role": "Alumni 2020", "text": "BFA prepared me exceptionally well for college. The rigorous academics made university feel manageable.", "rating": 5 },
+            { "name": "Maria Garcia", "role": "Parent", "text": "The sense of community is incredible. We've made lifelong friends here.", "rating": 5 }
+          ]
+        }
+      ]
+    },
+    "programs": {
+      "hero": {
+        "headline": "Academic Programs",
+        "subheadline": "Comprehensive education for every stage of development"
+      },
+      "programs": [
+        {
+          "name": "Early Childhood (Pre-K - K)",
+          "description": "Our early childhood program provides a nurturing, play-based learning environment that builds the foundation for lifelong learning.",
+          "features": ["Play-based curriculum", "Social-emotional development", "Early literacy & numeracy", "Creative arts"],
+          "tuition": { "annual": 12500, "monthly": 1250 }
+        },
+        {
+          "name": "Elementary School (1st - 5th)",
+          "description": "A strong academic foundation combined with enrichment opportunities in arts, music, and STEM.",
+          "features": ["Core academics", "STEM lab access", "Music & art programs", "Physical education"],
+          "tuition": { "annual": 15000, "monthly": 1500 }
+        },
+        {
+          "name": "Middle School (6th - 8th)",
+          "description": "Preparing students for high school with a challenging curriculum and exploratory electives.",
+          "features": ["Honors courses", "World languages", "Technology integration", "Advisory program"],
+          "tuition": { "annual": 18000, "monthly": 1800 }
+        },
+        {
+          "name": "High School (9th - 12th)",
+          "description": "College preparatory program with AP courses, dual enrollment, and comprehensive guidance.",
+          "features": ["15+ AP courses", "Dual enrollment", "College counseling", "Internship opportunities"],
+          "tuition": { "annual": 22000, "monthly": 2200 }
+        }
+      ]
+    },
+    "about": {
+      "hero": {
+        "headline": "About Bright Futures Academy",
+        "subheadline": "Educating future leaders since 1995"
+      },
+      "sections": [
+        {
+          "type": "story",
+          "title": "Our Story",
+          "content": "Founded in 1995, Bright Futures Academy began with a simple mission: to provide exceptional education that develops the whole child. What started as a small elementary school has grown into a comprehensive Pre-K through 12th grade institution serving over 1,000 students."
+        },
+        {
+          "type": "mission",
+          "title": "Our Mission",
+          "content": "To inspire academic excellence, foster character development, and prepare students to become responsible global citizens and lifelong learners."
+        },
+        {
+          "type": "values",
+          "title": "Core Values",
+          "items": ["Integrity", "Excellence", "Respect", "Community", "Innovation"]
+        }
+      ],
+      "team": [
+        { "name": "Dr. Elizabeth Chen", "role": "Head of School", "bio": "Ed.D. from Stanford, 25 years in education leadership" },
+        { "name": "Michael Thompson", "role": "Academic Dean", "bio": "Former AP curriculum director, Harvard M.Ed." },
+        { "name": "Sarah Rodriguez", "role": "Director of Admissions", "bio": "15 years experience in independent school admissions" }
+      ]
+    },
+    "admissions": {
+      "hero": {
+        "headline": "Join Our Community",
+        "subheadline": "Begin your journey at Bright Futures Academy"
+      },
+      "steps": [
+        { "step": 1, "title": "Inquire", "description": "Submit an inquiry form to learn more about our programs" },
+        { "step": 2, "title": "Visit", "description": "Schedule a campus tour and meet our faculty" },
+        { "step": 3, "title": "Apply", "description": "Complete the application and submit required documents" },
+        { "step": 4, "title": "Interview", "description": "Student and family interview with admissions team" },
+        { "step": 5, "title": "Decision", "description": "Receive admission decision and enrollment materials" }
+      ],
+      "tuition": [
+        { "level": "Pre-K", "annual": 12500 },
+        { "level": "Kindergarten", "annual": 13500 },
+        { "level": "Elementary (1-5)", "annual": 15000 },
+        { "level": "Middle School (6-8)", "annual": 18000 },
+        { "level": "High School (9-12)", "annual": 22000 }
+      ],
+      "financialAid": {
+        "available": true,
+        "percentage": "35% of families receive aid",
+        "description": "We are committed to making a BFA education accessible. Financial aid is awarded based on demonstrated need."
+      }
+    },
+    "contact": {
+      "hero": {
+        "headline": "Contact Us",
+        "subheadline": "We'd love to hear from you"
+      },
+      "info": {
+        "address": "500 Education Way, Denver, CO 80202",
+        "phone": "(555) 234-5678",
+        "email": "admissions@brightfuturesacademy.edu",
+        "hours": "Monday - Friday: 7:30 AM - 4:00 PM"
+      },
+      "departments": [
+        { "name": "Admissions", "email": "admissions@brightfuturesacademy.edu", "phone": "(555) 234-5679" },
+        { "name": "Main Office", "email": "info@brightfuturesacademy.edu", "phone": "(555) 234-5678" },
+        { "name": "Athletics", "email": "athletics@brightfuturesacademy.edu", "phone": "(555) 234-5680" }
+      ]
+    }
+  },
+  "extracurriculars": [
+    "Athletics (15 varsity sports)",
+    "Drama Club & Theater",
+    "Robotics Team",
+    "Music Program (Band, Orchestra, Choir)",
+    "Art Studio",
+    "Debate Team",
+    "Student Government",
+    "Community Service Club",
+    "Math Olympiad",
+    "Model United Nations"
+  ]
+}

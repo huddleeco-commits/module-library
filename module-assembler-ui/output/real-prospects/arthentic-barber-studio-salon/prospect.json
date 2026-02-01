@@ -1,0 +1,113 @@
+{
+  "id": "VBiiOhrWBup_xq07V7fElg",
+  "name": "ARThentic Barber Studio & Salon",
+  "address": "1305 S State Hwy 121, Lewisville, TX, 75067",
+  "phone": "+12145139914",
+  "category": "barbers",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 4,
+  "reviewCount": 4,
+  "photos": [
+    "https://s3-media0.fl.yelpcdn.com/bphoto/H_ZYAdJ96hycH6IiSSZI0A/o.jpg"
+  ],
+  "hours": null,
+  "fixtureId": "barbershop",
+  "source": "yelp",
+  "yelpUrl": "https://www.yelp.com/biz/arthentic-barber-studio-and-salon-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+  "raw": {
+    "id": "VBiiOhrWBup_xq07V7fElg",
+    "alias": "arthentic-barber-studio-and-salon-lewisville",
+    "name": "ARThentic Barber Studio & Salon",
+    "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/H_ZYAdJ96hycH6IiSSZI0A/o.jpg",
+    "is_closed": false,
+    "url": "https://www.yelp.com/biz/arthentic-barber-studio-and-salon-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+    "review_count": 4,
+    "categories": [
+      {
+        "alias": "barbers",
+        "title": "Barbers"
+      }
+    ],
+    "rating": 4,
+    "coordinates": {
+      "latitude": 33.02565,
+      "longitude": -96.99449
+    },
+    "transactions": [],
+    "location": {
+      "address1": "1305 S State Hwy 121",
+      "address2": "Ste 110",
+      "address3": "",
+      "city": "Lewisville",
+      "zip_code": "75067",
+      "country": "US",
+      "state": "TX",
+      "display_address": [
+        "1305 S State Hwy 121",
+        "Ste 110",
+        "Lewisville, TX 75067"
+      ]
+    },
+    "phone": "+12145139914",
+    "display_phone": "(214) 513-9914",
+    "distance": 1245.5077866233623,
+    "business_hours": [
+      {
+        "open": [
+          {
+            "is_overnight": false,
+            "start": "1000",
+            "end": "1800",
+            "day": 0
+          },
+          {
+            "is_overnight": false,
+            "start": "1000",
+            "end": "2000",
+            "day": 1
+          },
+          {
+            "is_overnight": false,
+            "start": "1000",
+            "end": "2000",
+            "day": 2
+          },
+          {
+            "is_overnight": false,
+            "start": "1000",
+            "end": "2100",
+            "day": 3
+          },
+          {
+            "is_overnight": false,
+            "start": "0800",
+            "end": "2100",
+            "day": 4
+          },
+          {
+            "is_overnight": false,
+            "start": "0800",
+            "end": "1930",
+            "day": 5
+          },
+          {
+            "is_overnight": false,
+            "start": "1300",
+            "end": "1800",
+            "day": 6
+          }
+        ],
+        "hours_type": "REGULAR",
+        "is_open_now": false
+      }
+    ],
+    "attributes": {
+      "business_temp_closed": null,
+      "menu_url": null,
+      "waitlist_reservation": null
+    }
+  },
+  "scannedAt": "2026-01-25T14:23:35.929Z",
+  "readyForGeneration": true
+}

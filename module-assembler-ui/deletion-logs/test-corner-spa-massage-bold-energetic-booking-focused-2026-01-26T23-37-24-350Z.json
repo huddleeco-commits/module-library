@@ -1,0 +1,80 @@
+{
+  "projectName": "test-corner-spa-massage-bold-energetic-booking-focused",
+  "deletedAt": "2026-01-26T23:37:24.351Z",
+  "resourcesFound": {
+    "name": "test-corner-spa-massage-bold-energetic-booking-focused",
+    "sanitizedName": "test-corner-spa-massage-bold-energetic-booking-focused",
+    "github": {
+      "repos": [
+        {
+          "name": "test-corner-spa-massage-bold-energetic-booking-focused-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-corner-spa-massage-bold-energetic-booking-focused-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-corner-spa-massage-bold-energetic-booking-focused-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-corner-spa-massage-bold-energetic-booking-focused-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-corner-spa-massage-bold-energetic-booking-focused-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-corner-spa-massage-bold-energetic-booking-focused-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "test-corner-spa-massage-bold-energetic-booking-focused",
+          "verified": true
+        },
+        {
+          "subdomain": "api.test-corner-spa-massage-bold-energetic-booking-focused",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.test-corner-spa-massage-bold-energetic-booking-focused",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "projectName": "cc-be1st6",
+  "savedAt": "2026-01-21T20:47:19.562Z",
+  "resources": {
+    "name": "cc-be1st6",
+    "sanitizedName": "cc-be1st6",
+    "github": {
+      "repos": [
+        {
+          "name": "cc-be1st6-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "cc-be1st6-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "cc-be1st6-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\cc-be1st6",
+      "exists": true
+    }
+  }
+}

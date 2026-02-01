@@ -1,0 +1,68 @@
+{
+  "id": "ns-Pwx3pSi9G7lnkysgx0Q",
+  "name": "Sharp Society",
+  "address": "1565 W Main St, Lewisville, TX, 75067",
+  "phone": "+18179131862",
+  "category": "barbers",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 0,
+  "reviewCount": 0,
+  "photos": [
+    "https://s3-media0.fl.yelpcdn.com/bphoto/qjhRrt2xiV_fui8j5EQjXw/o.jpg"
+  ],
+  "hours": null,
+  "fixtureId": "barbershop",
+  "source": "yelp",
+  "yelpUrl": "https://www.yelp.com/biz/sharp-society-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+  "raw": {
+    "id": "ns-Pwx3pSi9G7lnkysgx0Q",
+    "alias": "sharp-society-lewisville",
+    "name": "Sharp Society",
+    "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/qjhRrt2xiV_fui8j5EQjXw/o.jpg",
+    "is_closed": false,
+    "url": "https://www.yelp.com/biz/sharp-society-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+    "review_count": 0,
+    "categories": [
+      {
+        "alias": "barbers",
+        "title": "Barbers"
+      },
+      {
+        "alias": "waxing",
+        "title": "Waxing"
+      }
+    ],
+    "rating": 0,
+    "coordinates": {
+      "latitude": 33.04302,
+      "longitude": -97.033145
+    },
+    "transactions": [],
+    "location": {
+      "address1": "1565 W Main St",
+      "address2": "Ste 425 21",
+      "address3": "",
+      "city": "Lewisville",
+      "zip_code": "75067",
+      "country": "US",
+      "state": "TX",
+      "display_address": [
+        "1565 W Main St",
+        "Ste 425 21",
+        "Lewisville, TX 75067"
+      ]
+    },
+    "phone": "+18179131862",
+    "display_phone": "(817) 913-1862",
+    "distance": 3018.0091447931354,
+    "business_hours": [],
+    "attributes": {
+      "business_temp_closed": null,
+      "menu_url": "https://taylortheodore.glossgenius.com/services",
+      "waitlist_reservation": null
+    }
+  },
+  "scannedAt": "2026-01-25T14:23:35.929Z",
+  "readyForGeneration": true
+}

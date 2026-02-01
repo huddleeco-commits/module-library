@@ -1323,8 +1323,13 @@ export default function IndexPage() {
    * Uses the 3-archetype system: ecommerce, luxury, local
    * @param {string} archetypeOverride - Optional archetype ID to force ('local', 'luxury', 'ecommerce')
    * @param {object} styleOverrides - Theme/mood slider settings (isDark, fontHeading, fontBody, etc.)
+   * @param {object} aiOptions - AI-generated content (aiContent, aiMenu, aiComposition)
    */
-  generateArchetypePage(pageName, businessName, address, phone, industry, colors, fixture = {}, archetypeOverride = null, styleOverrides = {}) {
+  generateArchetypePage(pageName, businessName, address, phone, industry, colors, fixture = {}, archetypeOverride = null, styleOverrides = {}, aiOptions = {}) {
+    // Extract AI-generated content
+    const { aiContent, aiMenu, aiComposition, aiColorStrategy, aiTypographyStrategy, aiImageryGuidance } = aiOptions;
+    const hasAIContent = !!(aiContent || aiMenu || aiComposition);
+
     // Detect the best archetype based on business data
     const businessData = {
       name: businessName,
@@ -1334,7 +1339,16 @@ export default function IndexPage() {
       description: fixture.business?.description || '',
       tagline: fixture.business?.tagline || fixture.tagline || '',
       yearFounded: fixture.business?.yearFounded || fixture.yearFounded || '2020',
-      features: fixture.business?.features || fixture.features || {}
+      features: fixture.business?.features || fixture.features || {},
+      // AI-generated content (takes priority when available)
+      aiContent: aiContent || null,
+      aiMenu: aiMenu || null,
+      aiComposition: aiComposition || null,
+      hasAIContent: hasAIContent,
+      // AI visual strategies
+      aiColorStrategy: aiColorStrategy || null,
+      aiTypographyStrategy: aiTypographyStrategy || null,
+      aiImageryGuidance: aiImageryGuidance || null
     };
 
     // Use override archetype if provided, otherwise auto-detect
@@ -1548,7 +1562,7 @@ export default function IndexPage() {
 
     // Check ARTISAN FOOD industry (restaurant, bakery, cafe)
     if (isArtisanFoodIndustry(industry)) {
-      const archetypeResult = this.generateArchetypePage(pageName, businessName, address, phone, industry, colors, fixture, archetypeOverride, layoutOverrides);
+      const archetypeResult = this.generateArchetypePage(pageName, businessName, address, phone, industry, colors, fixture, archetypeOverride, layoutOverrides, aiOptions);
       if (archetypeResult) {
         return archetypeResult;
       }

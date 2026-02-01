@@ -1,0 +1,84 @@
+{
+  "projectName": "test-ale-s-salon-eyelashes",
+  "savedAt": "2026-01-27T21:51:42.737Z",
+  "resources": {
+    "name": "test-ale-s-salon-eyelashes",
+    "sanitizedName": "test-ale-s-salon-eyelashes",
+    "github": {
+      "repos": [
+        {
+          "name": "test-ale-s-salon-eyelashes-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "test-ale-s-salon-eyelashes-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "test-ale-s-salon-eyelashes-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "3ad4fbc0-0a83-44e0-9251-01cbc55d0558",
+        "name": "test-ale-s-salon-eyelashes",
+        "createdAt": "2026-01-26T01:04:15.013Z",
+        "environments": [
+          {
+            "id": "0a27e615-9a7c-4e05-8a92-43ae3609b0d0",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "5009cad2-fcd0-4883-b901-7289cb3b3e68",
+          "name": "backend"
+        },
+        {
+          "id": "5e8d28fb-4dcc-443c-bdba-25c500210507",
+          "name": "admin"
+        },
+        {
+          "id": "845713c7-4803-4f6e-a8fb-47e18aace079",
+          "name": "postgres"
+        },
+        {
+          "id": "9a92f239-52be-47f2-9db5-a1b9ff727929",
+          "name": "frontend"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "bed741c4b3fee08d54b8b066e2d928dc",
+          "name": "test-ale-s-salon-eyelashes.be1st.io",
+          "type": "CNAME",
+          "content": "aghz8gcp.up.railway.app"
+        },
+        {
+          "id": "f8c69bbf24fd0bf880136ece2aa50b6d",
+          "name": "api.test-ale-s-salon-eyelashes.be1st.io",
+          "type": "CNAME",
+          "content": "ukg72zl9.up.railway.app"
+        },
+        {
+          "id": "00aa628ce001d86427e557d3fee11792",
+          "name": "admin.test-ale-s-salon-eyelashes.be1st.io",
+          "type": "CNAME",
+          "content": "xt5yfkmm.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

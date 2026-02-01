@@ -175,14 +175,15 @@ function prepareProjectForDeployment(projectPath, subdomain) {
     console.log(`   ✅ Created backend/railway.json`);
   }
   
-  // Frontend railway.json
+  // Frontend railway.json - use npx serve for production static hosting
   const frontendRailwayConfig = {
     "$schema": "https://railway.com/railway.schema.json",
     "build": {
-      "builder": "NIXPACKS"
+      "builder": "NIXPACKS",
+      "buildCommand": "npm install && npm run build"
     },
     "deploy": {
-      "startCommand": "npm run preview -- --host --port $PORT",
+      "startCommand": "npx serve -s dist -l $PORT",
       "restartPolicyType": "ON_FAILURE",
       "restartPolicyMaxRetries": 10
     }
@@ -241,6 +242,24 @@ dist/
     if (fs.existsSync(folderPath) && !fs.existsSync(gitignorePath)) {
       fs.writeFileSync(gitignorePath, gitignoreContent);
       console.log(`   ✅ Created ${folder}/.gitignore`);
+    }
+  }
+
+  // Add 'serve' as a dependency for static file serving on Railway
+  for (const folder of ['frontend', 'admin']) {
+    const packageJsonPath = path.join(projectPath, folder, 'package.json');
+    if (fs.existsSync(packageJsonPath)) {
+      try {
+        const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+        if (!pkg.dependencies) pkg.dependencies = {};
+        if (!pkg.dependencies.serve) {
+          pkg.dependencies.serve = '^14.2.0';
+          fs.writeFileSync(packageJsonPath, JSON.stringify(pkg, null, 2));
+          console.log(`   ✅ Added 'serve' dependency to ${folder}/package.json`);
+        }
+      } catch (e) {
+        console.log(`   ⚠️ Could not update ${folder}/package.json: ${e.message}`);
+      }
     }
   }
 
@@ -564,12 +583,16 @@ async function pushFolderToGitHub(projectPath, folderName, repoName, githubUsern
 
     console.log(`   Initializing git in ${folderName}/...`);
     execSync('git init', options);
-    
+
+    // Set git config for this repo (required for commit)
+    execSync('git config user.email "deploy@be1st.io"', options);
+    execSync('git config user.name "BE1st Deploy"', options);
+
     console.log(`   Adding files...`);
     execSync('git add .', options);
-    
+
     console.log(`   Creating commit...`);
-    execSync('git commit -m "Initial commit from BE1st"', options);
+    execSync('git commit -m "Initial commit from BE1st" --allow-empty', options);
     
     console.log(`   Setting branch...`);
     execSync('git branch -M main', options);
@@ -643,18 +666,121 @@ async function railwayGraphQL(query, variables = {}, maxRetries = 3) {
   }
 }
 
-async function createRailwayProject(name) {
-  // Railway project names: alphanumeric + hyphens, max 39 characters
+/**
+ * Find existing Railway project by name
+ */
+async function findRailwayProjectByName(name) {
   let sanitizedName = name
     .toLowerCase()
     .replace(/[^a-z0-9-]/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '');
 
-  // Truncate to 39 characters max, ensuring we don't cut mid-hyphen
-  if (sanitizedName.length > 39) {
-    sanitizedName = sanitizedName.substring(0, 39).replace(/-$/, '');
+  // Match the same logic as createRailwayProject
+  if (!/^[a-z]/.test(sanitizedName)) {
+    sanitizedName = 'p-' + sanitizedName;
   }
+  sanitizedName = sanitizedName.substring(0, 32).replace(/-$/, '');
+
+  console.log(`\n🔍 Searching for existing Railway project: ${sanitizedName}`);
+
+  // Try workspace query first (for team accounts), then personal
+  const queries = RAILWAY_TEAM_ID
+    ? [
+        `query { projects(teamId: "${RAILWAY_TEAM_ID}") { edges { node { id name } } } }`,
+        `query { me { projects { edges { node { id name } } } } }`
+      ]
+    : [
+        `query { me { projects { edges { node { id name } } } } }`
+      ];
+
+  for (const query of queries) {
+    try {
+      const result = await railwayGraphQL(query);
+
+      // Debug: log raw result structure
+      console.log(`   🔍 API Response keys: ${Object.keys(result || {}).join(', ')}`);
+
+      // Handle different response shapes
+      const projects = result?.projects?.edges || result?.me?.projects?.edges || [];
+
+      console.log(`   📋 Found ${projects.length} projects in Railway`);
+
+      // List all projects for debugging
+      if (projects.length > 0 && projects.length < 20) {
+        console.log(`   📝 Project names: ${projects.map(e => e.node.name).join(', ')}`);
+      }
+
+      // Find matching project
+      const found = projects.find(e => e.node.name === sanitizedName);
+      if (found) {
+        console.log(`   ✅ Found matching project: ${found.node.name} (${found.node.id})`);
+        return found.node;
+      } else {
+        console.log(`   ❌ No match for "${sanitizedName}" in ${projects.length} projects`);
+      }
+    } catch (err) {
+      console.log(`   ⚠️ Query failed: ${err.message}`);
+    }
+  }
+
+  console.log(`   ℹ️ No existing project found with name: ${sanitizedName}`);
+  return null;
+}
+
+/**
+ * Delete a Railway project by ID
+ */
+async function deleteRailwayProject(projectId, projectName) {
+  console.log(`   🗑️ Deleting Railway project: ${projectName} (${projectId})`);
+
+  const query = `mutation { projectDelete(id: "${projectId}") }`;
+
+  try {
+    const result = await railwayGraphQL(query);
+    if (result?.projectDelete) {
+      console.log(`   ✅ Railway project deleted`);
+      return true;
+    }
+  } catch (err) {
+    console.log(`   ⚠️ Could not delete Railway project: ${err.message}`);
+  }
+  return false;
+}
+
+/**
+ * Clean up existing Railway project with same name
+ */
+async function cleanupExistingRailwayProject(name) {
+  const existing = await findRailwayProjectByName(name);
+  if (existing) {
+    console.log(`\n🧹 Found existing Railway project: ${existing.name}`);
+    await deleteRailwayProject(existing.id, existing.name);
+    // Wait a bit for Railway to fully clean up
+    await new Promise(r => setTimeout(r, 3000));
+  }
+}
+
+async function createRailwayProject(name) {
+  // Railway project names: alphanumeric + hyphens, max 32 characters, must start with letter
+  let sanitizedName = name
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+
+  // Ensure starts with a letter (Railway requirement)
+  if (!/^[a-z]/.test(sanitizedName)) {
+    sanitizedName = 'p-' + sanitizedName;
+  }
+
+  // Truncate to 32 characters max (Railway's actual limit)
+  if (sanitizedName.length > 32) {
+    sanitizedName = sanitizedName.substring(0, 32).replace(/-$/, '');
+  }
+
+  // Clean up existing project with same name first
+  await cleanupExistingRailwayProject(sanitizedName);
 
   console.log(`🚂 Creating Railway project: ${sanitizedName}${name !== sanitizedName ? ` (from: ${name})` : ''}`);
 
@@ -1159,6 +1285,173 @@ async function deployAdvancedApp(projectPath, projectName, options = {}) {
 }
 
 // ============================================
+// FRONTEND-ONLY DEPLOYMENT (Static sites to .io)
+// ============================================
+
+/**
+ * Deploy a frontend-only site (test sites, static sites)
+ * - ONE GitHub repo (frontend only)
+ * - ONE Railway service (static/Vite)
+ * - Deploys to [sitename].be1st.io
+ */
+async function deployFrontendOnly(projectPath, projectName, options = {}) {
+  const onProgress = options.onProgress || (() => {});
+
+  console.log('');
+  console.log('═══════════════════════════════════════════════════════════════');
+  console.log(`🌐 DEPLOYING FRONTEND-ONLY: ${projectName}`);
+  console.log('═══════════════════════════════════════════════════════════════');
+  console.log('');
+
+  const subdomain = projectName
+    .toLowerCase()
+    .replace(/&/g, '-and-')
+    .replace(/[^a-z0-9]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+
+  const results = {
+    success: false,
+    urls: {},
+    errors: []
+  };
+
+  try {
+    onProgress({ step: 'github-auth', status: 'Authenticating with GitHub...', icon: '🔑', progress: 5 });
+    const githubUsername = await getGitHubUsername();
+    console.log(`👤 GitHub user: ${githubUsername}`);
+
+    // Clean up existing .git folder from previous attempts
+    const frontendGitDir = path.join(projectPath, 'frontend', '.git');
+    if (fs.existsSync(frontendGitDir)) {
+      fs.rmSync(frontendGitDir, { recursive: true, force: true });
+      console.log(`   ✅ Cleaned up existing .git folder`);
+    }
+
+    // Clean up node_modules (Railway will install fresh)
+    const frontendNodeModules = path.join(projectPath, 'frontend', 'node_modules');
+    if (fs.existsSync(frontendNodeModules)) {
+      fs.rmSync(frontendNodeModules, { recursive: true, force: true });
+      console.log(`   ✅ Cleaned up node_modules (Railway will install)`);
+    }
+
+    // Ensure .gitignore exists
+    const gitignorePath = path.join(projectPath, 'frontend', '.gitignore');
+    if (!fs.existsSync(gitignorePath)) {
+      fs.writeFileSync(gitignorePath, `node_modules/
+dist/
+.env
+.env.local
+.DS_Store
+*.log
+`);
+      console.log(`   ✅ Created .gitignore`);
+    }
+
+    const frontendRepoName = `${subdomain}-frontend`;
+
+    // Clean up old repo if exists
+    onProgress({ step: 'github-cleanup', status: 'Cleaning up old repository...', icon: '🧹', progress: 10 });
+    await deleteGitHubRepo(githubUsername, frontendRepoName);
+    await sleep(1000);
+
+    // Create new repo
+    onProgress({ step: 'github-create', status: 'Creating GitHub repository...', icon: '📦', progress: 20 });
+    await createGitHubRepo(frontendRepoName);
+
+    // Push frontend code
+    onProgress({ step: 'github-push', status: 'Pushing frontend code to GitHub...', icon: '📤', progress: 30 });
+    await pushFolderToGitHub(projectPath, 'frontend', frontendRepoName, githubUsername);
+
+    // Create Railway project
+    onProgress({ step: 'railway-project', status: 'Creating Railway project...', icon: '🚂', progress: 45 });
+    const railwayProject = await createRailwayProject(subdomain);
+    const environmentId = railwayProject.environmentId;
+
+    // Create frontend service
+    onProgress({ step: 'railway-frontend', status: 'Creating frontend service...', icon: '🌐', progress: 55 });
+    const frontendService = await createRailwayService(
+      railwayProject.id,
+      environmentId,
+      'frontend',
+      `${githubUsername}/${frontendRepoName}`
+    );
+
+    // Configure frontend (static site settings)
+    onProgress({ step: 'railway-config', status: 'Configuring frontend service...', icon: '⚙️', progress: 65 });
+    await setRailwayVariables(railwayProject.id, environmentId, frontendService.id, {
+      PORT: '3000',
+      NODE_ENV: 'production'
+    });
+
+    // Generate Railway domain first
+    onProgress({ step: 'railway-domain', status: 'Setting up domains...', icon: '🔗', progress: 75 });
+    const frontendDomain = `${subdomain}.${DOMAINS.website}`;
+    let frontendRailwayDomain = null;
+
+    try {
+      // Generate the Railway service domain
+      frontendRailwayDomain = await generateRailwayServiceDomain(railwayProject.id, environmentId, frontendService.id);
+      console.log(`   ✅ Railway domain: ${frontendRailwayDomain}`);
+
+      // Add custom domain
+      await addRailwayCustomDomain(railwayProject.id, environmentId, frontendService.id, frontendDomain);
+      console.log(`   ✅ Custom domain: ${frontendDomain}`);
+    } catch (e) {
+      console.log(`   ⚠️ Domain setup: ${e.message}`);
+    }
+
+    // Configure Cloudflare DNS
+    onProgress({ step: 'cloudflare', status: 'Configuring DNS...', icon: '☁️', progress: 85 });
+    if (frontendRailwayDomain) {
+      try {
+        await addCloudflareDNS(subdomain, frontendRailwayDomain, 'CNAME', true);
+        console.log(`   ✅ DNS configured: ${subdomain} -> ${frontendRailwayDomain}`);
+      } catch (e) {
+        console.log(`   ⚠️ DNS setup: ${e.message}`);
+      }
+    }
+
+    // Deploy
+    onProgress({ step: 'deploy', status: 'Triggering deployment...', icon: '🚀', progress: 90 });
+    await deployRailwayService(environmentId, frontendService.id);
+
+    // Wait for deployment
+    onProgress({ step: 'waiting', status: 'Waiting for deployment...', icon: '⏳', progress: 95 });
+    await sleep(5000);
+
+    results.success = true;
+    results.frontendUrl = `https://${frontendDomain}`;
+    results.urls = {
+      frontend: `https://${frontendDomain}`,
+      github: `https://github.com/${githubUsername}/${frontendRepoName}`,
+      railway: `https://railway.app/project/${railwayProject.id}`,
+      railwayDirect: frontendRailwayDomain ? `https://${frontendRailwayDomain}` : null
+    };
+
+    onProgress({ step: 'complete', status: 'Deployment complete!', icon: '✅', progress: 100, urls: results.urls });
+
+    console.log('');
+    console.log('═══════════════════════════════════════════════════════════════');
+    console.log('✅ FRONTEND-ONLY DEPLOYMENT COMPLETE!');
+    console.log('═══════════════════════════════════════════════════════════════');
+    console.log('');
+    console.log(`🔗 Live URL: ${results.frontendUrl}`);
+    console.log(`📦 GitHub:   ${results.urls.github}`);
+    console.log(`🚂 Railway:  ${results.urls.railway}`);
+    console.log('');
+
+  } catch (error) {
+    console.error('');
+    console.error('❌ FRONTEND-ONLY DEPLOYMENT FAILED:', error.message);
+    results.errors.push(error.message);
+    onProgress({ step: 'error', status: `Deployment failed: ${error.message}`, icon: '❌', progress: 0 });
+  }
+
+  return results;
+}
+
+// ============================================
 // COMPANION APP DEPLOYMENT (Frontend-only to .app)
 // ============================================
 
@@ -1337,7 +1630,7 @@ function prepareCompanionAppForDeployment(projectPath, subdomain, apiUrl) {
   fs.writeFileSync(path.join(projectPath, '.env.production'), envContent);
   console.log(`   ✅ Created .env.production (API: ${apiUrl})`);
 
-  // Create railway.json for Vite static hosting
+  // Create railway.json for static hosting with npx serve
   const railwayConfig = {
     "$schema": "https://railway.com/railway.schema.json",
     "build": {
@@ -1345,7 +1638,7 @@ function prepareCompanionAppForDeployment(projectPath, subdomain, apiUrl) {
       "buildCommand": "npm install && npm run build"
     },
     "deploy": {
-      "startCommand": "npm run preview -- --host --port $PORT",
+      "startCommand": "npx serve -s dist -l $PORT",
       "restartPolicyType": "ON_FAILURE",
       "restartPolicyMaxRetries": 10
     }
@@ -1407,6 +1700,12 @@ async function deployProject(projectPath, projectName, options = {}) {
   if (options.appType === 'companion-app') {
     console.log('🔍 Detected Companion App - using frontend-only deployment to be1st.app');
     return deployCompanionApp(projectPath, projectName, options);
+  }
+
+  // Check if this is frontend-only (test sites, static sites)
+  if (options.frontendOnly) {
+    console.log('🔍 Frontend-only deployment to be1st.io');
+    return deployFrontendOnly(projectPath, projectName, options);
   }
   // Progress callback for real-time updates
   const onProgress = options.onProgress || (() => {});
@@ -1697,6 +1996,7 @@ module.exports = {
   deployProject,
   deployAdvancedApp,
   deployCompanionApp,
+  deployFrontendOnly,
   checkCredentials,
   createGitHubRepo,
   pushFolderToGitHub,

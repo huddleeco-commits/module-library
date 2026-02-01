@@ -1,0 +1,139 @@
+{
+  "id": "real-estate",
+  "name": "Real Estate",
+  "icon": "🏠",
+  "business": {
+    "name": "Premier Realty Group",
+    "location": "Miami, FL",
+    "tagline": "Your Dream Home Awaits",
+    "industry": "real-estate",
+    "teamSize": "10-25",
+    "priceRange": "$$$",
+    "established": "2005",
+    "phone": "(555) 789-0123",
+    "email": "info@premierrealty-demo.com",
+    "address": "500 Biscayne Blvd, Suite 300, Miami, FL 33131",
+    "hours": {
+      "monday": "9:00 AM - 7:00 PM",
+      "tuesday": "9:00 AM - 7:00 PM",
+      "wednesday": "9:00 AM - 7:00 PM",
+      "thursday": "9:00 AM - 7:00 PM",
+      "friday": "9:00 AM - 7:00 PM",
+      "saturday": "10:00 AM - 5:00 PM",
+      "sunday": "12:00 PM - 5:00 PM"
+    }
+  },
+  "theme": {
+    "colors": {
+      "primary": "#1A365D",
+      "secondary": "#C6A962",
+      "accent": "#2B6CB0",
+      "background": "#F7FAFC",
+      "text": "#2D3748"
+    },
+    "fonts": {
+      "heading": "Montserrat",
+      "body": "Open Sans"
+    },
+    "style": "luxury-modern"
+  },
+  "pages": {
+    "home": {
+      "hero": {
+        "headline": "Your Dream Home Awaits",
+        "subheadline": "Miami's premier real estate team. Over $500 million in sales and 1,000+ happy homeowners.",
+        "cta": "Browse Listings",
+        "secondaryCta": "Get Home Value",
+        "backgroundImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920"
+      },
+      "sections": [
+        {
+          "type": "stats",
+          "title": "Why Choose Us",
+          "items": [
+            { "value": "$500M+", "label": "In Sales" },
+            { "value": "1,000+", "label": "Homes Sold" },
+            { "value": "18", "label": "Years Experience" },
+            { "value": "4.9★", "label": "Client Rating" }
+          ]
+        },
+        {
+          "type": "featured-listings",
+          "title": "Featured Properties",
+          "items": [
+            { "address": "1234 Ocean Drive", "city": "Miami Beach", "price": 2450000, "beds": 4, "baths": 3, "sqft": 3200, "image": "listing1.jpg" },
+            { "address": "567 Palm Avenue", "city": "Coral Gables", "price": 1875000, "beds": 3, "baths": 2.5, "sqft": 2800, "image": "listing2.jpg" },
+            { "address": "890 Bay Harbor", "city": "Bay Harbor Islands", "price": 3200000, "beds": 5, "baths": 4, "sqft": 4500, "image": "listing3.jpg" }
+          ]
+        },
+        {
+          "type": "services",
+          "title": "Our Services",
+          "items": [
+            { "name": "Buy a Home", "description": "Find your perfect property with our expert guidance", "icon": "Home" },
+            { "name": "Sell Your Home", "description": "Get top dollar with our proven marketing strategies", "icon": "DollarSign" },
+            { "name": "Property Management", "description": "Hassle-free management for your investment properties", "icon": "Building" },
+            { "name": "Investment Advisory", "description": "Build wealth through strategic real estate investments", "icon": "TrendingUp" }
+          ]
+        },
+        {
+          "type": "testimonials",
+          "title": "Client Success Stories",
+          "items": [
+            { "name": "Carlos & Maria G.", "text": "They found us our dream home in Coral Gables within our budget. Incredible service!", "rating": 5 },
+            { "name": "Jennifer M.", "text": "Sold my condo in just 2 weeks for above asking price. Highly recommend!", "rating": 5 },
+            { "name": "David L.", "text": "As an investor, I appreciate their market knowledge. They've helped me build a great portfolio.", "rating": 5 }
+          ]
+        }
+      ]
+    },
+    "listings": {
+      "hero": {
+        "headline": "Available Properties",
+        "subheadline": "Find your perfect home in Miami"
+      },
+      "filters": ["priceRange", "beds", "baths", "propertyType", "neighborhood"],
+      "listings": [
+        { "address": "1234 Ocean Drive", "city": "Miami Beach", "price": 2450000, "beds": 4, "baths": 3, "sqft": 3200, "type": "Single Family", "status": "Active" },
+        { "address": "567 Palm Avenue", "city": "Coral Gables", "price": 1875000, "beds": 3, "baths": 2.5, "sqft": 2800, "type": "Single Family", "status": "Active" },
+        { "address": "890 Bay Harbor", "city": "Bay Harbor Islands", "price": 3200000, "beds": 5, "baths": 4, "sqft": 4500, "type": "Waterfront", "status": "Active" },
+        { "address": "234 Brickell Ave #1502", "city": "Brickell", "price": 895000, "beds": 2, "baths": 2, "sqft": 1450, "type": "Condo", "status": "Active" },
+        { "address": "456 Key Biscayne", "city": "Key Biscayne", "price": 4500000, "beds": 6, "baths": 5, "sqft": 5800, "type": "Luxury", "status": "Active" }
+      ]
+    },
+    "about": {
+      "hero": {
+        "headline": "About Premier Realty",
+        "subheadline": "Miami's trusted real estate partner since 2005"
+      },
+      "sections": [
+        {
+          "type": "story",
+          "title": "Our Story",
+          "content": "Premier Realty Group was founded in 2005 with a simple mission: to provide exceptional real estate services with integrity and expertise. Today, we're one of Miami's top-performing teams, known for our market knowledge and client-first approach."
+        }
+      ],
+      "team": [
+        { "name": "Alexandra Torres", "role": "Broker/Owner", "bio": "Top 1% of Miami agents, $100M+ in annual sales", "image": "team1.jpg" },
+        { "name": "Michael Chen", "role": "Senior Agent", "bio": "Luxury property specialist, 15 years experience", "image": "team2.jpg" },
+        { "name": "Sofia Rodriguez", "role": "Agent", "bio": "First-time homebuyer expert, bilingual English/Spanish", "image": "team3.jpg" }
+      ]
+    },
+    "contact": {
+      "hero": {
+        "headline": "Get In Touch",
+        "subheadline": "Ready to find your dream home?"
+      },
+      "info": {
+        "address": "500 Biscayne Blvd, Suite 300, Miami, FL 33131",
+        "phone": "(555) 789-0123",
+        "email": "info@premierrealty-demo.com",
+        "hours": "Mon-Fri: 9am-7pm, Sat: 10am-5pm, Sun: 12pm-5pm"
+      },
+      "form": {
+        "fields": ["name", "email", "phone", "interest", "message"],
+        "submitText": "Contact Agent"
+      }
+    }
+  }
+}

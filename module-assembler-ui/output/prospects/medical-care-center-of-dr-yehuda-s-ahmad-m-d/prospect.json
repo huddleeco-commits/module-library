@@ -1,0 +1,81 @@
+{
+  "id": "ChIJmQy1Op0YTIYR0W_k8bjN-Qw",
+  "name": "Medical Care Center of Dr. Yehuda S. Ahmad, M.D",
+  "address": "2709 W 15th St suite a, Plano, TX 75075, USA",
+  "phone": "(972) 612-9355",
+  "category": "doctor",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 4.3,
+  "reviewCount": 53,
+  "photo": null,
+  "photos": [],
+  "fixtureId": "healthcare",
+  "source": "google",
+  "googleMapsUrl": "https://maps.google.com/?cid=935004591872045009&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+  "coordinates": {
+    "latitude": 33.0197234,
+    "longitude": -96.7473733
+  },
+  "raw": {
+    "id": "ChIJmQy1Op0YTIYR0W_k8bjN-Qw",
+    "types": [
+      "doctor",
+      "health",
+      "point_of_interest",
+      "establishment"
+    ],
+    "nationalPhoneNumber": "(972) 612-9355",
+    "formattedAddress": "2709 W 15th St suite a, Plano, TX 75075, USA",
+    "location": {
+      "latitude": 33.0197234,
+      "longitude": -96.7473733
+    },
+    "rating": 4.3,
+    "googleMapsUri": "https://maps.google.com/?cid=935004591872045009&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "userRatingCount": 53,
+    "displayName": {
+      "text": "Medical Care Center of Dr. Yehuda S. Ahmad, M.D",
+      "languageCode": "en"
+    },
+    "primaryType": "doctor"
+  },
+  "detectedWebsite": null,
+  "scannedAt": "2026-01-25T19:11:47.156Z",
+  "readyForGeneration": true,
+  "research": {
+    "source": "yelp",
+    "enrichedAt": "2026-01-27T15:41:32.014Z",
+    "matched": true,
+    "yelpId": "g4Bkmah8WKw18msLaUaAlw",
+    "yelpUrl": "https://www.yelp.com/biz/ahmad-yehuda-s-md-plano?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+    "matchStatus": "found",
+    "rating": 4.3,
+    "reviewCount": 6,
+    "categories": [
+      "Doctors"
+    ],
+    "photos": [],
+    "hours": null,
+    "transactions": []
+  },
+  "opportunityScore": 70,
+  "scoreBreakdown": [
+    {
+      "factor": "No website (base)",
+      "points": 50,
+      "source": "Google"
+    },
+    {
+      "factor": "Good rating (4.3★)",
+      "points": 10,
+      "source": "Yelp"
+    },
+    {
+      "factor": "High-value industry (healthcare)",
+      "points": 10,
+      "source": "Industry"
+    }
+  ],
+  "city": "Plano"
+}

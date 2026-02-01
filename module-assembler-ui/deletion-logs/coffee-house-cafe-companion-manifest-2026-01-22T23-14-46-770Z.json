@@ -1,0 +1,38 @@
+{
+  "projectName": "coffee-house-cafe-companion",
+  "savedAt": "2026-01-22T23:14:46.770Z",
+  "resources": {
+    "name": "coffee-house-cafe-companion",
+    "sanitizedName": "coffee-house-cafe-companion",
+    "github": {
+      "repos": [
+        {
+          "name": "coffee-house-cafe-companion-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "coffee-house-cafe-companion-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "coffee-house-cafe-companion-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

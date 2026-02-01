@@ -1,0 +1,38 @@
+{
+  "projectName": "test-ale-s-salon-eyelashes-friendly-portfolio-showcase",
+  "savedAt": "2026-01-27T22:08:37.069Z",
+  "resources": {
+    "name": "test-ale-s-salon-eyelashes-friendly-portfolio-showcase",
+    "sanitizedName": "test-ale-s-salon-eyelashes-friendly-portfolio-showcase",
+    "github": {
+      "repos": [
+        {
+          "name": "test-ale-s-salon-eyelashes-friendly-portfolio-showcase-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-ale-s-salon-eyelashes-friendly-portfolio-showcase-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-ale-s-salon-eyelashes-friendly-portfolio-showcase-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

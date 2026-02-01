@@ -1,0 +1,61 @@
+{
+  "projectName": "test-classic-cuts-barbershop-ecommerce",
+  "deletedAt": "2026-01-27T22:13:04.512Z",
+  "resourcesFound": {
+    "name": "test-classic-cuts-barbershop-ecommerce",
+    "sanitizedName": "test-classic-cuts-barbershop-ecommerce",
+    "github": {
+      "repos": [
+        {
+          "name": "test-classic-cuts-barbershop-ecommerce-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-classic-cuts-barbershop-ecommerce-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-classic-cuts-barbershop-ecommerce-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-classic-cuts-barbershop-ecommerce-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-classic-cuts-barbershop-ecommerce-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-classic-cuts-barbershop-ecommerce-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": []
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "id": "ChIJjZwTbB4jTIYRAuGHx--q9zc",
+  "name": "Plano Real Estate",
+  "address": "3600 Preston Rd #100, Plano, TX 75093, USA",
+  "phone": "(214) 284-8779",
+  "category": "real_estate_agency",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 5,
+  "reviewCount": 2,
+  "photo": null,
+  "photos": [],
+  "fixtureId": "restaurant",
+  "source": "google",
+  "googleMapsUrl": "https://maps.google.com/?cid=4032879938155045122&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+  "coordinates": {
+    "latitude": 33.0468851,
+    "longitude": -96.79383709999999
+  },
+  "raw": {
+    "id": "ChIJjZwTbB4jTIYRAuGHx--q9zc",
+    "types": [
+      "real_estate_agency",
+      "point_of_interest",
+      "establishment"
+    ],
+    "nationalPhoneNumber": "(214) 284-8779",
+    "formattedAddress": "3600 Preston Rd #100, Plano, TX 75093, USA",
+    "location": {
+      "latitude": 33.0468851,
+      "longitude": -96.79383709999999
+    },
+    "rating": 5,
+    "googleMapsUri": "https://maps.google.com/?cid=4032879938155045122&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "userRatingCount": 2,
+    "displayName": {
+      "text": "Plano Real Estate",
+      "languageCode": "en"
+    },
+    "primaryType": "real_estate_agency"
+  },
+  "detectedWebsite": null,
+  "scannedAt": "2026-01-25T19:11:47.156Z",
+  "readyForGeneration": true,
+  "research": {
+    "source": "yelp",
+    "enrichedAt": "2026-01-27T15:42:08.172Z",
+    "matched": true,
+    "yelpId": "MTdLejBfcbvjwSPR1qJzpg",
+    "yelpUrl": "https://www.yelp.com/biz/plano-property-management-plano?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+    "matchStatus": "found",
+    "rating": 1.6,
+    "reviewCount": 17,
+    "categories": [
+      "Property Management"
+    ],
+    "photos": [],
+    "hours": [
+      {
+        "is_overnight": false,
+        "start": "0900",
+        "end": "1800",
+        "day": 0
+      },
+      {
+        "is_overnight": false,
+        "start": "0900",
+        "end": "1800",
+        "day": 1
+      },
+      {
+        "is_overnight": false,
+        "start": "0900",
+        "end": "1800",
+        "day": 2
+      },
+      {
+        "is_overnight": false,
+        "start": "0900",
+        "end": "1800",
+        "day": 3
+      },
+      {
+        "is_overnight": false,
+        "start": "0900",
+        "end": "1800",
+        "day": 4
+      },
+      {
+        "is_overnight": false,
+        "start": "1000",
+        "end": "1500",
+        "day": 5
+      }
+    ],
+    "isOpen": true,
+    "transactions": []
+  },
+  "opportunityScore": 40,
+  "scoreBreakdown": [
+    {
+      "factor": "No website (base)",
+      "points": 50,
+      "source": "Google"
+    },
+    {
+      "factor": "Low rating (1.6★)",
+      "points": -10,
+      "source": "Yelp"
+    }
+  ],
+  "city": "Plano"
+}

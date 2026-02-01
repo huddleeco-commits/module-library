@@ -1,0 +1,60 @@
+{
+  "businessName": "AI Test Bakery",
+  "address": "789 Tech Lane, San Francisco, CA 94102",
+  "phone": "(415) 555-9876",
+  "industry": "bakery",
+  "generatedAt": "2026-01-29T16:23:45.987Z",
+  "generatedBy": "MasterAgent",
+  "testMode": true,
+  "prospect": {
+    "name": "AI Test Bakery",
+    "address": "789 Tech Lane, San Francisco, CA 94102",
+    "phone": "(415) 555-9876",
+    "fixtureId": "bakery",
+    "research": {
+      "rating": 4.7,
+      "reviewCount": 89
+    }
+  },
+  "layout": null,
+  "industryGroup": null,
+  "layoutStyle": {
+    "fontHeading": "'DM Sans', 'Inter', system-ui, sans-serif",
+    "fontBody": "system-ui, sans-serif",
+    "borderRadius": "8px",
+    "sectionPadding": "80px 20px",
+    "cardPadding": "28px",
+    "gap": "32px",
+    "buttonStyle": {
+      "padding": "16px 32px",
+      "borderRadius": "8px",
+      "fontWeight": "600",
+      "textTransform": "none"
+    },
+    "headlineStyle": "none",
+    "isDark": false,
+    "isMedium": false,
+    "colors": {
+      "primary": "#8B4513",
+      "accent": "#DEB887",
+      "text": "#3E2723",
+      "textMuted": "#64748b",
+      "background": "#FFF8F0",
+      "surface": "#f8fafc"
+    },
+    "sectionOrder": [
+      "hero-image-first",
+      "gallery-masonry",
+      "about-split",
+      "services-grid",
+      "testimonials-carousel",
+      "contact-with-map"
+    ],
+    "emphasis": [
+      "visual-appeal",
+      "ambiance",
+      "experience"
+    ]
+  },
+  "archetype": null
+}

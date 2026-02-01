@@ -1,0 +1,38 @@
+{
+  "projectName": "test-cristy-s-cake-shop-friendly-light",
+  "savedAt": "2026-01-26T20:46:20.962Z",
+  "resources": {
+    "name": "test-cristy-s-cake-shop-friendly-light",
+    "sanitizedName": "test-cristy-s-cake-shop-friendly-light",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-friendly-light-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-friendly-light-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-friendly-light-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

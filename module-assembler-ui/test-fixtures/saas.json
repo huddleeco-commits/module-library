@@ -1,0 +1,206 @@
+{
+  "id": "saas",
+  "name": "SaaS / Software",
+  "icon": "💻",
+  "business": {
+    "name": "FlowStack",
+    "location": "San Francisco, CA",
+    "tagline": "Streamline Your Workflow, Amplify Your Results",
+    "industry": "saas",
+    "teamSize": "20-50",
+    "priceRange": "$$$",
+    "established": "2020",
+    "phone": "(555) 987-FLOW",
+    "email": "hello@flowstack-demo.com",
+    "address": "500 Tech Drive, San Francisco, CA 94107",
+    "hours": {
+      "support": "24/7 for paid plans",
+      "sales": "Mon-Fri 9am-6pm PST"
+    }
+  },
+  "theme": {
+    "colors": {
+      "primary": "#6366F1",
+      "secondary": "#8B5CF6",
+      "accent": "#22D3EE",
+      "background": "#F8FAFC",
+      "text": "#1E293B"
+    },
+    "fonts": {
+      "heading": "Inter",
+      "body": "Inter"
+    },
+    "style": "modern-tech"
+  },
+  "pages": {
+    "home": {
+      "hero": {
+        "headline": "Streamline Your Workflow, Amplify Your Results",
+        "subheadline": "The all-in-one platform that helps teams collaborate, automate, and deliver faster. Join 10,000+ companies already using FlowStack.",
+        "cta": "Start Free Trial",
+        "secondaryCta": "Watch Demo",
+        "backgroundImage": "https://images.unsplash.com/photo-1551434678-e076c223a692?w=1920"
+      },
+      "sections": [
+        {
+          "type": "social-proof",
+          "title": "Trusted by Industry Leaders",
+          "logos": ["TechCorp", "DataFlow", "CloudNine", "StartupX", "Enterprise Co", "Innovation Labs"],
+          "stats": [
+            { "value": "10,000+", "label": "Companies" },
+            { "value": "500K+", "label": "Users" },
+            { "value": "99.9%", "label": "Uptime" }
+          ]
+        },
+        {
+          "type": "features",
+          "title": "Everything You Need to Ship Faster",
+          "items": [
+            { "icon": "Zap", "title": "Workflow Automation", "description": "Automate repetitive tasks and focus on what matters" },
+            { "icon": "Users", "title": "Team Collaboration", "description": "Real-time editing, comments, and seamless handoffs" },
+            { "icon": "BarChart", "title": "Analytics Dashboard", "description": "Track progress with powerful, customizable reports" },
+            { "icon": "Lock", "title": "Enterprise Security", "description": "SOC 2 compliant, SSO, and role-based access" },
+            { "icon": "Puzzle", "title": "100+ Integrations", "description": "Connect with Slack, Jira, GitHub, and more" },
+            { "icon": "Smartphone", "title": "Mobile Apps", "description": "Stay productive on iOS and Android" }
+          ]
+        },
+        {
+          "type": "how-it-works",
+          "title": "Get Started in Minutes",
+          "steps": [
+            { "step": 1, "title": "Sign Up Free", "description": "No credit card required, 14-day trial" },
+            { "step": 2, "title": "Import Your Data", "description": "One-click migration from existing tools" },
+            { "step": 3, "title": "Invite Your Team", "description": "Collaborate instantly with unlimited members" }
+          ]
+        },
+        {
+          "type": "testimonials",
+          "title": "Loved by Teams Everywhere",
+          "items": [
+            { "name": "Sarah Chen", "title": "VP Engineering, TechCorp", "text": "FlowStack cut our sprint planning time in half. The automation features are a game-changer.", "rating": 5 },
+            { "name": "Marcus Johnson", "title": "Product Manager, StartupX", "text": "Finally, a tool that doesn't require a PhD to set up. Our team was productive on day one.", "rating": 5 },
+            { "name": "Emily Rodriguez", "title": "CEO, Innovation Labs", "text": "We've tried every project management tool out there. FlowStack is the one that stuck.", "rating": 5 }
+          ]
+        },
+        {
+          "type": "cta-section",
+          "title": "Ready to Transform Your Workflow?",
+          "subtitle": "Join 10,000+ companies already using FlowStack",
+          "cta": "Start Free Trial",
+          "secondaryCta": "Talk to Sales"
+        }
+      ]
+    },
+    "features": {
+      "hero": {
+        "headline": "Powerful Features for Modern Teams",
+        "subheadline": "Everything you need to plan, track, and deliver"
+      },
+      "categories": [
+        {
+          "name": "Project Management",
+          "items": [
+            { "name": "Kanban Boards", "description": "Visualize work with drag-and-drop boards" },
+            { "name": "Gantt Charts", "description": "Plan timelines and dependencies" },
+            { "name": "Sprint Planning", "description": "Agile tools for development teams" },
+            { "name": "Resource Management", "description": "Balance workloads across team members" }
+          ]
+        },
+        {
+          "name": "Collaboration",
+          "items": [
+            { "name": "Real-Time Editing", "description": "Work together on docs simultaneously" },
+            { "name": "Comments & Mentions", "description": "Keep discussions in context" },
+            { "name": "Video Conferencing", "description": "Built-in video calls, no app needed" },
+            { "name": "Shared Workspaces", "description": "Organize projects by team or client" }
+          ]
+        },
+        {
+          "name": "Automation",
+          "items": [
+            { "name": "Custom Workflows", "description": "Build automations without code" },
+            { "name": "Triggers & Actions", "description": "If-this-then-that logic for any process" },
+            { "name": "Scheduled Tasks", "description": "Automate recurring work" },
+            { "name": "Smart Notifications", "description": "Get alerted only when it matters" }
+          ]
+        },
+        {
+          "name": "Enterprise",
+          "items": [
+            { "name": "SSO / SAML", "description": "Single sign-on with Okta, Azure AD, more" },
+            { "name": "Audit Logs", "description": "Track every action for compliance" },
+            { "name": "Custom Roles", "description": "Fine-grained permissions control" },
+            { "name": "Dedicated Support", "description": "24/7 priority support and SLAs" }
+          ]
+        }
+      ]
+    },
+    "pricing": {
+      "hero": {
+        "headline": "Simple, Transparent Pricing",
+        "subheadline": "Start free, scale as you grow"
+      },
+      "options": [
+        { "name": "Free", "price": 0, "period": "forever", "features": ["Up to 5 users", "3 projects", "Basic integrations", "Community support"], "cta": "Get Started" },
+        { "name": "Pro", "price": 12, "period": "per user/month", "features": ["Unlimited users", "Unlimited projects", "All integrations", "Advanced analytics", "Priority support"], "popular": true, "cta": "Start Free Trial" },
+        { "name": "Business", "price": 24, "period": "per user/month", "features": ["Everything in Pro", "Custom workflows", "Advanced permissions", "API access", "Dedicated CSM"], "cta": "Start Free Trial" },
+        { "name": "Enterprise", "price": null, "period": "custom", "features": ["Everything in Business", "SSO / SAML", "Audit logs", "Custom contracts", "24/7 phone support"], "cta": "Contact Sales" }
+      ],
+      "faq": [
+        { "question": "Can I change plans later?", "answer": "Yes, upgrade or downgrade anytime. Changes take effect immediately." },
+        { "question": "What payment methods do you accept?", "answer": "All major credit cards, PayPal, and wire transfer for annual enterprise plans." },
+        { "question": "Is there a discount for annual billing?", "answer": "Yes! Save 20% when you pay annually." }
+      ]
+    },
+    "about": {
+      "hero": {
+        "headline": "About FlowStack",
+        "subheadline": "Building the future of work since 2020"
+      },
+      "sections": [
+        {
+          "type": "story",
+          "title": "Our Mission",
+          "content": "FlowStack was founded in 2020 by a team of engineers frustrated with fragmented, overcomplicated work tools. We believe software should adapt to how you work, not the other way around. Our mission is to help every team ship better work, faster."
+        },
+        {
+          "type": "values",
+          "title": "Our Values",
+          "items": ["Ship Fast, Learn Faster", "Customer Obsession", "Transparency by Default", "Simplicity Wins", "Remote-First Culture"]
+        }
+      ],
+      "stats": [
+        { "value": "10,000+", "label": "Companies" },
+        { "value": "500K+", "label": "Active Users" },
+        { "value": "150+", "label": "Team Members" },
+        { "value": "$50M", "label": "Series B Raised" }
+      ],
+      "team": [
+        { "name": "Alex Kim", "role": "CEO & Co-Founder", "bio": "Former Google PM, Stanford MBA", "image": "team1.jpg" },
+        { "name": "Jordan Lee", "role": "CTO & Co-Founder", "bio": "Ex-Stripe engineer, built systems at scale", "image": "team2.jpg" },
+        { "name": "Maya Patel", "role": "VP Product", "bio": "Previously led product at Asana", "image": "team3.jpg" }
+      ]
+    },
+    "contact": {
+      "hero": {
+        "headline": "Get in Touch",
+        "subheadline": "We'd love to hear from you"
+      },
+      "info": {
+        "address": "500 Tech Drive, San Francisco, CA 94107",
+        "email": "hello@flowstack-demo.com",
+        "sales": "sales@flowstack-demo.com",
+        "support": "support@flowstack-demo.com"
+      },
+      "options": [
+        { "name": "Sales", "description": "Talk to our sales team about enterprise plans", "cta": "Contact Sales" },
+        { "name": "Support", "description": "Get help with your account or technical issues", "cta": "Open Ticket" },
+        { "name": "Partnerships", "description": "Explore integration or reseller opportunities", "cta": "Partner With Us" }
+      ],
+      "form": {
+        "fields": ["name", "email", "company", "teamSize", "interest", "message"],
+        "submitText": "Send Message"
+      }
+    }
+  }
+}

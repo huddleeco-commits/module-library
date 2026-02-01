@@ -9,7 +9,7 @@ const BUNDLES = {
     description: 'Essential modules every platform needs',
     icon: '🔐',
     backend: ['auth', 'file-upload'],
-    frontend: ['login-form', 'register-form', 'header-nav', 'footer-section', 'modal-system', 'auth-context']
+    frontend: ['login-form', 'register-form', 'header-nav', 'layout-responsive', 'footer-section', 'modal-system', 'auth-context']
   },
   'dashboard': {
     name: 'Dashboard',

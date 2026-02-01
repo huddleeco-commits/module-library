@@ -1,0 +1,80 @@
+{
+  "projectName": "test-cristy-s-cake-shop-bold-energetic-menu-focused",
+  "deletedAt": "2026-01-27T20:44:24.411Z",
+  "resourcesFound": {
+    "name": "test-cristy-s-cake-shop-bold-energetic-menu-focused",
+    "sanitizedName": "test-cristy-s-cake-shop-bold-energetic-menu-focused",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-bold-energetic-menu-focused-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-bold-energetic-menu-focused-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-bold-energetic-menu-focused-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-bold-energetic-menu-focused-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-bold-energetic-menu-focused-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-bold-energetic-menu-focused-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "test-cristy-s-cake-shop-bold-energetic-menu-focused",
+          "verified": true
+        },
+        {
+          "subdomain": "api.test-cristy-s-cake-shop-bold-energetic-menu-focused",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.test-cristy-s-cake-shop-bold-energetic-menu-focused",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

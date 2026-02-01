@@ -1,0 +1,80 @@
+{
+  "projectName": "test-cristy-s-cake-shop-bold-energetic-dark",
+  "deletedAt": "2026-01-26T20:34:42.113Z",
+  "resourcesFound": {
+    "name": "test-cristy-s-cake-shop-bold-energetic-dark",
+    "sanitizedName": "test-cristy-s-cake-shop-bold-energetic-dark",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-bold-energetic-dark-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-bold-energetic-dark-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-bold-energetic-dark-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-bold-energetic-dark-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-bold-energetic-dark-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-bold-energetic-dark-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "test-cristy-s-cake-shop-bold-energetic-dark",
+          "verified": true
+        },
+        {
+          "subdomain": "api.test-cristy-s-cake-shop-bold-energetic-dark",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.test-cristy-s-cake-shop-bold-energetic-dark",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

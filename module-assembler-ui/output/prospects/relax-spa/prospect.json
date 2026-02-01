@@ -1,0 +1,118 @@
+{
+  "id": "ChIJ7VSDXwAZTIYRU92hxDyLEX0",
+  "name": "Relax spa",
+  "address": "221 W Parker Rd #510, Plano, TX 75023, USA",
+  "phone": "",
+  "category": "spa",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 5,
+  "reviewCount": 1,
+  "photo": null,
+  "photos": [],
+  "fixtureId": "salon-spa",
+  "source": "google",
+  "googleMapsUrl": "https://maps.google.com/?cid=9012137422458314067&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+  "coordinates": {
+    "latitude": 33.0402401,
+    "longitude": -96.70583920000001
+  },
+  "raw": {
+    "id": "ChIJ7VSDXwAZTIYRU92hxDyLEX0",
+    "types": [
+      "spa",
+      "massage",
+      "point_of_interest",
+      "establishment"
+    ],
+    "formattedAddress": "221 W Parker Rd #510, Plano, TX 75023, USA",
+    "location": {
+      "latitude": 33.0402401,
+      "longitude": -96.70583920000001
+    },
+    "rating": 5,
+    "googleMapsUri": "https://maps.google.com/?cid=9012137422458314067&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "userRatingCount": 1,
+    "displayName": {
+      "text": "Relax spa",
+      "languageCode": "en"
+    },
+    "primaryType": "spa"
+  },
+  "detectedWebsite": null,
+  "scannedAt": "2026-01-25T19:11:47.156Z",
+  "readyForGeneration": true,
+  "research": {
+    "source": "yelp",
+    "enrichedAt": "2026-01-27T15:42:15.931Z",
+    "matched": true,
+    "yelpId": "d5qWHKBmzGCGku2kil5t2A",
+    "yelpUrl": "https://www.yelp.com/biz/relax-spa-plano-2?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+    "matchStatus": "found",
+    "rating": 1.3,
+    "reviewCount": 3,
+    "categories": [
+      "Beauty & Spas"
+    ],
+    "photos": [],
+    "hours": [
+      {
+        "is_overnight": false,
+        "start": "0930",
+        "end": "2100",
+        "day": 0
+      },
+      {
+        "is_overnight": false,
+        "start": "0930",
+        "end": "2100",
+        "day": 1
+      },
+      {
+        "is_overnight": false,
+        "start": "0930",
+        "end": "2100",
+        "day": 2
+      },
+      {
+        "is_overnight": false,
+        "start": "0930",
+        "end": "2100",
+        "day": 3
+      },
+      {
+        "is_overnight": false,
+        "start": "0930",
+        "end": "2100",
+        "day": 4
+      },
+      {
+        "is_overnight": false,
+        "start": "0930",
+        "end": "2100",
+        "day": 5
+      }
+    ],
+    "isOpen": true,
+    "transactions": []
+  },
+  "opportunityScore": 35,
+  "scoreBreakdown": [
+    {
+      "factor": "No website (base)",
+      "points": 50,
+      "source": "Google"
+    },
+    {
+      "factor": "Low rating (1.3★)",
+      "points": -10,
+      "source": "Yelp"
+    },
+    {
+      "factor": "Few reviews (3)",
+      "points": -5,
+      "source": "Yelp"
+    }
+  ],
+  "city": "Plano"
+}

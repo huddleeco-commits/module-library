@@ -1,0 +1,61 @@
+{
+  "projectName": "test-ale-s-salon-eyelashes-local",
+  "deletedAt": "2026-01-27T21:51:51.253Z",
+  "resourcesFound": {
+    "name": "test-ale-s-salon-eyelashes-local",
+    "sanitizedName": "test-ale-s-salon-eyelashes-local",
+    "github": {
+      "repos": [
+        {
+          "name": "test-ale-s-salon-eyelashes-local-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-ale-s-salon-eyelashes-local-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-ale-s-salon-eyelashes-local-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-ale-s-salon-eyelashes-local-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-ale-s-salon-eyelashes-local-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-ale-s-salon-eyelashes-local-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": []
+  }
+}

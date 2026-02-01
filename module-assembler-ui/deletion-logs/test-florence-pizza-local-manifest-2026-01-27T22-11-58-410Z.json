@@ -1,0 +1,38 @@
+{
+  "projectName": "test-florence-pizza-local",
+  "savedAt": "2026-01-27T22:11:58.410Z",
+  "resources": {
+    "name": "test-florence-pizza-local",
+    "sanitizedName": "test-florence-pizza-local",
+    "github": {
+      "repos": [
+        {
+          "name": "test-florence-pizza-local-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-florence-pizza-local-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-florence-pizza-local-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

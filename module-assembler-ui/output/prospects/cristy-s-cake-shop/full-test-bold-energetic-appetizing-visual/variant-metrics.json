@@ -1,0 +1,16 @@
+{
+  "key": "-bold-energetic-appetizing-visual",
+  "preset": "bold-energetic",
+  "presetName": "bold-energetic",
+  "presetColor": "#f97316",
+  "presetIcon": "zap",
+  "layout": "appetizing-visual",
+  "layoutName": "appetizing-visual",
+  "theme": "medium",
+  "pages": 13,
+  "linesOfCode": 103312,
+  "files": 277,
+  "generationTimeMs": 13718,
+  "success": true,
+  "previewUrl": "/api/scout/preview/cristy-s-cake-shop/full-test-bold-energetic-appetizing-visual/"
+}

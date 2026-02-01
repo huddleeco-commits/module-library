@@ -1,0 +1,230 @@
+{
+  "id": "ChIJmdGoNfctTIYRTH6fgdPbuQU",
+  "name": "Image Beauty Salon",
+  "address": "1372 W Main St, Lewisville, TX 75067, USA",
+  "phone": "(469) 933-3724",
+  "category": "beauty_salon",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 5,
+  "reviewCount": 35,
+  "photos": [
+    "places/ChIJmdGoNfctTIYRTH6fgdPbuQU/photos/AcnlKN3PIHmI2NcirOYVJK3ntvRAQQ4-oZwwv2SNiW-Y18HUdIn1zL66aKbmzeRkepR_RlBlR9Bo87jdP1ucbRR9lrwL4w_-J4puJDDjNMcObx3ci2QbEdjv_7YZwbT2vlxVrljMl1QewiHjFGVulkqcnwOIavMY5tcdRiC8RAiUv7ItfoS9-IBLt3kHBo_mWSuEm58Z0Y0PWPzmzTDuGZVsnuHMRG22bzDeccBJIKPJbpJ4Kyef8Z4_wdXn0CEBGowgFMkTbTMSFVRg1R67v1VaKEjFD3Q6aT3q2BhgOnaszQTOyg",
+    "places/ChIJmdGoNfctTIYRTH6fgdPbuQU/photos/AcnlKN0cz1WWJLY4Yosa49rR07pA13mFFRGgJ56hQ4ohUNJyjKCaLN5Gfq9CwSk354y9_kla3woNaDh1bfcyA6WymqSBKKhnxFWbsC4r270fTbNjPcuQFb-0W3BRoiypiYJxASKjJnQaocGR30wNsOtOZVltVQqAURfhdl3k8UFEuZ8jOIqG8OHod170yeASJ1XUqM6k50OnlBY393-9ql-AzeV4RCY7n_-A1-SoUWLoq6X2N-zihA8i_IAJvxqYRQ82xJqQOMI499tP_87dhbC7JGMi8DrnHlSV9Zm7RYFhbhaUQw",
+    "places/ChIJmdGoNfctTIYRTH6fgdPbuQU/photos/AcnlKN1Djr2lHoWTfm6y-YkRNEt28wxOeoGmSooZZsrdiIC6OMSqBREBXwW93ZvWRvu9IUl8bTvzRlXsegcHYJNNMmvQeBmN3mHT_UadePTDiOed2twebE43nWHUfS2AufVm_2nbxMNy2BFjBXNiibGyDf7UmRACKF5yFpg7VaAIWRheeIr9_PRevXHKiUkMa10ZbiKigfJxaKyOtnETE_AVcwNoauHePCmz5YnYfWqwZgPmODq4wG76FQ1uAATLBVzN7mz4APxmIN1ADiERVTGL0hzBE2iuNhE7O-HbPCPv2NW3WQ",
+    "places/ChIJmdGoNfctTIYRTH6fgdPbuQU/photos/AcnlKN2A7q9P7PKDjIEZIwmATxSyaT2kOpxrLtTMokzL6UQAYAlWTp-xd2cWIMr-tNd1bHs24OKdraPL78EwqYqnpEZmTIQ1AWUd1xVEydSrtJUeGeCFGsHG15q2gLecp-2nTa9onwN2DrQv0haoc521S7FQVJdH5fupXIyvJi-LWB18ykyiul8O7x4nNbPLahZegchIcwi-vVmHgJ4rbzfEDj23ROUA0NEDLFRv1dAYm5E8O94bQ6f28HIvqgJAan-MXHJSDmEWt7JK1g6Hae_EnG3A7gYUzvPgCA-jIQ9YPHLEgg",
+    "places/ChIJmdGoNfctTIYRTH6fgdPbuQU/photos/AcnlKN2b3Drxft1QOiCBmPrAA6O2cfpgQ8mEBD2g8QJFsCFLzQ7zB0zlXlr45TmSfyTwFiBqhForj0UNly5cza92QsldKwQP08-p1lfBjgl-Tn3nNXVdRCU2KUpX1yKbm8FQw4rYK6LWnwWJuAaoFofkwu90RD3X2-XS_QdajstKZsprbf0YVP0GznyObIDsKnLzJgaCCAxPGPaESZD-q4-gK7GXdUTZCqxchnWtwC_4anSdVqgODcflIWchY2sMhSQMGxDevFcgjHXMRXmcCcMtRg88d3GLoMnQKapjl9xwhbPEZA",
+    "places/ChIJmdGoNfctTIYRTH6fgdPbuQU/photos/AcnlKN1coUT3dOe5dlebwDUHixISt1rslNa4rT5_zmYPGamzpwbHW1XXQlXYRO5VhWkGQ-3Q0QK0AYqQBZQOo5HeRjRAPxT4bTUHZTYZbp8PqhiALQ_A-L_ZbYlZE38gRwoZeiWuWw-BDTLErKz5SIJZ3WQT6N24YVHtlZeh2SKqg7Jfzepzh9wHHjbndVxMWo9D6ZE-DQi6AaLVHk7_o-YqaoHD5ADeZWcD20K3k6GMvziQHdUOb8GbsCFPwvGzWjBZBoTXYLKMjybjkoTbHw8XaVKW6-dUdp6B3ona_BmAagWVIg",
+    "places/ChIJmdGoNfctTIYRTH6fgdPbuQU/photos/AcnlKN0d_wEDU5ugS0wR67Dj671EY_6_3zcmbFBkGqyZ7ARd4_wfJgWgmxMNB3pH4u4cKWq7TIPcCznMoqCngBTU1p6bprGFn6J8-kzEL82gVU23gpsbO9EV805mECV7l6dbupN8dJyOosTb3g-ZdBRM0Ejk2hzF3GcE2QZY7UAGuF4yfm2Sgu0h-LgvSadnp6syGP0zANvQzQi5ZRpWsEgYMX1gsx-i2qD-Pk5mC9QneqluzMkEdlbcNtegNELqfKzKsBQXTSFDDJ5YmDd4mHinOFn7XHaACaVtcwHm2KZUvBNNMkeMMMdbc1hE3YKb6WuAGxmKZMZC5l_QF62vK-mqP8im4lDfJ-uj973ujEyvFW7yetwYWlQ07gNEXm7zb2wJ8Yy4R5tt9mezMFWl3OYvcEtq0drQP8_8Sjjhp6W2gmk",
+    "places/ChIJmdGoNfctTIYRTH6fgdPbuQU/photos/AcnlKN1Xde_I2wnCeHtZRWEqiXWwafyGIkVhPgyFl_ZEnZDdsJSEx-EPWQQ_zMxvhyyq0iVCXUcKZMgEjAQoJuE-Ap2NW7fgLSXSuCQjOz08Bfl-DUJIVXwG3GI6cRFk47QOXV8XWrOXknNf84jYHPlp2-Qp55u6e3TXAhul5JkMeUrawqNoOAdgWlNmg70u-hyibIWpZMnDVmfwJC7vmYYcQWkdnR0APTBGr4jgDCJpnLyLg2hlC_gSb7pdqxnZWFGKnd8wJ6U96w8bBaCOEBx2zmJbBIjFG9t7Dg3ZJi2KRvCstg",
+    "places/ChIJmdGoNfctTIYRTH6fgdPbuQU/photos/AcnlKN1EOh_xvaqD8vFracB0YVilodDUnhmpwKuo4LKBvoUErV3JKwzn8PSJz4CuQ7zNLba74zU2k1fQFDLNQvXX2JPNqaohmlRhw5npYGmNf0BNso2RHWzI-LJEvD6sVaLza4fhxOa9pbXO2snXn0Dhq9WU0sld5tbKrCjr3G5GFZ_b-4o4VDaonJTy0cbHRiD-JCR4_dLjmkAw_71C6e3hteSdAqrUWxsRF4Y50kPpiwamnMH0v-1oU11R-4WJz696GbWK9UZwXrV2ZC4qdtBh08w1SlfO2PhfNhPHJxYms2R2Og",
+    "places/ChIJmdGoNfctTIYRTH6fgdPbuQU/photos/AcnlKN2AzXsiz_66BQDRhclc0tOrsvn90vud3eXF0r5GLHesZZcbnuI6MGIsCabZYsusVzDPaFG3nexgMq0OqRIgrY8fvCjGWBgks6lN97kklcn13XqeiKK3zquOKZ62WYTmvdecX-_KVmke5d2D8uNjqMYVAqINuqjMApKVje0EFkSENd9y7uzXwJ91EnkWOsbRhNpvqTFXjBMKzN5JrGKWzbnjIxCLOT5qZTJZLqZdPpTaoeKzmzKqXMyVG_hC-5X1M7ehiZl_0d0UFG1J6uiZT1cCSSHaIvm_08Sd8eDnZrkrlA"
+  ],
+  "fixtureId": "salon-spa",
+  "source": "google",
+  "googleMapsUrl": "https://maps.google.com/?cid=412602542340406860&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+  "coordinates": {
+    "latitude": 33.0410146,
+    "longitude": -97.02972489999999
+  },
+  "raw": {
+    "id": "ChIJmdGoNfctTIYRTH6fgdPbuQU",
+    "types": [
+      "beauty_salon",
+      "point_of_interest",
+      "establishment"
+    ],
+    "nationalPhoneNumber": "(469) 933-3724",
+    "formattedAddress": "1372 W Main St, Lewisville, TX 75067, USA",
+    "location": {
+      "latitude": 33.0410146,
+      "longitude": -97.02972489999999
+    },
+    "rating": 5,
+    "googleMapsUri": "https://maps.google.com/?cid=412602542340406860&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "userRatingCount": 35,
+    "displayName": {
+      "text": "Image Beauty Salon",
+      "languageCode": "en"
+    },
+    "primaryType": "beauty_salon",
+    "photos": [
+      {
+        "name": "places/ChIJmdGoNfctTIYRTH6fgdPbuQU/photos/AcnlKN3PIHmI2NcirOYVJK3ntvRAQQ4-oZwwv2SNiW-Y18HUdIn1zL66aKbmzeRkepR_RlBlR9Bo87jdP1ucbRR9lrwL4w_-J4puJDDjNMcObx3ci2QbEdjv_7YZwbT2vlxVrljMl1QewiHjFGVulkqcnwOIavMY5tcdRiC8RAiUv7ItfoS9-IBLt3kHBo_mWSuEm58Z0Y0PWPzmzTDuGZVsnuHMRG22bzDeccBJIKPJbpJ4Kyef8Z4_wdXn0CEBGowgFMkTbTMSFVRg1R67v1VaKEjFD3Q6aT3q2BhgOnaszQTOyg",
+        "widthPx": 1179,
+        "heightPx": 1554,
+        "authorAttributions": [
+          {
+            "displayName": "Image Beauty Salon",
+            "uri": "https://maps.google.com/maps/contrib/110679563511727634726",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUU25nXqG90hmc76_40_Xa8YqbQ0q8GaKVa98rVff15AtuCdwE=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipNHBaSUC51XNvxM2k8_kfMLB9aJPecyom85kDEj&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipNHBaSUC51XNvxM2k8_kfMLB9aJPecyom85kDEj!2e10!4m2!3m1!1s0x864c2df735a8d199:0x5b9dbd3819f7e4c"
+      },
+      {
+        "name": "places/ChIJmdGoNfctTIYRTH6fgdPbuQU/photos/AcnlKN0cz1WWJLY4Yosa49rR07pA13mFFRGgJ56hQ4ohUNJyjKCaLN5Gfq9CwSk354y9_kla3woNaDh1bfcyA6WymqSBKKhnxFWbsC4r270fTbNjPcuQFb-0W3BRoiypiYJxASKjJnQaocGR30wNsOtOZVltVQqAURfhdl3k8UFEuZ8jOIqG8OHod170yeASJ1XUqM6k50OnlBY393-9ql-AzeV4RCY7n_-A1-SoUWLoq6X2N-zihA8i_IAJvxqYRQ82xJqQOMI499tP_87dhbC7JGMi8DrnHlSV9Zm7RYFhbhaUQw",
+        "widthPx": 1179,
+        "heightPx": 1546,
+        "authorAttributions": [
+          {
+            "displayName": "Image Beauty Salon",
+            "uri": "https://maps.google.com/maps/contrib/110679563511727634726",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUU25nXqG90hmc76_40_Xa8YqbQ0q8GaKVa98rVff15AtuCdwE=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipN9X8sj0jic_xOwMweFWRIXanIfff0pqn1AjsvS&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipN9X8sj0jic_xOwMweFWRIXanIfff0pqn1AjsvS!2e10!4m2!3m1!1s0x864c2df735a8d199:0x5b9dbd3819f7e4c"
+      },
+      {
+        "name": "places/ChIJmdGoNfctTIYRTH6fgdPbuQU/photos/AcnlKN1Djr2lHoWTfm6y-YkRNEt28wxOeoGmSooZZsrdiIC6OMSqBREBXwW93ZvWRvu9IUl8bTvzRlXsegcHYJNNMmvQeBmN3mHT_UadePTDiOed2twebE43nWHUfS2AufVm_2nbxMNy2BFjBXNiibGyDf7UmRACKF5yFpg7VaAIWRheeIr9_PRevXHKiUkMa10ZbiKigfJxaKyOtnETE_AVcwNoauHePCmz5YnYfWqwZgPmODq4wG76FQ1uAATLBVzN7mz4APxmIN1ADiERVTGL0hzBE2iuNhE7O-HbPCPv2NW3WQ",
+        "widthPx": 1179,
+        "heightPx": 1556,
+        "authorAttributions": [
+          {
+            "displayName": "Image Beauty Salon",
+            "uri": "https://maps.google.com/maps/contrib/110679563511727634726",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUU25nXqG90hmc76_40_Xa8YqbQ0q8GaKVa98rVff15AtuCdwE=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipMjQ2fGgakJ4Ko98qvaVo57MQQnT03Vtzf06eVb&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipMjQ2fGgakJ4Ko98qvaVo57MQQnT03Vtzf06eVb!2e10!4m2!3m1!1s0x864c2df735a8d199:0x5b9dbd3819f7e4c"
+      },
+      {
+        "name": "places/ChIJmdGoNfctTIYRTH6fgdPbuQU/photos/AcnlKN2A7q9P7PKDjIEZIwmATxSyaT2kOpxrLtTMokzL6UQAYAlWTp-xd2cWIMr-tNd1bHs24OKdraPL78EwqYqnpEZmTIQ1AWUd1xVEydSrtJUeGeCFGsHG15q2gLecp-2nTa9onwN2DrQv0haoc521S7FQVJdH5fupXIyvJi-LWB18ykyiul8O7x4nNbPLahZegchIcwi-vVmHgJ4rbzfEDj23ROUA0NEDLFRv1dAYm5E8O94bQ6f28HIvqgJAan-MXHJSDmEWt7JK1g6Hae_EnG3A7gYUzvPgCA-jIQ9YPHLEgg",
+        "widthPx": 1179,
+        "heightPx": 1557,
+        "authorAttributions": [
+          {
+            "displayName": "Image Beauty Salon",
+            "uri": "https://maps.google.com/maps/contrib/110679563511727634726",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUU25nXqG90hmc76_40_Xa8YqbQ0q8GaKVa98rVff15AtuCdwE=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipMD7ambVy1Ob5OSjvPBc7rqBfV1FwbPzDml8dAi&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipMD7ambVy1Ob5OSjvPBc7rqBfV1FwbPzDml8dAi!2e10!4m2!3m1!1s0x864c2df735a8d199:0x5b9dbd3819f7e4c"
+      },
+      {
+        "name": "places/ChIJmdGoNfctTIYRTH6fgdPbuQU/photos/AcnlKN2b3Drxft1QOiCBmPrAA6O2cfpgQ8mEBD2g8QJFsCFLzQ7zB0zlXlr45TmSfyTwFiBqhForj0UNly5cza92QsldKwQP08-p1lfBjgl-Tn3nNXVdRCU2KUpX1yKbm8FQw4rYK6LWnwWJuAaoFofkwu90RD3X2-XS_QdajstKZsprbf0YVP0GznyObIDsKnLzJgaCCAxPGPaESZD-q4-gK7GXdUTZCqxchnWtwC_4anSdVqgODcflIWchY2sMhSQMGxDevFcgjHXMRXmcCcMtRg88d3GLoMnQKapjl9xwhbPEZA",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Image Beauty Salon",
+            "uri": "https://maps.google.com/maps/contrib/110679563511727634726",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUU25nXqG90hmc76_40_Xa8YqbQ0q8GaKVa98rVff15AtuCdwE=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipM38tQLkN2Gg03Lhz3CBTrSkZVD5bIZCFb6r1H-&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipM38tQLkN2Gg03Lhz3CBTrSkZVD5bIZCFb6r1H-!2e10!4m2!3m1!1s0x864c2df735a8d199:0x5b9dbd3819f7e4c"
+      },
+      {
+        "name": "places/ChIJmdGoNfctTIYRTH6fgdPbuQU/photos/AcnlKN1coUT3dOe5dlebwDUHixISt1rslNa4rT5_zmYPGamzpwbHW1XXQlXYRO5VhWkGQ-3Q0QK0AYqQBZQOo5HeRjRAPxT4bTUHZTYZbp8PqhiALQ_A-L_ZbYlZE38gRwoZeiWuWw-BDTLErKz5SIJZ3WQT6N24YVHtlZeh2SKqg7Jfzepzh9wHHjbndVxMWo9D6ZE-DQi6AaLVHk7_o-YqaoHD5ADeZWcD20K3k6GMvziQHdUOb8GbsCFPwvGzWjBZBoTXYLKMjybjkoTbHw8XaVKW6-dUdp6B3ona_BmAagWVIg",
+        "widthPx": 1170,
+        "heightPx": 1847,
+        "authorAttributions": [
+          {
+            "displayName": "Image Beauty Salon",
+            "uri": "https://maps.google.com/maps/contrib/110679563511727634726",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUU25nXqG90hmc76_40_Xa8YqbQ0q8GaKVa98rVff15AtuCdwE=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipPLZn4K2aqszFyUHIcVsYVBgtQejRTgdihq9pqp&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipPLZn4K2aqszFyUHIcVsYVBgtQejRTgdihq9pqp!2e10!4m2!3m1!1s0x864c2df735a8d199:0x5b9dbd3819f7e4c"
+      },
+      {
+        "name": "places/ChIJmdGoNfctTIYRTH6fgdPbuQU/photos/AcnlKN0d_wEDU5ugS0wR67Dj671EY_6_3zcmbFBkGqyZ7ARd4_wfJgWgmxMNB3pH4u4cKWq7TIPcCznMoqCngBTU1p6bprGFn6J8-kzEL82gVU23gpsbO9EV805mECV7l6dbupN8dJyOosTb3g-ZdBRM0Ejk2hzF3GcE2QZY7UAGuF4yfm2Sgu0h-LgvSadnp6syGP0zANvQzQi5ZRpWsEgYMX1gsx-i2qD-Pk5mC9QneqluzMkEdlbcNtegNELqfKzKsBQXTSFDDJ5YmDd4mHinOFn7XHaACaVtcwHm2KZUvBNNMkeMMMdbc1hE3YKb6WuAGxmKZMZC5l_QF62vK-mqP8im4lDfJ-uj973ujEyvFW7yetwYWlQ07gNEXm7zb2wJ8Yy4R5tt9mezMFWl3OYvcEtq0drQP8_8Sjjhp6W2gmk",
+        "widthPx": 1200,
+        "heightPx": 1600,
+        "authorAttributions": [
+          {
+            "displayName": "Coral Ramirez",
+            "uri": "https://maps.google.com/maps/contrib/101023667484176214355",
+            "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocLzQpwKnOvVaBvDmb0pAPpvIOf60JZ2fGRe8LkC2L1SDaG7hg=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDnttTfUQ&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDnttTfUQ!2e10!4m2!3m1!1s0x864c2df735a8d199:0x5b9dbd3819f7e4c"
+      },
+      {
+        "name": "places/ChIJmdGoNfctTIYRTH6fgdPbuQU/photos/AcnlKN1Xde_I2wnCeHtZRWEqiXWwafyGIkVhPgyFl_ZEnZDdsJSEx-EPWQQ_zMxvhyyq0iVCXUcKZMgEjAQoJuE-Ap2NW7fgLSXSuCQjOz08Bfl-DUJIVXwG3GI6cRFk47QOXV8XWrOXknNf84jYHPlp2-Qp55u6e3TXAhul5JkMeUrawqNoOAdgWlNmg70u-hyibIWpZMnDVmfwJC7vmYYcQWkdnR0APTBGr4jgDCJpnLyLg2hlC_gSb7pdqxnZWFGKnd8wJ6U96w8bBaCOEBx2zmJbBIjFG9t7Dg3ZJi2KRvCstg",
+        "widthPx": 1206,
+        "heightPx": 1591,
+        "authorAttributions": [
+          {
+            "displayName": "Image Beauty Salon",
+            "uri": "https://maps.google.com/maps/contrib/110679563511727634726",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUU25nXqG90hmc76_40_Xa8YqbQ0q8GaKVa98rVff15AtuCdwE=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipPx-SB0fufYxv4pB5pOqAaBskjowoyvpY-y9uGl&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipPx-SB0fufYxv4pB5pOqAaBskjowoyvpY-y9uGl!2e10!4m2!3m1!1s0x864c2df735a8d199:0x5b9dbd3819f7e4c"
+      },
+      {
+        "name": "places/ChIJmdGoNfctTIYRTH6fgdPbuQU/photos/AcnlKN1EOh_xvaqD8vFracB0YVilodDUnhmpwKuo4LKBvoUErV3JKwzn8PSJz4CuQ7zNLba74zU2k1fQFDLNQvXX2JPNqaohmlRhw5npYGmNf0BNso2RHWzI-LJEvD6sVaLza4fhxOa9pbXO2snXn0Dhq9WU0sld5tbKrCjr3G5GFZ_b-4o4VDaonJTy0cbHRiD-JCR4_dLjmkAw_71C6e3hteSdAqrUWxsRF4Y50kPpiwamnMH0v-1oU11R-4WJz696GbWK9UZwXrV2ZC4qdtBh08w1SlfO2PhfNhPHJxYms2R2Og",
+        "widthPx": 1179,
+        "heightPx": 1538,
+        "authorAttributions": [
+          {
+            "displayName": "Image Beauty Salon",
+            "uri": "https://maps.google.com/maps/contrib/110679563511727634726",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUU25nXqG90hmc76_40_Xa8YqbQ0q8GaKVa98rVff15AtuCdwE=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipMlOahdvTsbHg1vkpYHe46m4PC1MMe7C6uVYSbY&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipMlOahdvTsbHg1vkpYHe46m4PC1MMe7C6uVYSbY!2e10!4m2!3m1!1s0x864c2df735a8d199:0x5b9dbd3819f7e4c"
+      },
+      {
+        "name": "places/ChIJmdGoNfctTIYRTH6fgdPbuQU/photos/AcnlKN2AzXsiz_66BQDRhclc0tOrsvn90vud3eXF0r5GLHesZZcbnuI6MGIsCabZYsusVzDPaFG3nexgMq0OqRIgrY8fvCjGWBgks6lN97kklcn13XqeiKK3zquOKZ62WYTmvdecX-_KVmke5d2D8uNjqMYVAqINuqjMApKVje0EFkSENd9y7uzXwJ91EnkWOsbRhNpvqTFXjBMKzN5JrGKWzbnjIxCLOT5qZTJZLqZdPpTaoeKzmzKqXMyVG_hC-5X1M7ehiZl_0d0UFG1J6uiZT1cCSSHaIvm_08Sd8eDnZrkrlA",
+        "widthPx": 1179,
+        "heightPx": 1549,
+        "authorAttributions": [
+          {
+            "displayName": "Image Beauty Salon",
+            "uri": "https://maps.google.com/maps/contrib/110679563511727634726",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUU25nXqG90hmc76_40_Xa8YqbQ0q8GaKVa98rVff15AtuCdwE=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipOtfEA3XeGyBTfYojZJwxVjVT9JY8pOqw5ZhFv7&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipOtfEA3XeGyBTfYojZJwxVjVT9JY8pOqw5ZhFv7!2e10!4m2!3m1!1s0x864c2df735a8d199:0x5b9dbd3819f7e4c"
+      }
+    ]
+  },
+  "detectedWebsite": null,
+  "scannedAt": "2026-01-25T16:21:49.926Z",
+  "readyForGeneration": true,
+  "research": {
+    "source": "yelp",
+    "enrichedAt": "2026-01-27T15:40:49.799Z",
+    "matched": true,
+    "yelpId": "XS0jYWQ67rLemclWwQ0iBw",
+    "yelpUrl": "https://www.yelp.com/biz/new-image-beauty-salon-carrollton-2?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+    "matchStatus": "found",
+    "rating": 4.5,
+    "reviewCount": 16,
+    "priceLevel": "$",
+    "categories": [
+      "Hair Salons",
+      "Skin Care",
+      "Waxing"
+    ],
+    "photos": [],
+    "hours": null,
+    "transactions": []
+  },
+  "opportunityScore": 65,
+  "scoreBreakdown": [
+    {
+      "factor": "No website (base)",
+      "points": 50,
+      "source": "Google"
+    },
+    {
+      "factor": "Excellent rating (4.5★)",
+      "points": 15,
+      "source": "Yelp"
+    }
+  ],
+  "city": "Lewisville"
+}

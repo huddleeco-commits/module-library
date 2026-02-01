@@ -1,0 +1,190 @@
+{
+  "id": "ecommerce",
+  "name": "E-commerce / Retail",
+  "icon": "🛍️",
+  "business": {
+    "name": "Urban Threads",
+    "location": "Los Angeles, CA",
+    "tagline": "Sustainable Fashion for the Modern You",
+    "industry": "ecommerce",
+    "teamSize": "10-20",
+    "priceRange": "$$",
+    "established": "2018",
+    "phone": "(555) 678-SHOP",
+    "email": "hello@urbanthreads-demo.com",
+    "address": "789 Fashion Blvd, Los Angeles, CA 90015",
+    "hours": {
+      "customerService": "Mon-Fri 9am-6pm PST",
+      "liveChat": "24/7"
+    }
+  },
+  "theme": {
+    "colors": {
+      "primary": "#18181B",
+      "secondary": "#A1A1AA",
+      "accent": "#F59E0B",
+      "background": "#FAFAFA",
+      "text": "#27272A"
+    },
+    "fonts": {
+      "heading": "DM Sans",
+      "body": "Inter"
+    },
+    "style": "minimal-modern"
+  },
+  "pages": {
+    "home": {
+      "hero": {
+        "headline": "Sustainable Fashion for the Modern You",
+        "subheadline": "Ethically made, eco-friendly clothing that doesn't compromise on style. Free shipping on orders over $75.",
+        "cta": "Shop New Arrivals",
+        "secondaryCta": "Our Story",
+        "backgroundImage": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920"
+      },
+      "sections": [
+        {
+          "type": "categories",
+          "title": "Shop by Category",
+          "items": [
+            { "name": "Women", "image": "women-category.jpg", "link": "/shop/women" },
+            { "name": "Men", "image": "men-category.jpg", "link": "/shop/men" },
+            { "name": "Accessories", "image": "accessories-category.jpg", "link": "/shop/accessories" },
+            { "name": "Sale", "image": "sale-category.jpg", "link": "/shop/sale", "badge": "Up to 50% Off" }
+          ]
+        },
+        {
+          "type": "featured-products",
+          "title": "Best Sellers",
+          "items": [
+            { "name": "Organic Cotton Tee", "price": 45, "originalPrice": null, "image": "product1.jpg", "badge": "Best Seller" },
+            { "name": "Recycled Denim Jacket", "price": 128, "originalPrice": 160, "image": "product2.jpg", "badge": "20% Off" },
+            { "name": "Hemp Canvas Tote", "price": 38, "originalPrice": null, "image": "product3.jpg", "badge": null },
+            { "name": "Bamboo Fiber Dress", "price": 89, "originalPrice": null, "image": "product4.jpg", "badge": "New" }
+          ]
+        },
+        {
+          "type": "features",
+          "title": "Why Urban Threads",
+          "items": [
+            { "icon": "Leaf", "title": "Sustainable Materials", "description": "Organic cotton, recycled fabrics, and eco-friendly dyes" },
+            { "icon": "Heart", "title": "Ethical Production", "description": "Fair wages and safe conditions for all workers" },
+            { "icon": "Truck", "title": "Free Shipping", "description": "On all orders over $75, carbon-neutral delivery" },
+            { "icon": "RefreshCw", "title": "Easy Returns", "description": "30-day hassle-free returns and exchanges" }
+          ]
+        },
+        {
+          "type": "collection-highlight",
+          "title": "Spring Collection 2024",
+          "description": "Fresh styles made from 100% organic and recycled materials. Light layers, bold colors, and timeless pieces.",
+          "cta": "Shop Spring",
+          "image": "spring-collection.jpg"
+        },
+        {
+          "type": "testimonials",
+          "title": "What Our Customers Say",
+          "items": [
+            { "name": "Jessica M.", "text": "The quality is incredible. I've had my Urban Threads tee for 2 years and it still looks brand new.", "rating": 5, "verified": true },
+            { "name": "Michael T.", "text": "Love knowing my clothes were made ethically. Plus the style is on point.", "rating": 5, "verified": true },
+            { "name": "Amanda R.", "text": "Fast shipping, great packaging (all recyclable!), and the fit is perfect.", "rating": 5, "verified": true }
+          ]
+        },
+        {
+          "type": "newsletter",
+          "title": "Join the Thread",
+          "description": "Subscribe for 15% off your first order, plus early access to sales and new arrivals.",
+          "placeholder": "Enter your email",
+          "cta": "Subscribe"
+        }
+      ]
+    },
+    "shop": {
+      "hero": {
+        "headline": "Shop All",
+        "subheadline": "Sustainable style for every occasion"
+      },
+      "filters": ["Category", "Size", "Color", "Price", "Material"],
+      "sortOptions": ["Newest", "Best Selling", "Price: Low to High", "Price: High to Low"],
+      "categories": [
+        {
+          "name": "Women's",
+          "subcategories": ["Tops", "Bottoms", "Dresses", "Outerwear", "Activewear"]
+        },
+        {
+          "name": "Men's",
+          "subcategories": ["Tops", "Bottoms", "Outerwear", "Activewear"]
+        },
+        {
+          "name": "Accessories",
+          "subcategories": ["Bags", "Hats", "Scarves", "Jewelry"]
+        }
+      ],
+      "featuredProducts": [
+        { "name": "Organic Cotton Tee", "price": 45, "sizes": ["XS", "S", "M", "L", "XL"], "colors": ["White", "Black", "Navy", "Sage"] },
+        { "name": "Recycled Denim Jacket", "price": 128, "sizes": ["XS", "S", "M", "L", "XL"], "colors": ["Light Wash", "Medium Wash", "Black"] },
+        { "name": "Hemp Canvas Tote", "price": 38, "sizes": ["One Size"], "colors": ["Natural", "Black", "Olive"] },
+        { "name": "Bamboo Fiber Dress", "price": 89, "sizes": ["XS", "S", "M", "L", "XL"], "colors": ["Terracotta", "Sage", "Cream"] },
+        { "name": "Organic Linen Pants", "price": 95, "sizes": ["XS", "S", "M", "L", "XL"], "colors": ["Natural", "Black", "Khaki"] },
+        { "name": "Recycled Wool Sweater", "price": 135, "sizes": ["XS", "S", "M", "L", "XL"], "colors": ["Oatmeal", "Charcoal", "Forest"] }
+      ]
+    },
+    "about": {
+      "hero": {
+        "headline": "Our Story",
+        "subheadline": "Fashion that feels good and does good"
+      },
+      "sections": [
+        {
+          "type": "story",
+          "title": "Why We Started",
+          "content": "Urban Threads was born in 2018 from a simple question: why can't fashion be both stylish and sustainable? Founder Maya Chen left her corporate fashion job to build a brand that proves you don't have to choose between looking good and doing good. Every piece we make is designed to last, crafted from sustainable materials, and produced in ethical facilities."
+        },
+        {
+          "type": "impact",
+          "title": "Our Impact",
+          "items": [
+            { "value": "500K+", "label": "Plastic bottles recycled into fabric" },
+            { "value": "100%", "label": "Organic or recycled materials" },
+            { "value": "0", "label": "Garments in landfills (we take back old pieces)" },
+            { "value": "15K", "label": "Trees planted through purchases" }
+          ]
+        },
+        {
+          "type": "values",
+          "title": "What We Stand For",
+          "items": ["Sustainability First", "Transparent Supply Chain", "Living Wages for All Workers", "Carbon Neutral Shipping", "Circular Fashion Model"]
+        }
+      ],
+      "certifications": ["B Corp Certified", "Fair Trade", "GOTS Certified Organic", "Climate Neutral"],
+      "team": [
+        { "name": "Maya Chen", "role": "Founder & CEO", "bio": "Former corporate fashion designer turned sustainability advocate", "image": "team1.jpg" },
+        { "name": "David Park", "role": "Head of Design", "bio": "15 years in sustainable textile innovation", "image": "team2.jpg" }
+      ]
+    },
+    "contact": {
+      "hero": {
+        "headline": "Get in Touch",
+        "subheadline": "We're here to help"
+      },
+      "info": {
+        "email": "hello@urbanthreads-demo.com",
+        "phone": "(555) 678-SHOP",
+        "customerService": "Mon-Fri 9am-6pm PST",
+        "liveChat": "Available 24/7"
+      },
+      "options": [
+        { "name": "Orders & Shipping", "description": "Track orders, shipping questions, delivery issues", "cta": "Order Help" },
+        { "name": "Returns & Exchanges", "description": "Start a return, exchange for different size", "cta": "Start Return" },
+        { "name": "Product Questions", "description": "Sizing, materials, care instructions", "cta": "Ask Us" }
+      ],
+      "faq": [
+        { "question": "What is your return policy?", "answer": "We offer free returns within 30 days of purchase. Items must be unworn with tags attached." },
+        { "question": "How long does shipping take?", "answer": "Standard shipping takes 5-7 business days. Express shipping (2-3 days) is available at checkout." },
+        { "question": "Are your products really sustainable?", "answer": "Yes! Every product page lists the exact materials and certifications. We're fully transparent about our supply chain." }
+      ],
+      "form": {
+        "fields": ["name", "email", "orderNumber", "subject", "message"],
+        "submitText": "Send Message"
+      }
+    }
+  }
+}

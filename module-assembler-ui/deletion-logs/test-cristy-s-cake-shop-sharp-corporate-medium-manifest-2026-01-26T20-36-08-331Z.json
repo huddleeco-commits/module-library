@@ -1,0 +1,38 @@
+{
+  "projectName": "test-cristy-s-cake-shop-sharp-corporate-medium",
+  "savedAt": "2026-01-26T20:36:08.331Z",
+  "resources": {
+    "name": "test-cristy-s-cake-shop-sharp-corporate-medium",
+    "sanitizedName": "test-cristy-s-cake-shop-sharp-corporate-medium",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-sharp-corporate-medium-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-sharp-corporate-medium-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-sharp-corporate-medium-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

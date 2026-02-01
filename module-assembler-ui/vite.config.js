@@ -11,6 +11,14 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:3001',
         changeOrigin: true
+      },
+      '/prospect-preview': {
+        target: 'http://localhost:3001',
+        changeOrigin: true
+      },
+      '/prospect-compare': {
+        target: 'http://localhost:3001',
+        changeOrigin: true
       }
     }
   },

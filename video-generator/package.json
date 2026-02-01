@@ -1,0 +1,22 @@
+{
+  "name": "blink-video-generator",
+  "version": "1.0.0",
+  "description": "Remotion-based video generator for Blink projects",
+  "scripts": {
+    "start": "remotion studio",
+    "build": "remotion render BusinessPromo out/promo.mp4",
+    "render": "node scripts/render.js",
+    "render:social": "remotion render SocialSquare out/instagram.mp4 && remotion render SocialVertical out/tiktok.mp4"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.0",
+    "@remotion/player": "^4.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "remotion": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "typescript": "^5.0.0"
+  }
+}

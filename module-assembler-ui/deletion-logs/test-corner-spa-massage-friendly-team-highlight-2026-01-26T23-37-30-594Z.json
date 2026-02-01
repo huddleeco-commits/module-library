@@ -1,0 +1,80 @@
+{
+  "projectName": "test-corner-spa-massage-friendly-team-highlight",
+  "deletedAt": "2026-01-26T23:37:30.594Z",
+  "resourcesFound": {
+    "name": "test-corner-spa-massage-friendly-team-highlight",
+    "sanitizedName": "test-corner-spa-massage-friendly-team-highlight",
+    "github": {
+      "repos": [
+        {
+          "name": "test-corner-spa-massage-friendly-team-highlight-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-corner-spa-massage-friendly-team-highlight-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-corner-spa-massage-friendly-team-highlight-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-corner-spa-massage-friendly-team-highlight-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-corner-spa-massage-friendly-team-highlight-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-corner-spa-massage-friendly-team-highlight-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "test-corner-spa-massage-friendly-team-highlight",
+          "verified": true
+        },
+        {
+          "subdomain": "api.test-corner-spa-massage-friendly-team-highlight",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.test-corner-spa-massage-friendly-team-highlight",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

@@ -24,6 +24,991 @@ const {
   getLoyaltyConfig
 } = require('../configs/industry-fixtures.cjs');
 
+// Screenshot service for automated previews
+let screenshotService = null;
+try {
+  screenshotService = require('../services/screenshot-service.cjs');
+} catch (e) {
+  console.log('[Test Mode] Screenshot service not available:', e.message);
+}
+
+// Archetype system for artisan food industries
+let archetypeSystem = null;
+let archetypePages = null;
+try {
+  archetypeSystem = require('../config/layout-archetypes.cjs');
+  archetypePages = require('../generators/archetype-pages.cjs');
+  console.log('[Test Mode] Archetype system loaded');
+} catch (e) {
+  console.log('[Test Mode] Archetype system not available:', e.message);
+}
+
+/**
+ * Business Type Detection & Content Adjustment
+ * Scans business name/tagline for keywords and adjusts content accordingly
+ * Covers: Restaurants, Fitness, Salon/Beauty, Healthcare, Professional Services, Tech, Education, Retail, Home Services
+ */
+
+// ============================================
+// RESTAURANT / FOOD & BEVERAGE TYPES
+// ============================================
+const CUISINE_KEYWORDS = {
+  italian: {
+    keywords: ['italian', 'italia', 'pizzeria', 'trattoria', 'ristorante', 'pasta', 'tuscan', 'sicilian', 'roman'],
+    menuItems: [
+      { name: 'Margherita Pizza', price: '$16', description: 'Fresh mozzarella, tomato sauce, basil' },
+      { name: 'Spaghetti Carbonara', price: '$18', description: 'Guanciale, egg, pecorino, black pepper' },
+      { name: 'Lasagna Bolognese', price: '$22', description: 'Layers of pasta, meat ragù, béchamel' },
+      { name: 'Chicken Parmigiana', price: '$24', description: 'Breaded chicken, marinara, mozzarella' },
+      { name: 'Tiramisu', price: '$10', description: 'Espresso-soaked ladyfingers, mascarpone' },
+      { name: 'Bruschetta', price: '$12', description: 'Grilled bread, tomatoes, garlic, basil' }
+    ],
+    heroImage: 'italian-restaurant-interior.jpg',
+    ambiance: 'Warm and inviting Italian atmosphere'
+  },
+  pizza: {
+    keywords: ['pizza', 'pizzeria', 'pie', 'slice'],
+    menuItems: [
+      { name: 'Classic Margherita', price: '$18', description: 'San Marzano tomatoes, fresh mozzarella, basil' },
+      { name: 'Pepperoni Supreme', price: '$20', description: 'Loaded pepperoni, mozzarella, oregano' },
+      { name: 'Meat Lovers', price: '$24', description: 'Pepperoni, sausage, bacon, ham' },
+      { name: 'Veggie Delight', price: '$19', description: 'Bell peppers, mushrooms, onions, olives' },
+      { name: 'Buffalo Chicken', price: '$22', description: 'Spicy buffalo chicken, ranch, celery' },
+      { name: 'Garlic Knots', price: '$8', description: 'Fresh baked, garlic butter, parmesan' }
+    ],
+    heroImage: 'pizza-oven-hero.jpg',
+    ambiance: 'Authentic pizzeria experience'
+  },
+  burger: {
+    keywords: ['burger', 'burgers', 'grill', 'patty', 'smash'],
+    menuItems: [
+      { name: 'Classic Smash Burger', price: '$14', description: 'Double patty, American cheese, pickles, special sauce' },
+      { name: 'Bacon BBQ Burger', price: '$16', description: 'Crispy bacon, cheddar, BBQ sauce, onion rings' },
+      { name: 'Mushroom Swiss', price: '$15', description: 'Sautéed mushrooms, Swiss cheese, garlic aioli' },
+      { name: 'Spicy Jalapeño', price: '$15', description: 'Pepper jack, jalapeños, chipotle mayo' },
+      { name: 'Loaded Fries', price: '$10', description: 'Cheese sauce, bacon bits, green onions' },
+      { name: 'Milkshake', price: '$7', description: 'Hand-spun, choice of flavor' }
+    ],
+    heroImage: 'burger-grill-hero.jpg',
+    ambiance: 'Classic American burger joint'
+  },
+  steakhouse: {
+    keywords: ['steak', 'steakhouse', 'chophouse', 'prime', 'ribeye', 'filet'],
+    menuItems: [
+      { name: 'Filet Mignon', price: '$58', description: '8oz center cut, butter-basted' },
+      { name: 'Ribeye', price: '$52', description: '16oz bone-in, perfectly marbled' },
+      { name: 'NY Strip', price: '$48', description: '14oz prime cut, char-grilled' },
+      { name: 'Surf & Turf', price: '$72', description: 'Filet and lobster tail' },
+      { name: 'Creamed Spinach', price: '$14', description: 'Classic steakhouse style' },
+      { name: 'Loaded Baked Potato', price: '$12', description: 'Bacon, sour cream, chives' }
+    ],
+    heroImage: 'steakhouse-interior.jpg',
+    ambiance: 'Upscale steakhouse dining'
+  },
+  mexican: {
+    keywords: ['mexican', 'taco', 'tacos', 'burrito', 'cantina', 'taqueria', 'tex-mex'],
+    menuItems: [
+      { name: 'Street Tacos', price: '$14', description: 'Three tacos, cilantro, onion, salsa verde' },
+      { name: 'Burrito Supreme', price: '$16', description: 'Rice, beans, meat, cheese, sour cream, guac' },
+      { name: 'Enchiladas', price: '$18', description: 'Three enchiladas, red or green sauce' },
+      { name: 'Chips & Guacamole', price: '$10', description: 'Fresh made tableside' },
+      { name: 'Queso Fundido', price: '$12', description: 'Melted cheese, chorizo, tortillas' },
+      { name: 'Churros', price: '$8', description: 'Cinnamon sugar, chocolate sauce' }
+    ],
+    heroImage: 'mexican-restaurant-hero.jpg',
+    ambiance: 'Vibrant Mexican cantina'
+  },
+  sushi: {
+    keywords: ['sushi', 'japanese', 'ramen', 'izakaya', 'omakase', 'sake'],
+    menuItems: [
+      { name: 'Dragon Roll', price: '$18', description: 'Eel, avocado, cucumber, eel sauce' },
+      { name: 'Salmon Sashimi', price: '$16', description: 'Fresh Atlantic salmon, 8 pieces' },
+      { name: 'Spicy Tuna Roll', price: '$14', description: 'Spicy tuna, cucumber, sesame' },
+      { name: 'Tonkotsu Ramen', price: '$17', description: 'Rich pork broth, chashu, soft egg' },
+      { name: 'Edamame', price: '$6', description: 'Steamed, sea salt' },
+      { name: 'Mochi Ice Cream', price: '$8', description: 'Assorted flavors' }
+    ],
+    heroImage: 'sushi-restaurant-hero.jpg',
+    ambiance: 'Modern Japanese dining'
+  },
+  chinese: {
+    keywords: ['chinese', 'dim sum', 'szechuan', 'cantonese', 'wok'],
+    menuItems: [
+      { name: 'General Tso Chicken', price: '$16', description: 'Crispy chicken, sweet-spicy sauce' },
+      { name: 'Kung Pao Shrimp', price: '$18', description: 'Wok-tossed, peanuts, dried chilies' },
+      { name: 'Beef & Broccoli', price: '$17', description: 'Tender beef, fresh broccoli, oyster sauce' },
+      { name: 'Fried Rice', price: '$12', description: 'Egg, vegetables, choice of protein' },
+      { name: 'Dim Sum Platter', price: '$22', description: 'Chef selection of dumplings' },
+      { name: 'Egg Rolls', price: '$8', description: 'Crispy, vegetable-filled' }
+    ],
+    heroImage: 'chinese-restaurant-hero.jpg',
+    ambiance: 'Authentic Chinese cuisine'
+  },
+  thai: {
+    keywords: ['thai', 'thailand', 'pad thai', 'curry'],
+    menuItems: [
+      { name: 'Pad Thai', price: '$16', description: 'Rice noodles, shrimp, peanuts, lime' },
+      { name: 'Green Curry', price: '$17', description: 'Coconut milk, Thai basil, vegetables' },
+      { name: 'Tom Yum Soup', price: '$12', description: 'Spicy lemongrass, shrimp, mushrooms' },
+      { name: 'Massaman Curry', price: '$18', description: 'Tender beef, potatoes, peanuts' },
+      { name: 'Spring Rolls', price: '$8', description: 'Fresh vegetables, peanut sauce' },
+      { name: 'Mango Sticky Rice', price: '$9', description: 'Sweet coconut rice, fresh mango' }
+    ],
+    heroImage: 'thai-restaurant-hero.jpg',
+    ambiance: 'Authentic Thai flavors'
+  },
+  indian: {
+    keywords: ['indian', 'curry', 'tandoori', 'masala', 'naan'],
+    menuItems: [
+      { name: 'Butter Chicken', price: '$18', description: 'Creamy tomato sauce, tender chicken' },
+      { name: 'Lamb Vindaloo', price: '$22', description: 'Spicy curry, potatoes' },
+      { name: 'Chicken Tikka Masala', price: '$19', description: 'Grilled chicken, rich sauce' },
+      { name: 'Vegetable Biryani', price: '$16', description: 'Aromatic basmati, mixed vegetables' },
+      { name: 'Garlic Naan', price: '$5', description: 'Fresh baked, garlic butter' },
+      { name: 'Samosas', price: '$8', description: 'Crispy pastry, spiced potatoes' }
+    ],
+    heroImage: 'indian-restaurant-hero.jpg',
+    ambiance: 'Rich Indian spices and flavors'
+  },
+  mediterranean: {
+    keywords: ['mediterranean', 'greek', 'lebanese', 'falafel', 'hummus', 'gyro'],
+    menuItems: [
+      { name: 'Lamb Gyro Platter', price: '$18', description: 'Sliced lamb, tzatziki, pita' },
+      { name: 'Falafel Wrap', price: '$14', description: 'Crispy falafel, tahini, vegetables' },
+      { name: 'Chicken Shawarma', price: '$17', description: 'Marinated chicken, garlic sauce' },
+      { name: 'Mezze Platter', price: '$22', description: 'Hummus, baba ganoush, falafel, pita' },
+      { name: 'Greek Salad', price: '$12', description: 'Feta, olives, cucumbers, tomatoes' },
+      { name: 'Baklava', price: '$8', description: 'Honey-soaked phyllo, pistachios' }
+    ],
+    heroImage: 'mediterranean-restaurant-hero.jpg',
+    ambiance: 'Fresh Mediterranean cuisine'
+  },
+  french: {
+    keywords: ['french', 'bistro', 'brasserie', 'parisian', 'cafe'],
+    menuItems: [
+      { name: 'Coq au Vin', price: '$32', description: 'Braised chicken, red wine, mushrooms' },
+      { name: 'Beef Bourguignon', price: '$36', description: 'Slow-braised beef, red wine sauce' },
+      { name: 'Duck Confit', price: '$34', description: 'Crispy leg, lentils, greens' },
+      { name: 'French Onion Soup', price: '$14', description: 'Caramelized onions, gruyère crouton' },
+      { name: 'Crème Brûlée', price: '$12', description: 'Vanilla custard, caramelized sugar' },
+      { name: 'Escargot', price: '$16', description: 'Garlic herb butter, baguette' }
+    ],
+    heroImage: 'french-bistro-hero.jpg',
+    ambiance: 'Classic French bistro'
+  },
+  bbq: {
+    keywords: ['bbq', 'barbecue', 'smokehouse', 'brisket', 'ribs', 'smoked'],
+    menuItems: [
+      { name: 'Smoked Brisket', price: '$26', description: '12-hour smoked, house rub' },
+      { name: 'Baby Back Ribs', price: '$28', description: 'Fall-off-the-bone, tangy sauce' },
+      { name: 'Pulled Pork', price: '$18', description: 'Slow-smoked, Carolina style' },
+      { name: 'BBQ Platter', price: '$34', description: 'Brisket, ribs, sausage, two sides' },
+      { name: 'Mac & Cheese', price: '$8', description: 'Creamy, three-cheese blend' },
+      { name: 'Cornbread', price: '$5', description: 'House-made, honey butter' }
+    ],
+    heroImage: 'bbq-smokehouse-hero.jpg',
+    ambiance: 'Authentic smokehouse BBQ'
+  },
+  seafood: {
+    keywords: ['seafood', 'fish', 'oyster', 'lobster', 'crab', 'shrimp', 'coastal'],
+    menuItems: [
+      { name: 'Lobster Roll', price: '$32', description: 'Fresh Maine lobster, butter, brioche' },
+      { name: 'Fish & Chips', price: '$22', description: 'Beer-battered cod, tartar sauce' },
+      { name: 'Grilled Salmon', price: '$28', description: 'Lemon dill, seasonal vegetables' },
+      { name: 'Oysters on the Half Shell', price: '$24', description: 'Half dozen, mignonette' },
+      { name: 'Clam Chowder', price: '$12', description: 'New England style, oyster crackers' },
+      { name: 'Shrimp Cocktail', price: '$18', description: 'Jumbo shrimp, cocktail sauce' }
+    ],
+    heroImage: 'seafood-restaurant-hero.jpg',
+    ambiance: 'Fresh coastal seafood'
+  },
+  cafe: {
+    keywords: ['cafe', 'coffee', 'espresso', 'bakery', 'brunch'],
+    menuItems: [
+      { name: 'Avocado Toast', price: '$14', description: 'Sourdough, poached eggs, everything seasoning' },
+      { name: 'Eggs Benedict', price: '$16', description: 'Hollandaise, Canadian bacon, English muffin' },
+      { name: 'Açaí Bowl', price: '$13', description: 'Fresh berries, granola, honey' },
+      { name: 'Belgian Waffle', price: '$12', description: 'Fresh fruit, whipped cream, maple' },
+      { name: 'Latte', price: '$5', description: 'Double espresso, steamed milk' },
+      { name: 'Fresh Pastries', price: '$4', description: 'Daily selection' }
+    ],
+    heroImage: 'cafe-brunch-hero.jpg',
+    ambiance: 'Cozy cafe atmosphere'
+  }
+};
+
+// ============================================
+// FITNESS & WELLNESS TYPES
+// ============================================
+const FITNESS_KEYWORDS = {
+  gym: {
+    keywords: ['gym', 'fitness center', 'fitness club', 'athletic club'],
+    services: [
+      { name: 'Monthly Membership', price: '$49/mo', description: 'Full gym access, all equipment' },
+      { name: 'Personal Training', price: '$75/session', description: 'One-on-one with certified trainer' },
+      { name: 'Group Classes', price: 'Included', description: 'Spin, HIIT, strength, and more' },
+      { name: 'Day Pass', price: '$15', description: 'Full access for 24 hours' },
+      { name: 'Locker Rental', price: '$10/mo', description: 'Secure storage, towel service' },
+      { name: 'Nutrition Coaching', price: '$99/mo', description: 'Personalized meal plans' }
+    ],
+    heroImage: 'gym-equipment-hero.jpg',
+    ambiance: 'State-of-the-art fitness facility'
+  },
+  crossfit: {
+    keywords: ['crossfit', 'cross fit', 'functional fitness', 'wod'],
+    services: [
+      { name: 'Unlimited Membership', price: '$175/mo', description: 'Unlimited classes, open gym' },
+      { name: 'Foundations Course', price: '$199', description: '4-week intro program for beginners' },
+      { name: 'Drop-In Class', price: '$25', description: 'Single class for visitors' },
+      { name: 'Competition Training', price: '$250/mo', description: 'Advanced programming, extra coaching' },
+      { name: 'Nutrition Challenge', price: '$149', description: '6-week guided nutrition program' },
+      { name: 'Private Coaching', price: '$100/hr', description: 'One-on-one skill work' }
+    ],
+    heroImage: 'crossfit-box-hero.jpg',
+    ambiance: 'Community-driven CrossFit box'
+  },
+  yoga: {
+    keywords: ['yoga', 'yogastudio', 'vinyasa', 'hot yoga', 'bikram', 'meditation'],
+    services: [
+      { name: 'Unlimited Monthly', price: '$129/mo', description: 'All classes, all styles' },
+      { name: 'Class Pack (10)', price: '$150', description: '10 classes, never expires' },
+      { name: 'Drop-In Class', price: '$20', description: 'Single class attendance' },
+      { name: 'Private Session', price: '$85/hr', description: 'Personalized instruction' },
+      { name: 'Teacher Training', price: '$2,500', description: '200-hour certification' },
+      { name: 'Meditation Workshop', price: '$45', description: '2-hour guided session' }
+    ],
+    heroImage: 'yoga-studio-hero.jpg',
+    ambiance: 'Peaceful sanctuary for mind and body'
+  },
+  pilates: {
+    keywords: ['pilates', 'reformer', 'barre', 'core'],
+    services: [
+      { name: 'Unlimited Reformer', price: '$199/mo', description: 'All reformer classes' },
+      { name: 'Mat Classes', price: '$99/mo', description: 'Unlimited mat Pilates' },
+      { name: 'Private Reformer', price: '$95/session', description: 'One-on-one instruction' },
+      { name: 'Duet Session', price: '$130', description: 'Semi-private, 2 people' },
+      { name: 'Intro Package', price: '$149', description: '3 private sessions for beginners' },
+      { name: 'Barre Fusion', price: '$22/class', description: 'Pilates meets ballet' }
+    ],
+    heroImage: 'pilates-studio-hero.jpg',
+    ambiance: 'Precision movement studio'
+  },
+  boxing: {
+    keywords: ['boxing', 'mma', 'kickboxing', 'muay thai', 'martial arts', 'fight', 'combat'],
+    services: [
+      { name: 'Unlimited Classes', price: '$159/mo', description: 'All group classes' },
+      { name: 'Private Coaching', price: '$80/session', description: 'One-on-one with trainer' },
+      { name: 'Kids Program', price: '$99/mo', description: 'Ages 6-14, discipline & fitness' },
+      { name: 'Competition Team', price: '$200/mo', description: 'Advanced fight training' },
+      { name: 'Drop-In Class', price: '$25', description: 'Single class' },
+      { name: 'Equipment Package', price: '$89', description: 'Gloves, wraps, bag' }
+    ],
+    heroImage: 'boxing-gym-hero.jpg',
+    ambiance: 'Train like a fighter'
+  },
+  personaltraining: {
+    keywords: ['personal training', 'personal trainer', 'pt studio', 'private training', 'one on one'],
+    services: [
+      { name: 'Single Session', price: '$85', description: '1-hour personal training' },
+      { name: '10 Session Pack', price: '$750', description: 'Save $100, flexible scheduling' },
+      { name: 'Monthly Unlimited', price: '$600/mo', description: '3x/week training' },
+      { name: 'Couples Training', price: '$120/session', description: 'Train with a partner' },
+      { name: 'Online Coaching', price: '$199/mo', description: 'Custom programs, weekly check-ins' },
+      { name: 'Assessment', price: '$50', description: 'Body composition, movement screening' }
+    ],
+    heroImage: 'personal-training-hero.jpg',
+    ambiance: 'Personalized fitness coaching'
+  }
+};
+
+// ============================================
+// SALON & BEAUTY TYPES
+// ============================================
+const SALON_KEYWORDS = {
+  hairsalon: {
+    keywords: ['hair salon', 'hair studio', 'hairdresser', 'hair stylist', 'salon', 'cuts', 'color'],
+    services: [
+      { name: "Women's Haircut", price: '$65+', description: 'Cut, wash, blowout' },
+      { name: "Men's Haircut", price: '$35+', description: 'Cut, wash, style' },
+      { name: 'Full Color', price: '$120+', description: 'Single process, all-over color' },
+      { name: 'Highlights', price: '$150+', description: 'Partial or full foils' },
+      { name: 'Balayage', price: '$200+', description: 'Hand-painted highlights' },
+      { name: 'Blowout', price: '$45', description: 'Wash and style' }
+    ],
+    heroImage: 'hair-salon-hero.jpg',
+    ambiance: 'Where style meets artistry'
+  },
+  barbershop: {
+    keywords: ['barber', 'barbershop', 'barber shop', 'mens grooming', 'fade', 'shave'],
+    services: [
+      { name: 'Classic Haircut', price: '$30', description: 'Cut, hot towel, style' },
+      { name: 'Haircut & Beard', price: '$45', description: 'Full grooming package' },
+      { name: 'Hot Towel Shave', price: '$35', description: 'Traditional straight razor' },
+      { name: 'Beard Trim', price: '$20', description: 'Shape and line up' },
+      { name: 'Kids Cut', price: '$20', description: 'Ages 12 and under' },
+      { name: 'The Works', price: '$65', description: 'Cut, shave, facial, massage' }
+    ],
+    heroImage: 'barbershop-hero.jpg',
+    ambiance: 'Classic barbershop experience'
+  },
+  nailsalon: {
+    keywords: ['nail salon', 'nails', 'manicure', 'pedicure', 'nail spa', 'nail bar'],
+    services: [
+      { name: 'Classic Manicure', price: '$25', description: 'Shape, cuticle care, polish' },
+      { name: 'Gel Manicure', price: '$45', description: 'Long-lasting gel polish' },
+      { name: 'Classic Pedicure', price: '$40', description: 'Soak, scrub, massage, polish' },
+      { name: 'Mani-Pedi Combo', price: '$60', description: 'Both services, save $5' },
+      { name: 'Nail Art', price: '$10+', description: 'Custom designs per nail' },
+      { name: 'Acrylic Full Set', price: '$55', description: 'Full set with tips' }
+    ],
+    heroImage: 'nail-salon-hero.jpg',
+    ambiance: 'Pamper yourself beautifully'
+  },
+  spa: {
+    keywords: ['spa', 'day spa', 'med spa', 'wellness spa', 'massage', 'facial'],
+    services: [
+      { name: 'Swedish Massage', price: '$95/60min', description: 'Relaxation, light pressure' },
+      { name: 'Deep Tissue', price: '$115/60min', description: 'Therapeutic, muscle relief' },
+      { name: 'Signature Facial', price: '$120', description: 'Cleanse, extract, hydrate' },
+      { name: 'Body Wrap', price: '$150', description: 'Detox and hydration' },
+      { name: 'Couples Massage', price: '$190', description: 'Side-by-side relaxation' },
+      { name: 'Spa Day Package', price: '$299', description: 'Massage, facial, lunch' }
+    ],
+    heroImage: 'spa-relaxation-hero.jpg',
+    ambiance: 'Your escape to tranquility'
+  },
+  aesthetics: {
+    keywords: ['aesthetics', 'medspa', 'botox', 'filler', 'laser', 'skincare', 'cosmetic', 'beauty clinic'],
+    services: [
+      { name: 'Botox', price: '$12/unit', description: 'Wrinkle relaxer, natural results' },
+      { name: 'Dermal Fillers', price: '$650/syringe', description: 'Volume and contouring' },
+      { name: 'Chemical Peel', price: '$150+', description: 'Skin resurfacing' },
+      { name: 'Laser Hair Removal', price: '$200+', description: 'Per treatment area' },
+      { name: 'Microneedling', price: '$300', description: 'Collagen stimulation' },
+      { name: 'Hydrafacial', price: '$199', description: 'Deep cleanse and hydrate' }
+    ],
+    heroImage: 'aesthetics-clinic-hero.jpg',
+    ambiance: 'Advanced beauty treatments'
+  },
+  lashbrow: {
+    keywords: ['lash', 'lashes', 'brow', 'brows', 'microblading', 'extensions', 'wax'],
+    services: [
+      { name: 'Classic Lash Set', price: '$150', description: 'Natural look, 2-3 week fill' },
+      { name: 'Volume Lash Set', price: '$200', description: 'Fuller, dramatic look' },
+      { name: 'Lash Fill', price: '$75', description: '2-3 week maintenance' },
+      { name: 'Brow Wax & Shape', price: '$25', description: 'Perfect arch' },
+      { name: 'Microblading', price: '$400', description: 'Semi-permanent brows' },
+      { name: 'Lash Lift & Tint', price: '$85', description: 'Natural curl enhancement' }
+    ],
+    heroImage: 'lash-brow-hero.jpg',
+    ambiance: 'Perfect lashes, perfect brows'
+  }
+};
+
+// ============================================
+// HEALTHCARE TYPES
+// ============================================
+const HEALTHCARE_KEYWORDS = {
+  dental: {
+    keywords: ['dental', 'dentist', 'dentistry', 'orthodontic', 'teeth', 'smile'],
+    services: [
+      { name: 'Cleaning & Exam', price: '$150', description: 'Routine cleaning, X-rays, exam' },
+      { name: 'Teeth Whitening', price: '$350', description: 'Professional in-office treatment' },
+      { name: 'Dental Filling', price: '$200+', description: 'Composite restoration' },
+      { name: 'Crown', price: '$1,200+', description: 'Porcelain or ceramic' },
+      { name: 'Invisalign Consult', price: 'Free', description: 'Clear aligner assessment' },
+      { name: 'Emergency Visit', price: '$100', description: 'Same-day urgent care' }
+    ],
+    heroImage: 'dental-office-hero.jpg',
+    ambiance: 'Your smile is our priority'
+  },
+  chiropractic: {
+    keywords: ['chiropractor', 'chiropractic', 'spine', 'adjustment', 'back pain'],
+    services: [
+      { name: 'Initial Consultation', price: '$75', description: 'Exam, X-rays, treatment plan' },
+      { name: 'Adjustment', price: '$50', description: 'Spinal manipulation' },
+      { name: 'Massage Therapy', price: '$80/hr', description: 'Therapeutic massage' },
+      { name: 'Wellness Package', price: '$400', description: '10 adjustments' },
+      { name: 'Decompression', price: '$75', description: 'Spinal decompression therapy' },
+      { name: 'Sports Rehab', price: '$100', description: 'Athletic injury treatment' }
+    ],
+    heroImage: 'chiropractic-hero.jpg',
+    ambiance: 'Align your body, elevate your life'
+  },
+  physicaltherapy: {
+    keywords: ['physical therapy', 'pt', 'rehab', 'rehabilitation', 'sports medicine', 'recovery'],
+    services: [
+      { name: 'Initial Evaluation', price: '$150', description: 'Assessment and treatment plan' },
+      { name: 'PT Session', price: '$125', description: 'One-on-one therapy' },
+      { name: 'Dry Needling', price: '$50', description: 'Trigger point therapy' },
+      { name: 'Manual Therapy', price: '$125', description: 'Hands-on techniques' },
+      { name: 'Sports Rehab', price: '$150', description: 'Return to play program' },
+      { name: 'Wellness Program', price: '$99/mo', description: 'Ongoing maintenance' }
+    ],
+    heroImage: 'physical-therapy-hero.jpg',
+    ambiance: 'Move better, live better'
+  },
+  medical: {
+    keywords: ['medical', 'doctor', 'physician', 'clinic', 'healthcare', 'primary care', 'family medicine'],
+    services: [
+      { name: 'Annual Physical', price: '$200', description: 'Comprehensive wellness exam' },
+      { name: 'Sick Visit', price: '$125', description: 'Acute illness treatment' },
+      { name: 'Lab Work', price: '$50+', description: 'Blood tests, screenings' },
+      { name: 'Vaccination', price: '$30+', description: 'Immunizations' },
+      { name: 'Telehealth Visit', price: '$75', description: 'Virtual consultation' },
+      { name: 'Sports Physical', price: '$50', description: 'Clearance for athletics' }
+    ],
+    heroImage: 'medical-clinic-hero.jpg',
+    ambiance: 'Compassionate care for your family'
+  },
+  dermatology: {
+    keywords: ['dermatology', 'dermatologist', 'skin', 'acne', 'eczema'],
+    services: [
+      { name: 'Skin Exam', price: '$150', description: 'Full body screening' },
+      { name: 'Acne Treatment', price: '$175', description: 'Consultation and treatment plan' },
+      { name: 'Mole Removal', price: '$250+', description: 'Biopsy and removal' },
+      { name: 'Cosmetic Consult', price: '$100', description: 'Anti-aging options' },
+      { name: 'Phototherapy', price: '$100', description: 'Light treatment session' },
+      { name: 'Patch Testing', price: '$200', description: 'Allergy diagnosis' }
+    ],
+    heroImage: 'dermatology-hero.jpg',
+    ambiance: 'Healthy skin, confident you'
+  },
+  optometry: {
+    keywords: ['optometry', 'optometrist', 'eye', 'vision', 'glasses', 'contacts', 'optical'],
+    services: [
+      { name: 'Eye Exam', price: '$100', description: 'Comprehensive vision test' },
+      { name: 'Contact Fitting', price: '$75', description: 'Lens fitting and trial' },
+      { name: 'Glasses Frame', price: '$150+', description: 'Designer and budget options' },
+      { name: 'Lens Package', price: '$200+', description: 'Single vision or progressive' },
+      { name: 'Retinal Imaging', price: '$40', description: 'Digital eye health scan' },
+      { name: 'Dry Eye Treatment', price: '$150', description: 'Diagnosis and therapy' }
+    ],
+    heroImage: 'optometry-hero.jpg',
+    ambiance: 'See life clearly'
+  }
+};
+
+// ============================================
+// PROFESSIONAL SERVICES TYPES
+// ============================================
+const PROFESSIONAL_KEYWORDS = {
+  lawfirm: {
+    keywords: ['law', 'lawyer', 'attorney', 'legal', 'law firm', 'litigation', 'counsel'],
+    services: [
+      { name: 'Initial Consultation', price: '$150', description: 'Case evaluation, legal advice' },
+      { name: 'Document Review', price: '$300/hr', description: 'Contract and agreement review' },
+      { name: 'Representation', price: 'Custom', description: 'Court representation' },
+      { name: 'Estate Planning', price: '$1,500+', description: 'Wills, trusts, powers of attorney' },
+      { name: 'Business Formation', price: '$800+', description: 'LLC, corporation setup' },
+      { name: 'Legal Letter', price: '$500', description: 'Demand or cease and desist' }
+    ],
+    heroImage: 'law-firm-hero.jpg',
+    ambiance: 'Experienced legal advocacy'
+  },
+  accounting: {
+    keywords: ['accounting', 'accountant', 'cpa', 'bookkeeping', 'tax', 'financial'],
+    services: [
+      { name: 'Tax Preparation', price: '$300+', description: 'Individual or business returns' },
+      { name: 'Monthly Bookkeeping', price: '$400/mo', description: 'Transaction categorization' },
+      { name: 'Payroll Services', price: '$150/mo', description: 'Employee payroll processing' },
+      { name: 'Tax Planning', price: '$500', description: 'Strategic tax optimization' },
+      { name: 'Business Advisory', price: '$200/hr', description: 'Financial consulting' },
+      { name: 'Audit Support', price: 'Custom', description: 'IRS or state audit assistance' }
+    ],
+    heroImage: 'accounting-hero.jpg',
+    ambiance: 'Your financial success partner'
+  },
+  realestate: {
+    keywords: ['real estate', 'realtor', 'realty', 'property', 'homes', 'broker'],
+    services: [
+      { name: 'Buyer Representation', price: '2.5-3%', description: 'Full-service home buying' },
+      { name: 'Seller Listing', price: '5-6%', description: 'Marketing and sale' },
+      { name: 'Market Analysis', price: 'Free', description: 'Home value assessment' },
+      { name: 'Rental Search', price: '$500', description: 'Find your perfect rental' },
+      { name: 'Investment Consult', price: '$200', description: 'Property investment advice' },
+      { name: 'Relocation Services', price: 'Custom', description: 'Out-of-area assistance' }
+    ],
+    heroImage: 'real-estate-hero.jpg',
+    ambiance: 'Finding your perfect home'
+  },
+  insurance: {
+    keywords: ['insurance', 'insure', 'coverage', 'policy', 'agent', 'broker'],
+    services: [
+      { name: 'Free Quote', price: 'Free', description: 'No-obligation rate comparison' },
+      { name: 'Auto Insurance', price: 'Custom', description: 'Vehicle coverage' },
+      { name: 'Home Insurance', price: 'Custom', description: 'Property protection' },
+      { name: 'Life Insurance', price: 'Custom', description: 'Term and whole life' },
+      { name: 'Business Insurance', price: 'Custom', description: 'Commercial coverage' },
+      { name: 'Policy Review', price: 'Free', description: 'Annual coverage checkup' }
+    ],
+    heroImage: 'insurance-hero.jpg',
+    ambiance: 'Protection you can count on'
+  },
+  consulting: {
+    keywords: ['consulting', 'consultant', 'advisory', 'strategy', 'management'],
+    services: [
+      { name: 'Discovery Session', price: '$500', description: 'Business assessment' },
+      { name: 'Strategy Workshop', price: '$2,500', description: 'Full-day planning session' },
+      { name: 'Monthly Retainer', price: '$3,000/mo', description: 'Ongoing advisory' },
+      { name: 'Project Engagement', price: 'Custom', description: 'Defined scope work' },
+      { name: 'Executive Coaching', price: '$400/hr', description: 'Leadership development' },
+      { name: 'Team Training', price: '$5,000', description: 'Group workshop' }
+    ],
+    heroImage: 'consulting-hero.jpg',
+    ambiance: 'Strategic solutions for growth'
+  },
+  marketing: {
+    keywords: ['marketing', 'advertising', 'agency', 'digital', 'social media', 'branding', 'creative'],
+    services: [
+      { name: 'Brand Strategy', price: '$5,000+', description: 'Complete brand development' },
+      { name: 'Social Media Mgmt', price: '$1,500/mo', description: 'Content and engagement' },
+      { name: 'SEO Package', price: '$1,000/mo', description: 'Search optimization' },
+      { name: 'PPC Management', price: '$500+/mo', description: 'Paid advertising' },
+      { name: 'Website Design', price: '$5,000+', description: 'Custom web development' },
+      { name: 'Content Creation', price: '$500/mo', description: 'Blog and media' }
+    ],
+    heroImage: 'marketing-agency-hero.jpg',
+    ambiance: 'Creative strategies that convert'
+  }
+};
+
+// ============================================
+// TECH & SOFTWARE TYPES
+// ============================================
+const TECH_KEYWORDS = {
+  saas: {
+    keywords: ['saas', 'software', 'platform', 'app', 'cloud', 'solution'],
+    services: [
+      { name: 'Starter Plan', price: '$29/mo', description: 'Essential features, 3 users' },
+      { name: 'Professional', price: '$99/mo', description: 'Advanced features, 10 users' },
+      { name: 'Enterprise', price: 'Custom', description: 'Unlimited, dedicated support' },
+      { name: 'Free Trial', price: 'Free', description: '14-day full access' },
+      { name: 'Onboarding', price: '$500', description: 'Setup and training' },
+      { name: 'API Access', price: '$199/mo', description: 'Developer integration' }
+    ],
+    heroImage: 'saas-platform-hero.jpg',
+    ambiance: 'Software that scales with you'
+  },
+  development: {
+    keywords: ['development', 'developer', 'web development', 'app development', 'coding', 'programming'],
+    services: [
+      { name: 'Website Build', price: '$5,000+', description: 'Custom web development' },
+      { name: 'Mobile App', price: '$25,000+', description: 'iOS and Android' },
+      { name: 'MVP Development', price: '$15,000+', description: 'Minimum viable product' },
+      { name: 'Maintenance', price: '$500/mo', description: 'Ongoing support' },
+      { name: 'Code Review', price: '$1,000', description: 'Technical assessment' },
+      { name: 'Consulting', price: '$200/hr', description: 'Technical advisory' }
+    ],
+    heroImage: 'development-hero.jpg',
+    ambiance: 'Building digital solutions'
+  },
+  itservices: {
+    keywords: ['it services', 'it support', 'managed it', 'tech support', 'helpdesk', 'msp'],
+    services: [
+      { name: 'Managed IT', price: '$150/user/mo', description: 'Complete IT support' },
+      { name: 'Helpdesk Support', price: '$99/mo', description: 'Remote assistance' },
+      { name: 'Network Setup', price: '$2,000+', description: 'Infrastructure design' },
+      { name: 'Cybersecurity', price: '$500/mo', description: 'Security monitoring' },
+      { name: 'Cloud Migration', price: 'Custom', description: 'Move to the cloud' },
+      { name: 'Break/Fix', price: '$125/hr', description: 'On-demand repairs' }
+    ],
+    heroImage: 'it-services-hero.jpg',
+    ambiance: 'Technology that works for you'
+  },
+  startup: {
+    keywords: ['startup', 'venture', 'incubator', 'accelerator', 'founder'],
+    services: [
+      { name: 'Seed Funding', price: '$50K-$500K', description: 'Early-stage investment' },
+      { name: 'Accelerator Program', price: '6% equity', description: '12-week intensive' },
+      { name: 'Mentorship', price: 'Included', description: 'Expert guidance' },
+      { name: 'Pitch Coaching', price: '$1,000', description: 'Investor presentation prep' },
+      { name: 'Co-working Space', price: '$300/mo', description: 'Desk and amenities' },
+      { name: 'Demo Day', price: 'Included', description: 'Investor showcase' }
+    ],
+    heroImage: 'startup-hero.jpg',
+    ambiance: 'Where ideas become reality'
+  }
+};
+
+// ============================================
+// EDUCATION TYPES
+// ============================================
+const EDUCATION_KEYWORDS = {
+  tutoring: {
+    keywords: ['tutoring', 'tutor', 'academic', 'learning center', 'test prep', 'sat', 'act'],
+    services: [
+      { name: '1-on-1 Tutoring', price: '$60/hr', description: 'Private instruction' },
+      { name: 'Group Session', price: '$30/hr', description: '3-5 students' },
+      { name: 'SAT/ACT Prep', price: '$1,200', description: '8-week course' },
+      { name: 'Homework Help', price: '$40/hr', description: 'Assignment assistance' },
+      { name: 'Subject Package', price: '$500', description: '10 sessions' },
+      { name: 'College Counseling', price: '$2,000', description: 'Application guidance' }
+    ],
+    heroImage: 'tutoring-hero.jpg',
+    ambiance: 'Unlock your potential'
+  },
+  musiclessons: {
+    keywords: ['music', 'lessons', 'piano', 'guitar', 'violin', 'voice', 'singing', 'instrument'],
+    services: [
+      { name: '30-Min Lesson', price: '$40', description: 'Weekly private lesson' },
+      { name: '60-Min Lesson', price: '$70', description: 'Extended session' },
+      { name: 'Group Class', price: '$25', description: '4-6 students' },
+      { name: 'Instrument Rental', price: '$30/mo', description: 'Quality instruments' },
+      { name: 'Recital Fee', price: '$50', description: 'Semester performance' },
+      { name: 'Summer Camp', price: '$400/week', description: 'Intensive program' }
+    ],
+    heroImage: 'music-lessons-hero.jpg',
+    ambiance: 'Discover your musical voice'
+  },
+  dancestudio: {
+    keywords: ['dance', 'ballet', 'hip hop', 'jazz', 'tap', 'contemporary', 'ballroom'],
+    services: [
+      { name: 'Drop-In Class', price: '$20', description: 'Single class' },
+      { name: 'Monthly Unlimited', price: '$150', description: 'All classes' },
+      { name: 'Private Lesson', price: '$80/hr', description: 'One-on-one' },
+      { name: 'Competition Team', price: '$200/mo', description: 'Advanced training' },
+      { name: 'Recital Fee', price: '$100', description: 'Annual showcase' },
+      { name: 'Summer Intensive', price: '$600', description: 'Week-long program' }
+    ],
+    heroImage: 'dance-studio-hero.jpg',
+    ambiance: 'Express yourself through movement'
+  },
+  artschool: {
+    keywords: ['art', 'painting', 'drawing', 'sculpture', 'pottery', 'ceramics', 'creative'],
+    services: [
+      { name: 'Drop-In Class', price: '$35', description: 'Single session' },
+      { name: 'Weekly Course', price: '$200/8wks', description: 'Structured learning' },
+      { name: 'Private Instruction', price: '$75/hr', description: 'Personalized coaching' },
+      { name: 'Kids Art Camp', price: '$250/wk', description: 'Ages 6-12' },
+      { name: 'Open Studio', price: '$15/hr', description: 'Work independently' },
+      { name: 'Supplies', price: '$50+', description: 'Materials package' }
+    ],
+    heroImage: 'art-school-hero.jpg',
+    ambiance: 'Unleash your creativity'
+  },
+  driving: {
+    keywords: ['driving', 'driving school', 'drivers ed', 'license', 'permit'],
+    services: [
+      { name: 'Classroom Course', price: '$350', description: '30-hour program' },
+      { name: 'Behind the Wheel', price: '$400', description: '6 hours driving' },
+      { name: 'Full Package', price: '$650', description: 'Classroom + driving' },
+      { name: 'Extra Lesson', price: '$75/hr', description: 'Additional practice' },
+      { name: 'License Test Prep', price: '$100', description: '2-hour session' },
+      { name: 'Refresher Course', price: '$150', description: 'For licensed drivers' }
+    ],
+    heroImage: 'driving-school-hero.jpg',
+    ambiance: 'Safe drivers start here'
+  }
+};
+
+// ============================================
+// HOME SERVICES TYPES
+// ============================================
+const HOME_SERVICES_KEYWORDS = {
+  plumber: {
+    keywords: ['plumber', 'plumbing', 'drain', 'pipe', 'water heater', 'leak'],
+    services: [
+      { name: 'Service Call', price: '$89', description: 'Diagnosis and estimate' },
+      { name: 'Drain Cleaning', price: '$150', description: 'Unclog any drain' },
+      { name: 'Faucet Repair', price: '$125', description: 'Fix or replace' },
+      { name: 'Water Heater', price: '$1,200+', description: 'Installation' },
+      { name: 'Leak Detection', price: '$200', description: 'Find hidden leaks' },
+      { name: 'Emergency 24/7', price: '$150+', description: 'After-hours service' }
+    ],
+    heroImage: 'plumber-hero.jpg',
+    ambiance: 'Fast, reliable plumbing solutions'
+  },
+  electrician: {
+    keywords: ['electrician', 'electrical', 'wiring', 'panel', 'outlet', 'lighting'],
+    services: [
+      { name: 'Service Call', price: '$99', description: 'Troubleshooting' },
+      { name: 'Outlet Install', price: '$150', description: 'New outlet or switch' },
+      { name: 'Panel Upgrade', price: '$2,000+', description: '200-amp service' },
+      { name: 'Ceiling Fan', price: '$200', description: 'Install or replace' },
+      { name: 'EV Charger', price: '$800+', description: 'Home charging station' },
+      { name: 'Generator Install', price: '$5,000+', description: 'Backup power' }
+    ],
+    heroImage: 'electrician-hero.jpg',
+    ambiance: 'Trusted electrical experts'
+  },
+  hvac: {
+    keywords: ['hvac', 'heating', 'cooling', 'air conditioning', 'ac', 'furnace'],
+    services: [
+      { name: 'AC Tune-Up', price: '$99', description: 'Seasonal maintenance' },
+      { name: 'Furnace Repair', price: '$150+', description: 'Diagnosis and fix' },
+      { name: 'New AC Install', price: '$5,000+', description: 'Complete system' },
+      { name: 'Duct Cleaning', price: '$400', description: 'Whole home' },
+      { name: 'Thermostat', price: '$200', description: 'Smart thermostat install' },
+      { name: 'Emergency Service', price: '$200+', description: '24/7 available' }
+    ],
+    heroImage: 'hvac-hero.jpg',
+    ambiance: 'Comfort in every season'
+  },
+  cleaning: {
+    keywords: ['cleaning', 'maid', 'housekeeping', 'janitorial', 'house cleaning'],
+    services: [
+      { name: 'Standard Clean', price: '$150', description: 'Regular maintenance' },
+      { name: 'Deep Clean', price: '$300', description: 'Thorough top-to-bottom' },
+      { name: 'Move In/Out', price: '$400', description: 'Complete property clean' },
+      { name: 'Weekly Service', price: '$120/visit', description: 'Recurring discount' },
+      { name: 'Office Cleaning', price: '$200+', description: 'Commercial space' },
+      { name: 'Carpet Cleaning', price: '$150+', description: 'Per room' }
+    ],
+    heroImage: 'cleaning-hero.jpg',
+    ambiance: 'A cleaner home, a happier life'
+  },
+  landscaping: {
+    keywords: ['landscaping', 'lawn', 'lawn care', 'garden', 'yard', 'mowing', 'tree'],
+    services: [
+      { name: 'Lawn Mowing', price: '$50', description: 'Weekly service' },
+      { name: 'Full Maintenance', price: '$200/mo', description: 'Complete lawn care' },
+      { name: 'Landscape Design', price: '$500+', description: 'Custom plans' },
+      { name: 'Tree Trimming', price: '$300+', description: 'Per tree' },
+      { name: 'Spring Cleanup', price: '$250', description: 'Seasonal prep' },
+      { name: 'Irrigation Install', price: '$2,500+', description: 'Sprinkler system' }
+    ],
+    heroImage: 'landscaping-hero.jpg',
+    ambiance: 'Beautiful outdoor spaces'
+  },
+  roofing: {
+    keywords: ['roofing', 'roof', 'roofer', 'shingle', 'gutter'],
+    services: [
+      { name: 'Free Inspection', price: 'Free', description: 'Roof assessment' },
+      { name: 'Roof Repair', price: '$400+', description: 'Leak and damage fix' },
+      { name: 'Full Replacement', price: '$8,000+', description: 'Complete reroof' },
+      { name: 'Gutter Install', price: '$1,000+', description: 'New gutters' },
+      { name: 'Gutter Cleaning', price: '$150', description: 'Debris removal' },
+      { name: 'Storm Damage', price: 'Insurance', description: 'Claim assistance' }
+    ],
+    heroImage: 'roofing-hero.jpg',
+    ambiance: 'Protecting what matters most'
+  },
+  moving: {
+    keywords: ['moving', 'movers', 'relocation', 'hauling', 'junk removal'],
+    services: [
+      { name: 'Local Move', price: '$400+', description: '2 movers, 3 hours' },
+      { name: 'Long Distance', price: 'Custom', description: 'Interstate moving' },
+      { name: 'Packing Service', price: '$50/hr', description: 'Per packer' },
+      { name: 'Supplies', price: '$50+', description: 'Boxes and tape' },
+      { name: 'Storage', price: '$100/mo', description: 'Climate-controlled' },
+      { name: 'Junk Removal', price: '$150+', description: 'Haul away' }
+    ],
+    heroImage: 'moving-hero.jpg',
+    ambiance: 'Stress-free moving experience'
+  },
+  pestcontrol: {
+    keywords: ['pest', 'pest control', 'exterminator', 'termite', 'bug', 'rodent'],
+    services: [
+      { name: 'Initial Treatment', price: '$150', description: 'Comprehensive spray' },
+      { name: 'Quarterly Service', price: '$100/visit', description: 'Preventive care' },
+      { name: 'Termite Inspection', price: '$100', description: 'Full property scan' },
+      { name: 'Termite Treatment', price: '$1,500+', description: 'Elimination' },
+      { name: 'Rodent Control', price: '$200+', description: 'Trapping and exclusion' },
+      { name: 'Bed Bug Treatment', price: '$500+', description: 'Heat treatment' }
+    ],
+    heroImage: 'pest-control-hero.jpg',
+    ambiance: 'Protecting your home and family'
+  }
+};
+
+// ============================================
+// RETAIL TYPES
+// ============================================
+const RETAIL_KEYWORDS = {
+  boutique: {
+    keywords: ['boutique', 'clothing', 'fashion', 'apparel', 'dress', 'womens'],
+    services: [
+      { name: 'Personal Styling', price: 'Free', description: 'Complimentary consultations' },
+      { name: 'Alterations', price: '$20+', description: 'In-house tailoring' },
+      { name: 'Gift Wrapping', price: '$5', description: 'Beautiful presentation' },
+      { name: 'Loyalty Program', price: 'Free', description: 'Earn points on purchases' },
+      { name: 'Private Shopping', price: 'Free', description: 'After-hours appointment' },
+      { name: 'Gift Cards', price: '$25+', description: 'Any amount' }
+    ],
+    heroImage: 'boutique-hero.jpg',
+    ambiance: 'Curated style for every occasion'
+  },
+  jewelry: {
+    keywords: ['jewelry', 'jeweler', 'diamond', 'engagement', 'ring', 'watch', 'gold'],
+    services: [
+      { name: 'Ring Sizing', price: '$40', description: 'Same-day service' },
+      { name: 'Watch Battery', price: '$15', description: 'Most watches' },
+      { name: 'Jewelry Repair', price: '$50+', description: 'Expert craftsmanship' },
+      { name: 'Custom Design', price: 'Custom', description: 'One-of-a-kind pieces' },
+      { name: 'Appraisal', price: '$75', description: 'Insurance documentation' },
+      { name: 'Cleaning', price: 'Free', description: 'Complimentary polish' }
+    ],
+    heroImage: 'jewelry-hero.jpg',
+    ambiance: 'Timeless elegance, expertly crafted'
+  },
+  petstore: {
+    keywords: ['pet', 'pets', 'dog', 'cat', 'puppy', 'kitten', 'grooming'],
+    services: [
+      { name: 'Dog Grooming', price: '$50+', description: 'Bath, cut, nails' },
+      { name: 'Cat Grooming', price: '$40+', description: 'Gentle handling' },
+      { name: 'Nail Trim', price: '$15', description: 'Walk-in welcome' },
+      { name: 'Loyalty Program', price: 'Free', description: 'Every 10th bag free' },
+      { name: 'Self-Wash Station', price: '$20', description: 'DIY bathing' },
+      { name: 'Delivery', price: '$5', description: 'Local delivery' }
+    ],
+    heroImage: 'pet-store-hero.jpg',
+    ambiance: 'Everything for your furry family'
+  },
+  florist: {
+    keywords: ['florist', 'flowers', 'floral', 'bouquet', 'wedding flowers', 'roses'],
+    services: [
+      { name: 'Everyday Bouquet', price: '$45+', description: 'Fresh arrangements' },
+      { name: 'Wedding Package', price: '$1,500+', description: 'Full event florals' },
+      { name: 'Sympathy Flowers', price: '$100+', description: 'Thoughtful tributes' },
+      { name: 'Same-Day Delivery', price: '$15', description: 'Local area' },
+      { name: 'Subscription', price: '$50/mo', description: 'Weekly fresh flowers' },
+      { name: 'Event Decor', price: 'Custom', description: 'Corporate and parties' }
+    ],
+    heroImage: 'florist-hero.jpg',
+    ambiance: 'Beautiful blooms for every moment'
+  }
+};
+
+/**
+ * All business type categories for detection
+ */
+const ALL_BUSINESS_TYPES = {
+  // Food & Beverage
+  ...Object.fromEntries(Object.entries(CUISINE_KEYWORDS).map(([k, v]) => [k, { ...v, industry: 'restaurant', contentType: 'menu' }])),
+  // Fitness & Wellness
+  ...Object.fromEntries(Object.entries(FITNESS_KEYWORDS).map(([k, v]) => [k, { ...v, industry: 'fitness', contentType: 'services' }])),
+  // Salon & Beauty
+  ...Object.fromEntries(Object.entries(SALON_KEYWORDS).map(([k, v]) => [k, { ...v, industry: 'salon', contentType: 'services' }])),
+  // Healthcare
+  ...Object.fromEntries(Object.entries(HEALTHCARE_KEYWORDS).map(([k, v]) => [k, { ...v, industry: 'healthcare', contentType: 'services' }])),
+  // Professional Services
+  ...Object.fromEntries(Object.entries(PROFESSIONAL_KEYWORDS).map(([k, v]) => [k, { ...v, industry: 'professional', contentType: 'services' }])),
+  // Tech & Software
+  ...Object.fromEntries(Object.entries(TECH_KEYWORDS).map(([k, v]) => [k, { ...v, industry: 'tech', contentType: 'services' }])),
+  // Education
+  ...Object.fromEntries(Object.entries(EDUCATION_KEYWORDS).map(([k, v]) => [k, { ...v, industry: 'education', contentType: 'services' }])),
+  // Home Services
+  ...Object.fromEntries(Object.entries(HOME_SERVICES_KEYWORDS).map(([k, v]) => [k, { ...v, industry: 'home-services', contentType: 'services' }])),
+  // Retail
+  ...Object.fromEntries(Object.entries(RETAIL_KEYWORDS).map(([k, v]) => [k, { ...v, industry: 'retail', contentType: 'services' }]))
+};
+
+/**
+ * Detect business type from business name and tagline
+ * Returns the modified fixture with business-specific content
+ */
+function applyCuisineDetection(fixture, customizations = {}) {
+  const result = JSON.parse(JSON.stringify(fixture)); // Deep clone
+
+  // Get text to scan
+  const businessName = (customizations.businessName || fixture.business?.name || '').toLowerCase();
+  const tagline = (customizations.tagline || fixture.business?.tagline || '').toLowerCase();
+  const searchText = `${businessName} ${tagline}`;
+
+  // Detect business type across all industries
+  let detectedType = null;
+  let typeData = null;
+
+  for (const [typeName, data] of Object.entries(ALL_BUSINESS_TYPES)) {
+    for (const keyword of data.keywords) {
+      if (searchText.includes(keyword)) {
+        detectedType = typeName;
+        typeData = data;
+        break;
+      }
+    }
+    if (detectedType) break;
+  }
+
+  // If no type detected, return original fixture
+  if (!detectedType || !typeData) {
+    return result;
+  }
+
+  // Mark detected type
+  result._detectedCuisine = detectedType; // Keep this name for backwards compatibility
+  result._detectedBusinessType = detectedType;
+  result._detectedIndustry = typeData.industry;
+  result._businessAmbiance = typeData.ambiance;
+  result._cuisineAmbiance = typeData.ambiance; // Backwards compatibility
+
+  // Get items (could be menuItems or services depending on industry)
+  const items = typeData.menuItems || typeData.services || [];
+
+  // Update content based on content type
+  if (typeData.contentType === 'menu') {
+    // Restaurant/Food - update menu page
+    if (result.pages?.menu) {
+      result.pages.menu.menuItems = items;
+      result.pages.menu.categories = [
+        { name: 'Starters & Sides', items: items.slice(4) },
+        { name: 'Main Dishes', items: items.slice(0, 4) }
+      ];
+    } else {
+      result.pages = result.pages || {};
+      result.pages.menu = {
+        menuItems: items,
+        categories: [
+          { name: 'Starters & Sides', items: items.slice(4) },
+          { name: 'Main Dishes', items: items.slice(0, 4) }
+        ]
+      };
+    }
+    result._cuisineMenuItems = items;
+  } else {
+    // Services-based business - update services page
+    if (result.pages?.services) {
+      result.pages.services.items = items;
+      result.pages.services.categories = [
+        { name: 'Popular Services', items: items.slice(0, 3) },
+        { name: 'Additional Services', items: items.slice(3) }
+      ];
+    } else {
+      result.pages = result.pages || {};
+      result.pages.services = {
+        items: items,
+        categories: [
+          { name: 'Popular Services', items: items.slice(0, 3) },
+          { name: 'Additional Services', items: items.slice(3) }
+        ]
+      };
+    }
+    result._businessServices = items;
+
+    // Also update pricing page if exists
+    if (result.pages?.pricing) {
+      result.pages.pricing.items = items;
+    }
+  }
+
+  // Update home page hero with business-specific ambiance
+  if (result.pages?.home?.hero) {
+    if (!customizations.tagline) {
+      result.pages.home.hero.subheadline = typeData.ambiance;
+    }
+  }
+
+  // Store hero image reference
+  result._businessHeroImage = typeData.heroImage;
+  result._cuisineHeroImage = typeData.heroImage; // Backwards compatibility
+
+  // Log detection
+  const emoji = typeData.industry === 'restaurant' ? '🍽️' :
+                typeData.industry === 'fitness' ? '💪' :
+                typeData.industry === 'salon' ? '💇' :
+                typeData.industry === 'healthcare' ? '🏥' :
+                typeData.industry === 'professional' ? '💼' :
+                typeData.industry === 'tech' ? '💻' :
+                typeData.industry === 'education' ? '📚' :
+                typeData.industry === 'home-services' ? '🏠' :
+                typeData.industry === 'retail' ? '🛍️' : '🏪';
+
+  console.log(`${emoji} Business type detected: ${detectedType} (${typeData.industry}) from "${searchText}"`);
+
+  return result;
+}
+
 /**
  * Create test mode routes
  */
@@ -115,6 +1100,32 @@ function createTestModeRoutes(deps) {
   });
 
   // ============================================
+  // GET /api/test-mode/archetypes
+  // List available layout archetypes for artisan food industries
+  // ============================================
+  router.get('/archetypes', (req, res) => {
+    if (!archetypeSystem) {
+      return res.json({ success: true, archetypes: [], message: 'Archetype system not available' });
+    }
+
+    const archetypes = archetypeSystem.getAllArchetypes().map(arch => ({
+      id: arch.id,
+      name: arch.name,
+      description: arch.description,
+      bestFor: arch.bestFor,
+      realExamples: arch.realExamples,
+      vibe: arch.style?.vibe
+    }));
+
+    res.json({
+      success: true,
+      archetypes,
+      industries: archetypeSystem.ARTISAN_FOOD_INDUSTRIES,
+      note: 'Pass archetype ID to /generate to override auto-detection'
+    });
+  });
+
+  // ============================================
   // POST /api/test-mode/generate
   // Generate a test project using fixture data
   // ============================================
@@ -124,7 +1135,9 @@ function createTestModeRoutes(deps) {
       customizations = {},
       websitePages = ['home', 'menu', 'about', 'contact', 'gallery'],
       appPages = ['dashboard', 'rewards', 'profile', 'wallet', 'earn', 'leaderboard'],
-      deploy = false
+      deploy = false,
+      captureScreenshots = true, // Auto-capture screenshots for gallery
+      archetype = null // Optional: 'ecommerce', 'luxury', or 'local' - overrides auto-detection
     } = req.body;
 
     // Set up SSE for real-time progress
@@ -165,8 +1178,11 @@ function createTestModeRoutes(deps) {
         appPages
       });
 
-      const businessName = customizedFixture.business.name;
-      const location = customizedFixture.business.location;
+      // Detect cuisine type from business name/tagline and adjust content
+      const cuisineAdjusted = applyCuisineDetection(customizedFixture, customizations);
+
+      const businessName = cuisineAdjusted.business.name;
+      const location = cuisineAdjusted.business.location;
 
       sendEvent('progress', {
         step: 'Fixture loaded',
@@ -174,8 +1190,28 @@ function createTestModeRoutes(deps) {
       });
       console.log(`🏪 Business: ${businessName} (${location})`);
 
+      // Log detected business type if any
+      if (cuisineAdjusted._detectedBusinessType) {
+        const industry = cuisineAdjusted._detectedIndustry || 'restaurant';
+        const emoji = industry === 'restaurant' ? '🍽️' :
+                      industry === 'fitness' ? '💪' :
+                      industry === 'salon' ? '💇' :
+                      industry === 'healthcare' ? '🏥' :
+                      industry === 'professional' ? '💼' :
+                      industry === 'tech' ? '💻' :
+                      industry === 'education' ? '📚' :
+                      industry === 'home-services' ? '🏠' :
+                      industry === 'retail' ? '🛍️' : '🏪';
+        const typeLabel = cuisineAdjusted._detectedBusinessType.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+        sendEvent('progress', {
+          step: 'Business type detected',
+          message: `${emoji} Detected: ${typeLabel} (${industry})`
+        });
+        console.log(`${emoji} Business type detected: ${typeLabel} (${industry})`);
+      }
+
       // Log what's included
-      const pageList = Object.keys(customizedFixture.pages).join(', ');
+      const pageList = Object.keys(cuisineAdjusted.pages).join(', ');
       sendEvent('progress', {
         step: 'Pages configured',
         message: `📄 Pages: ${pageList}`
@@ -271,20 +1307,26 @@ function createTestModeRoutes(deps) {
       // Generate pages using mock data
       sendEvent('progress', {
         step: 'Generating pages',
-        message: '📝 Generating pages from mock data...'
+        message: `📝 Generating ${websitePages.length} pages...`
       });
-      console.log('📝 Generating pages from mock data...');
+      console.log(`📝 Generating ${websitePages.length} pages from selection: ${websitePages.join(', ')}`);
 
       const pagesDir = path.join(projectPath, 'frontend', 'src', 'pages');
       if (!fs.existsSync(pagesDir)) {
         fs.mkdirSync(pagesDir, { recursive: true });
       }
 
-      // Generate each page from fixture data
+      // Generate each page from websitePages selection
+      // Use fixture data if available, otherwise generate industry-appropriate template
       const generatedPages = [];
-      for (const [pageName, pageData] of Object.entries(customizedFixture.pages)) {
-        const componentName = pageName.charAt(0).toUpperCase() + pageName.slice(1) + 'Page';
-        const pageContent = generateMockPage(pageName, pageData, customizedFixture);
+      for (const pageName of websitePages) {
+        const componentName = pageName.charAt(0).toUpperCase() + pageName.slice(1).replace(/-([a-z])/g, (_, c) => c.toUpperCase()) + 'Page';
+
+        // Check if fixture has data for this page
+        const pageData = customizedFixture.pages?.[pageName] || null;
+
+        // Generate the page content (pass archetype override if specified)
+        const pageContent = generateMockPage(pageName, pageData, customizedFixture, archetype);
 
         fs.writeFileSync(path.join(pagesDir, `${componentName}.jsx`), pageContent);
         sendEvent('log', { message: `   ✅ ${componentName}.jsx` });
@@ -458,6 +1500,26 @@ CORS_ORIGINS=http://localhost:5173,http://localhost:5174,http://localhost:5175,h
         customizations
       };
 
+      // Auto-capture screenshots in the background (non-blocking)
+      if (captureScreenshots && screenshotService) {
+        sendEvent('progress', {
+          step: 'Capturing screenshots',
+          message: '📸 Capturing screenshots for preview gallery...'
+        });
+        console.log('📸 Starting screenshot capture in background...');
+
+        // Run screenshot capture asynchronously (don't block the response)
+        screenshotService.quickCapture(projectPath)
+          .then(screenshotResults => {
+            console.log(`📸 Screenshots captured: ${screenshotResults.summary?.totalScreenshots || 0} images`);
+          })
+          .catch(err => {
+            console.error('📸 Screenshot capture failed:', err.message);
+          });
+
+        result.screenshotsQueued = true;
+      }
+
       sendEvent('complete', result);
 
       console.log(`✅ DONE${previewUrl ? ` - Preview: ${previewUrl}` : ''}`);
@@ -575,20 +1637,40 @@ CORS_ORIGINS=http://localhost:5173,http://localhost:5174,http://localhost:5175,h
 function generateMockAppJsx(pages, fixture, hasCompanionApp = true) {
   const businessName = fixture.business.name;
   const colors = fixture.theme.colors;
+  const accentColor = colors.accent || colors.primary;
+
+  // Pages that require authentication (protected routes) - these go in portal dropdown
+  const portalPageNames = ['dashboard', 'earn', 'rewards', 'wallet', 'profile', 'settings', 'account', 'leaderboard'];
+
+  // Separate main site pages from portal/app pages
+  const mainSitePages = pages.filter(p =>
+    !portalPageNames.includes(p.name.toLowerCase()) &&
+    !['login', 'register'].includes(p.name.toLowerCase())
+  );
+  const userPortalPages = pages.filter(p => portalPageNames.includes(p.name.toLowerCase()));
+  const hasPortalPages = hasCompanionApp && userPortalPages.length > 0;
 
   // Generate imports for main pages
   const imports = pages.map(p =>
     `import ${p.component} from './pages/${p.component}';`
   ).join('\n');
 
-  // Generate nav links (excluding auth pages from main nav)
-  const navLinks = pages.map(p => {
+  // Generate nav links for main site pages only (not portal pages)
+  const navLinks = mainSitePages.map(p => {
     const path = p.name === 'home' ? '/' : `/${p.name}`;
-    const label = p.name.charAt(0).toUpperCase() + p.name.slice(1);
+    // Handle hyphenated names like 'gift-cards' -> 'Gift Cards'
+    const label = p.name.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     return `            <Link to="${path}" style={styles.navLink}>${label}</Link>`;
   }).join('\n');
 
-  // Generate routes for main pages
+  // Generate portal dropdown items
+  const portalDropdownItems = userPortalPages.map(p => {
+    const path = `/${p.name}`;
+    const label = p.name.charAt(0).toUpperCase() + p.name.slice(1);
+    return `                    <Link to="${path}" style={styles.portalDropdownItem}>${label}</Link>`;
+  }).join('\n');
+
+  // Generate routes for all pages
   const routes = pages.map(p => {
     const path = p.name === 'home' ? '/' : `/${p.name}`;
     return `              <Route path="${path}" element={<${p.component} />} />`;
@@ -597,24 +1679,99 @@ function generateMockAppJsx(pages, fixture, hasCompanionApp = true) {
   // Auth routes (always include when companion app exists)
   const authRoutes = hasCompanionApp ? `
               <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/dashboard" element={<DashboardPage />} />` : '';
+              <Route path="/register" element={<RegisterPage />} />` : '';
 
   // Auth imports
   const authImports = hasCompanionApp ? `
 // Auth pages
 import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import DashboardPage from './pages/DashboardPage';` : '';
+import RegisterPage from './pages/RegisterPage';` : '';
 
-  // Auth nav buttons
-  const authNavButtons = hasCompanionApp ? `
-            <div style={styles.authButtons}>
-              <Link to="/login" style={styles.loginButton}>Login</Link>
-              <Link to="/register" style={styles.registerButton}>Sign Up</Link>
-            </div>` : '';
+  // AuthContext and AuthButtons component for portal dropdown
+  const authContextCode = hasCompanionApp ? `
+// Simple auth context for demo
+const AuthContext = React.createContext(null);
 
-  // Auth styles
+function AuthProvider({ children }) {
+  const [user, setUser] = React.useState(() => {
+    try {
+      const stored = localStorage.getItem('user');
+      return stored ? JSON.parse(stored) : null;
+    } catch { return null; }
+  });
+
+  const login = (userData) => {
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+function useAuth() {
+  return React.useContext(AuthContext);
+}
+
+function AuthButtons() {
+  const { user, logout } = useAuth();
+  const [portalOpen, setPortalOpen] = React.useState(false);
+  const portalRef = React.useRef(null);
+
+  React.useEffect(() => {
+    function handleClickOutside(event) {
+      if (portalRef.current && !portalRef.current.contains(event.target)) {
+        setPortalOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  if (user) {
+    return (
+      <div style={styles.authButtons}>
+        ${hasPortalPages ? `{/* Portal Dropdown */}
+        <div ref={portalRef} style={{ position: 'relative' }}>
+          <button
+            onClick={() => setPortalOpen(!portalOpen)}
+            style={styles.portalButton}
+          >
+            <span>My Account</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          {portalOpen && (
+            <div style={styles.portalDropdown}>
+${portalDropdownItems}
+              <div style={styles.portalDivider} />
+              <button onClick={logout} style={styles.portalDropdownItem}>Logout</button>
+            </div>
+          )}
+        </div>` : `<button onClick={logout} style={styles.logoutButton}>Logout</button>`}
+      </div>
+    );
+  }
+
+  return (
+    <div style={styles.authButtons}>
+      <Link to="/login" style={styles.loginButton}>Login</Link>
+      <Link to="/register" style={styles.registerButton}>Sign Up</Link>
+    </div>
+  );
+}` : '';
+
+  // Auth styles with portal dropdown
   const authStyles = hasCompanionApp ? `
   authButtons: {
     display: 'flex',
@@ -635,11 +1792,62 @@ import DashboardPage from './pages/DashboardPage';` : '';
     fontWeight: '600',
     padding: '10px 20px',
     borderRadius: '8px'
+  },
+  logoutButton: {
+    background: 'transparent',
+    border: '1px solid ${colors.primary}',
+    color: '${colors.primary}',
+    padding: '8px 16px',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    fontSize: '14px'
+  },
+  portalButton: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '8px 16px',
+    background: '${accentColor}',
+    color: '#ffffff',
+    border: 'none',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    fontSize: '14px',
+    fontWeight: '600'
+  },
+  portalDropdown: {
+    position: 'absolute',
+    top: '100%',
+    right: 0,
+    marginTop: '8px',
+    background: '#ffffff',
+    borderRadius: '12px',
+    boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
+    minWidth: '200px',
+    padding: '8px 0',
+    zIndex: 1000
+  },
+  portalDropdownItem: {
+    display: 'block',
+    width: '100%',
+    padding: '12px 20px',
+    background: 'transparent',
+    border: 'none',
+    color: '#1a1a2e',
+    textDecoration: 'none',
+    textAlign: 'left',
+    fontSize: '14px',
+    cursor: 'pointer'
+  },
+  portalDivider: {
+    height: '1px',
+    background: 'rgba(0,0,0,0.1)',
+    margin: '8px 0'
   },` : '';
 
   return `/**
  * ${businessName} - Frontend App
- * Test Mode Generated
+ * Test Mode Generated (with Portal Dropdown)
  */
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
@@ -648,6 +1856,7 @@ import { Menu, X } from 'lucide-react';
 // Page imports
 ${imports}
 ${authImports}
+${authContextCode}
 
 function Navigation() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -655,15 +1864,15 @@ function Navigation() {
 
   return (
     <nav style={styles.nav}>
-      <Link to="/" style={styles.brand}>${businessName}</Link>
+      <Link to="/home" style={styles.brand}>${businessName}</Link>
 
-      {/* Desktop Nav */}
+      {/* Desktop Nav - Main Site Pages Only */}
       <div style={styles.desktopNav}>
 ${navLinks}
       </div>
 
-      {/* Auth Buttons */}
-${authNavButtons}
+      {/* Auth Buttons with Portal Dropdown */}
+      ${hasCompanionApp ? '<AuthButtons />' : ''}
 
       {/* Mobile Menu Button */}
       <button
@@ -677,10 +1886,10 @@ ${authNavButtons}
       {menuOpen && (
         <div style={styles.mobileNav}>
 ${navLinks.replace(/styles\.navLink/g, 'styles.mobileNavLink')}
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '16px', marginTop: '8px' }}>
+          ${hasCompanionApp ? `<div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '16px', marginTop: '8px' }}>
             <Link to="/login" style={styles.mobileNavLink}>Login</Link>
             <Link to="/register" style={styles.mobileNavLink}>Sign Up</Link>
-          </div>
+          </div>` : ''}
         </div>
       )}
     </nav>
@@ -689,6 +1898,7 @@ ${navLinks.replace(/styles\.navLink/g, 'styles.mobileNavLink')}
 
 function App() {
   return (
+    ${hasCompanionApp ? '<AuthProvider>' : ''}
     <BrowserRouter>
       <div style={{ minHeight: '100vh', backgroundColor: '${colors.background}', color: '${colors.text}' }}>
         <Navigation />
@@ -699,6 +1909,7 @@ ${routes}${authRoutes}
         </main>
       </div>
     </BrowserRouter>
+    ${hasCompanionApp ? '</AuthProvider>' : ''}
   );
 }
 
@@ -1412,32 +2623,106 @@ const styles = {
 
 /**
  * Generate a mock page component from fixture data
+ * @param {string} pageName - The page name (e.g., 'home', 'menu')
+ * @param {object} pageData - Page-specific data from fixture
+ * @param {object} fixture - Full fixture data
+ * @param {string|null} archetypeOverride - Optional archetype override ('ecommerce', 'luxury', 'local')
  */
-function generateMockPage(pageName, pageData, fixture) {
-  const componentName = pageName.charAt(0).toUpperCase() + pageName.slice(1) + 'Page';
+function generateMockPage(pageName, pageData, fixture, archetypeOverride = null) {
+  // Handle hyphenated page names like 'gift-cards' -> 'GiftCardsPage'
+  const componentName = pageName
+    .split('-')
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join('') + 'Page';
   const businessName = fixture.business.name;
   const colors = fixture.theme.colors;
 
   // Generate appropriate page based on type
-  if (pageName === 'home') {
-    return generateHomePage(componentName, pageData, fixture);
-  } else if (pageName === 'menu') {
-    return generateMenuPage(componentName, pageData, fixture);
-  } else if (pageName === 'about') {
-    return generateAboutPage(componentName, pageData, fixture);
-  } else if (pageName === 'contact') {
-    return generateContactPage(componentName, pageData, fixture);
-  } else if (pageName === 'gallery') {
-    return generateGalleryPage(componentName, pageData, fixture);
-  } else {
-    return generateGenericPage(componentName, pageName, pageData, fixture);
+  switch (pageName) {
+    case 'home':
+      return generateHomePage(componentName, pageData, fixture, archetypeOverride);
+    case 'menu':
+      return generateMenuPage(componentName, pageData, fixture, archetypeOverride);
+    case 'about':
+      return generateAboutPage(componentName, pageData, fixture);
+    case 'contact':
+      return generateContactPage(componentName, pageData, fixture);
+    case 'gallery':
+      return generateGalleryPage(componentName, pageData, fixture);
+    case 'reservations':
+      return generateReservationsPage(componentName, pageData, fixture);
+    case 'events':
+      return generateEventsPage(componentName, pageData, fixture);
+    case 'catering':
+      return generateCateringPage(componentName, pageData, fixture);
+    case 'gift-cards':
+      return generateGiftCardsPage(componentName, pageData, fixture);
+    case 'careers':
+      return generateCareersPage(componentName, pageData, fixture);
+    case 'press':
+      return generatePressPage(componentName, pageData, fixture);
+    case 'faq':
+      return generateFaqPage(componentName, pageData, fixture);
+    case 'services':
+      return generateServicesPage(componentName, pageData, fixture);
+    case 'pricing':
+      return generatePricingPage(componentName, pageData, fixture);
+    case 'team':
+      return generateTeamPage(componentName, pageData, fixture);
+    case 'testimonials':
+      return generateTestimonialsPage(componentName, pageData, fixture);
+    case 'blog':
+      return generateBlogPage(componentName, pageData, fixture);
+    case 'location':
+    case 'locations':
+      return generateLocationPage(componentName, pageData, fixture);
+    case 'specials':
+    case 'promotions':
+      return generateSpecialsPage(componentName, pageData, fixture);
+    case 'online-order':
+    case 'order':
+      return generateOnlineOrderPage(componentName, pageData, fixture);
+    default:
+      return generateGenericPage(componentName, pageName, pageData, fixture);
   }
 }
 
-function generateHomePage(componentName, pageData, fixture) {
-  const { hero, sections } = pageData;
-  const { name, tagline } = fixture.business;
+function generateHomePage(componentName, pageData, fixture, archetypeOverride = null) {
+  const hero = pageData?.hero || {};
+  const sections = pageData?.sections || [];
+  const { name, tagline, location, phone, yearFounded } = fixture.business;
   const colors = fixture.theme.colors;
+  // Prefer the specific business industry over the detected category (e.g., "bakery" > "restaurant")
+  const industry = fixture.business.industry || fixture._detectedIndustry || 'restaurant';
+
+  // Check if this is an artisan food industry and use archetype system
+  if (archetypeSystem && archetypePages && (archetypeOverride || archetypeSystem.isArtisanFoodIndustry(industry))) {
+    const businessData = {
+      name,
+      tagline,
+      industry,
+      description: fixture.business.description || tagline,
+      website: fixture.business.website || '',
+      phone: phone || '',
+      address: location || ''
+    };
+
+    // Use override if provided, otherwise auto-detect
+    const archetypeId = archetypeOverride || archetypeSystem.detectArchetype(businessData);
+    const archetype = archetypeSystem.getArchetype(archetypeId);
+    console.log(`[Archetype] Using ${archetype.name} archetype for ${industry} home page${archetypeOverride ? ' (manual override)' : ''}`);
+
+    const archetypeResult = archetypePages.generateHomePage(
+      archetypeId,
+      businessData,
+      colors
+    );
+
+    // Archetype generators return a string directly
+    if (archetypeResult && typeof archetypeResult === 'string') {
+      return archetypeResult;
+    }
+  }
 
   return `/**
  * ${componentName} - Test Mode Generated
@@ -1552,10 +2837,49 @@ function FeatureCard({ icon, title, description, color }) {
 `;
 }
 
-function generateMenuPage(componentName, pageData, fixture) {
-  const { categories = [] } = pageData;
-  const { name } = fixture.business;
+function generateMenuPage(componentName, pageData, fixture, archetypeOverride = null) {
+  // Use cuisine-specific categories if available, otherwise fall back to pageData
+  let categories = pageData?.categories || [];
+  if (categories.length === 0 && fixture._cuisineMenuItems) {
+    categories = [
+      { name: 'Starters & Sides', items: fixture._cuisineMenuItems.slice(4) },
+      { name: 'Main Dishes', items: fixture._cuisineMenuItems.slice(0, 4) }
+    ];
+  }
+  const { name, tagline, location, phone } = fixture.business;
   const colors = fixture.theme.colors;
+  // Prefer the specific business industry over the detected category (e.g., "bakery" > "restaurant")
+  const industry = fixture.business.industry || fixture._detectedIndustry || 'restaurant';
+
+  // Check if this is an artisan food industry and use archetype system
+  if (archetypeSystem && archetypePages && (archetypeOverride || archetypeSystem.isArtisanFoodIndustry(industry))) {
+    const businessData = {
+      name,
+      tagline,
+      industry,
+      description: fixture.business.description || tagline,
+      website: fixture.business.website || '',
+      phone: phone || '',
+      address: location || '',
+      menuItems: fixture._cuisineMenuItems || categories.flatMap(c => c.items) || []
+    };
+
+    // Use override if provided, otherwise auto-detect
+    const archetypeId = archetypeOverride || archetypeSystem.detectArchetype(businessData);
+    const archetype = archetypeSystem.getArchetype(archetypeId);
+    console.log(`[Archetype] Using ${archetype.name} archetype for ${industry} menu page${archetypeOverride ? ' (manual override)' : ''}`);
+
+    const archetypeResult = archetypePages.generateMenuPage(
+      archetypeId,
+      businessData,
+      colors
+    );
+
+    // Archetype generators return a string directly
+    if (archetypeResult && typeof archetypeResult === 'string') {
+      return archetypeResult;
+    }
+  }
 
   return `/**
  * ${componentName} - Test Mode Generated
@@ -1619,7 +2943,9 @@ export default function ${componentName}() {
 }
 
 function generateAboutPage(componentName, pageData, fixture) {
-  const { story, team = [], values = [] } = pageData;
+  const story = pageData?.story || null;
+  const team = pageData?.team || [];
+  const values = pageData?.values || [];
   const { name, established } = fixture.business;
   const colors = fixture.theme.colors;
 
@@ -1679,7 +3005,9 @@ export default function ${componentName}() {
 }
 
 function generateContactPage(componentName, pageData, fixture) {
-  const { address, phone, email } = pageData;
+  const address = pageData?.address || fixture.business?.address || '123 Main Street';
+  const phone = pageData?.phone || fixture.business?.phone || '(555) 123-4567';
+  const email = pageData?.email || fixture.business?.email || 'hello@example.com';
   const { name } = fixture.business;
   const colors = fixture.theme.colors;
 
@@ -1786,7 +3114,14 @@ export default function ${componentName}() {
 }
 
 function generateGalleryPage(componentName, pageData, fixture) {
-  const { images = [] } = pageData;
+  const images = pageData?.images || [
+    { url: 'https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=600', caption: 'Our Space' },
+    { url: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600', caption: 'Training Session' },
+    { url: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600', caption: 'Group Class' },
+    { url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=600', caption: 'Equipment' },
+    { url: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=600', caption: 'Facility' },
+    { url: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=600', caption: 'Community' }
+  ];
   const { name } = fixture.business;
   const colors = fixture.theme.colors;
 
@@ -1871,6 +3206,857 @@ export default function ${componentName}() {
             />
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+`;
+}
+
+function generateReservationsPage(componentName, pageData, fixture) {
+  const { name, phone } = fixture.business;
+  const colors = fixture.theme.colors;
+  return `/**
+ * ${componentName} - Reservations Page
+ */
+import React, { useState } from 'react';
+import { Calendar, Clock, Users, CheckCircle } from 'lucide-react';
+
+export default function ${componentName}() {
+  const [formData, setFormData] = useState({ date: '', time: '', party: '2', name: '', phone: '', email: '', notes: '' });
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e) => { e.preventDefault(); setSubmitted(true); };
+
+  if (submitted) {
+    return (
+      <div style={{ minHeight: '100vh', backgroundColor: '${colors.background}', color: '${colors.text}', padding: '80px 20px', textAlign: 'center' }}>
+        <CheckCircle size={64} style={{ color: '${colors.primary}', margin: '0 auto 24px' }} />
+        <h1 style={{ fontSize: '36px', marginBottom: '16px' }}>Reservation Request Sent!</h1>
+        <p style={{ opacity: 0.8 }}>We'll confirm your reservation shortly. Call us at ${phone || '(555) 123-4567'} for immediate assistance.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: '${colors.background}', color: '${colors.text}', padding: '80px 20px' }}>
+      <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: '42px', textAlign: 'center', marginBottom: '16px' }}>Make a Reservation</h1>
+        <p style={{ textAlign: 'center', opacity: 0.8, marginBottom: '48px' }}>Reserve your table at ${name}</p>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', opacity: 0.8 }}>Date</label>
+              <input type="date" required value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'inherit' }} />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', opacity: 0.8 }}>Time</label>
+              <select required value={formData.time} onChange={(e) => setFormData({...formData, time: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'inherit' }}>
+                <option value="">Select time</option>
+                {['5:00 PM', '5:30 PM', '6:00 PM', '6:30 PM', '7:00 PM', '7:30 PM', '8:00 PM', '8:30 PM', '9:00 PM'].map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', opacity: 0.8 }}>Party Size</label>
+            <select value={formData.party} onChange={(e) => setFormData({...formData, party: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'inherit' }}>
+              {[1,2,3,4,5,6,7,8].map(n => <option key={n} value={n}>{n} {n === 1 ? 'Guest' : 'Guests'}</option>)}
+              <option value="9+">Large Party (9+)</option>
+            </select>
+          </div>
+          <input type="text" placeholder="Your Name" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} style={{ padding: '14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'inherit' }} />
+          <input type="tel" placeholder="Phone Number" required value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} style={{ padding: '14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'inherit' }} />
+          <input type="email" placeholder="Email Address" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} style={{ padding: '14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'inherit' }} />
+          <textarea placeholder="Special Requests (optional)" rows={3} value={formData.notes} onChange={(e) => setFormData({...formData, notes: e.target.value})} style={{ padding: '14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'inherit', resize: 'vertical' }} />
+          <button type="submit" style={{ padding: '16px', backgroundColor: '${colors.primary}', color: 'white', border: 'none', borderRadius: '8px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer' }}>Request Reservation</button>
+        </form>
+      </div>
+    </div>
+  );
+}
+`;
+}
+
+function generateEventsPage(componentName, pageData, fixture) {
+  const { name } = fixture.business;
+  const colors = fixture.theme.colors;
+  return `/**
+ * ${componentName} - Events Page
+ */
+import React from 'react';
+import { Calendar, Clock, MapPin } from 'lucide-react';
+
+const EVENTS = [
+  { title: 'Live Music Night', date: 'Every Friday', time: '7:00 PM - 10:00 PM', description: 'Enjoy live performances while you dine', image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600' },
+  { title: 'Wine Tasting Evening', date: 'First Saturday', time: '6:00 PM - 9:00 PM', description: 'Sample our curated wine selection', image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=600' },
+  { title: 'Chef\\'s Table Experience', date: 'By Reservation', time: 'Various', description: 'Exclusive multi-course tasting menu', image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600' },
+];
+
+export default function ${componentName}() {
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: '${colors.background}', color: '${colors.text}', padding: '80px 20px' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: '42px', textAlign: 'center', marginBottom: '16px' }}>Events at ${name}</h1>
+        <p style={{ textAlign: 'center', opacity: 0.8, marginBottom: '48px' }}>Join us for special occasions and experiences</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          {EVENTS.map((event, idx) => (
+            <div key={idx} style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '32px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '16px', overflow: 'hidden' }}>
+              <img src={event.image} alt={event.title} style={{ width: '100%', height: '200px', objectFit: 'cover' }} />
+              <div style={{ padding: '24px' }}>
+                <h2 style={{ fontSize: '24px', marginBottom: '12px' }}>{event.title}</h2>
+                <p style={{ opacity: 0.8, marginBottom: '16px' }}>{event.description}</p>
+                <div style={{ display: 'flex', gap: '24px', fontSize: '14px', opacity: 0.7 }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Calendar size={16} /> {event.date}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Clock size={16} /> {event.time}</span>
+                </div>
+                <button style={{ marginTop: '20px', padding: '12px 24px', backgroundColor: '${colors.primary}', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Learn More</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+`;
+}
+
+function generateCateringPage(componentName, pageData, fixture) {
+  const { name, phone, email } = fixture.business;
+  const colors = fixture.theme.colors;
+  return `/**
+ * ${componentName} - Catering Page
+ */
+import React, { useState } from 'react';
+import { Users, Calendar, UtensilsCrossed, CheckCircle } from 'lucide-react';
+
+const PACKAGES = [
+  { name: 'Basic Package', price: 'From $15/person', items: ['Choice of 2 entrees', 'Side dishes', 'Bread & butter', 'Disposable serviceware'] },
+  { name: 'Premium Package', price: 'From $25/person', items: ['Choice of 3 entrees', 'Appetizer platter', 'Side dishes', 'Dessert selection', 'Real serviceware'] },
+  { name: 'Deluxe Package', price: 'From $40/person', items: ['Full menu selection', 'Appetizer stations', 'Premium sides', 'Dessert bar', 'Full service staff'] },
+];
+
+export default function ${componentName}() {
+  const [submitted, setSubmitted] = useState(false);
+  if (submitted) return (
+    <div style={{ minHeight: '100vh', backgroundColor: '${colors.background}', color: '${colors.text}', padding: '80px 20px', textAlign: 'center' }}>
+      <CheckCircle size={64} style={{ color: '${colors.primary}', margin: '0 auto 24px' }} />
+      <h1 style={{ fontSize: '36px', marginBottom: '16px' }}>Catering Request Received!</h1>
+      <p>Our catering team will contact you within 24 hours. Questions? Call ${phone || '(555) 123-4567'}</p>
+    </div>
+  );
+
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: '${colors.background}', color: '${colors.text}', padding: '80px 20px' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: '42px', textAlign: 'center', marginBottom: '16px' }}>Catering Services</h1>
+        <p style={{ textAlign: 'center', opacity: 0.8, marginBottom: '48px' }}>Let ${name} cater your next event</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginBottom: '48px' }}>
+          {PACKAGES.map((pkg, idx) => (
+            <div key={idx} style={{ padding: '32px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '16px', border: idx === 1 ? '2px solid ' + '${colors.primary}' : 'none' }}>
+              <h3 style={{ fontSize: '24px', marginBottom: '8px' }}>{pkg.name}</h3>
+              <p style={{ fontSize: '20px', color: '${colors.primary}', fontWeight: 'bold', marginBottom: '16px' }}>{pkg.price}</p>
+              <ul style={{ listStyle: 'none', padding: 0 }}>
+                {pkg.items.map((item, i) => <li key={i} style={{ padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>✓ {item}</li>)}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <div style={{ backgroundColor: 'rgba(255,255,255,0.05)', padding: '32px', borderRadius: '16px' }}>
+          <h2 style={{ fontSize: '28px', marginBottom: '24px' }}>Request a Quote</h2>
+          <form onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <input placeholder="Your Name" required style={{ padding: '14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'inherit' }} />
+            <input placeholder="Phone" required type="tel" style={{ padding: '14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'inherit' }} />
+            <input placeholder="Email" required type="email" style={{ padding: '14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'inherit' }} />
+            <input placeholder="Event Date" required type="date" style={{ padding: '14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'inherit' }} />
+            <input placeholder="Number of Guests" required type="number" style={{ padding: '14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'inherit' }} />
+            <input placeholder="Event Type" style={{ padding: '14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'inherit' }} />
+            <textarea placeholder="Additional Details" rows={4} style={{ gridColumn: '1 / -1', padding: '14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'inherit' }} />
+            <button type="submit" style={{ gridColumn: '1 / -1', padding: '16px', backgroundColor: '${colors.primary}', color: 'white', border: 'none', borderRadius: '8px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer' }}>Submit Request</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+`;
+}
+
+function generateGiftCardsPage(componentName, pageData, fixture) {
+  const { name } = fixture.business;
+  const colors = fixture.theme.colors;
+  return `/**
+ * ${componentName} - Gift Cards Page
+ */
+import React, { useState } from 'react';
+import { Gift, CreditCard, Mail, CheckCircle } from 'lucide-react';
+
+const AMOUNTS = [25, 50, 75, 100, 150, 200];
+
+export default function ${componentName}() {
+  const [amount, setAmount] = useState(50);
+  const [customAmount, setCustomAmount] = useState('');
+  const [delivery, setDelivery] = useState('email');
+
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: '${colors.background}', color: '${colors.text}', padding: '80px 20px' }}>
+      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+          <Gift size={64} style={{ color: '${colors.primary}', marginBottom: '24px' }} />
+          <h1 style={{ fontSize: '42px', marginBottom: '16px' }}>Gift Cards</h1>
+          <p style={{ opacity: 0.8 }}>Give the gift of great food at ${name}</p>
+        </div>
+        <div style={{ backgroundColor: 'rgba(255,255,255,0.05)', padding: '32px', borderRadius: '16px' }}>
+          <h2 style={{ fontSize: '20px', marginBottom: '16px' }}>Select Amount</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '24px' }}>
+            {AMOUNTS.map(a => (
+              <button key={a} onClick={() => { setAmount(a); setCustomAmount(''); }} style={{ padding: '16px', backgroundColor: amount === a && !customAmount ? '${colors.primary}' : 'rgba(255,255,255,0.05)', color: amount === a && !customAmount ? 'white' : 'inherit', border: 'none', borderRadius: '8px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer' }}>\${a}</button>
+            ))}
+          </div>
+          <input type="number" placeholder="Or enter custom amount" value={customAmount} onChange={(e) => { setCustomAmount(e.target.value); setAmount(0); }} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'inherit', marginBottom: '24px' }} />
+          <h2 style={{ fontSize: '20px', marginBottom: '16px' }}>Delivery Method</h2>
+          <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
+            <button onClick={() => setDelivery('email')} style={{ flex: 1, padding: '16px', backgroundColor: delivery === 'email' ? '${colors.primary}' : 'rgba(255,255,255,0.05)', color: delivery === 'email' ? 'white' : 'inherit', border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}><Mail size={20} /> Email</button>
+            <button onClick={() => setDelivery('physical')} style={{ flex: 1, padding: '16px', backgroundColor: delivery === 'physical' ? '${colors.primary}' : 'rgba(255,255,255,0.05)', color: delivery === 'physical' ? 'white' : 'inherit', border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}><CreditCard size={20} /> Physical Card</button>
+          </div>
+          <input placeholder="Recipient's Name" style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'inherit', marginBottom: '12px' }} />
+          <input placeholder={delivery === 'email' ? "Recipient's Email" : "Shipping Address"} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'inherit', marginBottom: '12px' }} />
+          <textarea placeholder="Personal Message (optional)" rows={3} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)', color: 'inherit', marginBottom: '24px' }} />
+          <button style={{ width: '100%', padding: '18px', backgroundColor: '${colors.primary}', color: 'white', border: 'none', borderRadius: '8px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer' }}>Purchase Gift Card - \${customAmount || amount}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+`;
+}
+
+function generateCareersPage(componentName, pageData, fixture) {
+  const { name } = fixture.business;
+  const colors = fixture.theme.colors;
+  return `/**
+ * ${componentName} - Careers Page
+ */
+import React from 'react';
+import { Briefcase, Clock, MapPin, DollarSign } from 'lucide-react';
+
+const POSITIONS = [
+  { title: 'Line Cook', type: 'Full-time', location: 'On-site', salary: '$18-22/hr', description: 'Prepare dishes according to recipes and standards' },
+  { title: 'Server', type: 'Part-time', location: 'On-site', salary: '$15/hr + tips', description: 'Provide excellent customer service to guests' },
+  { title: 'Host/Hostess', type: 'Part-time', location: 'On-site', salary: '$14-16/hr', description: 'Welcome guests and manage reservations' },
+  { title: 'Kitchen Manager', type: 'Full-time', location: 'On-site', salary: '$50-60k/yr', description: 'Oversee kitchen operations and staff' },
+];
+
+export default function ${componentName}() {
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: '${colors.background}', color: '${colors.text}', padding: '80px 20px' }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: '42px', textAlign: 'center', marginBottom: '16px' }}>Join Our Team</h1>
+        <p style={{ textAlign: 'center', opacity: 0.8, marginBottom: '48px' }}>Build your career at ${name}</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {POSITIONS.map((job, idx) => (
+            <div key={idx} style={{ padding: '28px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '16px' }}>
+                <div>
+                  <h2 style={{ fontSize: '24px', marginBottom: '8px' }}>{job.title}</h2>
+                  <div style={{ display: 'flex', gap: '16px', fontSize: '14px', opacity: 0.7 }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={14} /> {job.type}</span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><MapPin size={14} /> {job.location}</span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><DollarSign size={14} /> {job.salary}</span>
+                  </div>
+                </div>
+                <button style={{ padding: '12px 24px', backgroundColor: '${colors.primary}', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Apply Now</button>
+              </div>
+              <p style={{ opacity: 0.8 }}>{job.description}</p>
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: '48px', padding: '32px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '16px', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>Don't See Your Role?</h2>
+          <p style={{ opacity: 0.8, marginBottom: '24px' }}>We're always looking for talented people. Send us your resume!</p>
+          <button style={{ padding: '14px 28px', backgroundColor: '${colors.primary}', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Submit General Application</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+`;
+}
+
+function generatePressPage(componentName, pageData, fixture) {
+  const { name } = fixture.business;
+  const colors = fixture.theme.colors;
+  return `/**
+ * ${componentName} - Press Page
+ */
+import React from 'react';
+import { Newspaper, Download, Mail } from 'lucide-react';
+
+const PRESS_ITEMS = [
+  { outlet: 'Local Food Magazine', title: '"Best New Restaurant of the Year"', date: '2024', quote: 'A dining experience that exceeds expectations...' },
+  { outlet: 'City Times', title: '"Hidden Gem Worth Discovering"', date: '2024', quote: 'The flavors are authentic and the atmosphere is inviting...' },
+  { outlet: 'Food Blog Weekly', title: '"Must-Try Menu Items"', date: '2023', quote: 'Every dish tells a story of passion and craftsmanship...' },
+];
+
+export default function ${componentName}() {
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: '${colors.background}', color: '${colors.text}', padding: '80px 20px' }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: '42px', textAlign: 'center', marginBottom: '16px' }}>${name} in the Press</h1>
+        <p style={{ textAlign: 'center', opacity: 0.8, marginBottom: '48px' }}>See what people are saying about us</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginBottom: '48px' }}>
+          {PRESS_ITEMS.map((item, idx) => (
+            <div key={idx} style={{ padding: '28px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', opacity: 0.7 }}>
+                <Newspaper size={16} />
+                <span>{item.outlet}</span>
+                <span>•</span>
+                <span>{item.date}</span>
+              </div>
+              <h2 style={{ fontSize: '24px', marginBottom: '12px', color: '${colors.primary}' }}>{item.title}</h2>
+              <p style={{ fontStyle: 'italic', opacity: 0.8 }}>"{item.quote}"</p>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+          <div style={{ padding: '28px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '16px', textAlign: 'center' }}>
+            <Download size={32} style={{ marginBottom: '16px', color: '${colors.primary}' }} />
+            <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Press Kit</h3>
+            <p style={{ opacity: 0.7, marginBottom: '16px' }}>Download logos, photos, and company information</p>
+            <button style={{ padding: '12px 24px', backgroundColor: '${colors.primary}', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Download Kit</button>
+          </div>
+          <div style={{ padding: '28px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '16px', textAlign: 'center' }}>
+            <Mail size={32} style={{ marginBottom: '16px', color: '${colors.primary}' }} />
+            <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Media Inquiries</h3>
+            <p style={{ opacity: 0.7, marginBottom: '16px' }}>Contact our PR team for interviews and features</p>
+            <button style={{ padding: '12px 24px', backgroundColor: '${colors.primary}', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Contact PR</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+`;
+}
+
+function generateFaqPage(componentName, pageData, fixture) {
+  const { name, phone } = fixture.business;
+  const colors = fixture.theme.colors;
+  return `/**
+ * ${componentName} - FAQ Page
+ */
+import React, { useState } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+
+const FAQS = [
+  { q: 'Do you take reservations?', a: 'Yes! You can make reservations online or by calling us. We recommend booking in advance for weekends and special occasions.' },
+  { q: 'Do you accommodate dietary restrictions?', a: 'Absolutely. We offer vegetarian, vegan, and gluten-free options. Please let your server know about any allergies or dietary needs.' },
+  { q: 'Is there parking available?', a: 'Yes, we have a parking lot behind the building and street parking is also available.' },
+  { q: 'Do you offer catering services?', a: 'Yes, we cater events of all sizes. Visit our catering page or contact us for more information.' },
+  { q: 'What are your hours?', a: 'We are open Monday-Thursday 11am-9pm, Friday-Saturday 11am-10pm, and Sunday 12pm-8pm.' },
+  { q: 'Do you have a private dining room?', a: 'Yes, our private room can accommodate up to 30 guests. Contact us for availability and pricing.' },
+];
+
+export default function ${componentName}() {
+  const [openIndex, setOpenIndex] = useState(null);
+
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: '${colors.background}', color: '${colors.text}', padding: '80px 20px' }}>
+      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: '42px', textAlign: 'center', marginBottom: '16px' }}>Frequently Asked Questions</h1>
+        <p style={{ textAlign: 'center', opacity: 0.8, marginBottom: '48px' }}>Everything you need to know about ${name}</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {FAQS.map((faq, idx) => (
+            <div key={idx} style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '12px', overflow: 'hidden' }}>
+              <button onClick={() => setOpenIndex(openIndex === idx ? null : idx)} style={{ width: '100%', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', textAlign: 'left' }}>
+                <span style={{ fontSize: '18px', fontWeight: '500' }}>{faq.q}</span>
+                {openIndex === idx ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+              </button>
+              {openIndex === idx && (
+                <div style={{ padding: '0 20px 20px', opacity: 0.8 }}>{faq.a}</div>
+              )}
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: '48px', textAlign: 'center', padding: '32px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '16px' }}>
+          <h2 style={{ fontSize: '24px', marginBottom: '12px' }}>Still have questions?</h2>
+          <p style={{ opacity: 0.8, marginBottom: '16px' }}>We're happy to help!</p>
+          <p style={{ fontSize: '20px', color: '${colors.primary}', fontWeight: 'bold' }}>${phone || '(555) 123-4567'}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+`;
+}
+
+function generateServicesPage(componentName, pageData, fixture) {
+  const { name } = fixture.business;
+  const colors = fixture.theme.colors;
+
+  // Use detected business services if available, otherwise default
+  const services = fixture._businessServices || pageData?.items || [
+    { name: 'Service One', price: 'From $99', description: 'Description of our first service offering' },
+    { name: 'Service Two', price: 'From $149', description: 'Description of our second service offering' },
+    { name: 'Service Three', price: 'From $199', description: 'Description of our third service offering' },
+  ];
+
+  return `/**
+ * ${componentName} - Services Page
+ * Business: ${name}
+ * ${fixture._detectedBusinessType ? `Detected Type: ${fixture._detectedBusinessType}` : ''}
+ */
+import React from 'react';
+import { CheckCircle, ArrowRight } from 'lucide-react';
+
+const SERVICES = ${JSON.stringify(services, null, 2)};
+
+export default function ${componentName}() {
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: '${colors.background}', color: '${colors.text}', padding: '80px 20px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: '42px', textAlign: 'center', marginBottom: '16px' }}>Our Services</h1>
+        <p style={{ textAlign: 'center', opacity: 0.8, marginBottom: '48px', maxWidth: '600px', margin: '0 auto 48px' }}>
+          ${fixture._businessAmbiance || `Quality services from ${name}`}
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
+          {SERVICES.map((service, idx) => (
+            <div key={idx} style={{
+              padding: '32px',
+              backgroundColor: 'rgba(255,255,255,0.05)',
+              borderRadius: '16px',
+              border: '1px solid rgba(255,255,255,0.1)',
+              transition: 'transform 0.2s, box-shadow 0.2s'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                <h2 style={{ fontSize: '22px', fontWeight: 'bold' }}>{service.name}</h2>
+                <span style={{
+                  backgroundColor: '${colors.primary}',
+                  color: 'white',
+                  padding: '6px 14px',
+                  borderRadius: '20px',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  whiteSpace: 'nowrap'
+                }}>{service.price}</span>
+              </div>
+              <p style={{ opacity: 0.8, marginBottom: '20px', lineHeight: 1.6 }}>{service.description}</p>
+              <button style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '12px 24px',
+                backgroundColor: 'transparent',
+                color: '${colors.primary}',
+                border: '2px solid ${colors.primary}',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: '600',
+                transition: 'all 0.2s'
+              }}>
+                Book Now <ArrowRight size={16} />
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+`;
+}
+
+function generatePricingPage(componentName, pageData, fixture) {
+  const { name } = fixture.business;
+  const colors = fixture.theme.colors;
+
+  // Use detected business services for pricing if available
+  const services = fixture._businessServices || [];
+  const hasServices = services.length > 0;
+
+  // Generate pricing items from services or use defaults
+  const pricingItems = hasServices ? services : [
+    { name: 'Basic', price: '$29', period: '/month', features: ['Feature one', 'Feature two', 'Feature three'], popular: false },
+    { name: 'Pro', price: '$59', period: '/month', features: ['Everything in Basic', 'Feature four', 'Feature five', 'Priority support'], popular: true },
+    { name: 'Enterprise', price: 'Custom', period: '', features: ['Everything in Pro', 'Custom integrations', 'Dedicated support', 'SLA guarantee'], popular: false },
+  ];
+
+  return `/**
+ * ${componentName} - Pricing Page
+ * Business: ${name}
+ */
+import React from 'react';
+import { Check, ArrowRight } from 'lucide-react';
+
+const PRICING = ${JSON.stringify(pricingItems, null, 2)};
+const IS_SERVICE_PRICING = ${hasServices};
+
+export default function ${componentName}() {
+  if (IS_SERVICE_PRICING) {
+    // Service-based pricing (fitness, salon, healthcare, etc.)
+    return (
+      <div style={{ minHeight: '100vh', backgroundColor: '${colors.background}', color: '${colors.text}', padding: '80px 20px' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h1 style={{ fontSize: '42px', textAlign: 'center', marginBottom: '16px' }}>Our Pricing</h1>
+          <p style={{ textAlign: 'center', opacity: 0.8, marginBottom: '48px' }}>Transparent pricing for all our services</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+            {PRICING.map((service, idx) => (
+              <div key={idx} style={{
+                padding: '24px',
+                backgroundColor: 'rgba(255,255,255,0.05)',
+                borderRadius: '12px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}>
+                <div>
+                  <h3 style={{ fontSize: '17px', fontWeight: 'bold', marginBottom: '4px' }}>{service.name}</h3>
+                  <p style={{ opacity: 0.7, fontSize: '14px' }}>{service.description}</p>
+                </div>
+                <span style={{
+                  backgroundColor: '${colors.primary}',
+                  color: 'white',
+                  padding: '8px 16px',
+                  borderRadius: '20px',
+                  fontWeight: 'bold',
+                  fontSize: '14px',
+                  whiteSpace: 'nowrap'
+                }}>{service.price}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Plan-based pricing (SaaS, subscriptions)
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: '${colors.background}', color: '${colors.text}', padding: '80px 20px' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: '42px', textAlign: 'center', marginBottom: '16px' }}>Pricing Plans</h1>
+        <p style={{ textAlign: 'center', opacity: 0.8, marginBottom: '48px' }}>Choose the plan that's right for you</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+          {PRICING.map((plan, idx) => (
+            <div key={idx} style={{ padding: '32px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '16px', border: plan.popular ? '2px solid ' + '${colors.primary}' : 'none', position: 'relative' }}>
+              {plan.popular && <span style={{ position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '${colors.primary}', color: 'white', padding: '4px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: 'bold' }}>Most Popular</span>}
+              <h2 style={{ fontSize: '24px', marginBottom: '8px' }}>{plan.name}</h2>
+              <p style={{ fontSize: '36px', fontWeight: 'bold', color: '${colors.primary}' }}>{plan.price}<span style={{ fontSize: '16px', opacity: 0.7 }}>{plan.period || ''}</span></p>
+              <ul style={{ listStyle: 'none', padding: 0, margin: '24px 0' }}>
+                {(plan.features || []).map((f, i) => <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 0' }}><Check size={16} style={{ color: '${colors.primary}' }} /> {f}</li>)}
+              </ul>
+              <button style={{ width: '100%', padding: '14px', backgroundColor: plan.popular ? '${colors.primary}' : 'transparent', color: plan.popular ? 'white' : '${colors.primary}', border: plan.popular ? 'none' : '2px solid ' + '${colors.primary}', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Get Started</button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+`;
+}
+
+function generateTeamPage(componentName, pageData, fixture) {
+  const { name } = fixture.business;
+  const colors = fixture.theme.colors;
+  return `/**
+ * ${componentName} - Team Page
+ */
+import React from 'react';
+
+const TEAM = [
+  { name: 'John Smith', role: 'Founder & CEO', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300', bio: 'Leading our vision forward' },
+  { name: 'Sarah Johnson', role: 'Head Chef', image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300', bio: 'Crafting memorable experiences' },
+  { name: 'Mike Williams', role: 'Operations Manager', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300', bio: 'Keeping everything running smoothly' },
+];
+
+export default function ${componentName}() {
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: '${colors.background}', color: '${colors.text}', padding: '80px 20px' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: '42px', textAlign: 'center', marginBottom: '16px' }}>Meet Our Team</h1>
+        <p style={{ textAlign: 'center', opacity: 0.8, marginBottom: '48px' }}>The people behind ${name}</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '32px' }}>
+          {TEAM.map((person, idx) => (
+            <div key={idx} style={{ textAlign: 'center' }}>
+              <img src={person.image} alt={person.name} style={{ width: '200px', height: '200px', borderRadius: '50%', objectFit: 'cover', marginBottom: '20px' }} />
+              <h2 style={{ fontSize: '24px', marginBottom: '4px' }}>{person.name}</h2>
+              <p style={{ color: '${colors.primary}', marginBottom: '12px' }}>{person.role}</p>
+              <p style={{ opacity: 0.7 }}>{person.bio}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+`;
+}
+
+function generateTestimonialsPage(componentName, pageData, fixture) {
+  const { name } = fixture.business;
+  const colors = fixture.theme.colors;
+  return `/**
+ * ${componentName} - Testimonials Page
+ */
+import React from 'react';
+import { Star, Quote } from 'lucide-react';
+
+const TESTIMONIALS = [
+  { name: 'Emily R.', rating: 5, text: 'Absolutely amazing experience! The food was incredible and the service was top-notch.', date: '2 weeks ago' },
+  { name: 'Michael T.', rating: 5, text: 'Best restaurant in town. We come here every week now. Highly recommend!', date: '1 month ago' },
+  { name: 'Jessica L.', rating: 5, text: 'The atmosphere is perfect and the staff makes you feel like family.', date: '1 month ago' },
+  { name: 'David K.', rating: 4, text: 'Great food, friendly staff. Will definitely be back!', date: '2 months ago' },
+];
+
+export default function ${componentName}() {
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: '${colors.background}', color: '${colors.text}', padding: '80px 20px' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: '42px', textAlign: 'center', marginBottom: '16px' }}>What Our Customers Say</h1>
+        <p style={{ textAlign: 'center', opacity: 0.8, marginBottom: '48px' }}>Real reviews from real customers</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+          {TESTIMONIALS.map((t, idx) => (
+            <div key={idx} style={{ padding: '28px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '16px' }}>
+              <Quote size={32} style={{ color: '${colors.primary}', opacity: 0.5, marginBottom: '16px' }} />
+              <p style={{ fontSize: '16px', marginBottom: '20px', lineHeight: 1.6 }}>"{t.text}"</p>
+              <div style={{ display: 'flex', marginBottom: '12px' }}>
+                {[...Array(5)].map((_, i) => <Star key={i} size={16} fill={i < t.rating ? '${colors.primary}' : 'transparent'} stroke="${colors.primary}" />)}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontWeight: 'bold' }}>{t.name}</span>
+                <span style={{ opacity: 0.6, fontSize: '14px' }}>{t.date}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+`;
+}
+
+function generateBlogPage(componentName, pageData, fixture) {
+  const { name } = fixture.business;
+  const colors = fixture.theme.colors;
+  return `/**
+ * ${componentName} - Blog Page
+ */
+import React from 'react';
+import { Calendar, User, ArrowRight } from 'lucide-react';
+
+const POSTS = [
+  { title: 'Behind the Scenes: Our Kitchen', excerpt: 'Take a peek at how we prepare your favorite dishes...', date: 'Jan 15, 2024', author: 'Chef Mike', image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600' },
+  { title: 'New Seasonal Menu Items', excerpt: 'We are excited to announce our new spring menu featuring...', date: 'Jan 10, 2024', author: 'Sarah', image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600' },
+  { title: 'Our Commitment to Local Sourcing', excerpt: 'Learn about our partnerships with local farmers and suppliers...', date: 'Jan 5, 2024', author: 'John', image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=600' },
+];
+
+export default function ${componentName}() {
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: '${colors.background}', color: '${colors.text}', padding: '80px 20px' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: '42px', textAlign: 'center', marginBottom: '48px' }}>Our Blog</h1>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          {POSTS.map((post, idx) => (
+            <div key={idx} style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '32px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '16px', overflow: 'hidden' }}>
+              <img src={post.image} alt={post.title} style={{ width: '100%', height: '200px', objectFit: 'cover' }} />
+              <div style={{ padding: '24px 24px 24px 0' }}>
+                <div style={{ display: 'flex', gap: '16px', fontSize: '14px', opacity: 0.7, marginBottom: '12px' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Calendar size={14} /> {post.date}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><User size={14} /> {post.author}</span>
+                </div>
+                <h2 style={{ fontSize: '24px', marginBottom: '12px' }}>{post.title}</h2>
+                <p style={{ opacity: 0.8, marginBottom: '16px' }}>{post.excerpt}</p>
+                <button style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', color: '${colors.primary}', cursor: 'pointer', fontWeight: 'bold' }}>Read More <ArrowRight size={16} /></button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+`;
+}
+
+function generateLocationPage(componentName, pageData, fixture) {
+  const { name, address, phone, hours } = fixture.business;
+  const colors = fixture.theme.colors;
+  return `/**
+ * ${componentName} - Location Page
+ */
+import React from 'react';
+import { MapPin, Phone, Clock, Navigation } from 'lucide-react';
+
+export default function ${componentName}() {
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: '${colors.background}', color: '${colors.text}', padding: '80px 20px' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: '42px', textAlign: 'center', marginBottom: '48px' }}>Find Us</h1>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px' }}>
+          <div>
+            <div style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '32px' }}>
+              <h2 style={{ fontSize: '24px', marginBottom: '24px' }}>${name}</h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div style={{ display: 'flex', alignItems: 'start', gap: '12px' }}>
+                  <MapPin size={24} style={{ color: '${colors.primary}', flexShrink: 0, marginTop: '2px' }} />
+                  <div>
+                    <h3 style={{ marginBottom: '4px' }}>Address</h3>
+                    <p style={{ opacity: 0.8 }}>${address || '123 Main Street, City, State 12345'}</p>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'start', gap: '12px' }}>
+                  <Phone size={24} style={{ color: '${colors.primary}', flexShrink: 0, marginTop: '2px' }} />
+                  <div>
+                    <h3 style={{ marginBottom: '4px' }}>Phone</h3>
+                    <p style={{ opacity: 0.8 }}>${phone || '(555) 123-4567'}</p>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'start', gap: '12px' }}>
+                  <Clock size={24} style={{ color: '${colors.primary}', flexShrink: 0, marginTop: '2px' }} />
+                  <div>
+                    <h3 style={{ marginBottom: '4px' }}>Hours</h3>
+                    <p style={{ opacity: 0.8 }}>Mon-Thu: 11am-9pm</p>
+                    <p style={{ opacity: 0.8 }}>Fri-Sat: 11am-10pm</p>
+                    <p style={{ opacity: 0.8 }}>Sunday: 12pm-8pm</p>
+                  </div>
+                </div>
+              </div>
+              <button style={{ marginTop: '24px', width: '100%', padding: '14px', backgroundColor: '${colors.primary}', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}><Navigation size={18} /> Get Directions</button>
+            </div>
+          </div>
+          <div style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '16px', height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <p style={{ opacity: 0.6 }}>Map would load here</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+`;
+}
+
+function generateSpecialsPage(componentName, pageData, fixture) {
+  const { name } = fixture.business;
+  const colors = fixture.theme.colors;
+  return `/**
+ * ${componentName} - Specials Page
+ */
+import React from 'react';
+import { Tag, Clock, Percent } from 'lucide-react';
+
+const SPECIALS = [
+  { title: 'Happy Hour', description: '50% off appetizers and drinks', time: 'Mon-Fri 4-6pm', tag: 'Daily' },
+  { title: 'Family Night', description: 'Kids eat free with adult entree', time: 'Every Tuesday', tag: 'Weekly' },
+  { title: 'Date Night Special', description: 'Two entrees + dessert for $59', time: 'Thursday & Friday', tag: 'Weekly' },
+  { title: 'Weekend Brunch', description: 'Special brunch menu with bottomless mimosas', time: 'Sat & Sun 10am-2pm', tag: 'Weekend' },
+];
+
+export default function ${componentName}() {
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: '${colors.background}', color: '${colors.text}', padding: '80px 20px' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: '42px', textAlign: 'center', marginBottom: '16px' }}>Specials & Promotions</h1>
+        <p style={{ textAlign: 'center', opacity: 0.8, marginBottom: '48px' }}>Great deals at ${name}</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+          {SPECIALS.map((special, idx) => (
+            <div key={idx} style={{ padding: '28px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '16px', position: 'relative' }}>
+              <span style={{ position: 'absolute', top: '16px', right: '16px', backgroundColor: '${colors.primary}', color: 'white', padding: '4px 12px', borderRadius: '12px', fontSize: '12px' }}>{special.tag}</span>
+              <h2 style={{ fontSize: '24px', marginBottom: '12px' }}>{special.title}</h2>
+              <p style={{ opacity: 0.8, marginBottom: '16px' }}>{special.description}</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', opacity: 0.7 }}>
+                <Clock size={16} />
+                <span>{special.time}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+`;
+}
+
+function generateOnlineOrderPage(componentName, pageData, fixture) {
+  const { name } = fixture.business;
+  const colors = fixture.theme.colors;
+  return `/**
+ * ${componentName} - Online Order Page
+ */
+import React, { useState } from 'react';
+import { ShoppingCart, Plus, Minus, Trash2 } from 'lucide-react';
+
+const MENU_ITEMS = [
+  { id: 1, name: 'Signature Pizza', price: 18.99, description: 'Our house special' },
+  { id: 2, name: 'Pasta Primavera', price: 15.99, description: 'Fresh vegetables in cream sauce' },
+  { id: 3, name: 'Caesar Salad', price: 12.99, description: 'Crisp romaine with house dressing' },
+  { id: 4, name: 'Garlic Bread', price: 6.99, description: 'Toasted with herb butter' },
+];
+
+export default function ${componentName}() {
+  const [cart, setCart] = useState([]);
+  const addToCart = (item) => {
+    const existing = cart.find(c => c.id === item.id);
+    if (existing) {
+      setCart(cart.map(c => c.id === item.id ? {...c, qty: c.qty + 1} : c));
+    } else {
+      setCart([...cart, {...item, qty: 1}]);
+    }
+  };
+  const updateQty = (id, delta) => {
+    setCart(cart.map(c => c.id === id ? {...c, qty: Math.max(0, c.qty + delta)} : c).filter(c => c.qty > 0));
+  };
+  const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: '${colors.background}', color: '${colors.text}', padding: '80px 20px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 350px', gap: '48px' }}>
+        <div>
+          <h1 style={{ fontSize: '36px', marginBottom: '32px' }}>Order Online</h1>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {MENU_ITEMS.map(item => (
+              <div key={item.id} style={{ padding: '20px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h3 style={{ fontSize: '18px', marginBottom: '4px' }}>{item.name}</h3>
+                  <p style={{ opacity: 0.7, fontSize: '14px' }}>{item.description}</p>
+                  <p style={{ color: '${colors.primary}', fontWeight: 'bold', marginTop: '8px' }}>\${item.price.toFixed(2)}</p>
+                </div>
+                <button onClick={() => addToCart(item)} style={{ padding: '10px 20px', backgroundColor: '${colors.primary}', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}><Plus size={16} /> Add</button>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={{ position: 'sticky', top: '100px', height: 'fit-content' }}>
+          <div style={{ padding: '24px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '16px' }}>
+            <h2 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}><ShoppingCart size={24} /> Your Order</h2>
+            {cart.length === 0 ? (
+              <p style={{ opacity: 0.6, textAlign: 'center', padding: '20px' }}>Your cart is empty</p>
+            ) : (
+              <>
+                {cart.map(item => (
+                  <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                    <div>
+                      <p style={{ fontWeight: '500' }}>{item.name}</p>
+                      <p style={{ opacity: 0.7, fontSize: '14px' }}>\${item.price.toFixed(2)} each</p>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <button onClick={() => updateQty(item.id, -1)} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '4px', padding: '4px', cursor: 'pointer', color: 'inherit' }}><Minus size={14} /></button>
+                      <span>{item.qty}</span>
+                      <button onClick={() => updateQty(item.id, 1)} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '4px', padding: '4px', cursor: 'pointer', color: 'inherit' }}><Plus size={14} /></button>
+                    </div>
+                  </div>
+                ))}
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px 0', fontWeight: 'bold', fontSize: '20px' }}>
+                  <span>Total</span>
+                  <span>\${total.toFixed(2)}</span>
+                </div>
+                <button style={{ width: '100%', padding: '16px', backgroundColor: '${colors.primary}', color: 'white', border: 'none', borderRadius: '8px', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer' }}>Checkout</button>
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -2118,7 +4304,7 @@ function App() {
       <div className="app-container">
         <Routes>
 ${screenRoutes}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
         <BottomNav />
       </div>

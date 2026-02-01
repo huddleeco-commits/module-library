@@ -54,19 +54,321 @@ function normalizeAction(action) {
 }
 
 /**
- * Get industry default colors if no theme provided
+ * Get industry default theme (full theme, not just colors)
+ */
+function getIndustryDefaultTheme(industry) {
+  const themes = {
+    // ===== FOOD & BEVERAGE =====
+    steakhouse: {
+      primary: '#722F37', accent: '#C9A961',
+      mode: 'dark', background: '#1a1a1a', surface: '#2a2a2a', text: '#ffffff',
+      fontHeading: "'Playfair Display', serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '8px'
+    },
+    pizza: {
+      primary: '#e53e3e', accent: '#f59e0b',
+      mode: 'light', background: '#fffaf0', surface: '#ffffff', text: '#1a1a1a',
+      fontHeading: "'Poppins', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '12px'
+    },
+    cafe: {
+      primary: '#8b5a2b', accent: '#d69e2e',
+      mode: 'light', background: '#faf7f2', surface: '#ffffff', text: '#3d3d3d',
+      fontHeading: "'Playfair Display', serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '12px'
+    },
+    bakery: {
+      primary: '#d69e2e', accent: '#8b5a2b',
+      mode: 'light', background: '#fffbf5', surface: '#ffffff', text: '#4a3728',
+      fontHeading: "'Playfair Display', serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '16px'
+    },
+    bar: {
+      primary: '#805ad5', accent: '#d69e2e',
+      mode: 'dark', background: '#0f0f1a', surface: '#1a1a2e', text: '#ffffff',
+      fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '8px'
+    },
+    restaurant: {
+      primary: '#722F37', accent: '#C9A961',
+      mode: 'dark', background: '#1a1a1a', surface: '#2a2a2a', text: '#ffffff',
+      fontHeading: "'Playfair Display', serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '8px'
+    },
+
+    // ===== HEALTHCARE & WELLNESS =====
+    'spa-salon': {
+      primary: '#9333ea', accent: '#f472b6',
+      mode: 'light', background: '#fdf4ff', surface: '#ffffff', text: '#1f1f1f',
+      fontHeading: "'Playfair Display', serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '16px'
+    },
+    dental: {
+      primary: '#0d9488', accent: '#06b6d4',
+      mode: 'light', background: '#f0fdfa', surface: '#ffffff', text: '#134e4a',
+      fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '12px'
+    },
+    healthcare: {
+      primary: '#0ea5e9', accent: '#22c55e',
+      mode: 'light', background: '#f0f9ff', surface: '#ffffff', text: '#0c4a6e',
+      fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '8px'
+    },
+    chiropractic: {
+      primary: '#16a34a', accent: '#0d9488',
+      mode: 'light', background: '#f0fdf4', surface: '#ffffff', text: '#14532d',
+      fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '12px'
+    },
+    barbershop: {
+      primary: '#1e293b', accent: '#f59e0b',
+      mode: 'dark', background: '#0f172a', surface: '#1e293b', text: '#f8fafc',
+      fontHeading: "'Poppins', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '8px'
+    },
+
+    // ===== HEALTH & FITNESS =====
+    fitness: {
+      primary: '#dc2626', accent: '#f97316',
+      mode: 'dark', background: '#0a0a0a', surface: '#1a1a1a', text: '#ffffff',
+      fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '8px'
+    },
+    yoga: {
+      primary: '#8b5cf6', accent: '#a78bfa',
+      mode: 'light', background: '#faf5ff', surface: '#ffffff', text: '#4c1d95',
+      fontHeading: "'Playfair Display', serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '24px'
+    },
+
+    // ===== PROFESSIONAL SERVICES =====
+    'law-firm': {
+      primary: '#1e3a5f', accent: '#c9a961',
+      mode: 'light', background: '#f8fafc', surface: '#ffffff', text: '#1e293b',
+      fontHeading: "'Playfair Display', serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '4px'
+    },
+    'real-estate': {
+      primary: '#059669', accent: '#0891b2',
+      mode: 'light', background: '#f0fdf4', surface: '#ffffff', text: '#1f2937',
+      fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '8px'
+    },
+    accounting: {
+      primary: '#1d4ed8', accent: '#3b82f6',
+      mode: 'light', background: '#eff6ff', surface: '#ffffff', text: '#1e3a8a',
+      fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '6px'
+    },
+    consulting: {
+      primary: '#4f46e5', accent: '#818cf8',
+      mode: 'light', background: '#f5f3ff', surface: '#ffffff', text: '#312e81',
+      fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '8px'
+    },
+    insurance: {
+      primary: '#0369a1', accent: '#0ea5e9',
+      mode: 'light', background: '#f0f9ff', surface: '#ffffff', text: '#0c4a6e',
+      fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '8px'
+    },
+
+    // ===== TECHNOLOGY =====
+    saas: {
+      primary: '#6366f1', accent: '#8b5cf6',
+      mode: 'dark', background: '#0f0f23', surface: '#1a1a2e', text: '#e0e7ff',
+      fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '12px'
+    },
+    startup: {
+      primary: '#8b5cf6', accent: '#06b6d4',
+      mode: 'light', background: '#faf5ff', surface: '#ffffff', text: '#1f2937',
+      fontHeading: "'Poppins', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '16px'
+    },
+    agency: {
+      primary: '#ec4899', accent: '#8b5cf6',
+      mode: 'dark', background: '#0a0a0a', surface: '#171717', text: '#fafafa',
+      fontHeading: "'Poppins', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '12px'
+    },
+
+    // ===== RETAIL =====
+    ecommerce: {
+      primary: '#ea580c', accent: '#f59e0b',
+      mode: 'light', background: '#fff7ed', surface: '#ffffff', text: '#1c1917',
+      fontHeading: "'Poppins', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '8px'
+    },
+    'subscription-box': {
+      primary: '#db2777', accent: '#f472b6',
+      mode: 'light', background: '#fdf2f8', surface: '#ffffff', text: '#831843',
+      fontHeading: "'Poppins', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '16px'
+    },
+
+    // ===== CREATIVE =====
+    photography: {
+      primary: '#171717', accent: '#a3a3a3',
+      mode: 'dark', background: '#0a0a0a', surface: '#171717', text: '#fafafa',
+      fontHeading: "'Playfair Display', serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '0px'
+    },
+    wedding: {
+      primary: '#be185d', accent: '#f9a8d4',
+      mode: 'light', background: '#fdf2f8', surface: '#ffffff', text: '#831843',
+      fontHeading: "'Playfair Display', serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '16px'
+    },
+    portfolio: {
+      primary: '#171717', accent: '#3b82f6',
+      mode: 'light', background: '#fafafa', surface: '#ffffff', text: '#171717',
+      fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '8px'
+    },
+
+    // ===== TRADE SERVICES =====
+    plumber: {
+      primary: '#0369a1', accent: '#0ea5e9',
+      mode: 'light', background: '#f0f9ff', surface: '#ffffff', text: '#0c4a6e',
+      fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '8px'
+    },
+    electrician: {
+      primary: '#eab308', accent: '#fbbf24',
+      mode: 'dark', background: '#171717', surface: '#262626', text: '#fafafa',
+      fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '8px'
+    },
+    construction: {
+      primary: '#f97316', accent: '#fbbf24',
+      mode: 'light', background: '#fff7ed', surface: '#ffffff', text: '#431407',
+      fontHeading: "'Poppins', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '4px'
+    },
+    landscaping: {
+      primary: '#16a34a', accent: '#84cc16',
+      mode: 'light', background: '#f0fdf4', surface: '#ffffff', text: '#14532d',
+      fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '12px'
+    },
+    cleaning: {
+      primary: '#06b6d4', accent: '#22d3ee',
+      mode: 'light', background: '#ecfeff', surface: '#ffffff', text: '#164e63',
+      fontHeading: "'Poppins', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '16px'
+    },
+    'auto-repair': {
+      primary: '#dc2626', accent: '#f97316',
+      mode: 'dark', background: '#18181b', surface: '#27272a', text: '#fafafa',
+      fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '8px'
+    },
+
+    // ===== ORGANIZATIONS =====
+    nonprofit: {
+      primary: '#059669', accent: '#34d399',
+      mode: 'light', background: '#ecfdf5', surface: '#ffffff', text: '#064e3b',
+      fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '12px'
+    },
+    church: {
+      primary: '#7c3aed', accent: '#a78bfa',
+      mode: 'light', background: '#f5f3ff', surface: '#ffffff', text: '#4c1d95',
+      fontHeading: "'Playfair Display', serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '8px'
+    },
+
+    // ===== EDUCATION =====
+    school: {
+      primary: '#2563eb', accent: '#3b82f6',
+      mode: 'light', background: '#eff6ff', surface: '#ffffff', text: '#1e3a8a',
+      fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '8px'
+    },
+    'online-course': {
+      primary: '#8b5cf6', accent: '#a78bfa',
+      mode: 'light', background: '#faf5ff', surface: '#ffffff', text: '#4c1d95',
+      fontHeading: "'Poppins', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '12px'
+    },
+
+    // ===== HOSPITALITY & EVENTS =====
+    hotel: {
+      primary: '#0f766e', accent: '#14b8a6',
+      mode: 'light', background: '#f0fdfa', surface: '#ffffff', text: '#134e4a',
+      fontHeading: "'Playfair Display', serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '8px'
+    },
+    'event-venue': {
+      primary: '#7c3aed', accent: '#c4b5fd',
+      mode: 'dark', background: '#1e1b4b', surface: '#312e81', text: '#e0e7ff',
+      fontHeading: "'Playfair Display', serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '12px'
+    },
+    travel: {
+      primary: '#0891b2', accent: '#22d3ee',
+      mode: 'light', background: '#ecfeff', surface: '#ffffff', text: '#164e63',
+      fontHeading: "'Poppins', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '16px'
+    },
+
+    // ===== OTHER =====
+    'pet-services': {
+      primary: '#ea580c', accent: '#fb923c',
+      mode: 'light', background: '#fff7ed', surface: '#ffffff', text: '#431407',
+      fontHeading: "'Poppins', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '20px'
+    },
+    moving: {
+      primary: '#ca8a04', accent: '#facc15',
+      mode: 'light', background: '#fefce8', surface: '#ffffff', text: '#422006',
+      fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '8px'
+    },
+    musician: {
+      primary: '#be185d', accent: '#ec4899',
+      mode: 'dark', background: '#0a0a0a', surface: '#171717', text: '#fafafa',
+      fontHeading: "'Poppins', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '8px'
+    },
+    podcast: {
+      primary: '#7c3aed', accent: '#a78bfa',
+      mode: 'dark', background: '#0f0f23', surface: '#1e1b4b', text: '#e0e7ff',
+      fontHeading: "'Poppins', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '12px'
+    },
+    gaming: {
+      primary: '#dc2626', accent: '#7c3aed',
+      mode: 'dark', background: '#0a0a0a', surface: '#18181b', text: '#fafafa',
+      fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '8px'
+    },
+    finance: {
+      primary: '#0f766e', accent: '#14b8a6',
+      mode: 'light', background: '#f0fdfa', surface: '#ffffff', text: '#134e4a',
+      fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+      borderRadius: '4px'
+    },
+
+    // ===== DEFAULT =====
+    default: {
+      primary: '#6366f1', accent: '#10b981',
+      mode: 'light', background: '#ffffff', surface: '#f8fafc', text: '#1a1a2e',
+      fontHeading: "'Inter', sans-serif", fontBody: "system-ui, sans-serif",
+      borderRadius: '8px'
+    }
+  };
+  return themes[industry] || themes.default;
+}
+
+/**
+ * Get industry default colors if no theme provided (legacy compatibility)
  */
 function getIndustryDefaultColors(industry) {
-  const colors = {
-    steakhouse: { primary: '#722F37', accent: '#C9A961' },
-    pizza: { primary: '#e53e3e', accent: '#f59e0b' },
-    cafe: { primary: '#8b5a2b', accent: '#d69e2e' },
-    bakery: { primary: '#d69e2e', accent: '#8b5a2b' },
-    bar: { primary: '#805ad5', accent: '#d69e2e' },
-    restaurant: { primary: '#722F37', accent: '#C9A961' },
-    default: { primary: '#8b5cf6', accent: '#10b981' }
-  };
-  return colors[industry] || colors.default;
+  const theme = getIndustryDefaultTheme(industry);
+  return { primary: theme.primary, accent: theme.accent };
 }
 
 /**
@@ -98,6 +400,20 @@ function hexToRgb(hex) {
   const g = parseInt(hex.substring(2, 4), 16);
   const b = parseInt(hex.substring(4, 6), 16);
   return `${r}, ${g}, ${b}`;
+}
+
+/**
+ * Determine if a color is light (for auto-detecting theme mode)
+ */
+function isLightColor(hex) {
+  if (!hex) return true;
+  hex = hex.replace('#', '');
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  // Calculate relative luminance
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.5;
 }
 
 // Quick action metadata for code generation
@@ -189,16 +505,43 @@ async function generateCompanionApp(config, outputPath) {
   console.log(`   Industry: ${industry}`);
   console.log(`   Quick Actions: ${quickActions.join(', ')}`);
 
-  // Extract theme colors from parent site or use defaults
-  const theme = parentSite.theme || {};
+  // Extract full theme from parent site or use industry defaults
+  const parentTheme = parentSite.theme || {};
+  const industryDefaults = getIndustryDefaultTheme(industry);
+
+  // Determine if we should use light or dark mode
+  // Check parent's background color luminance, or use parent's explicit mode, or use industry default
+  const parentBg = parentTheme.backgroundColor || parentTheme.background;
+  const isLightMode = parentTheme.mode === 'light' ||
+    (parentBg && isLightColor(parentBg)) ||
+    (!parentBg && industryDefaults.mode === 'light');
+
   const themeColors = {
-    primary: theme.primaryColor || getIndustryDefaultColors(industry).primary,
-    primaryDark: theme.primaryDark || darkenColor(theme.primaryColor || getIndustryDefaultColors(industry).primary),
-    accent: theme.accentColor || getIndustryDefaultColors(industry).accent,
-    bgDark: theme.backgroundColor || '#0a0a0f',
-    textPrimary: theme.textColor || '#ffffff'
+    // Core colors
+    primary: parentTheme.primaryColor || parentTheme.primary || industryDefaults.primary,
+    primaryDark: parentTheme.primaryDark || darkenColor(parentTheme.primaryColor || parentTheme.primary || industryDefaults.primary),
+    accent: parentTheme.accentColor || parentTheme.accent || industryDefaults.accent,
+
+    // Mode-aware colors
+    mode: isLightMode ? 'light' : 'dark',
+    background: parentTheme.backgroundColor || parentTheme.background || industryDefaults.background,
+    surface: parentTheme.surface || industryDefaults.surface,
+    text: parentTheme.textColor || parentTheme.text || industryDefaults.text,
+    textMuted: parentTheme.textMuted || (isLightMode ? '#64748b' : 'rgba(255, 255, 255, 0.6)'),
+
+    // Typography
+    fontHeading: parentTheme.fontHeading || parentTheme.fonts?.heading || industryDefaults.fontHeading,
+    fontBody: parentTheme.fontBody || parentTheme.fonts?.body || industryDefaults.fontBody,
+
+    // Design tokens
+    borderRadius: parentTheme.borderRadius || industryDefaults.borderRadius,
+
+    // Legacy compatibility
+    bgDark: parentTheme.backgroundColor || industryDefaults.background,
+    textPrimary: parentTheme.textColor || industryDefaults.text
   };
-  console.log(`   Theme: primary=${themeColors.primary}, accent=${themeColors.accent}`);
+
+  console.log(`   Theme: ${themeColors.mode} mode, primary=${themeColors.primary}, accent=${themeColors.accent}`);
 
   // Normalize action names using aliases (e.g., "menu" -> "viewMenu")
   const normalizedActions = quickActions.map(action => normalizeAction(action));
@@ -239,6 +582,7 @@ async function generateCompanionApp(config, outputPath) {
     'src/screens/ProfileScreen.jsx': generateProfileScreen(appType, parentSite.name, industry),
     'src/hooks/useAuth.jsx': generateAuthHook(),
     'src/hooks/useMenu.jsx': generateMenuHook(),
+    'src/context/ThemeContext.jsx': generateThemeContext(themeColors.mode || 'light'),
   };
 
   // Add Order screen for restaurant/food industries ONLY if orderFood action not already present
@@ -427,6 +771,7 @@ function generateApp(quickActions, appType, appName, industry) {
   return `import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './hooks/useAuth';
+import { ThemeProvider } from './context/ThemeContext';
 import { BottomNav } from './components/BottomNav';
 import { HomeScreen } from './screens/HomeScreen';
 import { LoginScreen } from './screens/LoginScreen';
@@ -479,49 +824,137 @@ ${orderRoute}
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppRoutes />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 `;
 }
 
 function generateStyles(industry, themeColors = {}) {
-  // Use theme colors from parent site, or fall back to industry defaults
-  const primary = themeColors.primary || getIndustryDefaultColors(industry).primary;
+  // Extract theme values with fallbacks
+  const industryDefaults = getIndustryDefaultTheme(industry);
+  const defaultMode = themeColors.mode || industryDefaults.mode || 'light';
+
+  const primary = themeColors.primary || industryDefaults.primary;
   const primaryDark = themeColors.primaryDark || darkenColor(primary);
-  const accent = themeColors.accent || getIndustryDefaultColors(industry).accent;
-  const bgDark = themeColors.bgDark || '#0a0a0f';
-  const textPrimary = themeColors.textPrimary || '#ffffff';
+  const accent = themeColors.accent || industryDefaults.accent;
+  const fontHeading = themeColors.fontHeading || industryDefaults.fontHeading;
+  const fontBody = themeColors.fontBody || industryDefaults.fontBody;
+  const borderRadius = themeColors.borderRadius || industryDefaults.borderRadius;
   const primaryRgb = hexToRgb(primary);
 
-  return `* {
+  // Google Fonts import based on fonts used
+  const fontsToImport = [];
+  if (fontHeading.includes('Playfair')) fontsToImport.push('Playfair+Display:wght@400;600;700');
+  if (fontHeading.includes('Poppins') || fontBody.includes('Poppins')) fontsToImport.push('Poppins:wght@400;500;600;700');
+  if (fontHeading.includes('Inter') || fontBody.includes('Inter')) fontsToImport.push('Inter:wght@400;500;600;700');
+  const fontImport = fontsToImport.length > 0
+    ? `@import url('https://fonts.googleapis.com/css2?family=${fontsToImport.join('&family=')}&display=swap');`
+    : '';
+
+  return `${fontImport}
+
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
 :root {
+  /* Brand Colors - These stay constant across themes */
   --primary: ${primary};
   --primary-dark: ${primaryDark};
   --primary-rgb: ${primaryRgb};
   --accent: ${accent};
-  --bg-dark: ${bgDark};
-  --bg-card: rgba(255, 255, 255, 0.05);
-  --text-primary: ${textPrimary};
-  --text-secondary: rgba(255, 255, 255, 0.6);
+
+  /* Typography */
+  --font-heading: ${fontHeading};
+  --font-body: ${fontBody};
+
+  /* Design Tokens */
+  --radius: ${borderRadius};
+  --radius-lg: calc(${borderRadius} * 1.5);
+
+  /* Safe Areas */
   --safe-area-top: env(safe-area-inset-top, 0px);
   --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* Default theme mode: ${defaultMode} */
+  --default-theme: ${defaultMode};
+}
+
+/* ===== LIGHT THEME ===== */
+[data-theme="light"], :root:not([data-theme]) {
+  --background: #ffffff;
+  --surface: #f8fafc;
+  --card-bg: #ffffff;
+  --card-border: rgba(0, 0, 0, 0.08);
+  --text: #1a1a2e;
+  --text-muted: #64748b;
+  --nav-bg: rgba(255, 255, 255, 0.95);
+  --nav-border: rgba(0, 0, 0, 0.08);
+  --input-bg: #f8fafc;
+  --input-border: rgba(0, 0, 0, 0.1);
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --bg-dark: #ffffff;
+  --bg-card: #ffffff;
+  --text-primary: #1a1a2e;
+  --text-secondary: #64748b;
+}
+
+/* ===== MEDIUM THEME (Soft/Neutral) ===== */
+[data-theme="medium"] {
+  --background: #e8e8e8;
+  --surface: #f0f0f0;
+  --card-bg: #f5f5f5;
+  --card-border: rgba(0, 0, 0, 0.1);
+  --text: #1f2937;
+  --text-muted: #4b5563;
+  --nav-bg: rgba(240, 240, 240, 0.95);
+  --nav-border: rgba(0, 0, 0, 0.1);
+  --input-bg: #e5e5e5;
+  --input-border: rgba(0, 0, 0, 0.12);
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --bg-dark: #e8e8e8;
+  --bg-card: #f5f5f5;
+  --text-primary: #1f2937;
+  --text-secondary: #4b5563;
+}
+
+/* ===== DARK THEME ===== */
+[data-theme="dark"] {
+  --background: #0a0a0f;
+  --surface: #1a1a2e;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --text: #f1f5f9;
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --nav-bg: rgba(10, 10, 15, 0.95);
+  --nav-border: rgba(255, 255, 255, 0.1);
+  --input-bg: rgba(255, 255, 255, 0.05);
+  --input-border: rgba(255, 255, 255, 0.1);
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --bg-dark: #0a0a0f;
+  --bg-card: rgba(255, 255, 255, 0.05);
+  --text-primary: #f1f5f9;
+  --text-secondary: rgba(255, 255, 255, 0.6);
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-  background: var(--bg-dark);
-  color: var(--text-primary);
+  font-family: var(--font-body);
+  background: var(--background);
+  color: var(--text);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
 }
 
 .app-container {
@@ -532,7 +965,7 @@ body {
 
 .screen {
   padding: 20px;
-  padding-bottom: 100px; /* Extra space for bottom nav + floating buttons */
+  padding-bottom: 100px;
   min-height: calc(100vh - 80px - var(--safe-area-top) - var(--safe-area-bottom));
 }
 
@@ -542,14 +975,16 @@ body {
 }
 
 .screen-title {
+  font-family: var(--font-heading);
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 4px;
+  color: var(--text);
 }
 
 .screen-subtitle {
   font-size: 14px;
-  color: var(--text-secondary);
+  color: var(--text-muted);
 }
 
 /* Quick Actions Grid */
@@ -560,43 +995,61 @@ body {
   margin-top: 24px;
 }
 
-/* Cards */
+/* Cards - Match parent site style */
 .card {
-  background: var(--bg-card);
-  border-radius: 20px;
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
   padding: 24px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow);
 }
 
-/* Buttons */
+/* Dark theme cards get blur effect */
+[data-theme="dark"] .card {
+  backdrop-filter: blur(10px);
+}
+
+/* Buttons - Use brand colors */
 .btn-primary {
   width: 100%;
   padding: 16px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  background: var(--primary);
   color: white;
+  font-family: var(--font-body);
   font-size: 16px;
   font-weight: 600;
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius);
   cursor: pointer;
-  transition: transform 0.2s, opacity 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.4);
 }
 
 .btn-primary:active {
   transform: scale(0.98);
-  opacity: 0.9;
 }
 
 .btn-secondary {
   width: 100%;
   padding: 16px;
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--text-muted);
+  font-family: var(--font-body);
   font-size: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
   cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.btn-secondary:hover {
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 /* Form Elements */
@@ -607,26 +1060,33 @@ body {
 .input-label {
   display: block;
   font-size: 12px;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   margin-bottom: 8px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  font-weight: 500;
 }
 
 .input-field {
   width: 100%;
   padding: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  color: white;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--font-body);
   font-size: 16px;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .input-field:focus {
   border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+}
+
+.input-field::placeholder {
+  color: var(--text-muted);
 }
 
 /* Loading */
@@ -635,7 +1095,7 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: var(--bg-dark);
+  background: var(--background);
 }
 
 .spinner {
@@ -660,13 +1120,16 @@ body {
 
 .stat-card {
   flex: 1;
-  background: var(--bg-card);
-  border-radius: 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
   padding: 16px;
   text-align: center;
+  box-shadow: var(--shadow);
 }
 
 .stat-value {
+  font-family: var(--font-heading);
   font-size: 24px;
   font-weight: 700;
   color: var(--primary);
@@ -674,11 +1137,11 @@ body {
 
 .stat-label {
   font-size: 12px;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   margin-top: 4px;
 }
 
-/* Bottom Nav */
+/* Bottom Nav - Match parent site */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -686,9 +1149,9 @@ body {
   right: 0;
   height: calc(70px + var(--safe-area-bottom));
   padding-bottom: var(--safe-area-bottom);
-  background: rgba(10, 10, 15, 0.95);
+  background: var(--nav-bg);
   backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--nav-border);
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -701,7 +1164,7 @@ body {
   align-items: center;
   gap: 4px;
   padding: 8px 16px;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   text-decoration: none;
   transition: color 0.2s;
 }
@@ -713,6 +1176,202 @@ body {
 .nav-label {
   font-size: 10px;
   font-weight: 500;
+}
+
+/* Menu Items */
+.menu-category {
+  margin-bottom: 24px;
+}
+
+.category-title {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--primary);
+}
+
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+}
+
+.menu-item-info {
+  flex: 1;
+}
+
+.menu-item-name {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.menu-item-desc {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.menu-item-price {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 18px;
+}
+
+/* Quick Action Card */
+.quick-action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.2s;
+  box-shadow: var(--shadow);
+}
+
+.quick-action-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+}
+
+.quick-action-card:active {
+  transform: scale(0.98);
+}
+
+.quick-action-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--primary-rgb), 0.1);
+  border-radius: var(--radius);
+  color: var(--primary);
+}
+
+.quick-action-label {
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Back Button */
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
+/* Profile Screen */
+.profile-header {
+  text-align: center;
+  padding: 32px 0;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(var(--primary-rgb), 0.1);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.profile-name {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.profile-email {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.profile-section {
+  margin-top: 24px;
+}
+
+.profile-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.profile-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.profile-option:hover {
+  border-color: var(--primary);
+}
+
+.profile-option-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text);
+}
+
+.profile-option-icon {
+  color: var(--primary);
+}
+
+.logout-btn {
+  width: 100%;
+  padding: 16px;
+  background: transparent;
+  border: 1px solid #ef4444;
+  border-radius: var(--radius);
+  color: #ef4444;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 24px;
+  transition: background 0.2s;
+}
+
+.logout-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
 }
 `;
 }
@@ -1187,11 +1846,13 @@ function generateProfileScreen(appType, businessName, industry) {
   return `import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { LogOut, Settings, HelpCircle, CreditCard, Bell, Shield, ChevronRight, Trophy, Calendar, MapPin, Star } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+import { LogOut, Settings, HelpCircle, CreditCard, Bell, Shield, ChevronRight, Trophy, Calendar, MapPin, Star, Sun, Moon, Palette } from 'lucide-react';
 import { BUSINESS_NAME } from '../data/menu';
 
 export function ProfileScreen() {
   const { user, logout } = useAuth();
+  const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -1303,6 +1964,45 @@ export function ProfileScreen() {
         <MenuItem icon={<Shield size={20} />} label="Privacy & Security" chevron />
       </div>
 
+      {/* Theme Selector */}
+      <div className="card" style={{ padding: '16px', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+          <Palette size={20} color="var(--primary)" />
+          <span style={{ fontSize: '15px', color: 'var(--text)' }}>Display Theme</span>
+        </div>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          {[
+            { id: 'light', label: 'Light', icon: <Sun size={16} /> },
+            { id: 'medium', label: 'Medium', icon: <Palette size={16} /> },
+            { id: 'dark', label: 'Dark', icon: <Moon size={16} /> }
+          ].map(t => (
+            <button
+              key={t.id}
+              onClick={() => setTheme(t.id)}
+              style={{
+                flex: 1,
+                padding: '12px 8px',
+                background: theme === t.id ? 'var(--primary)' : 'var(--input-bg)',
+                border: theme === t.id ? 'none' : '1px solid var(--card-border)',
+                borderRadius: 'var(--radius)',
+                color: theme === t.id ? 'white' : 'var(--text-muted)',
+                fontSize: '13px',
+                fontWeight: theme === t.id ? '600' : '400',
+                cursor: 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.2s'
+              }}
+            >
+              {t.icon}
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Support */}
       <div className="card" style={{ padding: '0', marginBottom: '16px' }}>
         <MenuItem icon={<Settings size={20} />} label="App Settings" chevron />
@@ -1408,6 +2108,55 @@ export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error('useAuth must be used within AuthProvider');
+  }
+  return context;
+}
+`;
+}
+
+function generateThemeContext(defaultTheme = 'light') {
+  return `import React, { createContext, useContext, useState, useEffect } from 'react';
+
+const ThemeContext = createContext(null);
+
+const THEMES = ['light', 'medium', 'dark'];
+
+export function ThemeProvider({ children, defaultTheme = '${defaultTheme}' }) {
+  const [theme, setThemeState] = useState(() => {
+    // Check localStorage first, then use default
+    const saved = localStorage.getItem('app-theme');
+    return saved && THEMES.includes(saved) ? saved : defaultTheme;
+  });
+
+  // Apply theme to document
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('app-theme', theme);
+  }, [theme]);
+
+  const setTheme = (newTheme) => {
+    if (THEMES.includes(newTheme)) {
+      setThemeState(newTheme);
+    }
+  };
+
+  const cycleTheme = () => {
+    const currentIndex = THEMES.indexOf(theme);
+    const nextIndex = (currentIndex + 1) % THEMES.length;
+    setTheme(THEMES[nextIndex]);
+  };
+
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme, cycleTheme, themes: THEMES }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+export function useTheme() {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error('useTheme must be used within ThemeProvider');
   }
   return context;
 }
@@ -2101,8 +2850,867 @@ function generateIconSvg(size, appName, themeColors = {}) {
 </svg>`;
 }
 
+// ============================================
+// COMPANION APP PREVIEW GENERATOR
+// Zero-cost visual testing in Style Preview Admin
+// ============================================
+
+/**
+ * Generate companion app preview HTML for zero-cost testing
+ * @param {Object} config - Preview configuration
+ * @param {string} config.industry - Industry key
+ * @param {string} config.businessName - Business name
+ * @param {Object} config.moodSliders - Mood slider values
+ * @param {Object} config.colors - Industry colors
+ * @returns {Object} Screen HTML keyed by screen name
+ */
+function generateCompanionPreview(config) {
+  const { industry, businessName, moodSliders = {}, colors = {} } = config;
+
+  // Get industry theme
+  const industryTheme = getIndustryDefaultTheme(industry);
+  const theme = moodSliders?.theme || industryTheme.mode || 'light';
+
+  // Determine colors based on theme
+  const primary = colors.primary || industryTheme.primary;
+  const accent = colors.accent || industryTheme.accent;
+  const primaryRgb = hexToRgb(primary);
+
+  // Theme-specific colors
+  const themeColors = {
+    light: {
+      background: '#ffffff',
+      surface: '#f8fafc',
+      cardBg: '#ffffff',
+      cardBorder: 'rgba(0,0,0,0.08)',
+      text: '#1a1a2e',
+      textMuted: '#64748b',
+      navBg: 'rgba(255,255,255,0.95)',
+      inputBg: '#f8fafc'
+    },
+    medium: {
+      background: '#e8e8e8',
+      surface: '#f0f0f0',
+      cardBg: '#f5f5f5',
+      cardBorder: 'rgba(0,0,0,0.1)',
+      text: '#1f2937',
+      textMuted: '#4b5563',
+      navBg: 'rgba(240,240,240,0.95)',
+      inputBg: '#e5e5e5'
+    },
+    dark: {
+      background: '#0a0a0f',
+      surface: '#1a1a2e',
+      cardBg: 'rgba(255,255,255,0.05)',
+      cardBorder: 'rgba(255,255,255,0.1)',
+      text: '#f1f5f9',
+      textMuted: 'rgba(255,255,255,0.6)',
+      navBg: 'rgba(10,10,15,0.95)',
+      inputBg: 'rgba(255,255,255,0.05)'
+    }
+  };
+
+  const tc = themeColors[theme] || themeColors.light;
+  const borderRadius = industryTheme.borderRadius || '12px';
+
+  // Common CSS for all screens
+  const commonCSS = `
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --primary: ${primary};
+      --primary-rgb: ${primaryRgb};
+      --accent: ${accent};
+      --background: ${tc.background};
+      --surface: ${tc.surface};
+      --card-bg: ${tc.cardBg};
+      --card-border: ${tc.cardBorder};
+      --text: ${tc.text};
+      --text-muted: ${tc.textMuted};
+      --nav-bg: ${tc.navBg};
+      --input-bg: ${tc.inputBg};
+      --radius: ${borderRadius};
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    .screen { padding: 20px; }
+    .screen-header { text-align: center; padding: 20px 0 30px; }
+    .screen-title { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+    .screen-subtitle { font-size: 14px; color: var(--text-muted); }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 20px;
+      border: 1px solid var(--card-border);
+      margin-bottom: 16px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .quick-action {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 20px 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .quick-action-icon {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(${primaryRgb}, 0.1);
+      border-radius: calc(var(--radius) * 0.7);
+      color: var(--primary);
+      font-size: 20px;
+    }
+
+    .quick-action-label { font-size: 13px; font-weight: 500; }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: var(--nav-bg);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 16px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 10px;
+    }
+
+    .nav-item.active { color: var(--primary); }
+
+    .stats-row {
+      display: flex;
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .stat-card {
+      flex: 1;
+      text-align: center;
+      padding: 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .theme-toggle {
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .theme-toggle-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-size: 15px;
+    }
+
+    .theme-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .theme-btn {
+      flex: 1;
+      padding: 12px 8px;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      color: var(--text-muted);
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .theme-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), ${darkenColor(primary)});
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 32px;
+      font-weight: 700;
+      color: white;
+    }
+  `;
+
+  // Generate Home screen
+  const homeScreen = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>${commonCSS}</style></head>
+<body>
+  <div class="screen">
+    <div class="screen-header">
+      <h1 class="screen-title">Welcome back!</h1>
+      <p class="screen-subtitle">${businessName}</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-value">2,450</div>
+        <div class="stat-label">POINTS</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">12</div>
+        <div class="stat-label">VISITS</div>
+      </div>
+    </div>
+
+    <div class="quick-actions">
+      <a class="quick-action">
+        <div class="quick-action-icon">📋</div>
+        <span class="quick-action-label">View Menu</span>
+      </a>
+      <a class="quick-action">
+        <div class="quick-action-icon">📅</div>
+        <span class="quick-action-label">Reservations</span>
+      </a>
+      <a class="quick-action">
+        <div class="quick-action-icon">🎁</div>
+        <span class="quick-action-label">Rewards</span>
+      </a>
+      <a class="quick-action">
+        <div class="quick-action-icon">⭐</div>
+        <span class="quick-action-label">Loyalty</span>
+      </a>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a class="nav-item active">
+      <span style="font-size: 20px">🏠</span>
+      <span>Home</span>
+    </a>
+    <a class="nav-item">
+      <span style="font-size: 20px">🎁</span>
+      <span>Rewards</span>
+    </a>
+    <a class="nav-item">
+      <span style="font-size: 20px">👤</span>
+      <span>Profile</span>
+    </a>
+  </nav>
+</body></html>`;
+
+  // Generate Profile screen with theme toggle
+  const profileScreen = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>${commonCSS}</style></head>
+<body>
+  <div class="screen">
+    <div class="screen-header">
+      <div class="profile-avatar">J</div>
+      <h1 class="screen-title">John Doe</h1>
+      <p class="screen-subtitle">john@example.com</p>
+      <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(${primaryRgb}, 0.2); padding: 6px 14px; border-radius: 20px; margin-top: 12px;">
+        <span style="color: var(--primary); font-size: 13px; font-weight: 600;">⭐ Gold Member</span>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-value">2,450</div>
+        <div class="stat-label">POINTS</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">12</div>
+        <div class="stat-label">VISITS</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">$240</div>
+        <div class="stat-label">SAVED</div>
+      </div>
+    </div>
+
+    <!-- Theme Toggle -->
+    <div class="card theme-toggle">
+      <div class="theme-toggle-label">
+        <span style="color: var(--primary);">🎨</span>
+        <span>Display Theme</span>
+      </div>
+      <div class="theme-buttons">
+        <button class="theme-btn ${theme === 'light' ? 'active' : ''}" onclick="setTheme('light')">
+          <span>☀️</span>
+          <span>Light</span>
+        </button>
+        <button class="theme-btn ${theme === 'medium' ? 'active' : ''}" onclick="setTheme('medium')">
+          <span>🎨</span>
+          <span>Medium</span>
+        </button>
+        <button class="theme-btn ${theme === 'dark' ? 'active' : ''}" onclick="setTheme('dark')">
+          <span>🌙</span>
+          <span>Dark</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="card" style="padding: 0;">
+      <div style="padding: 14px 16px; border-bottom: 1px solid var(--card-border); display: flex; align-items: center; gap: 12px;">
+        <span style="color: var(--primary);">💳</span>
+        <span>Payment Methods</span>
+      </div>
+      <div style="padding: 14px 16px; border-bottom: 1px solid var(--card-border); display: flex; align-items: center; gap: 12px;">
+        <span style="color: var(--primary);">🔔</span>
+        <span>Notifications</span>
+      </div>
+      <div style="padding: 14px 16px; display: flex; align-items: center; gap: 12px;">
+        <span style="color: var(--primary);">🔒</span>
+        <span>Privacy & Security</span>
+      </div>
+    </div>
+
+    <button class="btn-primary" style="background: transparent; border: 1px solid #ef4444; color: #ef4444;">
+      Sign Out
+    </button>
+  </div>
+
+  <nav class="bottom-nav">
+    <a class="nav-item">
+      <span style="font-size: 20px">🏠</span>
+      <span>Home</span>
+    </a>
+    <a class="nav-item">
+      <span style="font-size: 20px">🎁</span>
+      <span>Rewards</span>
+    </a>
+    <a class="nav-item active">
+      <span style="font-size: 20px">👤</span>
+      <span>Profile</span>
+    </a>
+  </nav>
+
+  <script>
+    function setTheme(theme) {
+      // In preview, just show visual feedback
+      document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.closest('.theme-btn').classList.add('active');
+    }
+  </script>
+</body></html>`;
+
+  // Generate Rewards screen
+  const rewardsScreen = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>${commonCSS}</style></head>
+<body>
+  <div class="screen">
+    <div class="screen-header">
+      <h1 class="screen-title">Rewards</h1>
+      <p class="screen-subtitle">Redeem your points for exclusive rewards</p>
+    </div>
+
+    <div class="card" style="text-align: center; padding: 24px;">
+      <div style="font-size: 36px; font-weight: 700; color: var(--primary);">2,450</div>
+      <div style="font-size: 13px; color: var(--text-muted);">Available Points</div>
+      <div style="margin-top: 16px; padding: 10px 20px; background: rgba(${primaryRgb}, 0.1); border-radius: 20px; display: inline-block;">
+        <span style="color: var(--primary); font-weight: 600;">550 points until next reward</span>
+      </div>
+    </div>
+
+    <div style="font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin: 20px 0 12px;">Available Rewards</div>
+
+    <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <div style="font-weight: 600;">Free Appetizer</div>
+        <div style="font-size: 13px; color: var(--text-muted);">Any appetizer on the menu</div>
+      </div>
+      <button style="padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: var(--radius); font-weight: 600; font-size: 13px;">500 pts</button>
+    </div>
+
+    <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <div style="font-weight: 600;">$10 Off</div>
+        <div style="font-size: 13px; color: var(--text-muted);">Your next order</div>
+      </div>
+      <button style="padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: var(--radius); font-weight: 600; font-size: 13px;">1,000 pts</button>
+    </div>
+
+    <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <div style="font-weight: 600;">Free Dessert</div>
+        <div style="font-size: 13px; color: var(--text-muted);">Chef's selection</div>
+      </div>
+      <button style="padding: 8px 16px; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-muted); border-radius: var(--radius); font-weight: 600; font-size: 13px;">2,500 pts</button>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a class="nav-item">
+      <span style="font-size: 20px">🏠</span>
+      <span>Home</span>
+    </a>
+    <a class="nav-item active">
+      <span style="font-size: 20px">🎁</span>
+      <span>Rewards</span>
+    </a>
+    <a class="nav-item">
+      <span style="font-size: 20px">👤</span>
+      <span>Profile</span>
+    </a>
+  </nav>
+</body></html>`;
+
+  return {
+    home: homeScreen,
+    profile: profileScreen,
+    rewards: rewardsScreen
+  };
+}
+
+/**
+ * Generate SANDBOX companion app preview with Mock API and real fixture data
+ * This is the full interactive version for demo purposes
+ */
+function generateCompanionPreviewSandbox(config) {
+  const { industry, businessName, moodSliders = {}, colors = {}, sandboxMode, fixture } = config;
+
+  // If not sandbox mode, just use the regular generator
+  if (!sandboxMode || !fixture) {
+    return generateCompanionPreview(config);
+  }
+
+  // Get industry theme
+  const industryTheme = getIndustryDefaultTheme(industry);
+  const theme = moodSliders?.theme || industryTheme.mode || 'light';
+
+  const primary = colors.primary || industryTheme.primary;
+  const accent = colors.accent || industryTheme.accent;
+  const primaryRgb = hexToRgb(primary);
+
+  // Theme-specific colors
+  const themeColors = {
+    light: { background: '#ffffff', surface: '#f8fafc', cardBg: '#ffffff', cardBorder: 'rgba(0,0,0,0.08)', text: '#1a1a2e', textMuted: '#64748b', navBg: 'rgba(255,255,255,0.95)', inputBg: '#f8fafc' },
+    medium: { background: '#e8e8e8', surface: '#f0f0f0', cardBg: '#f5f5f5', cardBorder: 'rgba(0,0,0,0.1)', text: '#1f2937', textMuted: '#4b5563', navBg: 'rgba(240,240,240,0.95)', inputBg: '#e5e5e5' },
+    dark: { background: '#0a0a0f', surface: '#1a1a2e', cardBg: 'rgba(255,255,255,0.05)', cardBorder: 'rgba(255,255,255,0.1)', text: '#f1f5f9', textMuted: 'rgba(255,255,255,0.6)', navBg: 'rgba(10,10,15,0.95)', inputBg: 'rgba(255,255,255,0.05)' }
+  };
+
+  const tc = themeColors[theme] || themeColors.light;
+  const borderRadius = industryTheme.borderRadius || '12px';
+
+  // Menu/Services from fixture
+  const menuData = fixture.menu || fixture.services || [];
+  const loyaltyData = fixture.loyalty || { rewards: [], pointsPerDollar: 10 };
+  const businessData = fixture.business || { name: businessName };
+
+  // Common CSS
+  const commonCSS = `
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: ${primary}; --primary-rgb: ${primaryRgb}; --accent: ${accent};
+      --background: ${tc.background}; --surface: ${tc.surface}; --card-bg: ${tc.cardBg};
+      --card-border: ${tc.cardBorder}; --text: ${tc.text}; --text-muted: ${tc.textMuted};
+      --nav-bg: ${tc.navBg}; --input-bg: ${tc.inputBg}; --radius: ${borderRadius};
+    }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--background); color: var(--text); min-height: 100vh; padding-bottom: 80px; }
+    .screen { padding: 20px; }
+    .screen-header { text-align: center; padding: 20px 0 30px; }
+    .screen-title { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+    .screen-subtitle { font-size: 14px; color: var(--text-muted); }
+    .card { background: var(--card-bg); border-radius: var(--radius); padding: 20px; border: 1px solid var(--card-border); margin-bottom: 16px; }
+    .btn-primary { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: var(--radius); font-size: 16px; font-weight: 600; cursor: pointer; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .quick-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 20px; }
+    .quick-action { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 20px 16px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); text-decoration: none; color: var(--text); cursor: pointer; }
+    .quick-action:hover { border-color: var(--primary); }
+    .quick-action-icon { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(${primaryRgb}, 0.1); border-radius: calc(var(--radius) * 0.7); color: var(--primary); font-size: 20px; }
+    .quick-action-label { font-size: 13px; font-weight: 500; }
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: var(--nav-bg); backdrop-filter: blur(20px); border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; align-items: center; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 16px; color: var(--text-muted); text-decoration: none; font-size: 10px; cursor: pointer; }
+    .nav-item.active { color: var(--primary); }
+    .stats-row { display: flex; gap: 12px; margin: 20px 0; }
+    .stat-card { flex: 1; text-align: center; padding: 16px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); }
+    .stat-value { font-size: 24px; font-weight: 700; color: var(--primary); }
+    .stat-label { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+    .menu-item { display: flex; gap: 12px; padding: 16px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); margin-bottom: 12px; }
+    .menu-item-image { width: 80px; height: 80px; border-radius: calc(var(--radius) * 0.7); object-fit: cover; }
+    .menu-item-info { flex: 1; }
+    .menu-item-name { font-weight: 600; margin-bottom: 4px; }
+    .menu-item-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+    .menu-item-price { font-weight: 700; color: var(--primary); }
+    .add-btn { padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: var(--radius); font-weight: 600; font-size: 13px; cursor: pointer; }
+    .cart-badge { position: absolute; top: -5px; right: -5px; width: 18px; height: 18px; background: #ef4444; color: white; border-radius: 50%; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+    .category-title { font-size: 18px; font-weight: 700; margin: 24px 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--primary); }
+    .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: white; padding: 12px 24px; border-radius: 8px; font-size: 14px; z-index: 1000; animation: fadeIn 0.3s; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+    .sandbox-indicator { position: fixed; top: 0; left: 0; right: 0; background: linear-gradient(90deg, #f59e0b, #d97706); color: #000; text-align: center; padding: 4px; font-size: 11px; font-weight: 600; z-index: 9999; }
+  `;
+
+  // Generate menu items HTML from fixture
+  const menuItemsHtml = menuData.map((category, catIdx) => `
+    <div class="category-title">${category.category}</div>
+    ${(category.items || []).map((item, itemIdx) => `
+      <div class="menu-item" data-item-id="${item.id}">
+        ${item.image ? `<img src="${item.image}" class="menu-item-image" alt="${item.name}" onerror="this.style.display='none'">` : ''}
+        <div class="menu-item-info">
+          <div class="menu-item-name">${item.name}</div>
+          <div class="menu-item-desc">${item.description || ''}</div>
+          <div class="menu-item-price">$${(item.price || 0).toFixed(2)}</div>
+        </div>
+        <button class="add-btn" onclick="addToCart('${item.id}', '${item.name.replace(/'/g, "\\'")}', ${item.price || 0})">Add</button>
+      </div>
+    `).join('')}
+  `).join('');
+
+  // Generate rewards HTML from fixture
+  const rewardsHtml = (loyaltyData.rewards || []).map(reward => `
+    <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <div style="font-weight: 600;">${reward.name}</div>
+        <div style="font-size: 13px; color: var(--text-muted);">${reward.description || ''}</div>
+      </div>
+      <button class="add-btn" onclick="redeemReward('${reward.id}', '${reward.name.replace(/'/g, "\\'")}', ${reward.points})">${reward.points} pts</button>
+    </div>
+  `).join('');
+
+  // Home screen with working menu
+  const homeScreen = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>${commonCSS}</style></head>
+<body>
+  <div class="sandbox-indicator">🧪 SANDBOX MODE - ${businessData.name}</div>
+  <div class="screen" style="padding-top: 30px;">
+    <div class="screen-header">
+      <h1 class="screen-title">Welcome back!</h1>
+      <p class="screen-subtitle">${businessData.name}</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-value" id="points-display">2,450</div>
+        <div class="stat-label">POINTS</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="visits-display">12</div>
+        <div class="stat-label">VISITS</div>
+      </div>
+    </div>
+
+    <div class="quick-actions">
+      <div class="quick-action" onclick="showScreen('menu')">
+        <div class="quick-action-icon">📋</div>
+        <span class="quick-action-label">View Menu</span>
+      </div>
+      <div class="quick-action" onclick="showScreen('cart')" style="position: relative;">
+        <div class="quick-action-icon">🛒</div>
+        <span class="quick-action-label">Cart</span>
+        <span class="cart-badge" id="cart-count" style="display: none;">0</span>
+      </div>
+      <div class="quick-action" onclick="showScreen('rewards')">
+        <div class="quick-action-icon">🎁</div>
+        <span class="quick-action-label">Rewards</span>
+      </div>
+      <div class="quick-action" onclick="showScreen('orders')">
+        <div class="quick-action-icon">📦</div>
+        <span class="quick-action-label">Orders</span>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a class="nav-item active"><span style="font-size: 20px">🏠</span><span>Home</span></a>
+    <a class="nav-item" onclick="showScreen('menu')"><span style="font-size: 20px">📋</span><span>Menu</span></a>
+    <a class="nav-item" onclick="showScreen('profile')"><span style="font-size: 20px">👤</span><span>Profile</span></a>
+  </nav>
+
+  <script>
+    // Simple localStorage-based state
+    let cart = JSON.parse(localStorage.getItem('demo_cart') || '{"items":[],"total":0}');
+    let userPoints = 2450;
+
+    function updateCartBadge() {
+      const badge = document.getElementById('cart-count');
+      const count = cart.items.reduce((sum, i) => sum + i.quantity, 0);
+      if (count > 0) {
+        badge.textContent = count;
+        badge.style.display = 'flex';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    function addToCart(id, name, price) {
+      const existing = cart.items.find(i => i.id === id);
+      if (existing) {
+        existing.quantity++;
+      } else {
+        cart.items.push({ id, name, price, quantity: 1 });
+      }
+      cart.total = cart.items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+      localStorage.setItem('demo_cart', JSON.stringify(cart));
+      updateCartBadge();
+      showToast('Added ' + name + ' to cart!');
+    }
+
+    function showToast(msg) {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
+    }
+
+    function showScreen(screen) {
+      showToast('Navigate to ' + screen + ' screen');
+    }
+
+    updateCartBadge();
+  </script>
+</body></html>`;
+
+  // Menu screen with real items
+  const menuScreen = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>${commonCSS}</style></head>
+<body>
+  <div class="sandbox-indicator">🧪 SANDBOX MODE - ${businessData.name}</div>
+  <div class="screen" style="padding-top: 30px;">
+    <div class="screen-header">
+      <h1 class="screen-title">Menu</h1>
+      <p class="screen-subtitle">${businessData.tagline || 'Order your favorites'}</p>
+    </div>
+
+    ${menuItemsHtml || '<p style="text-align: center; color: var(--text-muted);">No menu items available</p>'}
+  </div>
+
+  <nav class="bottom-nav">
+    <a class="nav-item" onclick="showScreen('home')"><span style="font-size: 20px">🏠</span><span>Home</span></a>
+    <a class="nav-item active"><span style="font-size: 20px">📋</span><span>Menu</span></a>
+    <a class="nav-item" onclick="showScreen('profile')"><span style="font-size: 20px">👤</span><span>Profile</span></a>
+  </nav>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem('demo_cart') || '{"items":[],"total":0}');
+
+    function addToCart(id, name, price) {
+      const existing = cart.items.find(i => i.id === id);
+      if (existing) {
+        existing.quantity++;
+      } else {
+        cart.items.push({ id, name, price, quantity: 1 });
+      }
+      cart.total = cart.items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+      localStorage.setItem('demo_cart', JSON.stringify(cart));
+      showToast('Added ' + name + ' to cart!');
+    }
+
+    function showToast(msg) {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
+    }
+
+    function showScreen(screen) { showToast('Navigate to ' + screen); }
+  </script>
+</body></html>`;
+
+  // Rewards screen
+  const rewardsScreen = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>${commonCSS}</style></head>
+<body>
+  <div class="sandbox-indicator">🧪 SANDBOX MODE - ${businessData.name}</div>
+  <div class="screen" style="padding-top: 30px;">
+    <div class="screen-header">
+      <h1 class="screen-title">Rewards</h1>
+      <p class="screen-subtitle">Redeem your points</p>
+    </div>
+
+    <div class="card" style="text-align: center; padding: 24px;">
+      <div style="font-size: 36px; font-weight: 700; color: var(--primary);" id="points-display">2,450</div>
+      <div style="font-size: 13px; color: var(--text-muted);">Available Points</div>
+    </div>
+
+    <div style="font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin: 20px 0 12px;">Available Rewards</div>
+    ${rewardsHtml || '<p style="text-align: center; color: var(--text-muted);">No rewards available</p>'}
+  </div>
+
+  <nav class="bottom-nav">
+    <a class="nav-item" onclick="showScreen('home')"><span style="font-size: 20px">🏠</span><span>Home</span></a>
+    <a class="nav-item active"><span style="font-size: 20px">🎁</span><span>Rewards</span></a>
+    <a class="nav-item" onclick="showScreen('profile')"><span style="font-size: 20px">👤</span><span>Profile</span></a>
+  </nav>
+
+  <script>
+    let userPoints = 2450;
+
+    function redeemReward(id, name, cost) {
+      if (userPoints >= cost) {
+        userPoints -= cost;
+        document.getElementById('points-display').textContent = userPoints.toLocaleString();
+        showToast('Redeemed: ' + name + '!');
+      } else {
+        showToast('Not enough points');
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
+    }
+
+    function showScreen(screen) { showToast('Navigate to ' + screen); }
+  </script>
+</body></html>`;
+
+  // Profile screen with theme toggle
+  const profileScreen = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>${commonCSS}
+  .theme-buttons { display: flex; gap: 8px; }
+  .theme-btn { flex: 1; padding: 12px 8px; background: var(--input-bg); border: 1px solid var(--card-border); border-radius: var(--radius); color: var(--text-muted); font-size: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .theme-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+  .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), ${darkenColor(primary)}); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 32px; font-weight: 700; color: white; }
+</style></head>
+<body>
+  <div class="sandbox-indicator">🧪 SANDBOX MODE - ${businessData.name}</div>
+  <div class="screen" style="padding-top: 30px;">
+    <div class="screen-header">
+      <div class="profile-avatar">J</div>
+      <h1 class="screen-title">John Demo</h1>
+      <p class="screen-subtitle">demo@test.com</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-value">2,450</div><div class="stat-label">POINTS</div></div>
+      <div class="stat-card"><div class="stat-value">12</div><div class="stat-label">VISITS</div></div>
+      <div class="stat-card"><div class="stat-value">$240</div><div class="stat-label">SAVED</div></div>
+    </div>
+
+    <div class="card">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+        <span style="color: var(--primary);">🎨</span>
+        <span style="font-size: 15px;">Display Theme</span>
+      </div>
+      <div class="theme-buttons">
+        <button class="theme-btn ${theme === 'light' ? 'active' : ''}" onclick="setTheme('light')"><span>☀️</span><span>Light</span></button>
+        <button class="theme-btn ${theme === 'medium' ? 'active' : ''}" onclick="setTheme('medium')"><span>🎨</span><span>Medium</span></button>
+        <button class="theme-btn ${theme === 'dark' ? 'active' : ''}" onclick="setTheme('dark')"><span>🌙</span><span>Dark</span></button>
+      </div>
+    </div>
+
+    <div class="card" style="padding: 0;">
+      <div style="padding: 14px 16px; border-bottom: 1px solid var(--card-border); display: flex; align-items: center; gap: 12px;"><span style="color: var(--primary);">💳</span><span>Payment Methods</span></div>
+      <div style="padding: 14px 16px; border-bottom: 1px solid var(--card-border); display: flex; align-items: center; gap: 12px;"><span style="color: var(--primary);">🔔</span><span>Notifications</span></div>
+      <div style="padding: 14px 16px; display: flex; align-items: center; gap: 12px;"><span style="color: var(--primary);">🔒</span><span>Privacy & Security</span></div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a class="nav-item" onclick="showScreen('home')"><span style="font-size: 20px">🏠</span><span>Home</span></a>
+    <a class="nav-item" onclick="showScreen('rewards')"><span style="font-size: 20px">🎁</span><span>Rewards</span></a>
+    <a class="nav-item active"><span style="font-size: 20px">👤</span><span>Profile</span></a>
+  </nav>
+
+  <script>
+    function setTheme(theme) {
+      document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.closest('.theme-btn').classList.add('active');
+      showToast('Theme set to ' + theme);
+    }
+    function showToast(msg) {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
+    }
+    function showScreen(screen) { showToast('Navigate to ' + screen); }
+  </script>
+</body></html>`;
+
+  return {
+    home: homeScreen,
+    menu: menuScreen,
+    rewards: rewardsScreen,
+    profile: profileScreen
+  };
+}
+
 module.exports = {
   generateCompanionApp,
+  generateCompanionPreview,
+  generateCompanionPreviewSandbox,
   QUICK_ACTION_CONFIG,
   ACTION_ALIASES,
   normalizeAction,

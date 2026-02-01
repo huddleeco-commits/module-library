@@ -1,0 +1,84 @@
+{
+  "projectName": "test-cristy-s-cake-shop",
+  "savedAt": "2026-01-26T15:27:07.543Z",
+  "resources": {
+    "name": "test-cristy-s-cake-shop",
+    "sanitizedName": "test-cristy-s-cake-shop",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "test-cristy-s-cake-shop-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "test-cristy-s-cake-shop-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "124f6c17-9d70-4b4f-a5dd-0930f03f6046",
+        "name": "test-cristy-s-cake-shop",
+        "createdAt": "2026-01-26T13:46:21.377Z",
+        "environments": [
+          {
+            "id": "e6d0f682-0b51-4bed-ac27-b08585ce8651",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "685bb2a4-ab98-4ecf-af17-0018edc40f36",
+          "name": "postgres"
+        },
+        {
+          "id": "c6501fb7-7172-4285-8d23-663a293b912e",
+          "name": "admin"
+        },
+        {
+          "id": "deb07027-7208-4ce4-9f9c-39693509d9ae",
+          "name": "backend"
+        },
+        {
+          "id": "eca01b33-a82a-4113-99b0-ce8d7e9bcd4e",
+          "name": "frontend"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "ac972a8bc18b7d93619cf355274c57fc",
+          "name": "test-cristy-s-cake-shop.be1st.io",
+          "type": "CNAME",
+          "content": "33b66n30.up.railway.app"
+        },
+        {
+          "id": "ac8510a1c187aced8c9066ca24cdf245",
+          "name": "api.test-cristy-s-cake-shop.be1st.io",
+          "type": "CNAME",
+          "content": "pym2dww2.up.railway.app"
+        },
+        {
+          "id": "f0153ae4b6a549dc27d4ca260419319c",
+          "name": "admin.test-cristy-s-cake-shop.be1st.io",
+          "type": "CNAME",
+          "content": "msiqk6td.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "projectName": "test-classic-cuts-barbershop-ecommerce",
+  "savedAt": "2026-01-27T22:13:02.968Z",
+  "resources": {
+    "name": "test-classic-cuts-barbershop-ecommerce",
+    "sanitizedName": "test-classic-cuts-barbershop-ecommerce",
+    "github": {
+      "repos": [
+        {
+          "name": "test-classic-cuts-barbershop-ecommerce-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-classic-cuts-barbershop-ecommerce-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-classic-cuts-barbershop-ecommerce-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

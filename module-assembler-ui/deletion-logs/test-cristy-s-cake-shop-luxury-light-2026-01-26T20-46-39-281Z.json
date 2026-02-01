@@ -1,0 +1,80 @@
+{
+  "projectName": "test-cristy-s-cake-shop-luxury-light",
+  "deletedAt": "2026-01-26T20:46:39.281Z",
+  "resourcesFound": {
+    "name": "test-cristy-s-cake-shop-luxury-light",
+    "sanitizedName": "test-cristy-s-cake-shop-luxury-light",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-luxury-light-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-luxury-light-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-luxury-light-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-luxury-light-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-luxury-light-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-luxury-light-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "test-cristy-s-cake-shop-luxury-light",
+          "verified": true
+        },
+        {
+          "subdomain": "api.test-cristy-s-cake-shop-luxury-light",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.test-cristy-s-cake-shop-luxury-light",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

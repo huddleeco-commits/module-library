@@ -1,0 +1,80 @@
+{
+  "projectName": "test-cristy-s-cake-shop-friendly-story-driven",
+  "deletedAt": "2026-01-26T21:37:44.758Z",
+  "resourcesFound": {
+    "name": "test-cristy-s-cake-shop-friendly-story-driven",
+    "sanitizedName": "test-cristy-s-cake-shop-friendly-story-driven",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-friendly-story-driven-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-friendly-story-driven-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-friendly-story-driven-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-friendly-story-driven-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-friendly-story-driven-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-friendly-story-driven-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "test-cristy-s-cake-shop-friendly-story-driven",
+          "verified": true
+        },
+        {
+          "subdomain": "api.test-cristy-s-cake-shop-friendly-story-driven",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.test-cristy-s-cake-shop-friendly-story-driven",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

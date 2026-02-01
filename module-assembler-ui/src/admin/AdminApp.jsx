@@ -34,7 +34,9 @@ import {
   Clock,
   FlaskConical,
   Archive,
-  Rocket
+  Rocket,
+  Sparkles,
+  Camera
 } from 'lucide-react';
 
 // Import Platform Health Page
@@ -42,6 +44,12 @@ import PlatformHealthPage from './PlatformHealthPage';
 import BackupManager from './BackupManager';
 import DemoTrackerPage from './DemoTrackerPage';
 import TestLabPage from './TestLabPage';
+import SmartTemplateDevPage from './SmartTemplateDevPage';
+import BusinessGeneratorPage from './BusinessGeneratorPage';
+import QuickStartDevTool from './QuickStartDevTool';
+import ScoutDashboard from './ScoutDashboard';
+import ScreenshotGallery from './ScreenshotGallery';
+import StylePreviewPage from './StylePreviewPage';
 
 // ============================================
 // CONTEXT & API
@@ -2234,7 +2242,13 @@ function LoginPage({ onLogin }) {
 function Sidebar({ currentPage, setPage, onLogout }) {
   const navItems = [
     { id: 'overview', label: 'Overview', icon: <LayoutDashboard size={20} /> },
+    { id: 'scout', label: 'Scout', icon: <Search size={20} />, highlight: true },
+    { id: 'style-preview', label: 'Style Preview', icon: <Layers size={20} />, highlight: true },
+    { id: 'quickstart-dev', label: 'QuickStart Dev', icon: <Zap size={20} />, highlight: true },
     { id: 'test-lab', label: 'Test Lab', icon: <FlaskConical size={20} />, highlight: true },
+    { id: 'screenshots', label: 'Screenshots', icon: <Camera size={20} />, highlight: true },
+    { id: 'smart-template', label: 'Smart Template', icon: <Sparkles size={20} /> },
+    { id: 'business-generator', label: 'Business Gen', icon: <Building2 size={20} /> },
     { id: 'platform-health', label: 'Health Check', icon: <Activity size={20} /> },
     { id: 'demo-tracker', label: 'Demo Tracker', icon: <Rocket size={20} /> },
     { id: 'users', label: 'Users', icon: <Users size={20} /> },
@@ -2330,7 +2344,13 @@ export default function AdminApp({ skipAuth = false, startPage = 'overview' }) {
   const renderPage = () => {
     switch (currentPage) {
       case 'overview': return <OverviewPage />;
+      case 'scout': return <ScoutDashboard />;
+      case 'style-preview': return <StylePreviewPage />;
+      case 'quickstart-dev': return <QuickStartDevTool />;
       case 'test-lab': return <TestLabPage />;
+      case 'screenshots': return <ScreenshotGallery />;
+      case 'smart-template': return <SmartTemplateDevPage />;
+      case 'business-generator': return <BusinessGeneratorPage />;
       case 'platform-health': return <PlatformHealthPage />;
       case 'demo-tracker': return <DemoTrackerPage />;
       case 'users': return <UsersPage />;

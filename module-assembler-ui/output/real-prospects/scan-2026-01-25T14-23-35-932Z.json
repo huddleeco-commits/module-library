@@ -1,0 +1,1680 @@
+{
+  "prospects": [
+    {
+      "id": "r8-wM42TAUYxjoxl_MdrlA",
+      "name": "David's Fade Shop",
+      "address": "101-1099 Lewisville Plz, Lewisville, TX, 75067",
+      "phone": "+14692301844",
+      "category": "barbers",
+      "website": null,
+      "hasWebsite": false,
+      "rating": 4.5,
+      "reviewCount": 23,
+      "photos": [
+        "https://s3-media0.fl.yelpcdn.com/bphoto/OEOcqim4ekXnxxnJOuXs_g/o.jpg"
+      ],
+      "hours": null,
+      "fixtureId": "barbershop",
+      "source": "yelp",
+      "yelpUrl": "https://www.yelp.com/biz/davids-fade-shop-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+      "raw": {
+        "id": "r8-wM42TAUYxjoxl_MdrlA",
+        "alias": "davids-fade-shop-lewisville",
+        "name": "David's Fade Shop",
+        "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/OEOcqim4ekXnxxnJOuXs_g/o.jpg",
+        "is_closed": false,
+        "url": "https://www.yelp.com/biz/davids-fade-shop-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+        "review_count": 23,
+        "categories": [
+          {
+            "alias": "barbers",
+            "title": "Barbers"
+          }
+        ],
+        "rating": 4.5,
+        "coordinates": {
+          "latitude": 33.0364502268711,
+          "longitude": -97.0110196824668
+        },
+        "transactions": [],
+        "location": {
+          "address1": "101-1099 Lewisville Plz",
+          "address2": "",
+          "address3": "",
+          "city": "Lewisville",
+          "zip_code": "75067",
+          "country": "US",
+          "state": "TX",
+          "display_address": [
+            "101-1099 Lewisville Plz",
+            "Lewisville, TX 75067"
+          ]
+        },
+        "phone": "+14692301844",
+        "display_phone": "(469) 230-1844",
+        "distance": 866.7658293273882,
+        "business_hours": [],
+        "attributes": {
+          "business_temp_closed": null,
+          "menu_url": null,
+          "waitlist_reservation": null
+        }
+      }
+    },
+    {
+      "id": "HCSQegKdm8pi9Tsmmftqag",
+      "name": "Back N Time Barber Shop",
+      "address": "320 Parker Square Dr, Flower Mound, TX, 75028",
+      "phone": "+19727242278",
+      "category": "barbers",
+      "website": null,
+      "hasWebsite": false,
+      "rating": 4.4,
+      "reviewCount": 71,
+      "photos": [
+        "https://s3-media0.fl.yelpcdn.com/bphoto/uyYj35O8YzTPwI0bGNIRcA/o.jpg"
+      ],
+      "hours": null,
+      "fixtureId": "barbershop",
+      "source": "yelp",
+      "yelpUrl": "https://www.yelp.com/biz/back-n-time-barber-shop-flower-mound?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+      "raw": {
+        "id": "HCSQegKdm8pi9Tsmmftqag",
+        "alias": "back-n-time-barber-shop-flower-mound",
+        "name": "Back N Time Barber Shop",
+        "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/uyYj35O8YzTPwI0bGNIRcA/o.jpg",
+        "is_closed": false,
+        "url": "https://www.yelp.com/biz/back-n-time-barber-shop-flower-mound?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+        "review_count": 71,
+        "categories": [
+          {
+            "alias": "barbers",
+            "title": "Barbers"
+          }
+        ],
+        "rating": 4.4,
+        "coordinates": {
+          "latitude": 33.039417,
+          "longitude": -97.0502103
+        },
+        "transactions": [],
+        "price": "$$",
+        "location": {
+          "address1": "320 Parker Square Dr",
+          "address2": "",
+          "address3": "",
+          "city": "Flower Mound",
+          "zip_code": "75028",
+          "country": "US",
+          "state": "TX",
+          "display_address": [
+            "320 Parker Square Dr",
+            "Flower Mound, TX 75028"
+          ]
+        },
+        "phone": "+19727242278",
+        "display_phone": "(972) 724-2278",
+        "distance": 4533.314122238793,
+        "business_hours": [
+          {
+            "open": [
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "1800",
+                "day": 0
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "1800",
+                "day": 1
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "1800",
+                "day": 2
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "1800",
+                "day": 3
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "1800",
+                "day": 4
+              },
+              {
+                "is_overnight": false,
+                "start": "0800",
+                "end": "1700",
+                "day": 5
+              }
+            ],
+            "hours_type": "REGULAR",
+            "is_open_now": false
+          }
+        ],
+        "attributes": {
+          "business_temp_closed": null,
+          "menu_url": null,
+          "waitlist_reservation": null
+        }
+      }
+    },
+    {
+      "id": "Thw6bBnK6YJmOmeUxTbl6g",
+      "name": "Blade Babe Barbering",
+      "address": "120 S Denton Tap Rd, Coppell, TX, 75019",
+      "phone": "+14695120154",
+      "category": "barbers",
+      "website": null,
+      "hasWebsite": false,
+      "rating": 0,
+      "reviewCount": 0,
+      "photos": [
+        "https://s3-media0.fl.yelpcdn.com/bphoto/Gn37Cf3p8aJ-oj-P9_CN7A/o.jpg"
+      ],
+      "hours": null,
+      "fixtureId": "barbershop",
+      "source": "yelp",
+      "yelpUrl": "https://www.yelp.com/biz/blade-babe-barbering-coppell?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+      "raw": {
+        "id": "Thw6bBnK6YJmOmeUxTbl6g",
+        "alias": "blade-babe-barbering-coppell",
+        "name": "Blade Babe Barbering",
+        "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/Gn37Cf3p8aJ-oj-P9_CN7A/o.jpg",
+        "is_closed": false,
+        "url": "https://www.yelp.com/biz/blade-babe-barbering-coppell?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+        "review_count": 0,
+        "categories": [
+          {
+            "alias": "barbers",
+            "title": "Barbers"
+          }
+        ],
+        "rating": 0,
+        "coordinates": {
+          "latitude": 32.96899,
+          "longitude": -96.99316
+        },
+        "transactions": [],
+        "location": {
+          "address1": "120 S Denton Tap Rd",
+          "address2": "Ste 305",
+          "address3": "",
+          "city": "Coppell",
+          "zip_code": "75019",
+          "country": "US",
+          "state": "TX",
+          "display_address": [
+            "120 S Denton Tap Rd",
+            "Ste 305",
+            "Coppell, TX 75019"
+          ]
+        },
+        "phone": "+14695120154",
+        "display_phone": "(469) 512-0154",
+        "distance": 7690.434014513197,
+        "business_hours": [
+          {
+            "open": [
+              {
+                "is_overnight": false,
+                "start": "1200",
+                "end": "0000",
+                "day": 0
+              },
+              {
+                "is_overnight": false,
+                "start": "1800",
+                "end": "0000",
+                "day": 1
+              },
+              {
+                "is_overnight": false,
+                "start": "1800",
+                "end": "0000",
+                "day": 2
+              },
+              {
+                "is_overnight": false,
+                "start": "1800",
+                "end": "0000",
+                "day": 3
+              },
+              {
+                "is_overnight": false,
+                "start": "1800",
+                "end": "2200",
+                "day": 4
+              },
+              {
+                "is_overnight": false,
+                "start": "1800",
+                "end": "2200",
+                "day": 5
+              }
+            ],
+            "hours_type": "REGULAR",
+            "is_open_now": false
+          }
+        ],
+        "attributes": {
+          "business_temp_closed": null,
+          "menu_url": null,
+          "waitlist_reservation": null
+        }
+      }
+    },
+    {
+      "id": "QADLuk6ZDEdnqchI7Mek1Q",
+      "name": "Ray's Barber Shop",
+      "address": "1565 Main St, Lewisville, TX, 75067",
+      "phone": "+19722190884",
+      "category": "barbers",
+      "website": null,
+      "hasWebsite": false,
+      "rating": 4.3,
+      "reviewCount": 17,
+      "photos": [
+        "https://s3-media0.fl.yelpcdn.com/bphoto/XVHVSwtumaVEsISZfeDbTg/o.jpg"
+      ],
+      "hours": null,
+      "fixtureId": "barbershop",
+      "source": "yelp",
+      "yelpUrl": "https://www.yelp.com/biz/rays-barber-shop-lewisville-2?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+      "raw": {
+        "id": "QADLuk6ZDEdnqchI7Mek1Q",
+        "alias": "rays-barber-shop-lewisville-2",
+        "name": "Ray's Barber Shop",
+        "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/XVHVSwtumaVEsISZfeDbTg/o.jpg",
+        "is_closed": false,
+        "url": "https://www.yelp.com/biz/rays-barber-shop-lewisville-2?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+        "review_count": 17,
+        "categories": [
+          {
+            "alias": "barbers",
+            "title": "Barbers"
+          }
+        ],
+        "rating": 4.3,
+        "coordinates": {
+          "latitude": 33.0429,
+          "longitude": -97.033254
+        },
+        "transactions": [],
+        "price": "$$",
+        "location": {
+          "address1": "1565 Main St",
+          "address2": "Ste 215",
+          "address3": "",
+          "city": "Lewisville",
+          "zip_code": "75067",
+          "country": "US",
+          "state": "TX",
+          "display_address": [
+            "1565 Main St",
+            "Ste 215",
+            "Lewisville, TX 75067"
+          ]
+        },
+        "phone": "+19722190884",
+        "display_phone": "(972) 219-0884",
+        "distance": 3030.447785121171,
+        "business_hours": [
+          {
+            "open": [
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "1800",
+                "day": 1
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "1800",
+                "day": 2
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "1800",
+                "day": 3
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "1800",
+                "day": 4
+              },
+              {
+                "is_overnight": false,
+                "start": "0700",
+                "end": "1600",
+                "day": 5
+              }
+            ],
+            "hours_type": "REGULAR",
+            "is_open_now": false
+          }
+        ],
+        "attributes": {
+          "business_temp_closed": null,
+          "menu_url": null,
+          "waitlist_reservation": null
+        }
+      }
+    },
+    {
+      "id": "LKR20-_KMLdyaalmJdCqXg",
+      "name": "Mel's Barber Shop",
+      "address": "5801 Long Prairie Rd, Flower Mound, TX, 75028",
+      "phone": "+19723554767",
+      "category": "barbers",
+      "website": null,
+      "hasWebsite": false,
+      "rating": 4.8,
+      "reviewCount": 84,
+      "photos": [
+        "https://s3-media0.fl.yelpcdn.com/bphoto/4gIeTCtHARnup4oIyMfdLw/o.jpg"
+      ],
+      "hours": null,
+      "fixtureId": "barbershop",
+      "source": "yelp",
+      "yelpUrl": "https://www.yelp.com/biz/mels-barber-shop-flower-mound?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+      "raw": {
+        "id": "LKR20-_KMLdyaalmJdCqXg",
+        "alias": "mels-barber-shop-flower-mound",
+        "name": "Mel's Barber Shop",
+        "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/4gIeTCtHARnup4oIyMfdLw/o.jpg",
+        "is_closed": false,
+        "url": "https://www.yelp.com/biz/mels-barber-shop-flower-mound?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+        "review_count": 84,
+        "categories": [
+          {
+            "alias": "barbers",
+            "title": "Barbers"
+          }
+        ],
+        "rating": 4.8,
+        "coordinates": {
+          "latitude": 33.06457,
+          "longitude": -97.08332
+        },
+        "transactions": [],
+        "price": "$$",
+        "location": {
+          "address1": "5801 Long Prairie Rd",
+          "address2": "Ste 840",
+          "address3": "",
+          "city": "Flower Mound",
+          "zip_code": "75028",
+          "country": "US",
+          "state": "TX",
+          "display_address": [
+            "5801 Long Prairie Rd",
+            "Ste 840",
+            "Flower Mound, TX 75028"
+          ]
+        },
+        "phone": "+19723554767",
+        "display_phone": "(972) 355-4767",
+        "distance": 8136.5755995684995,
+        "business_hours": [],
+        "attributes": {
+          "business_temp_closed": null,
+          "menu_url": "http://melsbarbershop.com",
+          "waitlist_reservation": null
+        }
+      }
+    },
+    {
+      "id": "i2l-Z3_x5JDJnOMysg7hqg",
+      "name": "1 Stop Barber Shop",
+      "address": "251 S.Mill St, Lewisville, TX, 75067",
+      "phone": "+19724209800",
+      "category": "barbers",
+      "website": null,
+      "hasWebsite": false,
+      "rating": 2.7,
+      "reviewCount": 15,
+      "photos": [
+        "https://s3-media0.fl.yelpcdn.com/bphoto/HD24YwvSgDhkEVwzBpA4PA/o.jpg"
+      ],
+      "hours": null,
+      "fixtureId": "barbershop",
+      "source": "yelp",
+      "yelpUrl": "https://www.yelp.com/biz/1-stop-barber-shop-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+      "raw": {
+        "id": "i2l-Z3_x5JDJnOMysg7hqg",
+        "alias": "1-stop-barber-shop-lewisville",
+        "name": "1 Stop Barber Shop",
+        "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/HD24YwvSgDhkEVwzBpA4PA/o.jpg",
+        "is_closed": false,
+        "url": "https://www.yelp.com/biz/1-stop-barber-shop-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+        "review_count": 15,
+        "categories": [
+          {
+            "alias": "barbers",
+            "title": "Barbers"
+          }
+        ],
+        "rating": 2.7,
+        "coordinates": {
+          "latitude": 33.04449401531945,
+          "longitude": -96.99449005644811
+        },
+        "transactions": [],
+        "location": {
+          "address1": "251 S.Mill St",
+          "address2": "Ste 120",
+          "address3": "",
+          "city": "Lewisville",
+          "zip_code": "75067",
+          "country": "US",
+          "state": "TX",
+          "display_address": [
+            "251 S.Mill St",
+            "Ste 120",
+            "Lewisville, TX 75067"
+          ]
+        },
+        "phone": "+19724209800",
+        "display_phone": "(972) 420-9800",
+        "distance": 1137.4692875614512,
+        "business_hours": [],
+        "attributes": {
+          "business_temp_closed": null,
+          "menu_url": null,
+          "waitlist_reservation": null
+        }
+      }
+    },
+    {
+      "id": "_SNf07Y80LNPooxGnfSGZA",
+      "name": "Troy Cuts",
+      "address": "1940 Justin Rd, Lewisville, TX, 75077",
+      "phone": "+19729661388",
+      "category": "barbers",
+      "website": null,
+      "hasWebsite": false,
+      "rating": 4.6,
+      "reviewCount": 12,
+      "photos": [
+        "https://s3-media0.fl.yelpcdn.com/bphoto/mWl2vEud4_IonCmJXAA3gQ/o.jpg"
+      ],
+      "hours": null,
+      "fixtureId": "barbershop",
+      "source": "yelp",
+      "yelpUrl": "https://www.yelp.com/biz/troy-cuts-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+      "raw": {
+        "id": "_SNf07Y80LNPooxGnfSGZA",
+        "alias": "troy-cuts-lewisville",
+        "name": "Troy Cuts",
+        "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/mWl2vEud4_IonCmJXAA3gQ/o.jpg",
+        "is_closed": false,
+        "url": "https://www.yelp.com/biz/troy-cuts-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+        "review_count": 12,
+        "categories": [
+          {
+            "alias": "barbers",
+            "title": "Barbers"
+          }
+        ],
+        "rating": 4.6,
+        "coordinates": {
+          "latitude": 33.07222,
+          "longitude": -97.04754
+        },
+        "transactions": [],
+        "price": "$",
+        "location": {
+          "address1": "1940 Justin Rd",
+          "address2": "Ste 106",
+          "address3": "",
+          "city": "Lewisville",
+          "zip_code": "75077",
+          "country": "US",
+          "state": "TX",
+          "display_address": [
+            "1940 Justin Rd",
+            "Ste 106",
+            "Lewisville, TX 75077"
+          ]
+        },
+        "phone": "+19729661388",
+        "display_phone": "(972) 966-1388",
+        "distance": 5881.297638514348,
+        "business_hours": [],
+        "attributes": {
+          "business_temp_closed": null,
+          "menu_url": null,
+          "waitlist_reservation": null
+        }
+      }
+    },
+    {
+      "id": "rEB7vg7azfRwIN0bucULEg",
+      "name": "Express Cut",
+      "address": "601 Cross Timbers Rd, Flower Mound, TX, 75028",
+      "phone": "+19725396854",
+      "category": "hairstylists",
+      "website": null,
+      "hasWebsite": false,
+      "rating": 4.4,
+      "reviewCount": 13,
+      "photos": [
+        "https://s3-media0.fl.yelpcdn.com/bphoto/HeVQ0cRmLE8j3rxIqecZOw/o.jpg"
+      ],
+      "hours": null,
+      "fixtureId": "barbershop",
+      "source": "yelp",
+      "yelpUrl": "https://www.yelp.com/biz/express-cut-flower-mound?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+      "raw": {
+        "id": "rEB7vg7azfRwIN0bucULEg",
+        "alias": "express-cut-flower-mound",
+        "name": "Express Cut",
+        "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/HeVQ0cRmLE8j3rxIqecZOw/o.jpg",
+        "is_closed": false,
+        "url": "https://www.yelp.com/biz/express-cut-flower-mound?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+        "review_count": 13,
+        "categories": [
+          {
+            "alias": "hairstylists",
+            "title": "Hair Stylists"
+          }
+        ],
+        "rating": 4.4,
+        "coordinates": {
+          "latitude": 33.0418347,
+          "longitude": -97.0363049
+        },
+        "transactions": [],
+        "price": "$",
+        "location": {
+          "address1": "601 Cross Timbers Rd",
+          "address2": "Ste 112",
+          "address3": null,
+          "city": "Flower Mound",
+          "zip_code": "75028",
+          "country": "US",
+          "state": "TX",
+          "display_address": [
+            "601 Cross Timbers Rd",
+            "Ste 112",
+            "Flower Mound, TX 75028"
+          ]
+        },
+        "phone": "+19725396854",
+        "display_phone": "(972) 539-6854",
+        "distance": 3282.567487936033,
+        "business_hours": [
+          {
+            "open": [
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2000",
+                "day": 0
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2000",
+                "day": 1
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2000",
+                "day": 2
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2000",
+                "day": 3
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2000",
+                "day": 4
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2000",
+                "day": 5
+              }
+            ],
+            "hours_type": "REGULAR",
+            "is_open_now": false
+          }
+        ],
+        "attributes": {
+          "business_temp_closed": null,
+          "menu_url": null,
+          "waitlist_reservation": null
+        }
+      }
+    },
+    {
+      "id": "zFELXvI1iNsMeKI4yT73cg",
+      "name": "Salon De Belleza Latino 2",
+      "address": "701 S Stemmons Fwy, Lewisville, TX, 75067",
+      "phone": "+19724200097",
+      "category": "barbers",
+      "website": null,
+      "hasWebsite": false,
+      "rating": 0,
+      "reviewCount": 0,
+      "photos": [
+        "https://s3-media0.fl.yelpcdn.com/bphoto/AOwY6d7xbObDFiCPZ6v4tw/o.jpg"
+      ],
+      "hours": null,
+      "fixtureId": "barbershop",
+      "source": "yelp",
+      "yelpUrl": "https://www.yelp.com/biz/salon-de-belleza-latino-2-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+      "raw": {
+        "id": "zFELXvI1iNsMeKI4yT73cg",
+        "alias": "salon-de-belleza-latino-2-lewisville",
+        "name": "Salon De Belleza Latino 2",
+        "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/AOwY6d7xbObDFiCPZ6v4tw/o.jpg",
+        "is_closed": false,
+        "url": "https://www.yelp.com/biz/salon-de-belleza-latino-2-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+        "review_count": 0,
+        "categories": [
+          {
+            "alias": "barbers",
+            "title": "Barbers"
+          }
+        ],
+        "rating": 0,
+        "coordinates": {
+          "latitude": 33.0380981,
+          "longitude": -97.0044883
+        },
+        "transactions": [],
+        "location": {
+          "address1": "701 S Stemmons Fwy",
+          "address2": "Ste 112",
+          "address3": null,
+          "city": "Lewisville",
+          "zip_code": "75067",
+          "country": "US",
+          "state": "TX",
+          "display_address": [
+            "701 S Stemmons Fwy",
+            "Ste 112",
+            "Lewisville, TX 75067"
+          ]
+        },
+        "phone": "+19724200097",
+        "display_phone": "(972) 420-0097",
+        "distance": 329.1633898522224,
+        "business_hours": [
+          {
+            "open": [
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2030",
+                "day": 0
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2030",
+                "day": 1
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2030",
+                "day": 2
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2030",
+                "day": 3
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2030",
+                "day": 4
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2030",
+                "day": 5
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "1900",
+                "day": 6
+              }
+            ],
+            "hours_type": "REGULAR",
+            "is_open_now": false
+          }
+        ],
+        "attributes": {
+          "business_temp_closed": null,
+          "menu_url": null,
+          "waitlist_reservation": null
+        }
+      }
+    },
+    {
+      "id": "JnZ0DPDY3EAO2TZhM2Tqbw",
+      "name": "Lakeside Barber Co",
+      "address": "3540 N Grapevine Mills Blvd, Grapevine, TX, 76051",
+      "phone": "+18175047210",
+      "category": "barbers",
+      "website": null,
+      "hasWebsite": false,
+      "rating": 4.6,
+      "reviewCount": 76,
+      "photos": [
+        "https://s3-media0.fl.yelpcdn.com/bphoto/LrWoGtYAm96HTUKFO-JTKg/o.jpg"
+      ],
+      "hours": null,
+      "fixtureId": "barbershop",
+      "source": "yelp",
+      "yelpUrl": "https://www.yelp.com/biz/lakeside-barber-co-grapevine?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+      "raw": {
+        "id": "JnZ0DPDY3EAO2TZhM2Tqbw",
+        "alias": "lakeside-barber-co-grapevine",
+        "name": "Lakeside Barber Co",
+        "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/LrWoGtYAm96HTUKFO-JTKg/o.jpg",
+        "is_closed": false,
+        "url": "https://www.yelp.com/biz/lakeside-barber-co-grapevine?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+        "review_count": 76,
+        "categories": [
+          {
+            "alias": "barbers",
+            "title": "Barbers"
+          }
+        ],
+        "rating": 4.6,
+        "coordinates": {
+          "latitude": 32.972206,
+          "longitude": -97.033091
+        },
+        "transactions": [],
+        "price": "$$",
+        "location": {
+          "address1": "3540 N Grapevine Mills Blvd",
+          "address2": "500 Ste 120",
+          "address3": "",
+          "city": "Grapevine",
+          "zip_code": "76051",
+          "country": "US",
+          "state": "TX",
+          "display_address": [
+            "3540 N Grapevine Mills Blvd",
+            "500 Ste 120",
+            "Grapevine, TX 76051"
+          ]
+        },
+        "phone": "+18175047210",
+        "display_phone": "(817) 504-7210",
+        "distance": 7715.664167561552,
+        "business_hours": [
+          {
+            "open": [
+              {
+                "is_overnight": false,
+                "start": "1000",
+                "end": "1900",
+                "day": 0
+              },
+              {
+                "is_overnight": false,
+                "start": "1000",
+                "end": "1900",
+                "day": 1
+              },
+              {
+                "is_overnight": false,
+                "start": "1400",
+                "end": "1900",
+                "day": 2
+              },
+              {
+                "is_overnight": false,
+                "start": "1000",
+                "end": "1900",
+                "day": 3
+              },
+              {
+                "is_overnight": false,
+                "start": "1000",
+                "end": "1900",
+                "day": 4
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "1700",
+                "day": 5
+              }
+            ],
+            "hours_type": "REGULAR",
+            "is_open_now": false
+          }
+        ],
+        "attributes": {
+          "business_temp_closed": null,
+          "menu_url": null,
+          "waitlist_reservation": null
+        }
+      }
+    },
+    {
+      "id": "Z4lxbHKkKVNIPa1dWoV8pg",
+      "name": "ROOSTERS MEN'S GROOMING CENTER",
+      "address": "2500 Cross Timbers Rd, Flower Mound, TX, 75028",
+      "phone": "+19728742000",
+      "category": "barbers",
+      "website": null,
+      "hasWebsite": false,
+      "rating": 3.8,
+      "reviewCount": 51,
+      "photos": [
+        "https://s3-media0.fl.yelpcdn.com/bphoto/aN6zboiTshoc_S8B82ZS6Q/o.jpg"
+      ],
+      "hours": null,
+      "fixtureId": "barbershop",
+      "source": "yelp",
+      "yelpUrl": "https://www.yelp.com/biz/roosters-mens-grooming-center-flower-mound-3?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+      "raw": {
+        "id": "Z4lxbHKkKVNIPa1dWoV8pg",
+        "alias": "roosters-mens-grooming-center-flower-mound-3",
+        "name": "ROOSTERS MEN'S GROOMING CENTER",
+        "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/aN6zboiTshoc_S8B82ZS6Q/o.jpg",
+        "is_closed": false,
+        "url": "https://www.yelp.com/biz/roosters-mens-grooming-center-flower-mound-3?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+        "review_count": 51,
+        "categories": [
+          {
+            "alias": "barbers",
+            "title": "Barbers"
+          },
+          {
+            "alias": "menshair",
+            "title": "Men's Hair Salons"
+          }
+        ],
+        "rating": 3.8,
+        "coordinates": {
+          "latitude": 33.03595,
+          "longitude": -97.06739
+        },
+        "transactions": [],
+        "price": "$$",
+        "location": {
+          "address1": "2500 Cross Timbers Rd",
+          "address2": "Riverwalk Market",
+          "address3": null,
+          "city": "Flower Mound",
+          "zip_code": "75028",
+          "country": "US",
+          "state": "TX",
+          "display_address": [
+            "2500 Cross Timbers Rd",
+            "Riverwalk Market",
+            "Flower Mound, TX 75028"
+          ]
+        },
+        "phone": "+19728742000",
+        "display_phone": "(972) 874-2000",
+        "distance": 6120.527497753325,
+        "business_hours": [],
+        "attributes": {
+          "business_temp_closed": null,
+          "menu_url": null,
+          "waitlist_reservation": null
+        }
+      }
+    },
+    {
+      "id": "9KxWVKNkYiq5xUsY0UqmFQ",
+      "name": "Cool Heads",
+      "address": "1050 Flower Mound Rd, Flower Mound, TX, 75028",
+      "phone": "+19728992488",
+      "category": "barbers",
+      "website": null,
+      "hasWebsite": false,
+      "rating": 4.1,
+      "reviewCount": 43,
+      "photos": [
+        "https://s3-media0.fl.yelpcdn.com/bphoto/oQ_Enwe0eG5RAO8OoN2JCw/o.jpg"
+      ],
+      "hours": null,
+      "fixtureId": "barbershop",
+      "source": "yelp",
+      "yelpUrl": "https://www.yelp.com/biz/cool-heads-flower-mound-2?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+      "raw": {
+        "id": "9KxWVKNkYiq5xUsY0UqmFQ",
+        "alias": "cool-heads-flower-mound-2",
+        "name": "Cool Heads",
+        "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/oQ_Enwe0eG5RAO8OoN2JCw/o.jpg",
+        "is_closed": false,
+        "url": "https://www.yelp.com/biz/cool-heads-flower-mound-2?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+        "review_count": 43,
+        "categories": [
+          {
+            "alias": "barbers",
+            "title": "Barbers"
+          },
+          {
+            "alias": "menshair",
+            "title": "Men's Hair Salons"
+          },
+          {
+            "alias": "hairstylists",
+            "title": "Hair Stylists"
+          }
+        ],
+        "rating": 4.1,
+        "coordinates": {
+          "latitude": 33.011609,
+          "longitude": -97.04413
+        },
+        "transactions": [],
+        "price": "$$",
+        "location": {
+          "address1": "1050 Flower Mound Rd",
+          "address2": "Ste 300",
+          "address3": "",
+          "city": "Flower Mound",
+          "zip_code": "75028",
+          "country": "US",
+          "state": "TX",
+          "display_address": [
+            "1050 Flower Mound Rd",
+            "Ste 300",
+            "Flower Mound, TX 75028"
+          ]
+        },
+        "phone": "+19728992488",
+        "display_phone": "(972) 899-2488",
+        "distance": 4810.524959910843,
+        "business_hours": [],
+        "attributes": {
+          "business_temp_closed": null,
+          "menu_url": "https://coolheadsmen.com/Services",
+          "waitlist_reservation": null
+        }
+      }
+    },
+    {
+      "id": "ns-Pwx3pSi9G7lnkysgx0Q",
+      "name": "Sharp Society",
+      "address": "1565 W Main St, Lewisville, TX, 75067",
+      "phone": "+18179131862",
+      "category": "barbers",
+      "website": null,
+      "hasWebsite": false,
+      "rating": 0,
+      "reviewCount": 0,
+      "photos": [
+        "https://s3-media0.fl.yelpcdn.com/bphoto/qjhRrt2xiV_fui8j5EQjXw/o.jpg"
+      ],
+      "hours": null,
+      "fixtureId": "barbershop",
+      "source": "yelp",
+      "yelpUrl": "https://www.yelp.com/biz/sharp-society-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+      "raw": {
+        "id": "ns-Pwx3pSi9G7lnkysgx0Q",
+        "alias": "sharp-society-lewisville",
+        "name": "Sharp Society",
+        "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/qjhRrt2xiV_fui8j5EQjXw/o.jpg",
+        "is_closed": false,
+        "url": "https://www.yelp.com/biz/sharp-society-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+        "review_count": 0,
+        "categories": [
+          {
+            "alias": "barbers",
+            "title": "Barbers"
+          },
+          {
+            "alias": "waxing",
+            "title": "Waxing"
+          }
+        ],
+        "rating": 0,
+        "coordinates": {
+          "latitude": 33.04302,
+          "longitude": -97.033145
+        },
+        "transactions": [],
+        "location": {
+          "address1": "1565 W Main St",
+          "address2": "Ste 425 21",
+          "address3": "",
+          "city": "Lewisville",
+          "zip_code": "75067",
+          "country": "US",
+          "state": "TX",
+          "display_address": [
+            "1565 W Main St",
+            "Ste 425 21",
+            "Lewisville, TX 75067"
+          ]
+        },
+        "phone": "+18179131862",
+        "display_phone": "(817) 913-1862",
+        "distance": 3018.0091447931354,
+        "business_hours": [],
+        "attributes": {
+          "business_temp_closed": null,
+          "menu_url": "https://taylortheodore.glossgenius.com/services",
+          "waitlist_reservation": null
+        }
+      }
+    },
+    {
+      "id": "ONHBa2Zs58XEw9j16-TqZA",
+      "name": "WOLFIN Barber Shop",
+      "address": "3349 Long Prairie Rd, Flower Mound, TX, 75022",
+      "phone": "+12145130023",
+      "category": "barbers",
+      "website": null,
+      "hasWebsite": false,
+      "rating": 5,
+      "reviewCount": 6,
+      "photos": [
+        "https://s3-media0.fl.yelpcdn.com/bphoto/EiDKHEFM47SWHhdOcoS_Lg/o.jpg"
+      ],
+      "hours": null,
+      "fixtureId": "barbershop",
+      "source": "yelp",
+      "yelpUrl": "https://www.yelp.com/biz/wolfin-barber-shop-flower-mound?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+      "raw": {
+        "id": "ONHBa2Zs58XEw9j16-TqZA",
+        "alias": "wolfin-barber-shop-flower-mound",
+        "name": "WOLFIN Barber Shop",
+        "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/EiDKHEFM47SWHhdOcoS_Lg/o.jpg",
+        "is_closed": false,
+        "url": "https://www.yelp.com/biz/wolfin-barber-shop-flower-mound?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+        "review_count": 6,
+        "categories": [
+          {
+            "alias": "barbers",
+            "title": "Barbers"
+          }
+        ],
+        "rating": 5,
+        "coordinates": {
+          "latitude": 33.032226,
+          "longitude": -97.071474
+        },
+        "transactions": [],
+        "location": {
+          "address1": "3349 Long Prairie Rd",
+          "address2": null,
+          "address3": "",
+          "city": "Flower Mound",
+          "zip_code": "75022",
+          "country": "US",
+          "state": "TX",
+          "display_address": [
+            "3349 Long Prairie Rd",
+            "Flower Mound, TX 75022"
+          ]
+        },
+        "phone": "+12145130023",
+        "display_phone": "(214) 513-0023",
+        "distance": 6517.4668534626635,
+        "business_hours": [],
+        "attributes": {
+          "business_temp_closed": null,
+          "menu_url": "",
+          "waitlist_reservation": null
+        }
+      }
+    },
+    {
+      "id": "yiH8odyJLn6nvmmdzGCDJQ",
+      "name": "King David the Barber",
+      "address": "124 N Austin St, Denton, TX, 76201",
+      "phone": "+19406003918",
+      "category": "barbers",
+      "website": null,
+      "hasWebsite": false,
+      "rating": 5,
+      "reviewCount": 13,
+      "photos": [
+        "https://s3-media0.fl.yelpcdn.com/bphoto/FprRRG79G__5ZCKta-82PA/o.jpg"
+      ],
+      "hours": null,
+      "fixtureId": "barbershop",
+      "source": "yelp",
+      "yelpUrl": "https://www.yelp.com/biz/king-david-the-barber-denton-4?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+      "raw": {
+        "id": "yiH8odyJLn6nvmmdzGCDJQ",
+        "alias": "king-david-the-barber-denton-4",
+        "name": "King David the Barber",
+        "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/FprRRG79G__5ZCKta-82PA/o.jpg",
+        "is_closed": false,
+        "url": "https://www.yelp.com/biz/king-david-the-barber-denton-4?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+        "review_count": 13,
+        "categories": [
+          {
+            "alias": "barbers",
+            "title": "Barbers"
+          }
+        ],
+        "rating": 5,
+        "coordinates": {
+          "latitude": 33.197923,
+          "longitude": -97.123291
+        },
+        "transactions": [],
+        "price": "$",
+        "location": {
+          "address1": "124 N Austin St",
+          "address2": "",
+          "address3": "",
+          "city": "Denton",
+          "zip_code": "76201",
+          "country": "US",
+          "state": "TX",
+          "display_address": [
+            "124 N Austin St",
+            "Denton, TX 76201"
+          ]
+        },
+        "phone": "+19406003918",
+        "display_phone": "(940) 600-3918",
+        "distance": 21244.709659515924,
+        "business_hours": [],
+        "attributes": {
+          "business_temp_closed": null,
+          "menu_url": "http://www.squareup.com/appointments/book/5MKR2AEC7AF5P",
+          "waitlist_reservation": null
+        }
+      }
+    },
+    {
+      "id": "fSsXPThYOXiNHZ7boD1rMA",
+      "name": "EpicFades Haircuts",
+      "address": "9425 N MacArthur Blvd, Irving, TX, 75063",
+      "phone": "+19725983166",
+      "category": "barbers",
+      "website": null,
+      "hasWebsite": false,
+      "rating": 4.5,
+      "reviewCount": 8,
+      "photos": [
+        "https://s3-media0.fl.yelpcdn.com/bphoto/HuM8oKJf5nOV7zPvUw8IZQ/o.jpg"
+      ],
+      "hours": null,
+      "fixtureId": "barbershop",
+      "source": "yelp",
+      "yelpUrl": "https://www.yelp.com/biz/epicfades-haircuts-irving-5?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+      "raw": {
+        "id": "fSsXPThYOXiNHZ7boD1rMA",
+        "alias": "epicfades-haircuts-irving-5",
+        "name": "EpicFades Haircuts",
+        "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/HuM8oKJf5nOV7zPvUw8IZQ/o.jpg",
+        "is_closed": false,
+        "url": "https://www.yelp.com/biz/epicfades-haircuts-irving-5?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+        "review_count": 8,
+        "categories": [
+          {
+            "alias": "barbers",
+            "title": "Barbers"
+          }
+        ],
+        "rating": 4.5,
+        "coordinates": {
+          "latitude": 32.934474,
+          "longitude": -96.952891
+        },
+        "transactions": [],
+        "location": {
+          "address1": "9425 N MacArthur Blvd",
+          "address2": "Ste 20",
+          "address3": "",
+          "city": "Irving",
+          "zip_code": "75063",
+          "country": "US",
+          "state": "TX",
+          "display_address": [
+            "9425 N MacArthur Blvd",
+            "Ste 20",
+            "Irving, TX 75063"
+          ]
+        },
+        "phone": "+19725983166",
+        "display_phone": "(972) 598-3166",
+        "distance": 12200.410237897064,
+        "business_hours": [
+          {
+            "open": [
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2100",
+                "day": 0
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2100",
+                "day": 1
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2100",
+                "day": 2
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2100",
+                "day": 3
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2100",
+                "day": 4
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2100",
+                "day": 5
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "1700",
+                "day": 6
+              }
+            ],
+            "hours_type": "REGULAR",
+            "is_open_now": false
+          }
+        ],
+        "attributes": {
+          "business_temp_closed": null,
+          "menu_url": "https://epicfadeshaircuts.com/services/",
+          "waitlist_reservation": null
+        }
+      }
+    },
+    {
+      "id": "oIeF11cFJUfmdxLH2xUxYQ",
+      "name": "Floyd's 99 Barbershop",
+      "address": "2704 Cross Timbers Rd, Flower Mound, TX, 75028",
+      "phone": "+19726910400",
+      "category": "barbers",
+      "website": null,
+      "hasWebsite": false,
+      "rating": 3.3,
+      "reviewCount": 116,
+      "photos": [
+        "https://s3-media0.fl.yelpcdn.com/bphoto/EcSG0RJb0PPFQFCGR3QPAw/o.jpg"
+      ],
+      "hours": null,
+      "fixtureId": "barbershop",
+      "source": "yelp",
+      "yelpUrl": "https://www.yelp.com/biz/floyds-99-barbershop-flower-mound-2?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+      "raw": {
+        "id": "oIeF11cFJUfmdxLH2xUxYQ",
+        "alias": "floyds-99-barbershop-flower-mound-2",
+        "name": "Floyd's 99 Barbershop",
+        "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/EcSG0RJb0PPFQFCGR3QPAw/o.jpg",
+        "is_closed": false,
+        "url": "https://www.yelp.com/biz/floyds-99-barbershop-flower-mound-2?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+        "review_count": 116,
+        "categories": [
+          {
+            "alias": "barbers",
+            "title": "Barbers"
+          }
+        ],
+        "rating": 3.3,
+        "coordinates": {
+          "latitude": 33.03657,
+          "longitude": -97.07115
+        },
+        "transactions": [],
+        "price": "$$",
+        "location": {
+          "address1": "2704 Cross Timbers Rd",
+          "address2": null,
+          "address3": null,
+          "city": "Flower Mound",
+          "zip_code": "75028",
+          "country": "US",
+          "state": "TX",
+          "display_address": [
+            "2704 Cross Timbers Rd",
+            "Flower Mound, TX 75028"
+          ]
+        },
+        "phone": "+19726910400",
+        "display_phone": "(972) 691-0400",
+        "distance": 6471.775882101906,
+        "business_hours": [],
+        "attributes": {
+          "business_temp_closed": null,
+          "menu_url": "https://www.floydsbarbershop.com/locations/texas/dallas/flower-mound",
+          "waitlist_reservation": null
+        }
+      }
+    },
+    {
+      "id": "WZuIDD8lOdq2GrH4S-dwQg",
+      "name": "Fades And Blades",
+      "address": "2401 S Stemmons Fwy, Lewisville, TX, 75067",
+      "phone": "",
+      "category": "menshair",
+      "website": null,
+      "hasWebsite": false,
+      "rating": 1.5,
+      "reviewCount": 2,
+      "photos": [
+        "https://s3-media0.fl.yelpcdn.com/bphoto/i9aSo8-2X7It9zLKETprvg/o.jpg"
+      ],
+      "hours": null,
+      "fixtureId": "barbershop",
+      "source": "yelp",
+      "yelpUrl": "https://www.yelp.com/biz/fades-and-blades-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+      "raw": {
+        "id": "WZuIDD8lOdq2GrH4S-dwQg",
+        "alias": "fades-and-blades-lewisville",
+        "name": "Fades And Blades",
+        "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/i9aSo8-2X7It9zLKETprvg/o.jpg",
+        "is_closed": false,
+        "url": "https://www.yelp.com/biz/fades-and-blades-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+        "review_count": 2,
+        "categories": [
+          {
+            "alias": "menshair",
+            "title": "Men's Hair Salons"
+          }
+        ],
+        "rating": 1.5,
+        "coordinates": {
+          "latitude": 33.003052459,
+          "longitude": -96.9717726989
+        },
+        "transactions": [],
+        "location": {
+          "address1": "2401 S Stemmons Fwy",
+          "address2": "Ste 2090",
+          "address3": "",
+          "city": "Lewisville",
+          "zip_code": "75067",
+          "country": "US",
+          "state": "TX",
+          "display_address": [
+            "2401 S Stemmons Fwy",
+            "Ste 2090",
+            "Lewisville, TX 75067"
+          ]
+        },
+        "phone": "",
+        "display_phone": "",
+        "distance": 4629.195305243273,
+        "business_hours": [],
+        "attributes": {
+          "business_temp_closed": null,
+          "menu_url": null,
+          "waitlist_reservation": null
+        }
+      }
+    },
+    {
+      "id": "nx7ufQHO0IZvEcCedrz4BA",
+      "name": "Floyd's 99 Barbershop",
+      "address": "775 North Denton Tap Rd, Coppell, TX, 75019",
+      "phone": "+19724595861",
+      "category": "barbers",
+      "website": null,
+      "hasWebsite": false,
+      "rating": 3.7,
+      "reviewCount": 115,
+      "photos": [
+        "https://s3-media0.fl.yelpcdn.com/bphoto/J9kG6bkq_ykDlp21fay2_Q/o.jpg"
+      ],
+      "hours": null,
+      "fixtureId": "barbershop",
+      "source": "yelp",
+      "yelpUrl": "https://www.yelp.com/biz/floyds-99-barbershop-coppell?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+      "raw": {
+        "id": "nx7ufQHO0IZvEcCedrz4BA",
+        "alias": "floyds-99-barbershop-coppell",
+        "name": "Floyd's 99 Barbershop",
+        "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/J9kG6bkq_ykDlp21fay2_Q/o.jpg",
+        "is_closed": false,
+        "url": "https://www.yelp.com/biz/floyds-99-barbershop-coppell?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+        "review_count": 115,
+        "categories": [
+          {
+            "alias": "barbers",
+            "title": "Barbers"
+          }
+        ],
+        "rating": 3.7,
+        "coordinates": {
+          "latitude": 32.98897,
+          "longitude": -96.99395
+        },
+        "transactions": [],
+        "price": "$$",
+        "location": {
+          "address1": "775 North Denton Tap Rd",
+          "address2": "Ste 110",
+          "address3": "",
+          "city": "Coppell",
+          "zip_code": "75019",
+          "country": "US",
+          "state": "TX",
+          "display_address": [
+            "775 North Denton Tap Rd",
+            "Ste 110",
+            "Coppell, TX 75019"
+          ]
+        },
+        "phone": "+19724595861",
+        "display_phone": "(972) 459-5861",
+        "distance": 5307.67640204274,
+        "business_hours": [
+          {
+            "open": [
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2100",
+                "day": 0
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2100",
+                "day": 1
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2100",
+                "day": 2
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2100",
+                "day": 3
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2000",
+                "day": 4
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "2000",
+                "day": 5
+              },
+              {
+                "is_overnight": false,
+                "start": "0900",
+                "end": "1800",
+                "day": 6
+              }
+            ],
+            "hours_type": "REGULAR",
+            "is_open_now": false
+          }
+        ],
+        "attributes": {
+          "business_temp_closed": null,
+          "menu_url": "https://www.floydsbarbershop.com/locations/texas/dallas/coppell",
+          "waitlist_reservation": null
+        }
+      }
+    },
+    {
+      "id": "VBiiOhrWBup_xq07V7fElg",
+      "name": "ARThentic Barber Studio & Salon",
+      "address": "1305 S State Hwy 121, Lewisville, TX, 75067",
+      "phone": "+12145139914",
+      "category": "barbers",
+      "website": null,
+      "hasWebsite": false,
+      "rating": 4,
+      "reviewCount": 4,
+      "photos": [
+        "https://s3-media0.fl.yelpcdn.com/bphoto/H_ZYAdJ96hycH6IiSSZI0A/o.jpg"
+      ],
+      "hours": null,
+      "fixtureId": "barbershop",
+      "source": "yelp",
+      "yelpUrl": "https://www.yelp.com/biz/arthentic-barber-studio-and-salon-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+      "raw": {
+        "id": "VBiiOhrWBup_xq07V7fElg",
+        "alias": "arthentic-barber-studio-and-salon-lewisville",
+        "name": "ARThentic Barber Studio & Salon",
+        "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/H_ZYAdJ96hycH6IiSSZI0A/o.jpg",
+        "is_closed": false,
+        "url": "https://www.yelp.com/biz/arthentic-barber-studio-and-salon-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+        "review_count": 4,
+        "categories": [
+          {
+            "alias": "barbers",
+            "title": "Barbers"
+          }
+        ],
+        "rating": 4,
+        "coordinates": {
+          "latitude": 33.02565,
+          "longitude": -96.99449
+        },
+        "transactions": [],
+        "location": {
+          "address1": "1305 S State Hwy 121",
+          "address2": "Ste 110",
+          "address3": "",
+          "city": "Lewisville",
+          "zip_code": "75067",
+          "country": "US",
+          "state": "TX",
+          "display_address": [
+            "1305 S State Hwy 121",
+            "Ste 110",
+            "Lewisville, TX 75067"
+          ]
+        },
+        "phone": "+12145139914",
+        "display_phone": "(214) 513-9914",
+        "distance": 1245.5077866233623,
+        "business_hours": [
+          {
+            "open": [
+              {
+                "is_overnight": false,
+                "start": "1000",
+                "end": "1800",
+                "day": 0
+              },
+              {
+                "is_overnight": false,
+                "start": "1000",
+                "end": "2000",
+                "day": 1
+              },
+              {
+                "is_overnight": false,
+                "start": "1000",
+                "end": "2000",
+                "day": 2
+              },
+              {
+                "is_overnight": false,
+                "start": "1000",
+                "end": "2100",
+                "day": 3
+              },
+              {
+                "is_overnight": false,
+                "start": "0800",
+                "end": "2100",
+                "day": 4
+              },
+              {
+                "is_overnight": false,
+                "start": "0800",
+                "end": "1930",
+                "day": 5
+              },
+              {
+                "is_overnight": false,
+                "start": "1300",
+                "end": "1800",
+                "day": 6
+              }
+            ],
+            "hours_type": "REGULAR",
+            "is_open_now": false
+          }
+        ],
+        "attributes": {
+          "business_temp_closed": null,
+          "menu_url": null,
+          "waitlist_reservation": null
+        }
+      }
+    }
+  ],
+  "stats": {
+    "scanned": 20,
+    "withWebsite": 0,
+    "withoutWebsite": 20,
+    "errors": 0
+  },
+  "location": "Lewisville, TX",
+  "industry": "barbershop",
+  "scannedAt": "2026-01-25T14:23:35.929Z"
+}

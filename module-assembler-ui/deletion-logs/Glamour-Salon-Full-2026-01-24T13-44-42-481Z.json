@@ -1,0 +1,80 @@
+{
+  "projectName": "Glamour-Salon-Full",
+  "deletedAt": "2026-01-24T13:44:42.481Z",
+  "resourcesFound": {
+    "name": "Glamour-Salon-Full",
+    "sanitizedName": "glamour-salon-full",
+    "github": {
+      "repos": [
+        {
+          "name": "glamour-salon-full-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "glamour-salon-full-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "glamour-salon-full-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/glamour-salon-full-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/glamour-salon-full-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/glamour-salon-full-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "glamour-salon-full",
+          "verified": true
+        },
+        {
+          "subdomain": "api.glamour-salon-full",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.glamour-salon-full",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

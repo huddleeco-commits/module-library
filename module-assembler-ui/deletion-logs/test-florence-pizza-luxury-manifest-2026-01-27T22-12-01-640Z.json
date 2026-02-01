@@ -1,0 +1,38 @@
+{
+  "projectName": "test-florence-pizza-luxury",
+  "savedAt": "2026-01-27T22:12:01.641Z",
+  "resources": {
+    "name": "test-florence-pizza-luxury",
+    "sanitizedName": "test-florence-pizza-luxury",
+    "github": {
+      "repos": [
+        {
+          "name": "test-florence-pizza-luxury-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-florence-pizza-luxury-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-florence-pizza-luxury-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

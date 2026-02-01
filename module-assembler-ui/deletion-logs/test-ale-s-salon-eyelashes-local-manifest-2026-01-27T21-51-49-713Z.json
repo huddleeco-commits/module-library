@@ -1,0 +1,38 @@
+{
+  "projectName": "test-ale-s-salon-eyelashes-local",
+  "savedAt": "2026-01-27T21:51:49.713Z",
+  "resources": {
+    "name": "test-ale-s-salon-eyelashes-local",
+    "sanitizedName": "test-ale-s-salon-eyelashes-local",
+    "github": {
+      "repos": [
+        {
+          "name": "test-ale-s-salon-eyelashes-local-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-ale-s-salon-eyelashes-local-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-ale-s-salon-eyelashes-local-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

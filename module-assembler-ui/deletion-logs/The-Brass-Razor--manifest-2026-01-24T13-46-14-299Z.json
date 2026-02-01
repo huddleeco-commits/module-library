@@ -1,0 +1,84 @@
+{
+  "projectName": "The-Brass-Razor-",
+  "savedAt": "2026-01-24T13:46:14.299Z",
+  "resources": {
+    "name": "The-Brass-Razor-",
+    "sanitizedName": "the-brass-razor",
+    "github": {
+      "repos": [
+        {
+          "name": "the-brass-razor-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "the-brass-razor-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "the-brass-razor-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "9d6607d8-de5d-4259-bae2-42e780263f88",
+        "name": "the-brass-razor",
+        "createdAt": "2026-01-18T21:06:20.572Z",
+        "environments": [
+          {
+            "id": "fb50b93e-f2cd-42fd-b3b8-6b31b1cad758",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "0f55dfeb-c7c1-4753-a7cd-3b3dad121457",
+          "name": "backend"
+        },
+        {
+          "id": "2de49a07-95ae-4a3a-8075-df07eacb45b3",
+          "name": "frontend"
+        },
+        {
+          "id": "c8a7809b-909f-4756-9798-589f34e13563",
+          "name": "admin"
+        },
+        {
+          "id": "d5415ef7-5e3e-41ef-b129-f6c509f1721b",
+          "name": "postgres"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "91437d9643b1a9d2072aa67031b68204",
+          "name": "the-brass-razor.be1st.io",
+          "type": "CNAME",
+          "content": "bbv8t8iq.up.railway.app"
+        },
+        {
+          "id": "6eddcc3268b518d1dbfbc948f89c741d",
+          "name": "api.the-brass-razor.be1st.io",
+          "type": "CNAME",
+          "content": "u25fsdqo.up.railway.app"
+        },
+        {
+          "id": "38429269d2822e3b5ea3461fe55908c9",
+          "name": "admin.the-brass-razor.be1st.io",
+          "type": "CNAME",
+          "content": "00vycvqz.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\The-Brass-Razor-",
+      "exists": true
+    }
+  }
+}

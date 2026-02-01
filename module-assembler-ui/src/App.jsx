@@ -76,7 +76,9 @@ import {
   FullControlFlow,
   DemoBatchStep,
   LandingPage,
-  MyDeploymentsPage
+  MyDeploymentsPage,
+  StylePreviewAdmin,
+  StudioMode
 } from './screens';
 
 // Admin Dashboard import
@@ -471,6 +473,10 @@ export default function App() {
     // ═══ DEMO MODE (Investor) ═══
     else if (selectedPath === 'demo-batch') {
       setStep('demo-batch');
+    }
+    // ═══ STUDIO MODE (Full Visual Control) ═══
+    else if (selectedPath === 'studio') {
+      setStep('studio');
     }
   };
   
@@ -1005,6 +1011,33 @@ export default function App() {
             </div>
           </button>
 
+          <button
+            onClick={() => { selectPath('studio'); setShowDevPanel(false); }}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              background: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
+              border: 'none',
+              borderRadius: '8px',
+              color: '#fff',
+              fontSize: '14px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              marginBottom: '8px',
+              textAlign: 'left',
+              boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)'
+            }}
+          >
+            <span>🎨</span>
+            <div>
+              <div style={{ fontWeight: '600' }}>Studio Mode</div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)' }}>Full visual control</div>
+            </div>
+            <span style={{ marginLeft: 'auto', fontSize: '10px', background: 'rgba(255,255,255,0.2)', padding: '2px 6px', borderRadius: '4px' }}>NEW</span>
+          </button>
+
           {/* Experimental Modes Section */}
           <div style={{ fontSize: '10px', color: '#666', marginBottom: '8px', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Experimental Modes
@@ -1130,6 +1163,28 @@ export default function App() {
           </button>
 
           <button
+            onClick={() => { setStep('style-preview'); setShowDevPanel(false); }}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              background: 'linear-gradient(135deg, #ec4899, #db2777)',
+              border: 'none',
+              borderRadius: '8px',
+              color: '#fff',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              marginBottom: '8px'
+            }}
+          >
+            <span>🎨</span> Style Preview
+            <span style={{ marginLeft: 'auto', fontSize: '10px', background: 'rgba(255,255,255,0.2)', padding: '2px 6px', borderRadius: '4px' }}>$0</span>
+          </button>
+
+          <button
             onClick={() => { window.open('/api/health-check/full', '_blank'); }}
             style={{
               width: '100%',
@@ -1217,7 +1272,11 @@ export default function App() {
             onCreateNew={() => setStep('choose-path')}
           />
         )}
-        
+
+        {step === 'style-preview' && (
+          <StylePreviewAdmin onBack={() => setStep('choose-path')} />
+        )}
+
         {step === 'rebuild' && (
           <RebuildStep
             projectData={projectData}
@@ -1380,6 +1439,63 @@ export default function App() {
         {/* Demo Batch Mode (Investor Demo) */}
         {step === 'demo-batch' && (
           <DemoBatchStep
+            onBack={() => setStep('choose-path')}
+          />
+        )}
+
+        {/* Studio Mode (Full Visual Control) */}
+        {step === 'studio' && (
+          <StudioMode
+            onGenerate={async (config) => {
+              // AI Mode - Update projectData with studio config
+              updateProject({
+                businessName: config.businessInfo?.name || 'My Business',
+                tagline: config.businessInfo?.tagline || '',
+                industry: { name: config.industry, key: config.industry },
+                industryKey: config.industry,
+                selectedPages: config.pages || ['home', 'about', 'contact'],
+                layoutKey: config.layout,
+                colors: {
+                  primary: config.themeColors?.primary || '#3b82f6',
+                  secondary: config.themeColors?.secondary || '#1e40af',
+                  accent: config.themeColors?.accent || '#f59e0b',
+                  text: config.themeColors?.text || '#1a1a2e',
+                  background: config.themeColors?.background || '#ffffff'
+                },
+                location: config.businessInfo?.address || '',
+                extraDetails: config.businessInfo?.description || ''
+              });
+              // Build orchestrator input from studio config
+              const pages = config.pages?.join(', ') || 'home, about, contact';
+              const inputDescription = `Build a ${config.industry} website for ${config.businessInfo?.name || 'My Business'}. Layout: ${config.layout}. Theme: ${config.theme}. Pages: ${pages}.`;
+              setPendingOrchestratorInput(inputDescription);
+              setPendingIndustryKey(config.industry);
+              setStep('orchestrator');
+            }}
+            onTestGenerate={(testResult) => {
+              // Test Mode - Handle generation result
+              if (testResult.action === 'deploy') {
+                // User clicked deploy - set up result and go to deploy flow
+                setResult({
+                  path: testResult.projectPath,
+                  name: testResult.projectName
+                });
+                updateProject({
+                  businessName: testResult.projectName
+                });
+                handleDeploy();
+              } else if (testResult.success) {
+                // Generation complete - store result for potential deploy
+                setResult({
+                  path: testResult.projectPath,
+                  name: testResult.projectName
+                });
+                updateProject({
+                  businessName: testResult.projectName
+                });
+                // Stay on studio mode - UI shows success with deploy button
+              }
+            }}
             onBack={() => setStep('choose-path')}
           />
         )}

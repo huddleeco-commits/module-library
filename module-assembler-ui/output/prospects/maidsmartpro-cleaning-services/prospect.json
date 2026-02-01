@@ -1,0 +1,216 @@
+{
+  "id": "ChIJGVqoLTIvTIYRLO2sXKa_ikU",
+  "name": "MaidSmartPro Cleaning Services",
+  "address": "2401 S Stemmons Fwy Suite 2124, Lewisville, TX 75067, USA",
+  "phone": "(325) 271-0544",
+  "category": "point_of_interest",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 4.8,
+  "reviewCount": 62,
+  "photos": [
+    "places/ChIJGVqoLTIvTIYRLO2sXKa_ikU/photos/AcnlKN2i25d7uCcsy5eDHF7KWkN6B62ALFTXIb8mmm602-ewwxfpqnCG3vC8gKQLawmH7fOcvfWZbe4ZyoSpNd7MHiBCckfWOafVni_m4sHXnb7VJPu6s_woMyKj2ys_T-wXQKvOhe18fd8jwYq5N0cxC5VvlM580PlkDqYwuCG1K2fgp6wG2538DBOpa9UO365UIyCfn2yKBE7apNbFle6jWR2b5ySjqjiWmNus8Nfvy_H2NJixlzGiyme6LaqR8u-aA794G3lQV-Wu4UGT6Lqxn3pf0hDppF5Tf7q9uBWFn5BJ84zCD--3-BD909U-kl-VrB63Spe-oNQRCE5rfTOkgYEWyKqJNyBfEECRa_XY7_a86YPKZHmIN0K6LMPkc-Uf0bnCmpXGooB_-wCrSAXCopHB4SCCykFybEOsZ9yG7Zc",
+    "places/ChIJGVqoLTIvTIYRLO2sXKa_ikU/photos/AcnlKN3Rp_V6pV1nJ80b8R2H1bhXKCSHaH2S4f-RsTUUbHzB8pgvcTWPb2wl0IlBYg1imoRNRuRX5vSe0T27R2FfLOsbEc0KEiv1J5UHzFd8n0OdKCwEFFI3HG1CcyJ0bgXdPXq8_BszXHYARHbUSrpJr0KC1dIftNctLoS9IzERIBVNyz4rPf85RhyFUx5QhaQuNly4r23dWqEu9z3sqj93Xtx73v4TgpdYBgQHn_OqydNh3X8mVbd1H4MXfqhEuzuodOaRb9nkr0WqpgIF4pHiH9shPg11LEg11iFDhC_An5n2YgBoX5iS8VgWTHVNTQHACx0TD027zD4jL5Pami2IXTMdDmAHE7XmZEEVFSxfeNdJuEYVfzq20EvoEOEDOwRJX_OdE9iNvhz9n0tiEsajE-4houd-IhPPu7_gVX-jaRXYVW2t",
+    "places/ChIJGVqoLTIvTIYRLO2sXKa_ikU/photos/AcnlKN3UEm2O9GW_BEXnqzVowu8eYFooQJdzcs3TXFGVuKzbW7B7Yz4pEij3_A2ZlvfTs8rngzmMhIVYCG-XsCf-BUKJ_78WUSnUMn4rG6zuqX8SqrptbonxoU9gCcdKi-DxlioV10ZJ-6gA_7d5ZWC9QCMIRXzmVGTPUdoQKEDyT3Mj5Q_BzMAKgeioZm5AzSqWSVbnM-tdDP4Fsvkhh3vwqKqa3BF82zN09aXpdtEL2Ie6yQDsdsVE_sBS4w4doXFuETCjMgkC8GWyMB07BaESVo1tJ-ioBYabzgRWt4T7lSoitNOAjYmlHrDjDHwW-k64ffaKV4F92K183a-EfPXDM2LS-qu4pGDZBdABy81lRR-padL-at4ox6hC77Dk5H2F0TvrF0OMXgLQFMcPSQiwJUm2iZ_IC-jBaR-pjSPbcalgG8Eq",
+    "places/ChIJGVqoLTIvTIYRLO2sXKa_ikU/photos/AcnlKN3jYWY3vXRl6NHXGtzQZULdWWnmNkCd5A9Qtka_F0VJ4327lmBHM1zHP-smS5xO1HYtZkuhG8Ztp83UES-ARaFtJ90HiUDeHF4Y5NhpGnhkf-IQU6kD-kjM1QLoeesff5e5qvUob7YZEhyX8MHfbAi2UmqIyzEBraEWDT26iMUBPq4MXYry3FQiO4KbmvaRU9fOt3YUoyES7QGuOSLRlVAPiugmmvJwqjN4ovLo5w7VpjqNeyNpr0q8dtMuGme9gfI6RJjcq2FZpZXIeQtMMCy71YIqdO5lj0ptQsBkttPqJYJ28AWIAhBlcdfKvX4JqkJHOTeodq48KuCwbnLPFpMGcRWg2nAdM_C7rJnuKxMhHPCKO0mSOd1LO5d_coCktGZ6u-TWR5aNj8Tk6fVF90LVD8iCUUs7caDi7K4m7fHB3FkQ",
+    "places/ChIJGVqoLTIvTIYRLO2sXKa_ikU/photos/AcnlKN34Q2zHkQaDn8Q80_BbiqKgcrBKZrpKuBWfdAcUNDrU85xSoQea5VlcnHT0fwa_n69jcMQIuw8yj74GBdx27r8ttnZK9ywc2SOL7AAy3IBPuiTOlP0vv0LNKwGxYaSDKwziQHhZZhkiZ2j7y9nFhedhYpcsepRfzpqd7J_TQoj0l0egFAb5JvURgnWIGzdx-N_FoWggitUIIrA7bUhFNshXJaPvgoVK6SczROYYVi0zKlhQnyD8rh5WPA7nGt9oPWYJCATKZOyGYhvxiEwVwCgmlciiK7q9N86wyNfVWMqyzlqGDvL8mH8BYCjENg86Fs8Z2K9y6e3m3CNCsiMBNxJ0tdH9fbqkCfYI-HVtjSqq0yxQTyO5weNS_P2xi3nyvqNzRGVAbPfWveTLPPIvv0Fid1GrDjMjUJDlSlrDndYzxw",
+    "places/ChIJGVqoLTIvTIYRLO2sXKa_ikU/photos/AcnlKN2BsVowWRvPIheSxIIM9bd3jHp6rOTBA4M7eqRIcxpTBvLv_Ezy0RFKGRj83M_zHjYHXsa1QCxQ9E-OePg2txwn3fo0goOa5ZAXFyYmEseT1SSbmU5jbGhglfDGNhLxBRuoGYHVuKP011Zr8vgYB120dEo2BqVU0XAEcEANfmfq4vp1IwU_hoZr8DySHSdNC4ryKCoZVu29QJ3KqOsdQ8Pna5HuxSeue9PjSMFFc2Pk6gLFGyL6qtLqkD8iUKfz1WDfaoe5_AemjTCkTJzN5eplCEvB3hxFkujbQUJddgoRmeBH3MOULEBzejdQXBTuBuQJPOvarxwvnHUVGWEpAyYvekGO-gayW98zU6HPDP8eUGN0h1GJf31MOk6ku4vv5O8fa-fO0ZfU3G0vEvIygzCFASELyjHM1nCX6DZEtFz3SObT",
+    "places/ChIJGVqoLTIvTIYRLO2sXKa_ikU/photos/AcnlKN2P_AMw6oykqn0X1MwiqO_WGLtlKIRbDXyIQloDCT5S3rt9Q3WDKcxz_iTA2K9wQ28dKJPCNFzXaqBIVPj13EEB9_OaSxXTUDCtmg0aCsM-M0bzmod_IiaZBNAJDCZbXWNWb550dPEoNszlb1p7OurC-ByfvZwAYztv28NH0PNQ7Egr7sJ0q84hybEcxmpvvSyPkiH_2emt8IGG5YUjkEASp4Dv5QO8d5RE9Ntk010iXnwkRL86iMEWCaRTfKyS99dPxWRE4Rv_8-nxCk2T1rXnH-IxN1QBFDA9SRInxvBb3lE6TdGegqrkPQX_uEPofS8ndnsVB7Th33lXnUQwaQSNk1U3f_D4uGw-jNIf4DOBckl9wAmh0OIWMl6bxuPAog4HH2Sw9LMcpdRtyYlE7Dy41uggB2NUTieFl9iaEdKq0_M",
+    "places/ChIJGVqoLTIvTIYRLO2sXKa_ikU/photos/AcnlKN3dxMi0VABmA7R0ETqXZt1oAKUefNgYjc7RX30iAmIx-Fu3fYRJlc5UMyaRXrPxZpgSjaZ5qYLhWvco6LMntKmRtr9VHkm1-ob9NCEUqJIKY1zg4AxTgE7p07PY-yncWB-jXiWoPZh6YaLngatcOBpn3IVhCLZQfHj1v8mWWOy9fvnE-KngQhNTCEVuA6zzflVv_VrgZrO3_vqPeQq5p1HjuSVYG8LfmMSHkRXDuu6S20XnRukQb1gfxxOZPJv2NiBNWm5Tn7cNFCElkU4hsqxuQ7EvGMDUc1xcvPGkirG7sTc3iSVV5znDlIXTQQQekQ_nmjnsU-saK86W0PT07kWMes8uU_VImUb48Y2oz-b5XRTolKGPXI0ibD0qQ8ykygHY53KWniztveQyN9AzPaGfL1_wR7kgNia6kCITHHbENQ",
+    "places/ChIJGVqoLTIvTIYRLO2sXKa_ikU/photos/AcnlKN3Yzo12PNBtULC5YEo-KY73zFG9SZBIVLAQGFDgnSchSjy9jDdT2wLtkw0SmdBNC5nuikipR8p7CiHid4Q4q0O6AiCimYRP9HgUrNNImFt85lX3UTzsQWWUilb7uucZMvpg-Mz1NThXYHYyXtpBCH3xR_KEWmTOTqXW2xZoXIAcALPzasHpnpU9U1gdcH2qU-VhiDpjPKY9nTpj_0H68w8SmiuFGcdp0uYXKgQBHDkHh2JY8A3pjybjNjplMULqWcrZX0YmFDpjGYVuc4KGj5O140UbI6MStHRzCWoU0ognnKv3f2e04_hIdPFSQr8u2i30uIJIvh0zP-9skul0AeP5xVjfxA1BWYFI35niw4dnh-lifUBd3Mr_nOp54j1VjsPee8_TBpI25GvNX0KD_oGTrWMGlQAL8GBI6JcKt3ObPA",
+    "places/ChIJGVqoLTIvTIYRLO2sXKa_ikU/photos/AcnlKN1Fb7eOfrLJ1AAj8mQ_BliEb8bWflhK9O3TPwrLDr-BcDrYkk9gc7CzOjt0-i5x8uH1Mv3J241T5M2SKwSfczVd4AVFyxWbgue4ebPpITels-y1YTH3UPZLq7_kd0zpsR1xiyyj_4Kzp1aFtNvKxA-ZNzqhpXTVVj7t4vZJmiXyJ6-oQWhS-J_TfGyQOA_y79DIDz6Tk3g7n45_bQgzvXaOFdoNywKoSIMz6L1KnPBvb-kTHo21WZZ_Pck1mmiZAau1wHsjhUmlLutHUfOR9Vqqs0xrVWeL8mB2hMQb-KkiHi6ucun6UcwB6mfAwFHDJQZU7VUQ3RwXlxOsMzThpK1jkb5SvS4sJb2BEmQ9WazJ5Le_e2yfCvHOS8rkm_C-E0vQGiAHBpf9A0Vel2bRP1GyrmXPWUTm39LXivF2LQX4ybI"
+  ],
+  "fixtureId": "restaurant",
+  "source": "google",
+  "googleMapsUrl": "https://maps.google.com/?cid=5011028256643411244&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+  "coordinates": {
+    "latitude": 33.0022926,
+    "longitude": -96.9717506
+  },
+  "raw": {
+    "id": "ChIJGVqoLTIvTIYRLO2sXKa_ikU",
+    "types": [
+      "point_of_interest",
+      "establishment"
+    ],
+    "nationalPhoneNumber": "(325) 271-0544",
+    "formattedAddress": "2401 S Stemmons Fwy Suite 2124, Lewisville, TX 75067, USA",
+    "location": {
+      "latitude": 33.0022926,
+      "longitude": -96.9717506
+    },
+    "rating": 4.8,
+    "googleMapsUri": "https://maps.google.com/?cid=5011028256643411244&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "userRatingCount": 62,
+    "displayName": {
+      "text": "MaidSmartPro Cleaning Services",
+      "languageCode": "en"
+    },
+    "photos": [
+      {
+        "name": "places/ChIJGVqoLTIvTIYRLO2sXKa_ikU/photos/AcnlKN2i25d7uCcsy5eDHF7KWkN6B62ALFTXIb8mmm602-ewwxfpqnCG3vC8gKQLawmH7fOcvfWZbe4ZyoSpNd7MHiBCckfWOafVni_m4sHXnb7VJPu6s_woMyKj2ys_T-wXQKvOhe18fd8jwYq5N0cxC5VvlM580PlkDqYwuCG1K2fgp6wG2538DBOpa9UO365UIyCfn2yKBE7apNbFle6jWR2b5ySjqjiWmNus8Nfvy_H2NJixlzGiyme6LaqR8u-aA794G3lQV-Wu4UGT6Lqxn3pf0hDppF5Tf7q9uBWFn5BJ84zCD--3-BD909U-kl-VrB63Spe-oNQRCE5rfTOkgYEWyKqJNyBfEECRa_XY7_a86YPKZHmIN0K6LMPkc-Uf0bnCmpXGooB_-wCrSAXCopHB4SCCykFybEOsZ9yG7Zc",
+        "widthPx": 4032,
+        "heightPx": 3024,
+        "authorAttributions": [
+          {
+            "displayName": "Tovics Tv",
+            "uri": "https://maps.google.com/maps/contrib/103438017507169584395",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjW3lz3GnTHhAlOrvKzu9RRZmjU4B8OmaViTYQ4yXYhb_Xg3jJw=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDh3_CeUA&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDh3_CeUA!2e10!4m2!3m1!1s0x864c2f322da85a19:0x458abfa65caced2c"
+      },
+      {
+        "name": "places/ChIJGVqoLTIvTIYRLO2sXKa_ikU/photos/AcnlKN3Rp_V6pV1nJ80b8R2H1bhXKCSHaH2S4f-RsTUUbHzB8pgvcTWPb2wl0IlBYg1imoRNRuRX5vSe0T27R2FfLOsbEc0KEiv1J5UHzFd8n0OdKCwEFFI3HG1CcyJ0bgXdPXq8_BszXHYARHbUSrpJr0KC1dIftNctLoS9IzERIBVNyz4rPf85RhyFUx5QhaQuNly4r23dWqEu9z3sqj93Xtx73v4TgpdYBgQHn_OqydNh3X8mVbd1H4MXfqhEuzuodOaRb9nkr0WqpgIF4pHiH9shPg11LEg11iFDhC_An5n2YgBoX5iS8VgWTHVNTQHACx0TD027zD4jL5Pami2IXTMdDmAHE7XmZEEVFSxfeNdJuEYVfzq20EvoEOEDOwRJX_OdE9iNvhz9n0tiEsajE-4houd-IhPPu7_gVX-jaRXYVW2t",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Tovics Tv",
+            "uri": "https://maps.google.com/maps/contrib/103438017507169584395",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjW3lz3GnTHhAlOrvKzu9RRZmjU4B8OmaViTYQ4yXYhb_Xg3jJw=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDh3_DexwE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDh3_DexwE!2e10!4m2!3m1!1s0x864c2f322da85a19:0x458abfa65caced2c"
+      },
+      {
+        "name": "places/ChIJGVqoLTIvTIYRLO2sXKa_ikU/photos/AcnlKN3UEm2O9GW_BEXnqzVowu8eYFooQJdzcs3TXFGVuKzbW7B7Yz4pEij3_A2ZlvfTs8rngzmMhIVYCG-XsCf-BUKJ_78WUSnUMn4rG6zuqX8SqrptbonxoU9gCcdKi-DxlioV10ZJ-6gA_7d5ZWC9QCMIRXzmVGTPUdoQKEDyT3Mj5Q_BzMAKgeioZm5AzSqWSVbnM-tdDP4Fsvkhh3vwqKqa3BF82zN09aXpdtEL2Ie6yQDsdsVE_sBS4w4doXFuETCjMgkC8GWyMB07BaESVo1tJ-ioBYabzgRWt4T7lSoitNOAjYmlHrDjDHwW-k64ffaKV4F92K183a-EfPXDM2LS-qu4pGDZBdABy81lRR-padL-at4ox6hC77Dk5H2F0TvrF0OMXgLQFMcPSQiwJUm2iZ_IC-jBaR-pjSPbcalgG8Eq",
+        "widthPx": 1200,
+        "heightPx": 1600,
+        "authorAttributions": [
+          {
+            "displayName": "Tovics Tv",
+            "uri": "https://maps.google.com/maps/contrib/103438017507169584395",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjW3lz3GnTHhAlOrvKzu9RRZmjU4B8OmaViTYQ4yXYhb_Xg3jJw=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDh3_D04AE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDh3_D04AE!2e10!4m2!3m1!1s0x864c2f322da85a19:0x458abfa65caced2c"
+      },
+      {
+        "name": "places/ChIJGVqoLTIvTIYRLO2sXKa_ikU/photos/AcnlKN3jYWY3vXRl6NHXGtzQZULdWWnmNkCd5A9Qtka_F0VJ4327lmBHM1zHP-smS5xO1HYtZkuhG8Ztp83UES-ARaFtJ90HiUDeHF4Y5NhpGnhkf-IQU6kD-kjM1QLoeesff5e5qvUob7YZEhyX8MHfbAi2UmqIyzEBraEWDT26iMUBPq4MXYry3FQiO4KbmvaRU9fOt3YUoyES7QGuOSLRlVAPiugmmvJwqjN4ovLo5w7VpjqNeyNpr0q8dtMuGme9gfI6RJjcq2FZpZXIeQtMMCy71YIqdO5lj0ptQsBkttPqJYJ28AWIAhBlcdfKvX4JqkJHOTeodq48KuCwbnLPFpMGcRWg2nAdM_C7rJnuKxMhHPCKO0mSOd1LO5d_coCktGZ6u-TWR5aNj8Tk6fVF90LVD8iCUUs7caDi7K4m7fHB3FkQ",
+        "widthPx": 1008,
+        "heightPx": 756,
+        "authorAttributions": [
+          {
+            "displayName": "Tovics Tv",
+            "uri": "https://maps.google.com/maps/contrib/103438017507169584395",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjW3lz3GnTHhAlOrvKzu9RRZmjU4B8OmaViTYQ4yXYhb_Xg3jJw=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDh3_C4vQE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDh3_C4vQE!2e10!4m2!3m1!1s0x864c2f322da85a19:0x458abfa65caced2c"
+      },
+      {
+        "name": "places/ChIJGVqoLTIvTIYRLO2sXKa_ikU/photos/AcnlKN34Q2zHkQaDn8Q80_BbiqKgcrBKZrpKuBWfdAcUNDrU85xSoQea5VlcnHT0fwa_n69jcMQIuw8yj74GBdx27r8ttnZK9ywc2SOL7AAy3IBPuiTOlP0vv0LNKwGxYaSDKwziQHhZZhkiZ2j7y9nFhedhYpcsepRfzpqd7J_TQoj0l0egFAb5JvURgnWIGzdx-N_FoWggitUIIrA7bUhFNshXJaPvgoVK6SczROYYVi0zKlhQnyD8rh5WPA7nGt9oPWYJCATKZOyGYhvxiEwVwCgmlciiK7q9N86wyNfVWMqyzlqGDvL8mH8BYCjENg86Fs8Z2K9y6e3m3CNCsiMBNxJ0tdH9fbqkCfYI-HVtjSqq0yxQTyO5weNS_P2xi3nyvqNzRGVAbPfWveTLPPIvv0Fid1GrDjMjUJDlSlrDndYzxw",
+        "widthPx": 4032,
+        "heightPx": 3024,
+        "authorAttributions": [
+          {
+            "displayName": "Tovics Tv",
+            "uri": "https://maps.google.com/maps/contrib/103438017507169584395",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjW3lz3GnTHhAlOrvKzu9RRZmjU4B8OmaViTYQ4yXYhb_Xg3jJw=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDh3_CefA&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDh3_CefA!2e10!4m2!3m1!1s0x864c2f322da85a19:0x458abfa65caced2c"
+      },
+      {
+        "name": "places/ChIJGVqoLTIvTIYRLO2sXKa_ikU/photos/AcnlKN2BsVowWRvPIheSxIIM9bd3jHp6rOTBA4M7eqRIcxpTBvLv_Ezy0RFKGRj83M_zHjYHXsa1QCxQ9E-OePg2txwn3fo0goOa5ZAXFyYmEseT1SSbmU5jbGhglfDGNhLxBRuoGYHVuKP011Zr8vgYB120dEo2BqVU0XAEcEANfmfq4vp1IwU_hoZr8DySHSdNC4ryKCoZVu29QJ3KqOsdQ8Pna5HuxSeue9PjSMFFc2Pk6gLFGyL6qtLqkD8iUKfz1WDfaoe5_AemjTCkTJzN5eplCEvB3hxFkujbQUJddgoRmeBH3MOULEBzejdQXBTuBuQJPOvarxwvnHUVGWEpAyYvekGO-gayW98zU6HPDP8eUGN0h1GJf31MOk6ku4vv5O8fa-fO0ZfU3G0vEvIygzCFASELyjHM1nCX6DZEtFz3SObT",
+        "widthPx": 407,
+        "heightPx": 305,
+        "authorAttributions": [
+          {
+            "displayName": "Tovics Tv",
+            "uri": "https://maps.google.com/maps/contrib/103438017507169584395",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjW3lz3GnTHhAlOrvKzu9RRZmjU4B8OmaViTYQ4yXYhb_Xg3jJw=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDh3_D0ogE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDh3_D0ogE!2e10!4m2!3m1!1s0x864c2f322da85a19:0x458abfa65caced2c"
+      },
+      {
+        "name": "places/ChIJGVqoLTIvTIYRLO2sXKa_ikU/photos/AcnlKN2P_AMw6oykqn0X1MwiqO_WGLtlKIRbDXyIQloDCT5S3rt9Q3WDKcxz_iTA2K9wQ28dKJPCNFzXaqBIVPj13EEB9_OaSxXTUDCtmg0aCsM-M0bzmod_IiaZBNAJDCZbXWNWb550dPEoNszlb1p7OurC-ByfvZwAYztv28NH0PNQ7Egr7sJ0q84hybEcxmpvvSyPkiH_2emt8IGG5YUjkEASp4Dv5QO8d5RE9Ntk010iXnwkRL86iMEWCaRTfKyS99dPxWRE4Rv_8-nxCk2T1rXnH-IxN1QBFDA9SRInxvBb3lE6TdGegqrkPQX_uEPofS8ndnsVB7Th33lXnUQwaQSNk1U3f_D4uGw-jNIf4DOBckl9wAmh0OIWMl6bxuPAog4HH2Sw9LMcpdRtyYlE7Dy41uggB2NUTieFl9iaEdKq0_M",
+        "widthPx": 4032,
+        "heightPx": 3024,
+        "authorAttributions": [
+          {
+            "displayName": "Tovics Tv",
+            "uri": "https://maps.google.com/maps/contrib/103438017507169584395",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjW3lz3GnTHhAlOrvKzu9RRZmjU4B8OmaViTYQ4yXYhb_Xg3jJw=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDh3_CumQE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDh3_CumQE!2e10!4m2!3m1!1s0x864c2f322da85a19:0x458abfa65caced2c"
+      },
+      {
+        "name": "places/ChIJGVqoLTIvTIYRLO2sXKa_ikU/photos/AcnlKN3dxMi0VABmA7R0ETqXZt1oAKUefNgYjc7RX30iAmIx-Fu3fYRJlc5UMyaRXrPxZpgSjaZ5qYLhWvco6LMntKmRtr9VHkm1-ob9NCEUqJIKY1zg4AxTgE7p07PY-yncWB-jXiWoPZh6YaLngatcOBpn3IVhCLZQfHj1v8mWWOy9fvnE-KngQhNTCEVuA6zzflVv_VrgZrO3_vqPeQq5p1HjuSVYG8LfmMSHkRXDuu6S20XnRukQb1gfxxOZPJv2NiBNWm5Tn7cNFCElkU4hsqxuQ7EvGMDUc1xcvPGkirG7sTc3iSVV5znDlIXTQQQekQ_nmjnsU-saK86W0PT07kWMes8uU_VImUb48Y2oz-b5XRTolKGPXI0ibD0qQ8ykygHY53KWniztveQyN9AzPaGfL1_wR7kgNia6kCITHHbENQ",
+        "widthPx": 407,
+        "heightPx": 305,
+        "authorAttributions": [
+          {
+            "displayName": "Tovics Tv",
+            "uri": "https://maps.google.com/maps/contrib/103438017507169584395",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjW3lz3GnTHhAlOrvKzu9RRZmjU4B8OmaViTYQ4yXYhb_Xg3jJw=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDh3_DMFQ&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDh3_DMFQ!2e10!4m2!3m1!1s0x864c2f322da85a19:0x458abfa65caced2c"
+      },
+      {
+        "name": "places/ChIJGVqoLTIvTIYRLO2sXKa_ikU/photos/AcnlKN3Yzo12PNBtULC5YEo-KY73zFG9SZBIVLAQGFDgnSchSjy9jDdT2wLtkw0SmdBNC5nuikipR8p7CiHid4Q4q0O6AiCimYRP9HgUrNNImFt85lX3UTzsQWWUilb7uucZMvpg-Mz1NThXYHYyXtpBCH3xR_KEWmTOTqXW2xZoXIAcALPzasHpnpU9U1gdcH2qU-VhiDpjPKY9nTpj_0H68w8SmiuFGcdp0uYXKgQBHDkHh2JY8A3pjybjNjplMULqWcrZX0YmFDpjGYVuc4KGj5O140UbI6MStHRzCWoU0ognnKv3f2e04_hIdPFSQr8u2i30uIJIvh0zP-9skul0AeP5xVjfxA1BWYFI35niw4dnh-lifUBd3Mr_nOp54j1VjsPee8_TBpI25GvNX0KD_oGTrWMGlQAL8GBI6JcKt3ObPA",
+        "widthPx": 2016,
+        "heightPx": 1512,
+        "authorAttributions": [
+          {
+            "displayName": "Tovics Tv",
+            "uri": "https://maps.google.com/maps/contrib/103438017507169584395",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjW3lz3GnTHhAlOrvKzu9RRZmjU4B8OmaViTYQ4yXYhb_Xg3jJw=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDh3_D0JQ&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDh3_D0JQ!2e10!4m2!3m1!1s0x864c2f322da85a19:0x458abfa65caced2c"
+      },
+      {
+        "name": "places/ChIJGVqoLTIvTIYRLO2sXKa_ikU/photos/AcnlKN1Fb7eOfrLJ1AAj8mQ_BliEb8bWflhK9O3TPwrLDr-BcDrYkk9gc7CzOjt0-i5x8uH1Mv3J241T5M2SKwSfczVd4AVFyxWbgue4ebPpITels-y1YTH3UPZLq7_kd0zpsR1xiyyj_4Kzp1aFtNvKxA-ZNzqhpXTVVj7t4vZJmiXyJ6-oQWhS-J_TfGyQOA_y79DIDz6Tk3g7n45_bQgzvXaOFdoNywKoSIMz6L1KnPBvb-kTHo21WZZ_Pck1mmiZAau1wHsjhUmlLutHUfOR9Vqqs0xrVWeL8mB2hMQb-KkiHi6ucun6UcwB6mfAwFHDJQZU7VUQ3RwXlxOsMzThpK1jkb5SvS4sJb2BEmQ9WazJ5Le_e2yfCvHOS8rkm_C-E0vQGiAHBpf9A0Vel2bRP1GyrmXPWUTm39LXivF2LQX4ybI",
+        "widthPx": 3024,
+        "heightPx": 4032,
+        "authorAttributions": [
+          {
+            "displayName": "Tovics Tv",
+            "uri": "https://maps.google.com/maps/contrib/103438017507169584395",
+            "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjW3lz3GnTHhAlOrvKzu9RRZmjU4B8OmaViTYQ4yXYhb_Xg3jJw=s100-p-k-no-mo"
+          }
+        ],
+        "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDh3_DupwE&hl=en",
+        "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDh3_DupwE!2e10!4m2!3m1!1s0x864c2f322da85a19:0x458abfa65caced2c"
+      }
+    ]
+  },
+  "detectedWebsite": null,
+  "scannedAt": "2026-01-25T16:21:49.926Z",
+  "readyForGeneration": true,
+  "research": {
+    "source": "yelp",
+    "enrichedAt": "2026-01-27T15:41:24.943Z",
+    "matched": false,
+    "matchStatus": "not_found",
+    "notes": "No Yelp listing found - may be very new or unlisted"
+  },
+  "opportunityScore": 55,
+  "scoreBreakdown": [
+    {
+      "factor": "No website (base)",
+      "points": 50,
+      "source": "Google"
+    },
+    {
+      "factor": "No Yelp listing (low online presence)",
+      "points": 5,
+      "source": "Yelp"
+    }
+  ],
+  "city": "Lewisville"
+}

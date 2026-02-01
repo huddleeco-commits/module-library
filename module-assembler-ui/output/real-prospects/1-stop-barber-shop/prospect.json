@@ -1,0 +1,64 @@
+{
+  "id": "i2l-Z3_x5JDJnOMysg7hqg",
+  "name": "1 Stop Barber Shop",
+  "address": "251 S.Mill St, Lewisville, TX, 75067",
+  "phone": "+19724209800",
+  "category": "barbers",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 2.7,
+  "reviewCount": 15,
+  "photos": [
+    "https://s3-media0.fl.yelpcdn.com/bphoto/HD24YwvSgDhkEVwzBpA4PA/o.jpg"
+  ],
+  "hours": null,
+  "fixtureId": "barbershop",
+  "source": "yelp",
+  "yelpUrl": "https://www.yelp.com/biz/1-stop-barber-shop-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+  "raw": {
+    "id": "i2l-Z3_x5JDJnOMysg7hqg",
+    "alias": "1-stop-barber-shop-lewisville",
+    "name": "1 Stop Barber Shop",
+    "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/HD24YwvSgDhkEVwzBpA4PA/o.jpg",
+    "is_closed": false,
+    "url": "https://www.yelp.com/biz/1-stop-barber-shop-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+    "review_count": 15,
+    "categories": [
+      {
+        "alias": "barbers",
+        "title": "Barbers"
+      }
+    ],
+    "rating": 2.7,
+    "coordinates": {
+      "latitude": 33.04449401531945,
+      "longitude": -96.99449005644811
+    },
+    "transactions": [],
+    "location": {
+      "address1": "251 S.Mill St",
+      "address2": "Ste 120",
+      "address3": "",
+      "city": "Lewisville",
+      "zip_code": "75067",
+      "country": "US",
+      "state": "TX",
+      "display_address": [
+        "251 S.Mill St",
+        "Ste 120",
+        "Lewisville, TX 75067"
+      ]
+    },
+    "phone": "+19724209800",
+    "display_phone": "(972) 420-9800",
+    "distance": 1137.4692875614512,
+    "business_hours": [],
+    "attributes": {
+      "business_temp_closed": null,
+      "menu_url": null,
+      "waitlist_reservation": null
+    }
+  },
+  "scannedAt": "2026-01-25T14:23:35.929Z",
+  "readyForGeneration": true
+}

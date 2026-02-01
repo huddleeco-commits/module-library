@@ -1,0 +1,38 @@
+{
+  "projectName": "Urban Style Boutique",
+  "savedAt": "2026-01-24T13:48:47.242Z",
+  "resources": {
+    "name": "Urban Style Boutique",
+    "sanitizedName": "urban-style-boutique",
+    "github": {
+      "repos": [
+        {
+          "name": "urban-style-boutique-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "urban-style-boutique-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "urban-style-boutique-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

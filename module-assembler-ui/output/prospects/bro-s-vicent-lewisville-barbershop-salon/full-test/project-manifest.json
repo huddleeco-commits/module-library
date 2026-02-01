@@ -1,0 +1,55 @@
+{
+  "name": "full-test",
+  "generatedAt": "2026-01-26T00:17:03.395Z",
+  "generator": "Module Library Assembler v4",
+  "industry": "Barbershop / Men's Grooming",
+  "bundles": [
+    "core"
+  ],
+  "counts": {
+    "backendModules": 5,
+    "frontendModules": 9
+  },
+  "modules": {
+    "backend": [
+      "auth",
+      "file-upload",
+      "booking",
+      "notifications",
+      "payments"
+    ],
+    "frontend": [
+      "login-form",
+      "register-form",
+      "header-nav",
+      "footer-section",
+      "modal-system",
+      "auth-context",
+      "auth-pages",
+      "image-gallery",
+      "pricing-table"
+    ]
+  },
+  "admin": {
+    "included": true,
+    "module": "business-admin",
+    "features": [
+      "dashboard",
+      "orders",
+      "products",
+      "customers",
+      "inventory",
+      "analytics",
+      "marketing",
+      "ai-manager",
+      "settings"
+    ]
+  },
+  "brain": {
+    "path": "brain.json",
+    "apiEndpoint": "/api/brain"
+  },
+  "health": {
+    "apiEndpoint": "/api/health"
+  }
+}

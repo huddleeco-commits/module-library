@@ -1,0 +1,116 @@
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ShoppingCart, CreditCard, Truck, Shield, ArrowRight, Package } from 'lucide-react';
+
+export default function OrderPage() {
+  const [step, setStep] = useState(1);
+
+  const orderSteps = [
+    { num: 1, title: 'Browse', desc: 'Select your items' },
+    { num: 2, title: 'Cart', desc: 'Review your order' },
+    { num: 3, title: 'Checkout', desc: 'Complete purchase' },
+    { num: 4, title: 'Enjoy', desc: 'Delivered to you' }
+  ];
+
+  const benefits = [
+    { icon: Truck, title: 'Free Shipping', desc: 'On orders over $50' },
+    { icon: Package, title: 'Fresh Guarantee', desc: 'Arrives fresh or free' },
+    { icon: Shield, title: 'Secure Payment', desc: '100% protected checkout' },
+    { icon: CreditCard, title: 'Easy Returns', desc: '30-day satisfaction guarantee' }
+  ];
+
+  return (
+    <div style={styles.page}>
+      <header style={styles.header}>
+        <h1 style={styles.title}>Order Online</h1>
+        <p style={styles.subtitle}>Fresh baked goods delivered nationwide</p>
+      </header>
+
+      <section style={styles.steps}>
+        <div style={styles.stepsGrid}>
+          {orderSteps.map((s, i) => (
+            <div key={i} style={styles.stepItem}>
+              <div style={{...styles.stepNum, ...(s.num <= step ? styles.stepActive : {})}}>{s.num}</div>
+              <h3 style={styles.stepTitle}>{s.title}</h3>
+              <p style={styles.stepDesc}>{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={styles.cta}>
+        <div style={styles.ctaContent}>
+          <ShoppingCart size={48} color="#8B4513" />
+          <h2 style={styles.ctaTitle}>Ready to Order?</h2>
+          <p style={styles.ctaText}>Browse our menu and add your favorites to cart</p>
+          <Link to="/menu" style={styles.ctaBtn}>Shop Menu <ArrowRight size={18} /></Link>
+        </div>
+      </section>
+
+      <section style={styles.benefits}>
+        <div style={styles.container}>
+          <div style={styles.benefitsGrid}>
+            {benefits.map((b, i) => (
+              <div key={i} style={styles.benefitCard}>
+                <b.icon size={28} color="#8B4513" />
+                <h3 style={styles.benefitTitle}>{b.title}</h3>
+                <p style={styles.benefitDesc}>{b.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section style={styles.faq}>
+        <div style={styles.container}>
+          <h2 style={styles.faqTitle}>Shipping FAQ</h2>
+          <div style={styles.faqGrid}>
+            <div style={styles.faqItem}>
+              <h4 style={styles.faqQ}>How long does shipping take?</h4>
+              <p style={styles.faqA}>Standard shipping takes 2-3 business days. Express overnight is available.</p>
+            </div>
+            <div style={styles.faqItem}>
+              <h4 style={styles.faqQ}>How do you keep items fresh?</h4>
+              <p style={styles.faqA}>All items are packed with ice packs in insulated boxes for maximum freshness.</p>
+            </div>
+            <div style={styles.faqItem}>
+              <h4 style={styles.faqQ}>Do you ship nationwide?</h4>
+              <p style={styles.faqA}>Yes! We ship to all 50 states. Some remote areas may have extended delivery times.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+const styles = {
+  page: { background: '#0f172a', minHeight: '100vh' },
+  header: { padding: '60px 24px', textAlign: 'center', background: '#1e293b' },
+  title: { fontFamily: "'Inter', 'Outfit', system-ui, sans-serif", fontSize: '2rem', fontWeight: '700', color: '#f8fafc', marginBottom: '8px' },
+  subtitle: { color: '#94a3b8' },
+  steps: { padding: '48px 24px', borderBottom: '1px solid #334155' },
+  stepsGrid: { display: 'flex', justifyContent: 'center', gap: '48px', flexWrap: 'wrap', maxWidth: '800px', margin: '0 auto' },
+  stepItem: { textAlign: 'center' },
+  stepNum: { width: '48px', height: '48px', borderRadius: '50%', border: '2px solid #334155', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontWeight: '700', color: '#94a3b8' },
+  stepActive: { background: '#8B4513', borderColor: '#8B4513', color: '#fff' },
+  stepTitle: { fontFamily: "'Inter', 'Outfit', system-ui, sans-serif", fontWeight: '600', color: '#f8fafc', marginBottom: '4px' },
+  stepDesc: { color: '#94a3b8', fontSize: '0.9rem' },
+  cta: { padding: '80px 24px', textAlign: 'center' },
+  ctaContent: { maxWidth: '500px', margin: '0 auto' },
+  ctaTitle: { fontFamily: "'Inter', 'Outfit', system-ui, sans-serif", fontSize: '2rem', fontWeight: '700', color: '#f8fafc', margin: '24px 0 12px' },
+  ctaText: { color: '#94a3b8', marginBottom: '24px' },
+  ctaBtn: { display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#8B4513', color: '#fff', padding: '16px 32px', borderRadius: '16px', textDecoration: 'none', fontWeight: '600', fontSize: '1rem' },
+  benefits: { padding: '80px 20px', background: '#1e293b' },
+  container: { maxWidth: '1100px', margin: '0 auto', padding: '0 24px' },
+  benefitsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '24px' },
+  benefitCard: { background: '#1e293b', padding: '28px', borderRadius: '16px', textAlign: 'center' },
+  benefitTitle: { fontFamily: "'Inter', 'Outfit', system-ui, sans-serif", fontWeight: '600', color: '#f8fafc', margin: '12px 0 8px' },
+  benefitDesc: { color: '#94a3b8', fontSize: '0.9rem' },
+  faq: { padding: '80px 20px' },
+  faqTitle: { fontFamily: "'Inter', 'Outfit', system-ui, sans-serif", fontSize: '1.75rem', fontWeight: '700', color: '#f8fafc', textAlign: 'center', marginBottom: '48px' },
+  faqGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' },
+  faqItem: { background: '#1e293b', padding: '24px', borderRadius: '16px' },
+  faqQ: { fontFamily: "'Inter', 'Outfit', system-ui, sans-serif", fontWeight: '600', color: '#f8fafc', marginBottom: '8px' },
+  faqA: { color: '#94a3b8', lineHeight: 1.6 }
+};

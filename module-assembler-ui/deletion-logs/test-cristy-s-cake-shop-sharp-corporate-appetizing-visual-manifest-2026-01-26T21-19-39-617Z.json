@@ -1,0 +1,38 @@
+{
+  "projectName": "test-cristy-s-cake-shop-sharp-corporate-appetizing-visual",
+  "savedAt": "2026-01-26T21:19:39.617Z",
+  "resources": {
+    "name": "test-cristy-s-cake-shop-sharp-corporate-appetizing-visual",
+    "sanitizedName": "test-cristy-s-cake-shop-sharp-corporate-appetizing-visual",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-sharp-corporate-appetizing-visual-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-sharp-corporate-appetizing-visual-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-sharp-corporate-appetizing-visual-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

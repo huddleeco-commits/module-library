@@ -1,0 +1,157 @@
+{
+  "id": "barbershop",
+  "name": "Barbershop",
+  "icon": "💈",
+  "business": {
+    "name": "Classic Cuts Barbershop",
+    "location": "Brooklyn, NY",
+    "tagline": "Where Style Meets Tradition",
+    "industry": "barbershop",
+    "teamSize": "5-10",
+    "priceRange": "$$",
+    "established": "2015",
+    "phone": "(555) 321-0987",
+    "email": "info@classiccuts-demo.com",
+    "address": "456 Bedford Ave, Brooklyn, NY 11211",
+    "hours": {
+      "monday": "Closed",
+      "tuesday": "10:00 AM - 8:00 PM",
+      "wednesday": "10:00 AM - 8:00 PM",
+      "thursday": "10:00 AM - 8:00 PM",
+      "friday": "10:00 AM - 9:00 PM",
+      "saturday": "9:00 AM - 6:00 PM",
+      "sunday": "10:00 AM - 4:00 PM"
+    }
+  },
+  "theme": {
+    "colors": {
+      "primary": "#1A1A2E",
+      "secondary": "#C9A227",
+      "accent": "#E43F5A",
+      "background": "#F5F5F5",
+      "text": "#1A1A2E"
+    },
+    "fonts": {
+      "heading": "Bebas Neue",
+      "body": "Roboto"
+    },
+    "style": "vintage-modern"
+  },
+  "pages": {
+    "home": {
+      "hero": {
+        "headline": "Where Style Meets Tradition",
+        "subheadline": "Premium cuts, classic shaves, and modern styles. Brooklyn's finest barbershop experience since 2015.",
+        "cta": "Book Now",
+        "secondaryCta": "View Services",
+        "backgroundImage": "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1920"
+      },
+      "sections": [
+        {
+          "type": "features",
+          "title": "The Classic Cuts Experience",
+          "items": [
+            { "icon": "Scissors", "title": "Expert Barbers", "description": "Skilled craftsmen with 10+ years experience" },
+            { "icon": "Clock", "title": "Walk-Ins Welcome", "description": "No appointment? No problem. Walk-ins always welcome" },
+            { "icon": "Coffee", "title": "Complimentary Drinks", "description": "Enjoy a cold beer or hot coffee on us" },
+            { "icon": "Gamepad2", "title": "Entertainment", "description": "Big screens, sports, and good vibes" }
+          ]
+        },
+        {
+          "type": "services-preview",
+          "title": "Our Services",
+          "items": [
+            { "name": "Classic Haircut", "price": 35, "description": "Precision cut with hot towel finish" },
+            { "name": "Beard Trim", "price": 20, "description": "Shape and trim with straight razor edge" },
+            { "name": "Hot Towel Shave", "price": 40, "description": "Traditional straight razor shave experience" },
+            { "name": "The Works", "price": 65, "description": "Haircut + beard trim + hot towel treatment" }
+          ]
+        },
+        {
+          "type": "gallery",
+          "title": "Our Work",
+          "images": ["gallery1.jpg", "gallery2.jpg", "gallery3.jpg", "gallery4.jpg", "gallery5.jpg", "gallery6.jpg"]
+        },
+        {
+          "type": "testimonials",
+          "title": "What Our Clients Say",
+          "items": [
+            { "name": "Marcus J.", "text": "Best barbershop in Brooklyn. Been coming here for 5 years and wouldn't go anywhere else.", "rating": 5 },
+            { "name": "Anthony R.", "text": "The hot towel shave is an experience every man should have. These guys are artists.", "rating": 5 },
+            { "name": "Derek W.", "text": "Great atmosphere, great cuts, great people. Classic Cuts is the real deal.", "rating": 5 }
+          ]
+        }
+      ]
+    },
+    "services": {
+      "hero": {
+        "headline": "Services & Pricing",
+        "subheadline": "Premium grooming services for the modern gentleman"
+      },
+      "categories": [
+        {
+          "name": "Haircuts",
+          "items": [
+            { "name": "Classic Haircut", "price": 35, "description": "Precision cut, wash, and style with hot towel finish", "duration": "30 min" },
+            { "name": "Fade", "price": 40, "description": "Skin fade, mid fade, or low fade with detailed blending", "duration": "45 min" },
+            { "name": "Kids Cut (12 & under)", "price": 25, "description": "Gentle haircut for the young gentlemen", "duration": "20 min" },
+            { "name": "Senior Cut (65+)", "price": 28, "description": "Classic cut with senior discount", "duration": "30 min" }
+          ]
+        },
+        {
+          "name": "Beard & Shave",
+          "items": [
+            { "name": "Beard Trim", "price": 20, "description": "Shape, trim, and straight razor edge", "duration": "20 min" },
+            { "name": "Beard Design", "price": 30, "description": "Custom beard styling and shaping", "duration": "30 min" },
+            { "name": "Hot Towel Shave", "price": 40, "description": "Traditional straight razor shave with hot towels", "duration": "45 min" },
+            { "name": "Head Shave", "price": 35, "description": "Clean head shave with hot towel treatment", "duration": "30 min" }
+          ]
+        },
+        {
+          "name": "Packages",
+          "items": [
+            { "name": "The Works", "price": 65, "description": "Haircut + beard trim + hot towel treatment", "duration": "75 min" },
+            { "name": "Father & Son", "price": 55, "description": "One adult cut + one kids cut", "duration": "50 min" },
+            { "name": "Groom's Package", "price": 100, "description": "Haircut + shave + facial + styling for the big day", "duration": "90 min" }
+          ]
+        }
+      ]
+    },
+    "about": {
+      "hero": {
+        "headline": "Our Story",
+        "subheadline": "A Brooklyn tradition since 2015"
+      },
+      "sections": [
+        {
+          "type": "story",
+          "title": "The Classic Cuts Story",
+          "content": "Classic Cuts was founded in 2015 by lifelong friends Marcus Williams and James Thompson. Frustrated with impersonal chain barbershops, they set out to create a space where every client feels like family. Today, we're proud to be Brooklyn's neighborhood barbershop."
+        }
+      ],
+      "team": [
+        { "name": "Marcus Williams", "role": "Owner/Master Barber", "bio": "15 years experience, specializing in fades and designs", "image": "team1.jpg" },
+        { "name": "James Thompson", "role": "Owner/Master Barber", "bio": "Traditional techniques with modern style", "image": "team2.jpg" },
+        { "name": "Carlos Rivera", "role": "Senior Barber", "bio": "Beard specialist and straight razor expert", "image": "team3.jpg" },
+        { "name": "Damon Lee", "role": "Barber", "bio": "Creative cuts and the freshest fades", "image": "team4.jpg" }
+      ]
+    },
+    "contact": {
+      "hero": {
+        "headline": "Visit Us",
+        "subheadline": "Walk-ins welcome, appointments appreciated"
+      },
+      "info": {
+        "address": "456 Bedford Ave, Brooklyn, NY 11211",
+        "phone": "(555) 321-0987",
+        "email": "info@classiccuts-demo.com",
+        "hours": "Tue-Thu: 10am-8pm, Fri: 10am-9pm, Sat: 9am-6pm, Sun: 10am-4pm"
+      },
+      "booking": {
+        "enabled": true,
+        "platform": "integrated",
+        "buttonText": "Book Appointment"
+      }
+    }
+  }
+}

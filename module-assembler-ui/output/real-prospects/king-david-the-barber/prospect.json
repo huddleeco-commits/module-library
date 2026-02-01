@@ -1,0 +1,64 @@
+{
+  "id": "yiH8odyJLn6nvmmdzGCDJQ",
+  "name": "King David the Barber",
+  "address": "124 N Austin St, Denton, TX, 76201",
+  "phone": "+19406003918",
+  "category": "barbers",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 5,
+  "reviewCount": 13,
+  "photos": [
+    "https://s3-media0.fl.yelpcdn.com/bphoto/FprRRG79G__5ZCKta-82PA/o.jpg"
+  ],
+  "hours": null,
+  "fixtureId": "barbershop",
+  "source": "yelp",
+  "yelpUrl": "https://www.yelp.com/biz/king-david-the-barber-denton-4?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+  "raw": {
+    "id": "yiH8odyJLn6nvmmdzGCDJQ",
+    "alias": "king-david-the-barber-denton-4",
+    "name": "King David the Barber",
+    "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/FprRRG79G__5ZCKta-82PA/o.jpg",
+    "is_closed": false,
+    "url": "https://www.yelp.com/biz/king-david-the-barber-denton-4?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+    "review_count": 13,
+    "categories": [
+      {
+        "alias": "barbers",
+        "title": "Barbers"
+      }
+    ],
+    "rating": 5,
+    "coordinates": {
+      "latitude": 33.197923,
+      "longitude": -97.123291
+    },
+    "transactions": [],
+    "price": "$",
+    "location": {
+      "address1": "124 N Austin St",
+      "address2": "",
+      "address3": "",
+      "city": "Denton",
+      "zip_code": "76201",
+      "country": "US",
+      "state": "TX",
+      "display_address": [
+        "124 N Austin St",
+        "Denton, TX 76201"
+      ]
+    },
+    "phone": "+19406003918",
+    "display_phone": "(940) 600-3918",
+    "distance": 21244.709659515924,
+    "business_hours": [],
+    "attributes": {
+      "business_temp_closed": null,
+      "menu_url": "http://www.squareup.com/appointments/book/5MKR2AEC7AF5P",
+      "waitlist_reservation": null
+    }
+  },
+  "scannedAt": "2026-01-25T14:23:35.929Z",
+  "readyForGeneration": true
+}

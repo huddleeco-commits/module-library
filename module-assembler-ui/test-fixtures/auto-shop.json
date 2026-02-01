@@ -1,0 +1,182 @@
+{
+  "id": "auto-shop",
+  "name": "Auto Shop / Mechanic",
+  "icon": "🚗",
+  "business": {
+    "name": "Precision Auto Care",
+    "location": "Dallas, TX",
+    "tagline": "Honest Service, Expert Repairs",
+    "industry": "auto-shop",
+    "teamSize": "8-12",
+    "priceRange": "$$",
+    "established": "2010",
+    "phone": "(555) 432-AUTO",
+    "email": "service@precisionauto-demo.com",
+    "address": "1234 Motor Lane, Dallas, TX 75201",
+    "hours": {
+      "monday": "7:30 AM - 6:00 PM",
+      "tuesday": "7:30 AM - 6:00 PM",
+      "wednesday": "7:30 AM - 6:00 PM",
+      "thursday": "7:30 AM - 6:00 PM",
+      "friday": "7:30 AM - 6:00 PM",
+      "saturday": "8:00 AM - 3:00 PM",
+      "sunday": "Closed"
+    }
+  },
+  "theme": {
+    "colors": {
+      "primary": "#DC2626",
+      "secondary": "#1F2937",
+      "accent": "#F59E0B",
+      "background": "#F9FAFB",
+      "text": "#111827"
+    },
+    "fonts": {
+      "heading": "Oswald",
+      "body": "Open Sans"
+    },
+    "style": "industrial-trust"
+  },
+  "pages": {
+    "home": {
+      "hero": {
+        "headline": "Honest Service, Expert Repairs",
+        "subheadline": "Dallas's trusted auto repair shop since 2010. ASE-certified technicians, transparent pricing, and a 2-year warranty on all repairs.",
+        "cta": "Schedule Service",
+        "secondaryCta": "Get Free Estimate",
+        "backgroundImage": "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1920"
+      },
+      "sections": [
+        {
+          "type": "features",
+          "title": "Why Choose Precision Auto",
+          "items": [
+            { "icon": "Award", "title": "ASE Certified", "description": "All technicians are ASE-certified master mechanics" },
+            { "icon": "DollarSign", "title": "Upfront Pricing", "description": "Free estimates, no surprise charges ever" },
+            { "icon": "Shield", "title": "2-Year Warranty", "description": "All repairs backed by our 24-month warranty" },
+            { "icon": "Clock", "title": "Same-Day Service", "description": "Most repairs completed same day" }
+          ]
+        },
+        {
+          "type": "services-preview",
+          "title": "Our Services",
+          "items": [
+            { "name": "Oil Change", "price": "From $39", "description": "Conventional, synthetic blend, or full synthetic" },
+            { "name": "Brake Service", "price": "From $149", "description": "Inspection, pads, rotors, and fluid flush" },
+            { "name": "Engine Diagnostics", "price": "$89", "description": "Complete computer diagnostic scan" },
+            { "name": "A/C Service", "price": "From $129", "description": "Inspection, recharge, and leak repair" }
+          ]
+        },
+        {
+          "type": "stats",
+          "title": "Our Track Record",
+          "items": [
+            { "value": "14+", "label": "Years in Business" },
+            { "value": "25,000+", "label": "Vehicles Serviced" },
+            { "value": "4.9★", "label": "Google Rating" },
+            { "value": "100%", "label": "Satisfaction Rate" }
+          ]
+        },
+        {
+          "type": "testimonials",
+          "title": "Customer Reviews",
+          "items": [
+            { "name": "Mike R.", "text": "Finally found an honest mechanic! They showed me exactly what was wrong and didn't try to upsell unnecessary services.", "rating": 5 },
+            { "name": "Sarah T.", "text": "Fast, fair, and friendly. They've been servicing our family's cars for 5 years now.", "rating": 5 },
+            { "name": "David L.", "text": "The warranty on repairs gives me peace of mind. Quality work at reasonable prices.", "rating": 5 }
+          ]
+        },
+        {
+          "type": "brands",
+          "title": "We Service All Makes",
+          "items": ["Ford", "Chevrolet", "Toyota", "Honda", "BMW", "Mercedes", "Audi", "Nissan", "Hyundai", "Kia"]
+        }
+      ]
+    },
+    "services": {
+      "hero": {
+        "headline": "Auto Repair Services",
+        "subheadline": "Complete automotive care for all makes and models"
+      },
+      "categories": [
+        {
+          "name": "Maintenance Services",
+          "items": [
+            { "name": "Oil Change - Conventional", "price": 39, "description": "Up to 5 quarts, filter, inspection" },
+            { "name": "Oil Change - Synthetic", "price": 69, "description": "Full synthetic oil, filter, inspection" },
+            { "name": "Tire Rotation", "price": 25, "description": "Rotate and balance all four tires" },
+            { "name": "Fluid Flush", "price": 99, "description": "Transmission, coolant, brake, or power steering" },
+            { "name": "Tune-Up", "price": 199, "description": "Spark plugs, filters, inspection" }
+          ]
+        },
+        {
+          "name": "Brake Services",
+          "items": [
+            { "name": "Brake Inspection", "price": 0, "description": "Free visual brake inspection" },
+            { "name": "Brake Pad Replacement", "price": 149, "description": "Per axle, quality pads included" },
+            { "name": "Rotor Replacement", "price": 249, "description": "Per axle, pads and rotors" },
+            { "name": "Brake Fluid Flush", "price": 89, "description": "Complete fluid replacement" }
+          ]
+        },
+        {
+          "name": "Engine & Transmission",
+          "items": [
+            { "name": "Check Engine Diagnostics", "price": 89, "description": "Full computer scan and diagnosis" },
+            { "name": "Engine Repair", "price": null, "description": "Varies by issue - free estimate", "note": "Free Estimate" },
+            { "name": "Transmission Service", "price": 149, "description": "Fluid change and inspection" },
+            { "name": "Timing Belt", "price": 499, "description": "Belt and tensioner replacement" }
+          ]
+        },
+        {
+          "name": "Heating & Cooling",
+          "items": [
+            { "name": "A/C Recharge", "price": 129, "description": "Evacuate and recharge system" },
+            { "name": "A/C Repair", "price": null, "description": "Compressor, condenser, leaks", "note": "Free Estimate" },
+            { "name": "Radiator Service", "price": 99, "description": "Flush and fill coolant" },
+            { "name": "Heater Core", "price": 399, "description": "Repair or replacement" }
+          ]
+        }
+      ]
+    },
+    "about": {
+      "hero": {
+        "headline": "About Precision Auto Care",
+        "subheadline": "Family-owned and operated since 2010"
+      },
+      "sections": [
+        {
+          "type": "story",
+          "title": "Our Story",
+          "content": "Precision Auto Care was founded in 2010 by master mechanic Carlos Rodriguez after 20 years working at dealerships. Frustrated by the industry's reputation for dishonesty, he built a shop on a simple promise: treat every customer like family. Today, we're proud to be Dallas's most trusted independent auto shop."
+        },
+        {
+          "type": "values",
+          "title": "Our Promise",
+          "items": ["Honest Diagnosis", "Transparent Pricing", "Quality Parts", "Warranty on All Work", "Respect Your Time"]
+        }
+      ],
+      "certifications": ["ASE Certified", "AAA Approved", "BBB A+ Rating", "NAPA AutoCare Center"],
+      "team": [
+        { "name": "Carlos Rodriguez", "role": "Owner/Master Technician", "bio": "ASE Master Certified, 35+ years experience", "image": "team1.jpg" },
+        { "name": "James Wilson", "role": "Service Manager", "bio": "Ensures every repair meets our standards", "image": "team2.jpg" },
+        { "name": "Tony Nguyen", "role": "Lead Technician", "bio": "Specializes in European vehicles", "image": "team3.jpg" }
+      ]
+    },
+    "contact": {
+      "hero": {
+        "headline": "Contact Us",
+        "subheadline": "Schedule your service today"
+      },
+      "info": {
+        "address": "1234 Motor Lane, Dallas, TX 75201",
+        "phone": "(555) 432-AUTO",
+        "email": "service@precisionauto-demo.com",
+        "hours": "Mon-Fri: 7:30am-6pm, Sat: 8am-3pm"
+      },
+      "form": {
+        "fields": ["name", "email", "phone", "vehicleInfo", "serviceType", "message"],
+        "submitText": "Request Appointment"
+      }
+    }
+  }
+}

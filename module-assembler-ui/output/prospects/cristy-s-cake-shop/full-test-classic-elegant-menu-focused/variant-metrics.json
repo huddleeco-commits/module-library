@@ -1,0 +1,16 @@
+{
+  "key": "-classic-elegant-menu-focused",
+  "preset": "classic-elegant",
+  "presetName": "classic-elegant",
+  "presetColor": "#fbbf24",
+  "presetIcon": "bookmark",
+  "layout": "menu-focused",
+  "layoutName": "menu-focused",
+  "theme": "dark",
+  "pages": 13,
+  "linesOfCode": 103247,
+  "files": 277,
+  "generationTimeMs": 13891,
+  "success": true,
+  "previewUrl": "/api/scout/preview/cristy-s-cake-shop/full-test-classic-elegant-menu-focused/"
+}

@@ -1,0 +1,123 @@
+{
+  "id": "ChIJ14_Kh34vTIYRniwiPjxv4Mw",
+  "name": "Sunshine Mobile Mechanics",
+  "address": "2175 S State Hwy 121, Lewisville, TX 75067, USA",
+  "phone": "(945) 306-6932",
+  "category": "car_repair",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 5,
+  "reviewCount": 4,
+  "photos": [],
+  "fixtureId": "restaurant",
+  "source": "google",
+  "googleMapsUrl": "https://maps.google.com/?cid=14762921883051633822&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+  "coordinates": {
+    "latitude": 33.0104453,
+    "longitude": -96.9943122
+  },
+  "raw": {
+    "id": "ChIJ14_Kh34vTIYRniwiPjxv4Mw",
+    "types": [
+      "car_repair",
+      "point_of_interest",
+      "establishment"
+    ],
+    "nationalPhoneNumber": "(945) 306-6932",
+    "formattedAddress": "2175 S State Hwy 121, Lewisville, TX 75067, USA",
+    "location": {
+      "latitude": 33.0104453,
+      "longitude": -96.9943122
+    },
+    "rating": 5,
+    "googleMapsUri": "https://maps.google.com/?cid=14762921883051633822&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "userRatingCount": 4,
+    "displayName": {
+      "text": "Sunshine Mobile Mechanics",
+      "languageCode": "en"
+    },
+    "primaryType": "car_repair"
+  },
+  "detectedWebsite": null,
+  "scannedAt": "2026-01-25T16:21:49.926Z",
+  "readyForGeneration": true,
+  "research": {
+    "source": "yelp",
+    "enrichedAt": "2026-01-27T15:42:27.206Z",
+    "matched": true,
+    "yelpId": "UDoeOd5X-RikD1g-fNlW6A",
+    "yelpUrl": "https://www.yelp.com/biz/dfw-mobile-repair-carrollton?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+    "matchStatus": "found",
+    "rating": 4.8,
+    "reviewCount": 95,
+    "categories": [
+      "Auto Repair"
+    ],
+    "photos": [],
+    "hours": [
+      {
+        "is_overnight": false,
+        "start": "0900",
+        "end": "1800",
+        "day": 0
+      },
+      {
+        "is_overnight": false,
+        "start": "0900",
+        "end": "1800",
+        "day": 1
+      },
+      {
+        "is_overnight": false,
+        "start": "0900",
+        "end": "1800",
+        "day": 2
+      },
+      {
+        "is_overnight": false,
+        "start": "0900",
+        "end": "1800",
+        "day": 3
+      },
+      {
+        "is_overnight": false,
+        "start": "0900",
+        "end": "1800",
+        "day": 4
+      },
+      {
+        "is_overnight": false,
+        "start": "0900",
+        "end": "1500",
+        "day": 5
+      },
+      {
+        "is_overnight": false,
+        "start": "0900",
+        "end": "1500",
+        "day": 6
+      }
+    ],
+    "isOpen": true,
+    "transactions": []
+  },
+  "opportunityScore": 73,
+  "scoreBreakdown": [
+    {
+      "factor": "No website (base)",
+      "points": 50,
+      "source": "Google"
+    },
+    {
+      "factor": "Excellent rating (4.8★)",
+      "points": 15,
+      "source": "Yelp"
+    },
+    {
+      "factor": "Good reviews (95)",
+      "points": 8,
+      "source": "Yelp"
+    }
+  ],
+  "city": "Lewisville"
+}

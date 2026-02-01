@@ -1,0 +1,65 @@
+{
+  "projectName": "test-cristy-s-cake-shop",
+  "savedAt": "2026-01-26T13:37:28.017Z",
+  "resources": {
+    "name": "test-cristy-s-cake-shop",
+    "sanitizedName": "test-cristy-s-cake-shop",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "b34a8eea-80d3-4a55-9e3b-a83e7a5f37b3",
+        "name": "test-cristy-s-cake-shop",
+        "createdAt": "2026-01-26T00:46:30.754Z",
+        "environments": [
+          {
+            "id": "7855d81c-42c1-44e7-9caf-593c9edbe67e",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "5b52128c-06af-4562-ac7d-b482d9396f86",
+          "name": "backend"
+        },
+        {
+          "id": "8b22126d-a80d-4faf-bae7-f662dde0a0a5",
+          "name": "postgres"
+        },
+        {
+          "id": "b088c746-24fa-4174-93e8-fad3c9f9ce9c",
+          "name": "frontend"
+        },
+        {
+          "id": "ebdb21ed-f7d4-4368-81e5-27a007b0741b",
+          "name": "admin"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

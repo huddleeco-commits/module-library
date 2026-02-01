@@ -1,0 +1,16 @@
+{
+  "key": "-friendly-story-driven",
+  "preset": "friendly",
+  "presetName": "friendly",
+  "presetColor": "#4ade80",
+  "presetIcon": "smile",
+  "layout": "story-driven",
+  "layoutName": "story-driven",
+  "theme": "light",
+  "pages": 13,
+  "linesOfCode": 103133,
+  "files": 277,
+  "generationTimeMs": 12587,
+  "success": true,
+  "previewUrl": "/api/scout/preview/cristy-s-cake-shop/full-test-friendly-story-driven/"
+}

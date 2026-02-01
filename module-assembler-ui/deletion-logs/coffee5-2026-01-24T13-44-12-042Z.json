@@ -1,0 +1,80 @@
+{
+  "projectName": "coffee5",
+  "deletedAt": "2026-01-24T13:44:12.042Z",
+  "resourcesFound": {
+    "name": "coffee5",
+    "sanitizedName": "coffee5",
+    "github": {
+      "repos": [
+        {
+          "name": "coffee5-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "coffee5-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "coffee5-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/coffee5-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/coffee5-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/coffee5-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "coffee5",
+          "verified": true
+        },
+        {
+          "subdomain": "api.coffee5",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.coffee5",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

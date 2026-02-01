@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="339.2" height="60" viewBox="0 0 339.2 60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="hGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Icon circle -->
+  <circle cx="30" cy="30" r="26" fill="url(#hGradient)"/>
+  <g transform="translate(14, 14) scale(1.33)" fill="white">
+    <path d="M12 2C8.43 2 5.23 3.54 3.01 6L12 22l8.99-16C18.78 3.55 15.57 2 12 2zM7 7c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm5 8c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
+  </g>
+
+  <!-- Business name -->
+  <text
+    x="70"
+    y="50%"
+    dominant-baseline="middle"
+    text-anchor="start"
+    fill="#ffffff"
+    font-family="Comic Sans MS, cursive, sans-serif"
+    font-weight="700"
+    font-size="24"
+    letter-spacing="0"
+  >Cristy&apos;s Cake Shop</text>
+</svg>

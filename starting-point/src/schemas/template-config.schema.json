@@ -1,0 +1,750 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://blink.studio/schemas/template-config.schema.json",
+  "title": "Template Configuration",
+  "description": "Configuration schema for template settings including AI assistant and deployment parameters",
+  "type": "object",
+  "required": ["version", "template", "ai", "deployment"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Schema version in semver format",
+      "examples": ["1.0.0", "2.1.0"]
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of when this config was generated"
+    },
+    "template": {
+      "$ref": "#/$defs/templateSettings"
+    },
+    "ai": {
+      "$ref": "#/$defs/aiSettings"
+    },
+    "deployment": {
+      "$ref": "#/$defs/deploymentSettings"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Custom extension fields for project-specific configurations"
+    }
+  },
+  "$defs": {
+    "templateSettings": {
+      "type": "object",
+      "description": "Template and design configuration",
+      "required": ["id", "industry"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$",
+          "description": "Unique template identifier",
+          "examples": ["restaurant-appetizing-visual", "spa-luxury-booking"]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "Human-readable template name"
+        },
+        "industry": {
+          "$ref": "#/$defs/industryConfig"
+        },
+        "layout": {
+          "$ref": "#/$defs/layoutConfig"
+        },
+        "visual": {
+          "$ref": "#/$defs/visualConfig"
+        },
+        "pages": {
+          "$ref": "#/$defs/pagesConfig"
+        },
+        "bundles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["core", "dashboard", "commerce", "social", "collectibles", "sports", "healthcare", "family", "gamification"]
+          },
+          "uniqueItems": true,
+          "description": "Module bundles to include"
+        }
+      }
+    },
+    "industryConfig": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "restaurant",
+            "cafe",
+            "bakery",
+            "dental",
+            "healthcare",
+            "spa-salon",
+            "barbershop",
+            "fitness",
+            "retail",
+            "professional-services",
+            "home-services",
+            "automotive",
+            "real-estate",
+            "education",
+            "nonprofit",
+            "custom"
+          ],
+          "description": "Industry vertical"
+        },
+        "keywords": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "SEO and categorization keywords"
+        },
+        "terminology": {
+          "type": "object",
+          "properties": {
+            "product": {
+              "type": "string",
+              "description": "Industry term for product (e.g., 'dish', 'service', 'treatment')"
+            },
+            "customer": {
+              "type": "string",
+              "description": "Industry term for customer (e.g., 'guest', 'patient', 'client')"
+            },
+            "location": {
+              "type": "string",
+              "description": "Industry term for location (e.g., 'restaurant', 'clinic', 'studio')"
+            },
+            "booking": {
+              "type": "string",
+              "description": "Industry term for booking (e.g., 'reservation', 'appointment', 'session')"
+            }
+          },
+          "additionalProperties": { "type": "string" }
+        },
+        "ctaTypes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Recommended call-to-action types for this industry"
+        },
+        "trustSignals": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Industry-appropriate trust indicators"
+        }
+      }
+    },
+    "layoutConfig": {
+      "type": "object",
+      "properties": {
+        "archetype": {
+          "type": "string",
+          "enum": ["bento", "split", "editorial", "minimal-stack", "glassmorphic"],
+          "description": "Visual archetype for layout structure"
+        },
+        "heroLayout": {
+          "type": "string",
+          "enum": [
+            "centered-dramatic",
+            "left-aligned-clean",
+            "split-screen",
+            "asymmetric-overlap",
+            "minimal-typography",
+            "video-cinematic",
+            "card-stack",
+            "diagonal-split"
+          ],
+          "description": "Hero section layout style"
+        },
+        "sectionOrder": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Ordered list of page sections"
+        },
+        "contentFocus": {
+          "type": "string",
+          "enum": [
+            "appetizing-visual",
+            "menu-focused",
+            "story-driven",
+            "booking-focused",
+            "portfolio-showcase",
+            "team-highlight",
+            "service-catalog",
+            "testimonial-driven"
+          ],
+          "description": "Primary content emphasis"
+        }
+      }
+    },
+    "visualConfig": {
+      "type": "object",
+      "properties": {
+        "typography": {
+          "type": "object",
+          "properties": {
+            "headingFont": {
+              "type": "string",
+              "description": "Font family for headings"
+            },
+            "bodyFont": {
+              "type": "string",
+              "description": "Font family for body text"
+            },
+            "scale": {
+              "type": "string",
+              "enum": ["compact", "standard", "generous", "dramatic"],
+              "default": "standard"
+            }
+          }
+        },
+        "colors": {
+          "type": "object",
+          "properties": {
+            "primary": {
+              "type": "string",
+              "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+              "description": "Primary brand color in hex"
+            },
+            "secondary": {
+              "type": "string",
+              "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+            },
+            "accent": {
+              "type": "string",
+              "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+            },
+            "background": {
+              "type": "string",
+              "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+            },
+            "text": {
+              "type": "string",
+              "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+            },
+            "variation": {
+              "type": "string",
+              "enum": ["standard", "inverted", "monochrome-dark", "monochrome-light", "gradient-rich", "neutral-pop"],
+              "default": "standard"
+            },
+            "mood": {
+              "type": "string",
+              "enum": ["warm", "cool", "neutral", "earthy", "vibrant", "muted"],
+              "description": "Overall color mood"
+            }
+          }
+        },
+        "imagery": {
+          "type": "object",
+          "properties": {
+            "style": {
+              "type": "string",
+              "enum": ["photography", "illustration", "mixed", "minimal", "abstract"],
+              "default": "photography"
+            },
+            "treatment": {
+              "type": "string",
+              "enum": ["natural", "high-contrast", "muted", "vibrant", "black-and-white"]
+            },
+            "aspectRatios": {
+              "type": "object",
+              "properties": {
+                "hero": { "type": "string", "pattern": "^\\d+:\\d+$" },
+                "gallery": { "type": "string", "pattern": "^\\d+:\\d+$" },
+                "thumbnail": { "type": "string", "pattern": "^\\d+:\\d+$" }
+              }
+            }
+          }
+        },
+        "spacing": {
+          "type": "string",
+          "enum": ["tight", "comfortable", "generous", "expansive"],
+          "default": "comfortable"
+        },
+        "corners": {
+          "type": "string",
+          "enum": ["sharp", "subtle", "rounded", "pill"],
+          "default": "subtle"
+        }
+      }
+    },
+    "pagesConfig": {
+      "type": "object",
+      "properties": {
+        "tier": {
+          "type": "string",
+          "enum": ["essential", "recommended", "premium", "all"],
+          "default": "recommended",
+          "description": "Page package tier"
+        },
+        "included": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of included page types"
+        },
+        "custom": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "title"],
+            "properties": {
+              "id": { "type": "string" },
+              "title": { "type": "string" },
+              "template": { "type": "string" },
+              "sections": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          },
+          "description": "Custom page definitions"
+        }
+      }
+    },
+    "aiSettings": {
+      "type": "object",
+      "description": "AI assistant configuration",
+      "required": ["level"],
+      "properties": {
+        "level": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4,
+          "description": "AI enhancement level: 0=test/no-AI, 1=composer, 2=content, 3=composer+content, 4=full-freedom"
+        },
+        "provider": {
+          "type": "string",
+          "enum": ["anthropic", "openai", "custom"],
+          "default": "anthropic",
+          "description": "AI service provider"
+        },
+        "model": {
+          "type": "object",
+          "properties": {
+            "composer": {
+              "type": "string",
+              "description": "Model for composition decisions",
+              "examples": ["claude-sonnet-4-20250514", "claude-3-5-sonnet-20241022"]
+            },
+            "content": {
+              "type": "string",
+              "description": "Model for content generation",
+              "examples": ["claude-sonnet-4-20250514", "gpt-4o"]
+            },
+            "validation": {
+              "type": "string",
+              "description": "Model for validation tasks"
+            }
+          }
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "temperature": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 2,
+              "default": 0.7,
+              "description": "Response randomness (0=deterministic, 2=creative)"
+            },
+            "maxTokens": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 200000,
+              "default": 4096,
+              "description": "Maximum tokens in response"
+            },
+            "topP": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 1
+            }
+          }
+        },
+        "prompts": {
+          "type": "object",
+          "properties": {
+            "systemPrompt": {
+              "type": "string",
+              "description": "Base system prompt for AI interactions"
+            },
+            "composerPrompt": {
+              "type": "string",
+              "description": "Prompt template for composition decisions"
+            },
+            "contentPrompt": {
+              "type": "string",
+              "description": "Prompt template for content generation"
+            },
+            "toneGuide": {
+              "type": "string",
+              "description": "Brand voice and tone instructions"
+            }
+          }
+        },
+        "features": {
+          "type": "object",
+          "properties": {
+            "neighborhoodAnalysis": {
+              "type": "boolean",
+              "default": true,
+              "description": "Analyze business location for contextual insights"
+            },
+            "archetypeSelection": {
+              "type": "boolean",
+              "default": true,
+              "description": "AI-driven visual archetype selection"
+            },
+            "colorStrategy": {
+              "type": "boolean",
+              "default": true,
+              "description": "AI-recommended color palette"
+            },
+            "contentPersonalization": {
+              "type": "boolean",
+              "default": true,
+              "description": "Personalized copy generation"
+            },
+            "seoOptimization": {
+              "type": "boolean",
+              "default": true,
+              "description": "AI-enhanced SEO content"
+            }
+          }
+        },
+        "budget": {
+          "type": "object",
+          "properties": {
+            "maxCostPerGeneration": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Maximum cost in USD per generation"
+            },
+            "maxTokensPerGeneration": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Token budget per generation"
+            },
+            "trackUsage": {
+              "type": "boolean",
+              "default": true,
+              "description": "Enable usage tracking"
+            }
+          }
+        },
+        "fallback": {
+          "type": "object",
+          "properties": {
+            "onError": {
+              "type": "string",
+              "enum": ["use-defaults", "retry", "fail", "notify"],
+              "default": "use-defaults",
+              "description": "Behavior when AI fails"
+            },
+            "retryAttempts": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5,
+              "default": 2
+            },
+            "defaultsPath": {
+              "type": "string",
+              "description": "Path to fallback defaults file"
+            }
+          }
+        }
+      }
+    },
+    "deploymentSettings": {
+      "type": "object",
+      "description": "Deployment and infrastructure configuration",
+      "required": ["target"],
+      "properties": {
+        "target": {
+          "type": "string",
+          "enum": ["railway", "vercel", "netlify", "cloudflare", "aws", "docker", "custom"],
+          "description": "Primary deployment platform"
+        },
+        "environment": {
+          "type": "string",
+          "enum": ["development", "staging", "production"],
+          "default": "development"
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Deployment regions",
+          "examples": [["us-west-2", "eu-west-1"]]
+        },
+        "domain": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["subdomain", "custom", "none"],
+              "default": "subdomain"
+            },
+            "value": {
+              "type": "string",
+              "format": "hostname",
+              "description": "Domain or subdomain value"
+            },
+            "ssl": {
+              "type": "boolean",
+              "default": true,
+              "description": "Enable SSL/TLS"
+            },
+            "provider": {
+              "type": "string",
+              "enum": ["cloudflare", "letsencrypt", "custom"],
+              "default": "cloudflare"
+            }
+          }
+        },
+        "github": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "organization": {
+              "type": "string",
+              "description": "GitHub organization name"
+            },
+            "repositories": {
+              "type": "object",
+              "properties": {
+                "frontend": { "type": "string" },
+                "backend": { "type": "string" },
+                "admin": { "type": "string" }
+              }
+            },
+            "branch": {
+              "type": "string",
+              "default": "main"
+            },
+            "autoMerge": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        },
+        "database": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["postgresql", "mysql", "mongodb", "sqlite", "none"],
+              "default": "postgresql"
+            },
+            "provider": {
+              "type": "string",
+              "enum": ["railway", "supabase", "planetscale", "neon", "custom"],
+              "default": "railway"
+            },
+            "pooling": {
+              "type": "boolean",
+              "default": true
+            },
+            "migrations": {
+              "type": "object",
+              "properties": {
+                "autoRun": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "path": {
+                  "type": "string",
+                  "default": "./database/migrations"
+                }
+              }
+            }
+          }
+        },
+        "services": {
+          "type": "object",
+          "properties": {
+            "frontend": {
+              "$ref": "#/$defs/serviceConfig"
+            },
+            "backend": {
+              "$ref": "#/$defs/serviceConfig"
+            },
+            "admin": {
+              "$ref": "#/$defs/serviceConfig"
+            },
+            "companion": {
+              "$ref": "#/$defs/serviceConfig"
+            }
+          }
+        },
+        "secrets": {
+          "type": "object",
+          "properties": {
+            "provider": {
+              "type": "string",
+              "enum": ["env", "vault", "aws-secrets", "railway"],
+              "default": "env"
+            },
+            "required": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "List of required secret keys"
+            },
+            "optional": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "List of optional secret keys"
+            }
+          }
+        },
+        "monitoring": {
+          "type": "object",
+          "properties": {
+            "errorTracking": {
+              "type": "object",
+              "properties": {
+                "enabled": { "type": "boolean", "default": true },
+                "provider": {
+                  "type": "string",
+                  "enum": ["sentry", "bugsnag", "rollbar", "none"],
+                  "default": "sentry"
+                }
+              }
+            },
+            "analytics": {
+              "type": "object",
+              "properties": {
+                "enabled": { "type": "boolean", "default": false },
+                "provider": {
+                  "type": "string",
+                  "enum": ["plausible", "fathom", "google", "none"]
+                }
+              }
+            },
+            "logging": {
+              "type": "object",
+              "properties": {
+                "level": {
+                  "type": "string",
+                  "enum": ["debug", "info", "warn", "error"],
+                  "default": "info"
+                },
+                "structured": {
+                  "type": "boolean",
+                  "default": true
+                }
+              }
+            }
+          }
+        },
+        "scaling": {
+          "type": "object",
+          "properties": {
+            "autoScale": {
+              "type": "boolean",
+              "default": false
+            },
+            "minInstances": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 1
+            },
+            "maxInstances": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 3
+            }
+          }
+        },
+        "ci": {
+          "type": "object",
+          "properties": {
+            "provider": {
+              "type": "string",
+              "enum": ["github-actions", "railway", "none"],
+              "default": "github-actions"
+            },
+            "checks": {
+              "type": "object",
+              "properties": {
+                "lint": { "type": "boolean", "default": true },
+                "test": { "type": "boolean", "default": true },
+                "build": { "type": "boolean", "default": true },
+                "typecheck": { "type": "boolean", "default": true }
+              }
+            },
+            "deployOn": {
+              "type": "object",
+              "properties": {
+                "push": { "type": "boolean", "default": true },
+                "pullRequest": { "type": "boolean", "default": false },
+                "tag": { "type": "boolean", "default": false }
+              }
+            }
+          }
+        }
+      }
+    },
+    "serviceConfig": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "healthCheck": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "default": "/health"
+            },
+            "interval": {
+              "type": "integer",
+              "minimum": 5,
+              "description": "Health check interval in seconds"
+            }
+          }
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "memory": {
+              "type": "string",
+              "pattern": "^\\d+(MB|GB)$",
+              "description": "Memory limit (e.g., '512MB', '2GB')"
+            },
+            "cpu": {
+              "type": "number",
+              "minimum": 0.1,
+              "description": "CPU cores"
+            }
+          }
+        },
+        "env": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Service-specific environment variables"
+        }
+      }
+    }
+  }
+}

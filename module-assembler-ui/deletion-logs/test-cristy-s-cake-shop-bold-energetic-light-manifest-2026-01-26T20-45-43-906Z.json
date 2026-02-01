@@ -1,0 +1,38 @@
+{
+  "projectName": "test-cristy-s-cake-shop-bold-energetic-light",
+  "savedAt": "2026-01-26T20:45:43.906Z",
+  "resources": {
+    "name": "test-cristy-s-cake-shop-bold-energetic-light",
+    "sanitizedName": "test-cristy-s-cake-shop-bold-energetic-light",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-bold-energetic-light-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-bold-energetic-light-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-bold-energetic-light-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

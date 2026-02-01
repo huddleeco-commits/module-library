@@ -1,0 +1,9 @@
+{
+  "name": "modal-system",
+  "type": "frontend",
+  "source": "slabtrack",
+  "extractedAt": "2026-01-08T13:05:46.345Z",
+  "files": [
+    "components/ui/Modal.jsx"
+  ]
+}

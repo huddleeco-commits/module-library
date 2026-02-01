@@ -1317,6 +1317,7 @@ router.get('/generations', async (req, res) => {
   const limit = parseInt(req.query.limit) || 20;
 
   try {
+    const db = require('../../database/db.cjs');
     if (!db || !db.getRecentGenerations) {
       return res.status(503).json({
         error: 'Database not available or tracking functions not loaded'

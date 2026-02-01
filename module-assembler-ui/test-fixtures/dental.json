@@ -1,0 +1,157 @@
+{
+  "id": "dental",
+  "name": "Dental Practice",
+  "icon": "🦷",
+  "business": {
+    "name": "Bright Smile Dental",
+    "location": "Austin, TX",
+    "tagline": "Your Smile, Our Priority",
+    "industry": "dental",
+    "teamSize": "5-10",
+    "priceRange": "$$",
+    "established": "2010",
+    "phone": "(555) 456-7890",
+    "email": "appointments@brightsmile-demo.com",
+    "address": "321 Healthcare Blvd, Suite 100, Austin, TX 78701",
+    "hours": {
+      "monday": "8:00 AM - 5:00 PM",
+      "tuesday": "8:00 AM - 5:00 PM",
+      "wednesday": "8:00 AM - 5:00 PM",
+      "thursday": "8:00 AM - 5:00 PM",
+      "friday": "8:00 AM - 3:00 PM",
+      "saturday": "Closed",
+      "sunday": "Closed"
+    }
+  },
+  "theme": {
+    "colors": {
+      "primary": "#0891B2",
+      "secondary": "#22D3EE",
+      "accent": "#06B6D4",
+      "background": "#F0FDFA",
+      "text": "#164E63"
+    },
+    "fonts": {
+      "heading": "Poppins",
+      "body": "Inter"
+    },
+    "style": "clean-medical"
+  },
+  "pages": {
+    "home": {
+      "hero": {
+        "headline": "Your Smile, Our Priority",
+        "subheadline": "Modern dental care with a gentle touch. State-of-the-art technology and compassionate care for the whole family.",
+        "cta": "Book Appointment",
+        "secondaryCta": "Call Now",
+        "backgroundImage": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1920"
+      },
+      "sections": [
+        {
+          "type": "features",
+          "title": "Why Choose Bright Smile",
+          "items": [
+            { "icon": "Shield", "title": "Gentle Care", "description": "Anxiety-free dentistry with sedation options available" },
+            { "icon": "Zap", "title": "Advanced Technology", "description": "Digital X-rays, laser dentistry, and same-day crowns" },
+            { "icon": "Users", "title": "Family Friendly", "description": "Comprehensive care for patients of all ages" },
+            { "icon": "Clock", "title": "Flexible Hours", "description": "Early morning and lunch appointments available" }
+          ]
+        },
+        {
+          "type": "services-preview",
+          "title": "Our Services",
+          "items": [
+            { "name": "General Dentistry", "description": "Exams, cleanings, fillings, and preventive care", "price": "From $150" },
+            { "name": "Cosmetic Dentistry", "description": "Whitening, veneers, and smile makeovers", "price": "From $350" },
+            { "name": "Restorative Care", "description": "Crowns, implants, and root canals", "price": "From $900" }
+          ]
+        },
+        {
+          "type": "testimonials",
+          "title": "Patient Reviews",
+          "items": [
+            { "name": "Michael T.", "text": "Best dental experience ever. Dr. Chen is incredibly gentle and thorough.", "rating": 5 },
+            { "name": "Jennifer L.", "text": "The whole staff is friendly and professional. My kids actually look forward to visits!", "rating": 5 },
+            { "name": "Robert K.", "text": "Finally found a dentist I trust. The technology here is impressive.", "rating": 5 }
+          ]
+        },
+        {
+          "type": "insurance",
+          "title": "Insurance Accepted",
+          "items": ["Delta Dental", "Cigna", "Aetna", "MetLife", "Blue Cross", "United Healthcare"]
+        }
+      ]
+    },
+    "services": {
+      "hero": {
+        "headline": "Dental Services",
+        "subheadline": "Comprehensive care for your entire family"
+      },
+      "categories": [
+        {
+          "name": "General Dentistry",
+          "items": [
+            { "name": "Dental Exam & Cleaning", "price": 150, "description": "Comprehensive exam with professional cleaning", "duration": "60 min" },
+            { "name": "Dental X-Rays", "price": 75, "description": "Digital x-rays for accurate diagnosis", "duration": "15 min" },
+            { "name": "Filling", "price": 200, "description": "Tooth-colored composite filling", "duration": "45 min" }
+          ]
+        },
+        {
+          "name": "Cosmetic Dentistry",
+          "items": [
+            { "name": "Teeth Whitening", "price": 350, "description": "Professional in-office whitening", "duration": "90 min" },
+            { "name": "Veneers", "price": 1200, "description": "Porcelain veneers per tooth", "duration": "2 visits" },
+            { "name": "Bonding", "price": 300, "description": "Cosmetic tooth repair", "duration": "60 min" }
+          ]
+        },
+        {
+          "name": "Restorative",
+          "items": [
+            { "name": "Crown", "price": 1100, "description": "Porcelain crown restoration", "duration": "2 visits" },
+            { "name": "Root Canal", "price": 900, "description": "Endodontic treatment", "duration": "90 min" },
+            { "name": "Dental Implant", "price": 3500, "description": "Titanium implant with crown", "duration": "Multiple visits" }
+          ]
+        }
+      ]
+    },
+    "about": {
+      "hero": {
+        "headline": "About Bright Smile Dental",
+        "subheadline": "Caring for Austin smiles since 2010"
+      },
+      "sections": [
+        {
+          "type": "story",
+          "title": "Our Story",
+          "content": "Founded in 2010 by Dr. Sarah Chen, Bright Smile Dental was built on the belief that everyone deserves access to gentle, high-quality dental care. We've grown from a small practice to a full-service dental office, but our commitment to patient comfort and excellent outcomes remains unchanged."
+        },
+        {
+          "type": "mission",
+          "title": "Our Mission",
+          "content": "To provide exceptional dental care in a warm, welcoming environment where patients feel comfortable and confident in their treatment."
+        }
+      ],
+      "team": [
+        { "name": "Dr. Sarah Chen", "role": "Lead Dentist, DMD", "bio": "15 years of experience in family and cosmetic dentistry", "image": "team1.jpg" },
+        { "name": "Dr. Michael Park", "role": "Dentist, DDS", "bio": "Specializing in restorative and implant dentistry", "image": "team2.jpg" },
+        { "name": "Lisa Thompson", "role": "Dental Hygienist", "bio": "Making cleanings comfortable for over 10 years", "image": "team3.jpg" }
+      ]
+    },
+    "contact": {
+      "hero": {
+        "headline": "Contact Us",
+        "subheadline": "Schedule your appointment today"
+      },
+      "info": {
+        "address": "321 Healthcare Blvd, Suite 100, Austin, TX 78701",
+        "phone": "(555) 456-7890",
+        "email": "appointments@brightsmile-demo.com",
+        "hours": "Mon-Thu: 8am-5pm, Fri: 8am-3pm"
+      },
+      "form": {
+        "fields": ["name", "email", "phone", "preferredDate", "message"],
+        "submitText": "Request Appointment"
+      }
+    }
+  }
+}

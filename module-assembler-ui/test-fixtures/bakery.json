@@ -1,0 +1,159 @@
+{
+  "id": "bakery",
+  "name": "Bakery",
+  "icon": "🥐",
+  "business": {
+    "name": "Sweet Rise Bakery",
+    "location": "Portland, OR",
+    "tagline": "Handcrafted Baked Goods, Made Fresh Daily",
+    "industry": "bakery",
+    "teamSize": "5-10",
+    "priceRange": "$$",
+    "established": "2019",
+    "phone": "(555) 234-8765",
+    "email": "hello@sweetrise-demo.com",
+    "address": "234 Alberta Street, Portland, OR 97211",
+    "hours": {
+      "monday": "7:00 AM - 3:00 PM",
+      "tuesday": "7:00 AM - 3:00 PM",
+      "wednesday": "7:00 AM - 3:00 PM",
+      "thursday": "7:00 AM - 3:00 PM",
+      "friday": "7:00 AM - 5:00 PM",
+      "saturday": "8:00 AM - 5:00 PM",
+      "sunday": "8:00 AM - 2:00 PM"
+    }
+  },
+  "theme": {
+    "colors": {
+      "primary": "#8B4513",
+      "secondary": "#F4A460",
+      "accent": "#DEB887",
+      "background": "#FFF8F0",
+      "text": "#3E2723"
+    },
+    "fonts": {
+      "heading": "Playfair Display",
+      "body": "Nunito"
+    },
+    "style": "warm-artisan"
+  },
+  "pages": {
+    "home": {
+      "hero": {
+        "headline": "Handcrafted Baked Goods, Made Fresh Daily",
+        "subheadline": "Artisan breads, flaky pastries, and custom cakes baked with love in Portland since 2019.",
+        "cta": "Order Online",
+        "secondaryCta": "View Menu",
+        "backgroundImage": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1920"
+      },
+      "sections": [
+        {
+          "type": "features",
+          "title": "Why Sweet Rise",
+          "items": [
+            { "icon": "Sunrise", "title": "Fresh Daily", "description": "Everything baked fresh each morning starting at 4am" },
+            { "icon": "Wheat", "title": "Quality Ingredients", "description": "Organic flour, local eggs, real butter - always" },
+            { "icon": "Heart", "title": "Made with Love", "description": "Small batch, handcrafted with traditional techniques" },
+            { "icon": "Leaf", "title": "Eco-Friendly", "description": "Sustainable packaging and local sourcing" }
+          ]
+        },
+        {
+          "type": "menu-preview",
+          "title": "Customer Favorites",
+          "items": [
+            { "name": "Butter Croissant", "price": 4.50, "description": "Flaky, buttery, 48-hour fermented dough" },
+            { "name": "Sourdough Loaf", "price": 8, "description": "Our signature wild yeast bread, crusty perfection" },
+            { "name": "Cinnamon Roll", "price": 5.50, "description": "Gooey, cream cheese frosted, dangerously addictive" },
+            { "name": "Almond Croissant", "price": 5.50, "description": "Filled with house-made almond cream, toasted almonds" }
+          ]
+        },
+        {
+          "type": "custom-cakes",
+          "title": "Custom Cakes & Catering",
+          "description": "From birthday cakes to wedding masterpieces, we create custom cakes for every occasion. Contact us to discuss your vision.",
+          "cta": "Inquire About Custom Orders"
+        },
+        {
+          "type": "testimonials",
+          "title": "What Our Customers Say",
+          "items": [
+            { "name": "Emily R.", "text": "The croissants are better than what I had in Paris. I'm not exaggerating!", "rating": 5 },
+            { "name": "Marcus T.", "text": "Their sourdough is the best in Portland. We go through a loaf every two days.", "rating": 5 },
+            { "name": "Jennifer S.", "text": "They made our wedding cake and it was stunning AND delicious. Can't recommend enough!", "rating": 5 }
+          ]
+        }
+      ]
+    },
+    "menu": {
+      "hero": {
+        "headline": "Our Menu",
+        "subheadline": "Fresh baked goods made with love"
+      },
+      "categories": [
+        {
+          "name": "Pastries",
+          "items": [
+            { "name": "Butter Croissant", "price": 4.50, "description": "Classic French croissant, 48-hour fermented" },
+            { "name": "Almond Croissant", "price": 5.50, "description": "Filled with almond cream, toasted almonds" },
+            { "name": "Pain au Chocolat", "price": 5, "description": "Dark chocolate batons in flaky pastry" },
+            { "name": "Cinnamon Roll", "price": 5.50, "description": "Cream cheese frosted, gooey center" },
+            { "name": "Morning Bun", "price": 4.50, "description": "Orange zest, cinnamon sugar, laminated dough" }
+          ]
+        },
+        {
+          "name": "Breads",
+          "items": [
+            { "name": "Sourdough Loaf", "price": 8, "description": "Wild yeast, 24-hour ferment, crusty" },
+            { "name": "Baguette", "price": 4, "description": "Traditional French, crispy crust" },
+            { "name": "Ciabatta", "price": 5, "description": "Italian, olive oil, perfect for sandwiches" },
+            { "name": "Focaccia", "price": 7, "description": "Rosemary, sea salt, olive oil" },
+            { "name": "Brioche Loaf", "price": 9, "description": "Rich, buttery, perfect for French toast" }
+          ]
+        },
+        {
+          "name": "Cakes & Sweets",
+          "items": [
+            { "name": "Chocolate Cake Slice", "price": 6, "description": "Triple layer, dark chocolate ganache" },
+            { "name": "Carrot Cake Slice", "price": 6, "description": "Cream cheese frosting, toasted walnuts" },
+            { "name": "Fruit Tart", "price": 5.50, "description": "Seasonal fruits, vanilla pastry cream" },
+            { "name": "Brownie", "price": 4, "description": "Fudgy, sea salt topped" }
+          ]
+        }
+      ]
+    },
+    "about": {
+      "hero": {
+        "headline": "Our Story",
+        "subheadline": "A labor of love since 2019"
+      },
+      "sections": [
+        {
+          "type": "story",
+          "title": "The Sweet Rise Story",
+          "content": "Sweet Rise began in 2019 when baker Sarah Mitchell decided to turn her passion into her profession. After years of perfecting recipes and training in France, she opened our Alberta Street location. Today, we're proud to be Portland's neighborhood bakery."
+        }
+      ],
+      "team": [
+        { "name": "Sarah Mitchell", "role": "Owner/Head Baker", "bio": "Trained in Paris, obsessed with perfect croissants", "image": "team1.jpg" },
+        { "name": "Tom Garcia", "role": "Bread Baker", "bio": "Sourdough whisperer, 5am starts for 10 years", "image": "team2.jpg" },
+        { "name": "Amy Chen", "role": "Pastry Chef", "bio": "Cake artist and dessert innovator", "image": "team3.jpg" }
+      ]
+    },
+    "contact": {
+      "hero": {
+        "headline": "Visit Us",
+        "subheadline": "Come smell the fresh bread"
+      },
+      "info": {
+        "address": "234 Alberta Street, Portland, OR 97211",
+        "phone": "(555) 234-8765",
+        "email": "hello@sweetrise-demo.com",
+        "hours": "Mon-Thu: 7am-3pm, Fri: 7am-5pm, Sat: 8am-5pm, Sun: 8am-2pm"
+      },
+      "form": {
+        "fields": ["name", "email", "orderType", "message"],
+        "submitText": "Send Message"
+      }
+    }
+  }
+}

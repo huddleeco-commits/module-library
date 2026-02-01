@@ -1,0 +1,38 @@
+{
+  "projectName": "test-cristy-s-cake-shop-classic-elegant-menu-focused",
+  "savedAt": "2026-01-26T21:18:33.953Z",
+  "resources": {
+    "name": "test-cristy-s-cake-shop-classic-elegant-menu-focused",
+    "sanitizedName": "test-cristy-s-cake-shop-classic-elegant-menu-focused",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-classic-elegant-menu-focused-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-classic-elegant-menu-focused-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-classic-elegant-menu-focused-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

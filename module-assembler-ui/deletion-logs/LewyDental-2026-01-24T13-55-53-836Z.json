@@ -1,0 +1,83 @@
+{
+  "projectName": "LewyDental",
+  "deletedAt": "2026-01-24T13:55:53.836Z",
+  "resourcesFound": {
+    "name": "LewyDental",
+    "sanitizedName": "lewydental",
+    "github": {
+      "repos": [
+        {
+          "name": "lewydental-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "lewydental-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "lewydental-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\LewyDental",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/lewydental-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/lewydental-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/lewydental-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\LewyDental"
+    },
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "lewydental",
+          "verified": true
+        },
+        {
+          "subdomain": "api.lewydental",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.lewydental",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

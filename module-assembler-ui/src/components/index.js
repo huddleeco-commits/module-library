@@ -34,3 +34,6 @@ export { default as PageCustomizer } from './PageCustomizer.jsx';
 
 // Dev Tools
 export { TestGenerator } from './TestGenerator.jsx';
+
+// Layout Intelligence
+export { LayoutSelector } from './LayoutSelector.jsx';

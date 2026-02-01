@@ -49,7 +49,8 @@ function createOrchestratorRoutes(deps) {
     db,
     INDUSTRY_LAYOUTS,
     buildLayoutContext,
-    getLayoutConfig
+    getLayoutConfig,
+    getLayoutConfigFull
   } = deps;
 
   // Rate limiter for orchestrate endpoints
@@ -566,6 +567,14 @@ router.post('/orchestrate', orchestrateRateLimiter, async (req, res) => {
               const client = new Anthropic({ apiKey });
               const MODEL_NAME = 'claude-sonnet-4-20250514';
 
+              // Get layout intelligence for this industry (Phase 2: auto-inject)
+              const layoutConfig = getLayoutConfigFull ? getLayoutConfigFull(sanitizedIndustry, null) : null;
+              if (layoutConfig && layoutConfig.detailedContext) {
+                console.log(`   🎯 Layout Intelligence: ${layoutConfig.categoryKey} → ${layoutConfig.layoutKey || 'default'}`);
+              } else {
+                console.log(`   📐 Layout Intelligence: none (using default structure)`);
+              }
+
               console.log(`   ⚡ Generating ${payload.pages.length} pages in parallel...`);
 
               // Generate pages in parallel
@@ -576,8 +585,8 @@ router.post('/orchestrate', orchestrateRateLimiter, async (req, res) => {
 
                   const otherPages = payload.pages.filter(p => p !== pageId).map(p => `/${p}`).join(', ');
 
-                  // Build orchestrator-specific page prompt
-                  const pagePrompt = buildOrchestratorPagePrompt(pageId, componentName, otherPages, description, promptConfig);
+                  // Build orchestrator-specific page prompt with layout intelligence
+                  const pagePrompt = buildOrchestratorPagePrompt(pageId, componentName, otherPages, description, promptConfig, layoutConfig);
 
                   const pageResponse = await client.messages.create({
                     model: MODEL_NAME,

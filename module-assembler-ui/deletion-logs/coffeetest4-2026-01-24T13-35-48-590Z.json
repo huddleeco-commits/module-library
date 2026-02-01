@@ -1,0 +1,83 @@
+{
+  "projectName": "coffeetest4",
+  "deletedAt": "2026-01-24T13:35:48.590Z",
+  "resourcesFound": {
+    "name": "coffeetest4",
+    "sanitizedName": "coffeetest4",
+    "github": {
+      "repos": [
+        {
+          "name": "coffeetest4-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "coffeetest4-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "coffeetest4-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\coffeetest4",
+      "exists": true
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/coffeetest4-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/coffeetest4-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/coffeetest4-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": {
+      "success": true,
+      "message": "Deleted C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\coffeetest4"
+    },
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "coffeetest4",
+          "verified": true
+        },
+        {
+          "subdomain": "api.coffeetest4",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.coffeetest4",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

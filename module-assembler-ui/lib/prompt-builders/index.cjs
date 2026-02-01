@@ -15,7 +15,16 @@ const {
 } = require('../configs/index.cjs');
 
 // Import layout context builder for industry-specific layouts
-const { buildLayoutContext } = require('../../config/industry-layouts.cjs');
+const {
+  buildLayoutContext,
+  getLayoutCategory,
+  buildDetailedLayoutContext,
+  getAvailableLayouts,
+  getLayoutConfigFull,
+  getPageLayout,
+  INDUSTRY_LAYOUTS,
+  PAGE_LAYOUTS
+} = require('../../config/industry-layouts.cjs');
 
 // Import video services for dynamic video fetching
 const { getIndustryVideo } = require('../services/video.cjs');
@@ -37,6 +46,383 @@ function initPromptBuilders(config) {
   LAYOUTS = config.LAYOUTS;
   EFFECTS = config.EFFECTS;
   SECTIONS = config.SECTIONS;
+}
+
+// ============================================
+// MOOD SLIDERS - Creative Style Interpretation
+// ============================================
+/**
+ * Interpret mood slider values and build a style context for AI generation
+ * Sliders: vibe, energy, era, density, price (0-100 scale, 50 = neutral)
+ *
+ * @param {Object} sliders - { vibe: 0-100, energy: 0-100, era: 0-100, density: 0-100, price: 0-100 }
+ * @returns {string} Context string for the AI prompt
+ */
+function buildMoodSliderContext(sliders) {
+  if (!sliders || typeof sliders !== 'object') {
+    return '';
+  }
+
+  const { vibe = 50, energy = 50, era = 50, density = 50, price = 50 } = sliders;
+
+  // Build style directives based on slider values
+  const styleDirectives = [];
+
+  // VIBE: Professional (0) vs Friendly (100)
+  if (vibe < 35) {
+    styleDirectives.push('TONE: Formal, corporate, authoritative. Use "we" language, professional terminology, sophisticated vocabulary.');
+    styleDirectives.push('IMAGERY: Corporate headshots, clean office spaces, handshakes, business settings.');
+  } else if (vibe > 65) {
+    styleDirectives.push('TONE: Warm, personal, approachable. Use conversational language, contractions, friendly invitations.');
+    styleDirectives.push('IMAGERY: Smiling faces, candid moments, community vibes, welcoming atmosphere.');
+  } else {
+    styleDirectives.push('TONE: Balanced professional-friendly. Approachable but competent.');
+  }
+
+  // ENERGY: Calm (0) vs Bold (100)
+  if (energy < 35) {
+    styleDirectives.push('VISUAL ENERGY: Muted colors, subtle animations, generous whitespace, soft shadows.');
+    styleDirectives.push('TYPOGRAPHY: Light font weights (300-400), refined serif fonts for headings, understated elegance.');
+    styleDirectives.push('ANIMATIONS: Minimal - gentle fades, slow reveals (800-1200ms), no bouncing or flashy effects.');
+  } else if (energy > 65) {
+    styleDirectives.push('VISUAL ENERGY: Vibrant saturated colors, bold contrasts, dynamic compositions.');
+    styleDirectives.push('TYPOGRAPHY: Heavy font weights (700-900), large impactful headlines, strong visual hierarchy.');
+    styleDirectives.push('ANIMATIONS: Dynamic - quick reveals (300-500ms), slide-ins, scale effects, engaging micro-interactions.');
+  } else {
+    styleDirectives.push('VISUAL ENERGY: Balanced - moderate color saturation, comfortable contrasts.');
+  }
+
+  // ERA: Classic (0) vs Modern (100)
+  if (era < 35) {
+    styleDirectives.push('STYLE ERA: Timeless, traditional, established. Think classic elegance, trust through heritage.');
+    styleDirectives.push('FONTS: Serif typefaces (Playfair Display, Merriweather, Georgia), traditional layouts.');
+    styleDirectives.push('ELEMENTS: Ornamental borders, traditional section dividers, established credibility markers.');
+  } else if (era > 65) {
+    styleDirectives.push('STYLE ERA: Cutting-edge, trendy, contemporary. Think startup-fresh, innovative, forward-thinking.');
+    styleDirectives.push('FONTS: Modern sans-serif (Inter, Outfit, Space Grotesk), asymmetric layouts, bold geometrics.');
+    styleDirectives.push('ELEMENTS: Gradient backgrounds, glassmorphism, floating cards, modern grid systems.');
+  } else {
+    styleDirectives.push('STYLE ERA: Contemporary classic - modern techniques with timeless sensibility.');
+  }
+
+  // DENSITY: Minimal (0) vs Rich (100)
+  if (density < 35) {
+    styleDirectives.push('CONTENT DENSITY: Minimal, spacious, focused. Less is more approach.');
+    styleDirectives.push('SECTIONS: 3-5 focused sections max, each with single clear purpose.');
+    styleDirectives.push('WHITESPACE: Generous padding (80-120px between sections), breathing room, visual rest.');
+  } else if (density > 65) {
+    styleDirectives.push('CONTENT DENSITY: Rich, detailed, comprehensive. Information-forward approach.');
+    styleDirectives.push('SECTIONS: 6-10 detailed sections with supporting subsections.');
+    styleDirectives.push('WHITESPACE: Efficient use of space, more compact layouts (40-60px between sections).');
+  } else {
+    styleDirectives.push('CONTENT DENSITY: Balanced - enough detail without overwhelming.');
+  }
+
+  // PRICE: Value (0) vs Premium (100)
+  if (price < 35) {
+    styleDirectives.push('MARKET POSITIONING: Value-focused, accessible, budget-friendly appeal.');
+    styleDirectives.push('COPY: Emphasize savings, deals, competitive pricing, "affordable", "best value".');
+    styleDirectives.push('DESIGN: Approachable, no-frills, clear pricing, emphasis on quantity/deals.');
+  } else if (price > 65) {
+    styleDirectives.push('MARKET POSITIONING: Premium, luxury, exclusive, high-end positioning.');
+    styleDirectives.push('COPY: Emphasize quality, craftsmanship, exclusivity, "bespoke", "premium", "finest".');
+    styleDirectives.push('DESIGN: Elevated aesthetics, luxurious textures, sophisticated color palette, refined details.');
+  } else {
+    styleDirectives.push('MARKET POSITIONING: Quality-value balance - good quality at fair price.');
+  }
+
+  // Build the context string
+  const context = `
+══════════════════════════════════════════════════════════════
+🎨 STYLE PREFERENCES - USER-SELECTED CREATIVE DIRECTION
+══════════════════════════════════════════════════════════════
+The user has customized their site's creative direction using style sliders.
+FOLLOW THESE DIRECTIVES TO MATCH THEIR VISION:
+
+${styleDirectives.join('\n\n')}
+
+SLIDER VALUES (0-100 scale, 50=neutral):
+- Vibe: ${vibe} (${vibe < 35 ? 'Professional' : vibe > 65 ? 'Friendly' : 'Balanced'})
+- Energy: ${energy} (${energy < 35 ? 'Calm/Refined' : energy > 65 ? 'Bold/Dynamic' : 'Balanced'})
+- Era: ${era} (${era < 35 ? 'Classic/Timeless' : era > 65 ? 'Modern/Trendy' : 'Contemporary'})
+- Density: ${density} (${density < 35 ? 'Minimal/Spacious' : density > 65 ? 'Rich/Detailed' : 'Balanced'})
+- Price: ${price} (${price < 35 ? 'Value-Focused' : price > 65 ? 'Premium/Luxury' : 'Quality-Value'})
+
+IMPORTANT: These preferences should influence EVERY aspect of the generated page:
+- Color choices and saturation levels
+- Font selections and weights
+- Animation timing and style
+- Content depth and section count
+- Copy tone and vocabulary
+- Overall visual impression
+══════════════════════════════════════════════════════════════
+`;
+
+  return context;
+}
+
+/**
+ * Convert mood slider values into concrete CSS styles for fallback pages
+ * This enables zero-cost previews that still reflect user preferences
+ *
+ * @param {Object} sliders - { vibe, energy, era, density, price } (0-100)
+ * @param {Object} baseColors - Base colors from industry config
+ * @returns {Object} Style configuration object
+ */
+function getSliderStyles(sliders, baseColors = {}) {
+  const {
+    vibe = 50,
+    energy = 50,
+    era = 50,
+    density = 50,
+    price = 50,
+    theme = 'light' // Explicit theme mode: 'light', 'medium', 'dark'
+  } = sliders || {};
+
+  // Base colors with fallbacks
+  const base = {
+    primary: baseColors.primary || '#2563eb',
+    accent: baseColors.accent || '#06b6d4',
+    text: baseColors.text || '#1a1a2e',
+    textMuted: baseColors.textMuted || '#64748b',
+    background: baseColors.background || '#ffffff',
+    surface: baseColors.surface || '#f8fafc'
+  };
+
+  // FONTS based on era slider
+  let fontHeading, fontBody, fontWeight;
+  if (era < 35) {
+    // Classic - serif fonts
+    fontHeading = "'Playfair Display', Georgia, serif";
+    fontBody = "'Merriweather', Georgia, serif";
+    fontWeight = '400';
+  } else if (era > 65) {
+    // Modern - clean sans-serif
+    fontHeading = "'Inter', 'Outfit', system-ui, sans-serif";
+    fontBody = "'Inter', system-ui, sans-serif";
+    fontWeight = '600';
+  } else {
+    // Balanced
+    fontHeading = "'DM Sans', 'Inter', system-ui, sans-serif";
+    fontBody = "system-ui, sans-serif";
+    fontWeight = '500';
+  }
+
+  // SPACING based on density slider
+  let sectionPadding, cardPadding, gap;
+  if (density < 35) {
+    // Minimal - lots of whitespace
+    sectionPadding = '120px 20px';
+    cardPadding = '40px';
+    gap = '48px';
+  } else if (density > 65) {
+    // Rich - tighter spacing
+    sectionPadding = '60px 20px';
+    cardPadding = '20px';
+    gap = '20px';
+  } else {
+    // Balanced
+    sectionPadding = '80px 20px';
+    cardPadding = '28px';
+    gap = '32px';
+  }
+
+  // BORDER RADIUS based on era
+  // Ultra-modern (90+) = sharp squared-off look
+  // Modern (65-90) = rounded
+  // Classic (<35) = subtle
+  let borderRadius;
+  if (era >= 90) {
+    borderRadius = '2px'; // Ultra-modern - sharp, squared-off, clean geometric
+  } else if (era < 35) {
+    borderRadius = '4px'; // Classic - subtle
+  } else if (era > 65) {
+    borderRadius = '16px'; // Modern - rounded
+  } else {
+    borderRadius = '8px'; // Balanced
+  }
+
+  // COLOR ADJUSTMENTS based on explicit theme mode and price positioning
+  let primaryColor = base.primary;
+  let accentColor = base.accent;
+  let surfaceColor = base.surface;
+
+  // LUXURY COLORS: When price is premium (>85), use luxury gold/champagne palette
+  const isLuxury = price > 85;
+  if (isLuxury) {
+    primaryColor = '#d4af37';      // Luxury gold
+    accentColor = '#c9a227';       // Darker gold accent
+    base.primary = primaryColor;
+    base.accent = accentColor;
+  } else if (price > 65) {
+    // Premium but not ultra-luxury - refined gold tones
+    primaryColor = '#b8860b';      // Dark goldenrod
+    accentColor = '#daa520';       // Goldenrod accent
+    base.primary = primaryColor;
+    base.accent = accentColor;
+  }
+
+  // Theme-based background colors (light/medium/dark)
+  if (theme === 'dark') {
+    // Dark theme - bold, dramatic backgrounds
+    if (isLuxury) {
+      // Luxury dark - rich charcoal/near-black
+      surfaceColor = '#1a1a1f';
+      base.text = '#f5f5f0';
+      base.textMuted = '#a8a8a0';
+      base.background = '#0d0d0f';
+    } else {
+      surfaceColor = '#0f172a';
+      base.text = '#f1f5f9';
+      base.textMuted = '#94a3b8';
+      base.background = '#0a0a0f';
+    }
+  } else if (theme === 'medium') {
+    // Medium theme - soft, subtle backgrounds (warm grays)
+    if (isLuxury) {
+      // Luxury medium - warm cream/champagne tones
+      surfaceColor = '#f5f0e6';
+      base.text = '#2d2a26';
+      base.textMuted = '#5c5955';
+      base.background = '#faf6ef';
+    } else {
+      surfaceColor = '#e5e5e5';
+      base.text = '#1f2937';
+      base.textMuted = '#4b5563';
+      base.background = '#f0f0f0';
+    }
+  } else if (isLuxury) {
+    // Luxury light - clean whites with warm undertones
+    surfaceColor = '#fdfbf7';
+    base.text = '#1f1e1c';
+    base.textMuted = '#4a4845';
+    base.background = '#ffffff';
+  }
+  // 'light' non-luxury theme keeps the default light colors
+
+  // HEADLINE STYLE based on vibe
+  let headlineStyle;
+  if (vibe < 35) {
+    // Professional
+    headlineStyle = 'uppercase';
+  } else {
+    headlineStyle = 'none';
+  }
+
+  // BUTTON STYLE based on energy
+  let buttonStyle;
+  if (energy < 35) {
+    // Calm - subtle buttons
+    buttonStyle = {
+      padding: '14px 28px',
+      borderRadius: borderRadius,
+      fontWeight: '500',
+      textTransform: 'none'
+    };
+  } else if (energy > 65) {
+    // Bold - prominent buttons
+    buttonStyle = {
+      padding: '18px 36px',
+      borderRadius: borderRadius,
+      fontWeight: '700',
+      textTransform: 'uppercase'
+    };
+  } else {
+    buttonStyle = {
+      padding: '16px 32px',
+      borderRadius: borderRadius,
+      fontWeight: '600',
+      textTransform: 'none'
+    };
+  }
+
+  // COPY TONE based on vibe
+  let copyTone;
+  if (vibe < 35) {
+    copyTone = {
+      greeting: 'Welcome.',
+      cta: 'Learn More',
+      about: 'Our firm has been delivering excellence since establishment.',
+      valueWords: ['expertise', 'professional', 'trusted', 'established']
+    };
+  } else if (vibe > 65) {
+    copyTone = {
+      greeting: "Hey there! We're so glad you're here.",
+      cta: "Let's Get Started!",
+      about: "We're a passionate team that loves what we do.",
+      valueWords: ['friendly', 'caring', 'community', 'family']
+    };
+  } else {
+    copyTone = {
+      greeting: 'Welcome to our business.',
+      cta: 'Get Started',
+      about: 'We are dedicated to providing quality service.',
+      valueWords: ['quality', 'reliable', 'dedicated', 'experienced']
+    };
+  }
+
+  // PRICE POSITIONING copy
+  let priceTone;
+  if (price < 35) {
+    priceTone = {
+      valueMessage: 'Affordable quality you can count on.',
+      priceLabel: 'Great Value',
+      words: ['affordable', 'value', 'savings', 'budget-friendly']
+    };
+  } else if (price > 65) {
+    priceTone = {
+      valueMessage: 'Experience the finest quality and craftsmanship.',
+      priceLabel: 'Premium',
+      words: ['premium', 'luxury', 'exclusive', 'bespoke', 'finest']
+    };
+  } else {
+    priceTone = {
+      valueMessage: 'Quality service at fair prices.',
+      priceLabel: 'Quality',
+      words: ['quality', 'value', 'professional', 'reliable']
+    };
+  }
+
+  return {
+    // Typography
+    fontHeading,
+    fontBody,
+    fontWeight,
+    headlineStyle,
+
+    // Spacing
+    sectionPadding,
+    cardPadding,
+    gap,
+    borderRadius,
+
+    // Colors (adjusted)
+    colors: {
+      primary: primaryColor,
+      accent: accentColor,
+      text: base.text,
+      textMuted: base.textMuted,
+      background: base.background,
+      surface: surfaceColor
+    },
+
+    // Theme mode
+    theme,
+    isDark: theme === 'dark',
+    isMedium: theme === 'medium',
+    isLuxury: price > 85,
+    isPremium: price > 65,
+
+    // Button styles
+    buttonStyle,
+
+    // Copy/content tone
+    copyTone,
+    priceTone,
+
+    // Raw slider values for reference
+    sliders: { vibe, energy, era, density, price, theme }
+  };
 }
 
 // ============================================
@@ -668,6 +1054,30 @@ function getIndustryImageUrls(industryName) {
       ],
       searchTerms: ['pizza chef', 'pizzeria', 'pizza making', 'italian restaurant']
     },
+    // Coffee Shop / Cafe - cozy coffee house atmosphere
+    coffee: {
+      hero: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1920', // Cozy coffee shop interior
+      heroVideo: 'https://videos.pexels.com/video-files/3214107/3214107-uhd_2560_1440_25fps.mp4', // Coffee being made
+      team: [
+        'https://images.unsplash.com/photo-1556745757-8d76bdb6984b?w=800', // Barista making coffee
+        'https://images.unsplash.com/photo-1557862921-37829c790f19?w=800', // Barista portrait
+        'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800', // Coffee shop employee
+        'https://images.unsplash.com/photo-1559305616-3f99cd43e353?w=800'  // Coffee roaster
+      ],
+      gallery: [
+        'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800', // Latte art
+        'https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=800', // Coffee and pastry
+        'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800', // Coffee cup
+        'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=800', // Coffee beans
+        'https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?w=800', // Pastries display
+        'https://images.unsplash.com/photo-1498804103079-a6351b050096?w=800'  // Cozy cafe scene
+      ],
+      services: [
+        'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800', // Latte art
+        'https://images.unsplash.com/photo-1556745757-8d76bdb6984b?w=800'  // Barista at work
+      ],
+      searchTerms: ['coffee shop', 'barista', 'latte art', 'cafe interior', 'coffee beans', 'espresso', 'cozy cafe']
+    },
     // Luxury Steakhouse - upscale dining, dry-aged beef, wine, elegant atmosphere
     steakhouse: {
       hero: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920', // Fine dining table setting
@@ -848,12 +1258,16 @@ function getIndustryImageUrls(industryName) {
     config = imageConfig.salon;
   } else if (industry.includes('pizza') || industry.includes('pizzeria')) {
     config = imageConfig.pizza;
+  } else if (industry.includes('coffee') || industry.includes('cafe') || industry.includes('espresso') ||
+             industry.includes('roaster') || industry.includes('tea house')) {
+    console.log(`   ☕ COFFEE SHOP MATCH! Using coffee config with video: ${imageConfig.coffee.heroVideo}`);
+    config = imageConfig.coffee;
   } else if (industry.includes('steakhouse') || industry.includes('steak house') ||
              industry.includes('prime') || industry.includes('chophouse') ||
              (industry.includes('steak') && (industry.includes('luxury') || industry.includes('fine') || industry.includes('upscale')))) {
     console.log(`   🥩 STEAKHOUSE MATCH! Using steakhouse config with video: ${imageConfig.steakhouse.heroVideo}`);
     config = imageConfig.steakhouse;
-  } else if (industry.includes('restaurant') || industry.includes('food') || industry.includes('dining') || industry.includes('cafe')) {
+  } else if (industry.includes('restaurant') || industry.includes('food') || industry.includes('dining')) {
     config = imageConfig.restaurant;
   } else if (industry.includes('dental') || industry.includes('dentist')) {
     config = imageConfig.dental;
@@ -1206,6 +1620,38 @@ async function buildFreshModePrompt(pageId, pageName, otherPages, description, p
   const uploadedAssets = description.uploadedAssets || null;
   const imageDescription = description.imageDescription || '';
   const assetsContext = buildUploadedAssetsContext(uploadedAssets, imageDescription);
+
+  // EXTRACT USER-PASTED MENU TEXT (separate from uploaded files)
+  const pastedMenuText = description.menuText || '';
+  const menuTextContext = pastedMenuText.trim() ? `
+══════════════════════════════════════════════════════════════
+USER'S MENU ITEMS (PASTED TEXT) - USE THIS ACTUAL DATA!
+══════════════════════════════════════════════════════════════
+${pastedMenuText.substring(0, 4000)}
+
+CRITICAL INSTRUCTIONS FOR MENU PAGE:
+1. Use the EXACT items and prices listed above
+2. Parse categories from ALL CAPS headers or lines ending with ":"
+3. Create a visually appealing menu layout with these real items
+4. DO NOT make up menu items - use ONLY what the user provided
+5. If the page is "menu", this content is your PRIMARY data source
+══════════════════════════════════════════════════════════════
+` : '';
+
+  // EXTRACT USER BUSINESS DATA (hours, location, team, etc.)
+  const businessLocation = description.location || description.businessLocation || '';
+  const businessHours = description.hours || null;
+  const businessDataContext = (businessLocation || businessHours) ? `
+══════════════════════════════════════════════════════════════
+BUSINESS DETAILS - USE THESE REAL VALUES
+══════════════════════════════════════════════════════════════
+${businessLocation ? `LOCATION: ${businessLocation}` : ''}
+${businessHours ? `HOURS OF OPERATION: (use in Contact page and header)
+${JSON.stringify(businessHours, null, 2)}` : ''}
+
+Use this REAL location and hours data in the Contact page and anywhere hours/location are displayed.
+══════════════════════════════════════════════════════════════
+` : '';
   
   // EXTRACT EXTRA DETAILS FROM USER
   const extraDetails = description.extraDetails || '';
@@ -1242,6 +1688,13 @@ Replace any standard elements with the user's specified alternatives.
   // Build smart context inference for minimal input
   const businessInput = description.text || 'A professional business';
   const smartContextGuide = buildSmartContextGuide(businessInput, industry.name);
+
+  // Build mood slider context (user's creative direction preferences)
+  const moodSliders = description.moodSliders || null;
+  const moodSliderContext = buildMoodSliderContext(moodSliders);
+  if (moodSliders) {
+    console.log(`   🎨 Mood sliders applied: vibe=${moodSliders.vibe}, energy=${moodSliders.energy}, era=${moodSliders.era}, density=${moodSliders.density}, price=${moodSliders.price}`);
+  }
 
   // Get industry-specific CONTEXT-AWARE image URLs
   const industryImages = getIndustryImageUrls(industry.name || businessInput);
@@ -1465,7 +1918,7 @@ INFERENCE RULES:
    - Realistic business hours for the industry
    - Genuine-sounding testimonials with first names
 
-${rebuildContext}${inspiredContext}${assetsContext}${extraDetailsContext}${layoutContext}${imageContext}
+${rebuildContext}${inspiredContext}${assetsContext}${extraDetailsContext}${menuTextContext}${businessDataContext}${layoutContext}${imageContext}${moodSliderContext}
 ══════════════════════════════════════════════════════════════
 CRITICAL: STATISTICS & NUMBERS - NEVER USE ZEROS!
 ══════════════════════════════════════════════════════════════
@@ -2991,8 +3444,15 @@ Use their actual product images: ${images.slice(0, 8).map(i => i.src).join(', ')
 /**
  * Build page prompt specifically for Orchestrator mode
  * Streamlined version optimized for orchestrator-generated businesses
+ *
+ * @param {string} pageId - Page identifier (home, about, services, etc.)
+ * @param {string} componentName - React component name
+ * @param {string} otherPages - List of other pages in the site
+ * @param {Object} description - Business description object
+ * @param {Object} promptConfig - Prompt configuration (colors, industry, etc.)
+ * @param {Object} [layoutConfig] - Optional layout configuration for layout intelligence
  */
-function buildOrchestratorPagePrompt(pageId, componentName, otherPages, description, promptConfig) {
+function buildOrchestratorPagePrompt(pageId, componentName, otherPages, description, promptConfig, layoutConfig = null) {
   const businessName = description.businessName || promptConfig.businessName || 'Our Business';
   const tagline = description.tagline || '';
   const cta = description.callToAction || 'Get Started';
@@ -3003,6 +3463,10 @@ function buildOrchestratorPagePrompt(pageId, componentName, otherPages, descript
   // Get industry-specific images
   const industryImages = getIndustryImageUrls(industry);
 
+  // Check if we have layout intelligence
+  const hasLayoutIntelligence = layoutConfig && layoutConfig.detailedContext;
+
+  // Generic page type guide (used when no layout intelligence)
   const pageTypeGuide = {
     home: `HERO SECTION with impactful headline, tagline, and CTA button. FEATURES/SERVICES preview. TESTIMONIALS. About preview. Contact CTA.`,
     about: `Company story and mission. Team section with photos. Values/philosophy. Timeline or milestones. Trust badges.`,
@@ -3018,7 +3482,19 @@ function buildOrchestratorPagePrompt(pageId, componentName, otherPages, descript
     blog: `Blog post previews in card grid. Categories sidebar. Search placeholder. Featured posts.`
   };
 
-  const pageGuide = pageTypeGuide[pageId] || `Create appropriate content sections for a ${pageId} page.`;
+  // Use layout intelligence for home page if available, otherwise use generic guide
+  let pageGuide;
+  if (hasLayoutIntelligence && (pageId === 'home' || pageId === 'landing')) {
+    // For home page with layout intelligence, the detailed context includes section order
+    pageGuide = 'Follow the LAYOUT INTELLIGENCE section order below EXACTLY.';
+  } else {
+    pageGuide = pageTypeGuide[pageId] || `Create appropriate content sections for a ${pageId} page.`;
+  }
+
+  // Build layout intelligence block if available
+  const layoutIntelligenceBlock = hasLayoutIntelligence ? `
+${layoutConfig.detailedContext}
+` : '';
 
   return `You are an expert React developer creating a ${pageId.toUpperCase()} page for "${businessName}".
 
@@ -3031,7 +3507,7 @@ BUSINESS CONTEXT:
 
 PAGE REQUIREMENTS:
 ${pageGuide}
-
+${layoutIntelligenceBlock}
 OTHER PAGES IN THIS SITE: ${otherPages || 'none'}
 
 DESIGN SYSTEM:
@@ -3067,23 +3543,34 @@ CRITICAL:
 Generate the complete ${componentName}Page.jsx component:`;
 }
 
-function buildFallbackPage(componentName, pageId, promptConfig, industry) {
-  // Ensure all color properties have fallbacks (promptConfig.colors may exist but be missing some properties)
-  const defaultColors = { primary: '#0a1628', accent: '#06b6d4', text: '#1a1a2e', textMuted: '#4a5568', surface: '#f8f9fa' };
-  const colors = {
-    ...defaultColors,
-    ...(promptConfig?.colors || {})
+function buildFallbackPage(componentName, pageId, promptConfig, industry, moodSliders = null) {
+  // Get slider-aware styles
+  const sliderStyles = getSliderStyles(moodSliders, promptConfig?.colors);
+
+  // Use slider-adjusted colors and typography
+  const colors = sliderStyles.colors;
+  const typography = {
+    heading: sliderStyles.fontHeading,
+    body: sliderStyles.fontBody
   };
-  const typography = promptConfig?.typography || { heading: 'Georgia, serif' };
   const displayName = toNavLabel(pageId);
 
   // Get industry-specific data for richer fallback pages
   const fixture = industry ? getIndustryFixture(industry) : null;
   const sampleData = industry ? getSampleData(industry) : null;
-  const terminology = fixture?.terminology || { items: 'Services', action: 'Get Started' };
+  const terminology = fixture?.terminology || { items: 'Services', action: sliderStyles.copyTone.cta };
+
+  // Get copy tone from sliders
+  const { copyTone, priceTone, buttonStyle, isDark } = sliderStyles;
 
   // Generate page-specific content based on pageId
   const pageType = pageId.toLowerCase();
+
+  // Background and text colors based on dark mode
+  const bgColor = isDark ? '#0a0a0f' : colors.background;
+  const heroGradient = isDark
+    ? `linear-gradient(135deg, #1a1a2e 0%, ${colors.primary} 100%)`
+    : `linear-gradient(135deg, ${colors.primary} 0%, ${colors.accent || colors.primary} 100%)`;
 
   // HOME PAGE - Hero + Features
   if (pageType === 'home' || pageType === 'landing') {
@@ -3092,51 +3579,68 @@ import { Link } from 'react-router-dom';
 
 const ${componentName}Page = () => {
   return (
-    <div style={{ minHeight: '100vh' }}>
+    <div style={{ minHeight: '100vh', background: '${bgColor}' }}>
       {/* Hero Section */}
       <section style={{
-        padding: '120px 20px 80px',
-        background: 'linear-gradient(135deg, ${colors.primary} 0%, ${colors.accent || colors.primary} 100%)',
+        padding: '${sliderStyles.sectionPadding}',
+        paddingTop: '140px',
+        background: '${heroGradient}',
         color: 'white',
         textAlign: 'center'
       }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <h1 style={{ fontSize: '48px', fontFamily: "${typography.heading}", marginBottom: '24px', fontWeight: 700 }}>
-            Welcome to Our Business
+          <h1 style={{
+            fontSize: '${sliderStyles.sliders.energy > 65 ? '56px' : '48px'}',
+            fontFamily: "${typography.heading}",
+            marginBottom: '24px',
+            fontWeight: ${sliderStyles.fontWeight},
+            textTransform: '${sliderStyles.headlineStyle}',
+            letterSpacing: '${sliderStyles.sliders.era < 35 ? '2px' : '0'}'
+          }}>
+            ${copyTone.greeting.replace("We're so glad you're here.", '')}
           </h1>
-          <p style={{ fontSize: '20px', opacity: 0.9, marginBottom: '32px', lineHeight: 1.6 }}>
-            Quality ${terminology.items.toLowerCase()} you can trust. Let us help you achieve your goals.
+          <p style={{ fontSize: '20px', opacity: 0.9, marginBottom: '32px', lineHeight: 1.7, fontFamily: "${typography.body}" }}>
+            ${priceTone.valueMessage} ${terminology.items} you can ${copyTone.valueWords[2] || 'trust'}.
           </p>
           <Link to="/contact" style={{
             display: 'inline-block',
-            padding: '16px 32px',
-            background: 'white',
-            color: '${colors.primary}',
+            padding: '${buttonStyle.padding}',
+            background: '${isDark ? colors.accent : 'white'}',
+            color: '${isDark ? 'white' : colors.primary}',
             textDecoration: 'none',
-            borderRadius: '8px',
-            fontWeight: 600,
-            fontSize: '18px'
+            borderRadius: '${sliderStyles.borderRadius}',
+            fontWeight: ${buttonStyle.fontWeight},
+            fontSize: '18px',
+            textTransform: '${buttonStyle.textTransform}'
           }}>
-            ${terminology.action}
+            ${copyTone.cta}
           </Link>
         </div>
       </section>
 
       {/* Features Section */}
-      <section style={{ padding: '80px 20px', maxWidth: '1200px', margin: '0 auto' }}>
-        <h2 style={{ fontSize: '32px', color: '${colors.text}', textAlign: 'center', marginBottom: '48px', fontFamily: "${typography.heading}" }}>
+      <section style={{ padding: '${sliderStyles.sectionPadding}', maxWidth: '1200px', margin: '0 auto' }}>
+        <h2 style={{
+          fontSize: '32px',
+          color: '${colors.text}',
+          textAlign: 'center',
+          marginBottom: '${sliderStyles.gap}',
+          fontFamily: "${typography.heading}",
+          textTransform: '${sliderStyles.headlineStyle}'
+        }}>
           Why Choose Us
         </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '32px' }}>
-          {['Quality', 'Experience', 'Trust'].map((feature, idx) => (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '${sliderStyles.gap}' }}>
+          {['${copyTone.valueWords[0] || 'Quality'}', '${copyTone.valueWords[1] || 'Experience'}', '${copyTone.valueWords[2] || 'Trust'}'].map((feature, idx) => (
             <div key={idx} style={{
-              padding: '32px',
-              background: '${colors.surface}',
-              borderRadius: '12px',
-              textAlign: 'center'
+              padding: '${sliderStyles.cardPadding}',
+              background: '${isDark ? 'rgba(255,255,255,0.05)' : colors.surface}',
+              borderRadius: '${sliderStyles.borderRadius}',
+              textAlign: 'center',
+              border: '${isDark ? '1px solid rgba(255,255,255,0.1)' : 'none'}'
             }}>
-              <h3 style={{ fontSize: '20px', color: '${colors.primary}', marginBottom: '12px' }}>{feature}</h3>
-              <p style={{ color: '${colors.textMuted}', lineHeight: 1.6 }}>
+              <h3 style={{ fontSize: '20px', color: '${colors.primary}', marginBottom: '12px', textTransform: 'capitalize' }}>{feature}</h3>
+              <p style={{ color: '${colors.textMuted}', lineHeight: 1.6, fontFamily: "${typography.body}" }}>
                 We pride ourselves on delivering exceptional {feature.toLowerCase()} in everything we do.
               </p>
             </div>
@@ -3446,7 +3950,7 @@ const ${componentName}Page = () => {
       <p style={{ color: '${colors.textMuted}', fontSize: '18px', lineHeight: 1.7, marginBottom: '32px' }}>
         Welcome to the ${displayName} page. Content coming soon.
       </p>
-      <Link to="/" style={{
+      <Link to="/home" style={{
         display: 'inline-block',
         padding: '12px 24px',
         background: '${colors.primary}',
@@ -4108,7 +4612,7 @@ function NavWrapper({ children }) {
   return (
     <>${emergencyBanner}${promoBanner}
       <nav style={styles.nav}>
-        <Link to="/" style={styles.navBrand}>
+        <Link to="/home" style={styles.navBrand}>
           <span style={styles.brandText}>${name.replace(/-/g, ' ').replace(/\s+/g, ' ').trim()}</span>
         </Link>
 
@@ -4525,7 +5029,7 @@ export default App;
 function buildFallbackThemeCss(promptConfig) {
   const colors = promptConfig?.colors || {};
   const typography = promptConfig?.typography || {};
-  
+
   return `/* Auto-generated theme from industry config */
 :root {
   --color-primary: ${colors.primary || '#6366f1'};
@@ -4537,10 +5041,952 @@ function buildFallbackThemeCss(promptConfig) {
   --color-text-muted: ${colors.textMuted || '#64748b'};
   --font-heading: ${typography.heading || "'Inter', sans-serif"};
   --font-body: ${typography.body || "system-ui, sans-serif"};
-  --border-radius: 8px;
+  --border-radius: ${ctx.inputRadius || '8px'};
 }
 body { margin: 0; font-family: var(--font-body); color: var(--color-text); }
 `;
+}
+
+// ============================================
+// LAYOUT-AWARE PREVIEW GENERATOR
+// Generates HTML preview based on layout's sectionOrder
+// Used for zero-cost testing with different structures
+// ============================================
+
+/**
+ * Section HTML generators - each returns HTML for a specific section type
+ */
+const SECTION_GENERATORS = {
+  // HERO SECTIONS
+  'hero-split': (ctx) => `
+    <section style="display: grid; grid-template-columns: 1fr 1fr; min-height: 500px; background: ${ctx.colors.background};">
+      <div style="padding: 80px 60px; display: flex; flex-direction: column; justify-content: center;">
+        <h1 style="font-size: 48px; color: ${ctx.colors.text}; margin-bottom: 20px; font-family: ${ctx.fonts.heading};">${ctx.businessName}</h1>
+        <p style="font-size: 18px; color: ${ctx.colors.textMuted}; margin-bottom: 32px; line-height: 1.6;">${ctx.tagline}</p>
+        <div><button style="padding: 16px 32px; background: ${ctx.colors.primary}; color: white; border: none; border-radius: ${ctx.inputRadius || '8px'}; font-size: 16px; cursor: pointer;">${ctx.cta}</button></div>
+      </div>
+      <div style="background: linear-gradient(135deg, ${ctx.colors.primary}22, ${ctx.colors.accent || ctx.colors.primary}33); display: flex; align-items: center; justify-content: center;">
+        <div style="width: 300px; height: 300px; background: ${ctx.colors.primary}44; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 48px;">📸</div>
+      </div>
+    </section>`,
+
+  'hero-centered': (ctx) => `
+    <section style="padding: 120px 40px; text-align: center; background: linear-gradient(135deg, ${ctx.colors.primary}, ${ctx.colors.accent || ctx.colors.primary}); color: white;">
+      <h1 style="font-size: 56px; margin-bottom: 24px; font-family: ${ctx.fonts.heading};">${ctx.businessName}</h1>
+      <p style="font-size: 20px; opacity: 0.9; margin-bottom: 40px; max-width: 600px; margin-left: auto; margin-right: auto;">${ctx.tagline}</p>
+      <button style="padding: 18px 40px; background: white; color: ${ctx.colors.primary}; border: none; border-radius: ${ctx.inputRadius || '8px'}; font-size: 18px; font-weight: 600; cursor: pointer;">${ctx.cta}</button>
+    </section>`,
+
+  'hero-image-first': (ctx) => `
+    <section style="display: grid; grid-template-columns: 1fr 1fr; min-height: 500px;">
+      <div style="background: linear-gradient(135deg, ${ctx.colors.primary}33, ${ctx.colors.accent || ctx.colors.primary}22); display: flex; align-items: center; justify-content: center;">
+        <div style="width: 350px; height: 280px; background: ${ctx.colors.surface}; border-radius: ${ctx.borderRadius}; display: flex; align-items: center; justify-content: center; font-size: 64px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">🍽️</div>
+      </div>
+      <div style="padding: 80px 60px; display: flex; flex-direction: column; justify-content: center; background: ${ctx.colors.background};">
+        <h1 style="font-size: 44px; color: ${ctx.colors.text}; margin-bottom: 20px; font-family: ${ctx.fonts.heading};">${ctx.businessName}</h1>
+        <p style="font-size: 18px; color: ${ctx.colors.textMuted}; margin-bottom: 32px;">${ctx.tagline}</p>
+        <button style="padding: 16px 32px; background: ${ctx.colors.primary}; color: white; border: none; border-radius: ${ctx.inputRadius || '8px'}; width: fit-content;">${ctx.cta}</button>
+      </div>
+    </section>`,
+
+  'dental-hero': (ctx) => `
+    <section style="background: linear-gradient(135deg, ${ctx.colors.primary}, ${ctx.colors.secondary || ctx.colors.primary}); color: white; padding: 100px 40px; text-align: center;">
+      <div style="background: rgba(255,255,255,0.1); padding: 12px 24px; border-radius: ${ctx.inputRadius || '8px'}; display: inline-block; margin-bottom: 24px; font-size: 14px;">🦷 Accepting New Patients</div>
+      <h1 style="font-size: 48px; margin-bottom: 20px; font-family: ${ctx.fonts.heading};">${ctx.businessName}</h1>
+      <p style="font-size: 20px; opacity: 0.9; margin-bottom: 32px;">${ctx.tagline || 'Your smile is our priority'}</p>
+      <div style="display: flex; gap: 16px; justify-content: center;">
+        <button style="padding: 16px 32px; background: white; color: ${ctx.colors.primary}; border: none; border-radius: ${ctx.inputRadius || '8px'}; font-weight: 600;">Book Appointment</button>
+        <button style="padding: 16px 32px; background: transparent; color: white; border: 2px solid white; border-radius: ${ctx.inputRadius || '8px'};">Call Now</button>
+      </div>
+    </section>`,
+
+  'medical-hero': (ctx) => `
+    <section style="background: ${ctx.colors.background}; padding: 100px 40px;">
+      <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;">
+        <div>
+          <div style="background: #ef444422; color: #ef4444; padding: 8px 16px; border-radius: 6px; display: inline-block; margin-bottom: 20px; font-size: 13px;">🚨 For emergencies, call 911</div>
+          <h1 style="font-size: 44px; color: ${ctx.colors.text}; margin-bottom: 20px; font-family: ${ctx.fonts.heading};">${ctx.businessName}</h1>
+          <p style="font-size: 18px; color: ${ctx.colors.textMuted}; margin-bottom: 32px; line-height: 1.7;">Compassionate healthcare for you and your family. We accept most major insurance plans.</p>
+          <button style="padding: 16px 32px; background: ${ctx.colors.primary}; color: white; border: none; border-radius: ${ctx.inputRadius || '8px'};">Schedule Visit</button>
+        </div>
+        <div style="background: ${ctx.colors.surface}; border-radius: ${ctx.borderRadius}; padding: 40px; text-align: center;">
+          <div style="font-size: 80px; margin-bottom: 20px;">🏥</div>
+          <p style="color: ${ctx.colors.textMuted};">Caring for our community since 1995</p>
+        </div>
+      </div>
+    </section>`,
+
+  'realestate-hero': (ctx) => `
+    <section style="background: linear-gradient(135deg, ${ctx.colors.primary}11, ${ctx.colors.accent || ctx.colors.primary}22); padding: 80px 40px;">
+      <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
+        <h1 style="font-size: 48px; color: ${ctx.colors.text}; margin-bottom: 16px; font-family: ${ctx.fonts.heading};">${ctx.businessName}</h1>
+        <p style="font-size: 20px; color: ${ctx.colors.textMuted}; margin-bottom: 40px;">${ctx.tagline || 'Find your dream home'}</p>
+        <div style="background: white; padding: 24px; border-radius: ${ctx.borderRadius}; box-shadow: 0 10px 40px rgba(0,0,0,0.1); display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
+          <input placeholder="Location..." style="padding: 16px; border: 1px solid #ddd; border-radius: ${ctx.inputRadius || '8px'}; width: 200px;">
+          <select style="padding: 16px; border: 1px solid #ddd; border-radius: ${ctx.inputRadius || '8px'}; width: 150px;"><option>Price Range</option></select>
+          <select style="padding: 16px; border: 1px solid #ddd; border-radius: ${ctx.inputRadius || '8px'}; width: 120px;"><option>Beds</option></select>
+          <button style="padding: 16px 32px; background: ${ctx.colors.primary}; color: white; border: none; border-radius: ${ctx.inputRadius || '8px'};">Search</button>
+        </div>
+      </div>
+    </section>`,
+
+  // SERVICES/FEATURES SECTIONS
+  'services-grid': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.background};">
+      <div style="max-width: 1200px; margin: 0 auto;">
+        <h2 style="font-size: 36px; color: ${ctx.colors.text}; text-align: center; margin-bottom: 48px; font-family: ${ctx.fonts.heading};">Our Services</h2>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;">
+          ${['Service 1', 'Service 2', 'Service 3'].map(s => `
+            <div style="padding: 32px; background: ${ctx.colors.surface}; border-radius: ${ctx.borderRadius}; text-align: center;">
+              <div style="font-size: 40px; margin-bottom: 16px;">⭐</div>
+              <h3 style="font-size: 20px; color: ${ctx.colors.text}; margin-bottom: 12px;">${s}</h3>
+              <p style="color: ${ctx.colors.textMuted}; line-height: 1.6;">Professional service tailored to your needs.</p>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`,
+
+  'dental-services': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.surface};">
+      <div style="max-width: 1200px; margin: 0 auto;">
+        <h2 style="font-size: 36px; color: ${ctx.colors.text}; text-align: center; margin-bottom: 16px; font-family: ${ctx.fonts.heading};">Our Dental Services</h2>
+        <p style="text-align: center; color: ${ctx.colors.textMuted}; margin-bottom: 48px;">Comprehensive care for your entire family</p>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;">
+          ${['🦷 General Dentistry', '✨ Cosmetic', '🔧 Restorative', '👶 Pediatric'].map(s => `
+            <div style="padding: 28px; background: white; border-radius: ${ctx.borderRadius}; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+              <div style="font-size: 32px; margin-bottom: 12px;">${s.split(' ')[0]}</div>
+              <h3 style="font-size: 16px; color: ${ctx.colors.text}; margin: 0;">${s.split(' ').slice(1).join(' ')}</h3>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`,
+
+  'medical-services-grid': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.background};">
+      <div style="max-width: 1200px; margin: 0 auto;">
+        <h2 style="font-size: 36px; color: ${ctx.colors.text}; text-align: center; margin-bottom: 48px; font-family: ${ctx.fonts.heading};">Medical Services</h2>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+          ${['🩺 Primary Care', '💉 Vaccinations', '🔬 Lab Services', '❤️ Cardiology', '🦴 Orthopedics', '👁️ Eye Care'].map(s => `
+            <div style="padding: 24px; background: ${ctx.colors.surface}; border-radius: ${ctx.borderRadius}; display: flex; align-items: center; gap: 16px;">
+              <div style="font-size: 32px;">${s.split(' ')[0]}</div>
+              <div>
+                <h3 style="font-size: 18px; color: ${ctx.colors.text}; margin: 0 0 4px 0;">${s.split(' ').slice(1).join(' ')}</h3>
+                <p style="color: ${ctx.colors.textMuted}; margin: 0; font-size: 14px;">Expert care available</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`,
+
+  // GALLERY SECTIONS
+  'gallery-masonry': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.background};">
+      <div style="max-width: 1200px; margin: 0 auto;">
+        <h2 style="font-size: 36px; color: ${ctx.colors.text}; text-align: center; margin-bottom: 48px; font-family: ${ctx.fonts.heading};">Gallery</h2>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 150px; gap: 16px;">
+          <div style="background: ${ctx.colors.primary}22; border-radius: ${ctx.borderRadius}; grid-row: span 2;"></div>
+          <div style="background: ${ctx.colors.accent || ctx.colors.primary}22; border-radius: ${ctx.borderRadius};"></div>
+          <div style="background: ${ctx.colors.primary}33; border-radius: ${ctx.borderRadius};"></div>
+          <div style="background: ${ctx.colors.accent || ctx.colors.primary}33; border-radius: ${ctx.borderRadius}; grid-row: span 2;"></div>
+          <div style="background: ${ctx.colors.primary}22; border-radius: ${ctx.borderRadius};"></div>
+          <div style="background: ${ctx.colors.accent || ctx.colors.primary}22; border-radius: ${ctx.borderRadius}; grid-column: span 2;"></div>
+        </div>
+      </div>
+    </section>`,
+
+  'smile-gallery': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.surface};">
+      <div style="max-width: 1200px; margin: 0 auto;">
+        <h2 style="font-size: 36px; color: ${ctx.colors.text}; text-align: center; margin-bottom: 16px; font-family: ${ctx.fonts.heading};">Smile Gallery</h2>
+        <p style="text-align: center; color: ${ctx.colors.textMuted}; margin-bottom: 48px;">See the transformations we've created</p>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+          ${[1,2,3].map(() => `
+            <div style="background: white; border-radius: ${ctx.borderRadius}; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+              <div style="display: grid; grid-template-columns: 1fr 1fr;">
+                <div style="height: 150px; background: ${ctx.colors.primary}22; display: flex; align-items: center; justify-content: center; color: ${ctx.colors.textMuted};">Before</div>
+                <div style="height: 150px; background: ${ctx.colors.primary}44; display: flex; align-items: center; justify-content: center; color: white;">After</div>
+              </div>
+              <div style="padding: 16px; text-align: center;">
+                <p style="color: ${ctx.colors.text}; font-weight: 500; margin: 0;">Smile Makeover</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`,
+
+  // LISTINGS / PROPERTIES
+  'featured-properties': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.surface};">
+      <div style="max-width: 1200px; margin: 0 auto;">
+        <h2 style="font-size: 36px; color: ${ctx.colors.text}; text-align: center; margin-bottom: 48px; font-family: ${ctx.fonts.heading};">Featured Properties</h2>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+          ${['$450,000', '$625,000', '$890,000'].map((price, i) => `
+            <div style="background: white; border-radius: ${ctx.borderRadius}; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+              <div style="height: 200px; background: linear-gradient(135deg, ${ctx.colors.primary}22, ${ctx.colors.primary}44); display: flex; align-items: center; justify-content: center; font-size: 48px;">🏠</div>
+              <div style="padding: 20px;">
+                <div style="color: ${ctx.colors.primary}; font-size: 24px; font-weight: 700; margin-bottom: 8px;">${price}</div>
+                <p style="color: ${ctx.colors.text}; font-weight: 500; margin: 0 0 8px 0;">${3+i} bed • ${2+i} bath • ${1800+i*200} sqft</p>
+                <p style="color: ${ctx.colors.textMuted}; font-size: 14px; margin: 0;">123 Main Street, City</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`,
+
+  'property-search': (ctx) => `
+    <section style="padding: 60px 40px; background: white; border-bottom: 1px solid #eee;">
+      <div style="max-width: 1000px; margin: 0 auto;">
+        <h2 style="font-size: 28px; color: ${ctx.colors.text}; text-align: center; margin-bottom: 32px; font-family: ${ctx.fonts.heading};">Find Your Perfect Home</h2>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
+          <input placeholder="City or ZIP" style="padding: 14px 20px; border: 2px solid #eee; border-radius: ${ctx.inputRadius || '8px'}; width: 180px; font-size: 15px;">
+          <select style="padding: 14px 20px; border: 2px solid #eee; border-radius: ${ctx.inputRadius || '8px'}; width: 160px; font-size: 15px;"><option>Price: Any</option></select>
+          <select style="padding: 14px 20px; border: 2px solid #eee; border-radius: ${ctx.inputRadius || '8px'}; width: 140px; font-size: 15px;"><option>Beds: Any</option></select>
+          <select style="padding: 14px 20px; border: 2px solid #eee; border-radius: ${ctx.inputRadius || '8px'}; width: 160px; font-size: 15px;"><option>Property Type</option></select>
+          <button style="padding: 14px 32px; background: ${ctx.colors.primary}; color: white; border: none; border-radius: ${ctx.inputRadius || '8px'}; font-weight: 600;">Search</button>
+        </div>
+      </div>
+    </section>`,
+
+  // TEAM / PROVIDERS
+  'about-team': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.background};">
+      <div style="max-width: 1200px; margin: 0 auto;">
+        <h2 style="font-size: 36px; color: ${ctx.colors.text}; text-align: center; margin-bottom: 48px; font-family: ${ctx.fonts.heading};">Meet Our Team</h2>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;">
+          ${['Dr. Smith', 'Dr. Johnson', 'Sarah M.', 'Mike R.'].map(name => `
+            <div style="text-align: center;">
+              <div style="width: 150px; height: 150px; background: ${ctx.colors.primary}22; border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 48px;">👤</div>
+              <h3 style="font-size: 18px; color: ${ctx.colors.text}; margin: 0 0 4px 0;">${name}</h3>
+              <p style="color: ${ctx.colors.textMuted}; font-size: 14px; margin: 0;">Team Member</p>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`,
+
+  'provider-profiles': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.surface};">
+      <div style="max-width: 1200px; margin: 0 auto;">
+        <h2 style="font-size: 36px; color: ${ctx.colors.text}; text-align: center; margin-bottom: 16px; font-family: ${ctx.fonts.heading};">Our Providers</h2>
+        <p style="text-align: center; color: ${ctx.colors.textMuted}; margin-bottom: 48px;">Board-certified and experienced healthcare professionals</p>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;">
+          ${['Dr. Sarah Johnson, MD', 'Dr. Michael Chen, DDS', 'Dr. Emily Davis, DO'].map(name => `
+            <div style="background: white; border-radius: ${ctx.borderRadius}; padding: 32px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+              <div style="width: 120px; height: 120px; background: ${ctx.colors.primary}22; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 48px;">👨‍⚕️</div>
+              <h3 style="font-size: 18px; color: ${ctx.colors.text}; margin: 0 0 8px 0;">${name}</h3>
+              <p style="color: ${ctx.colors.primary}; font-size: 14px; margin: 0 0 12px 0;">Primary Care Physician</p>
+              <button style="padding: 10px 24px; background: ${ctx.colors.primary}; color: white; border: none; border-radius: 6px; font-size: 14px;">Book Appointment</button>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`,
+
+  // TRUST / STATS
+  'trust-logos': (ctx) => `
+    <section style="padding: 40px; background: ${ctx.colors.surface}; border-top: 1px solid ${ctx.colors.primary}11; border-bottom: 1px solid ${ctx.colors.primary}11;">
+      <div style="max-width: 1000px; margin: 0 auto; display: flex; justify-content: center; align-items: center; gap: 48px; flex-wrap: wrap;">
+        <span style="color: ${ctx.colors.textMuted}; font-size: 14px;">Trusted by:</span>
+        ${['Brand 1', 'Brand 2', 'Brand 3', 'Brand 4'].map(b => `
+          <div style="padding: 12px 24px; background: ${ctx.colors.background}; border-radius: ${ctx.inputRadius || '8px'}; color: ${ctx.colors.textMuted}; font-weight: 500;">${b}</div>
+        `).join('')}
+      </div>
+    </section>`,
+
+  'stats-animated': (ctx) => `
+    <section style="padding: 60px 40px; background: ${ctx.colors.primary}; color: white;">
+      <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; text-align: center;">
+        ${[['500+', 'Happy Clients'], ['15+', 'Years Experience'], ['50+', 'Team Members'], ['99%', 'Satisfaction']].map(([num, label]) => `
+          <div>
+            <div style="font-size: 48px; font-weight: 700; margin-bottom: 8px;">${num}</div>
+            <div style="opacity: 0.9;">${label}</div>
+          </div>
+        `).join('')}
+      </div>
+    </section>`,
+
+  'insurance-accepted': (ctx) => `
+    <section style="padding: 60px 40px; background: ${ctx.colors.surface};">
+      <div style="max-width: 1000px; margin: 0 auto; text-align: center;">
+        <h2 style="font-size: 28px; color: ${ctx.colors.text}; margin-bottom: 32px; font-family: ${ctx.fonts.heading};">Insurance We Accept</h2>
+        <div style="display: flex; justify-content: center; gap: 24px; flex-wrap: wrap;">
+          ${['Blue Cross', 'Aetna', 'Cigna', 'United', 'Medicare'].map(ins => `
+            <div style="padding: 16px 28px; background: white; border-radius: ${ctx.inputRadius || '8px'}; color: ${ctx.colors.text}; font-weight: 500; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">${ins}</div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`,
+
+  // TESTIMONIALS
+  'testimonials-carousel': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.background};">
+      <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+        <h2 style="font-size: 36px; color: ${ctx.colors.text}; margin-bottom: 48px; font-family: ${ctx.fonts.heading};">What Our Clients Say</h2>
+        <div style="background: ${ctx.colors.surface}; padding: 48px; border-radius: ${ctx.borderRadius};">
+          <div style="font-size: 24px; color: ${ctx.colors.primary}; margin-bottom: 24px;">★★★★★</div>
+          <p style="font-size: 20px; color: ${ctx.colors.text}; line-height: 1.7; margin-bottom: 24px; font-style: italic;">"Outstanding service! They exceeded all my expectations. Highly recommend to anyone looking for quality."</p>
+          <div style="font-weight: 600; color: ${ctx.colors.text};">John D.</div>
+          <div style="color: ${ctx.colors.textMuted}; font-size: 14px;">Verified Customer</div>
+        </div>
+      </div>
+    </section>`,
+
+  'testimonials-grid': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.surface};">
+      <div style="max-width: 1200px; margin: 0 auto;">
+        <h2 style="font-size: 36px; color: ${ctx.colors.text}; text-align: center; margin-bottom: 48px; font-family: ${ctx.fonts.heading};">Patient Reviews</h2>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+          ${['Sarah M.', 'James K.', 'Lisa P.'].map(name => `
+            <div style="background: white; padding: 28px; border-radius: ${ctx.borderRadius}; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+              <div style="color: #fbbf24; margin-bottom: 12px;">★★★★★</div>
+              <p style="color: ${ctx.colors.text}; line-height: 1.6; margin-bottom: 16px;">"Excellent experience from start to finish. The team was professional and caring."</p>
+              <div style="font-weight: 600; color: ${ctx.colors.text};">${name}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`,
+
+  // CTA SECTIONS
+  'cta-simple': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.primary}; text-align: center; color: white;">
+      <h2 style="font-size: 36px; margin-bottom: 16px; font-family: ${ctx.fonts.heading};">Ready to Get Started?</h2>
+      <p style="font-size: 18px; opacity: 0.9; margin-bottom: 32px;">Contact us today for a free consultation.</p>
+      <button style="padding: 18px 40px; background: white; color: ${ctx.colors.primary}; border: none; border-radius: ${ctx.inputRadius || '8px'}; font-size: 18px; font-weight: 600; cursor: pointer;">${ctx.cta}</button>
+    </section>`,
+
+  'appointment-booking': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.primary}; color: white;">
+      <div style="max-width: 600px; margin: 0 auto; text-align: center;">
+        <h2 style="font-size: 36px; margin-bottom: 16px; font-family: ${ctx.fonts.heading};">Book Your Appointment</h2>
+        <p style="font-size: 18px; opacity: 0.9; margin-bottom: 32px;">Schedule online or call us today</p>
+        <div style="display: flex; gap: 16px; justify-content: center;">
+          <button style="padding: 16px 32px; background: white; color: ${ctx.colors.primary}; border: none; border-radius: ${ctx.inputRadius || '8px'}; font-weight: 600;">Book Online</button>
+          <button style="padding: 16px 32px; background: transparent; color: white; border: 2px solid white; border-radius: ${ctx.inputRadius || '8px'}; font-weight: 600;">📞 Call Now</button>
+        </div>
+      </div>
+    </section>`,
+
+  // CONTACT
+  'contact-with-map': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.background};">
+      <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 48px;">
+        <div>
+          <h2 style="font-size: 36px; color: ${ctx.colors.text}; margin-bottom: 24px; font-family: ${ctx.fonts.heading};">Contact Us</h2>
+          <div style="margin-bottom: 24px;">
+            <p style="color: ${ctx.colors.text}; font-weight: 500; margin: 0 0 4px 0;">📍 Address</p>
+            <p style="color: ${ctx.colors.textMuted}; margin: 0;">123 Main Street, City, ST 12345</p>
+          </div>
+          <div style="margin-bottom: 24px;">
+            <p style="color: ${ctx.colors.text}; font-weight: 500; margin: 0 0 4px 0;">📞 Phone</p>
+            <p style="color: ${ctx.colors.textMuted}; margin: 0;">(555) 123-4567</p>
+          </div>
+          <div>
+            <p style="color: ${ctx.colors.text}; font-weight: 500; margin: 0 0 4px 0;">✉️ Email</p>
+            <p style="color: ${ctx.colors.textMuted}; margin: 0;">hello@business.com</p>
+          </div>
+        </div>
+        <div style="background: ${ctx.colors.surface}; border-radius: ${ctx.borderRadius}; display: flex; align-items: center; justify-content: center; min-height: 300px;">
+          <span style="color: ${ctx.colors.textMuted};">📍 Map Location</span>
+        </div>
+      </div>
+    </section>`,
+
+  // MENU (for restaurants)
+  'services-tabs': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.background};">
+      <div style="max-width: 1000px; margin: 0 auto;">
+        <h2 style="font-size: 36px; color: ${ctx.colors.text}; text-align: center; margin-bottom: 32px; font-family: ${ctx.fonts.heading};">Our Menu</h2>
+        <div style="display: flex; justify-content: center; gap: 16px; margin-bottom: 40px;">
+          ${['Appetizers', 'Mains', 'Desserts', 'Drinks'].map((tab, i) => `
+            <button style="padding: 12px 24px; background: ${i === 0 ? ctx.colors.primary : ctx.colors.surface}; color: ${i === 0 ? 'white' : ctx.colors.text}; border: none; border-radius: ${ctx.inputRadius || '8px'}; font-weight: 500;">${tab}</button>
+          `).join('')}
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;">
+          ${['Signature Dish', 'House Special', 'Chef\'s Choice', 'Classic Favorite'].map(item => `
+            <div style="display: flex; justify-content: space-between; padding: 20px; background: ${ctx.colors.surface}; border-radius: ${ctx.inputRadius || '8px'};">
+              <div>
+                <h3 style="font-size: 18px; color: ${ctx.colors.text}; margin: 0 0 4px 0;">${item}</h3>
+                <p style="color: ${ctx.colors.textMuted}; font-size: 14px; margin: 0;">Delicious description here</p>
+              </div>
+              <span style="color: ${ctx.colors.primary}; font-weight: 600;">$18</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`,
+
+  // FAQ
+  'faq-accordion': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.surface};">
+      <div style="max-width: 800px; margin: 0 auto;">
+        <h2 style="font-size: 36px; color: ${ctx.colors.text}; text-align: center; margin-bottom: 48px; font-family: ${ctx.fonts.heading};">Frequently Asked Questions</h2>
+        ${['What are your hours?', 'Do you accept insurance?', 'How do I schedule?'].map(q => `
+          <div style="background: white; margin-bottom: 16px; border-radius: ${ctx.inputRadius || '8px'}; overflow: hidden;">
+            <div style="padding: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+              <span style="font-weight: 500; color: ${ctx.colors.text};">${q}</span>
+              <span style="color: ${ctx.colors.primary};">+</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </section>`,
+
+  // Additional section types for better coverage
+  'trust-badges': (ctx) => `
+    <section style="padding: 40px; background: ${ctx.colors.surface};">
+      <div style="max-width: 1000px; margin: 0 auto; display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; align-items: center;">
+        ${['✓ Licensed & Insured', '★ 5-Star Rated', '🏆 Award Winning', '👥 1000+ Clients'].map(b => `
+          <div style="display: flex; align-items: center; gap: 8px; color: ${ctx.colors.textMuted}; font-size: 14px; font-weight: 500;">
+            <span>${b}</span>
+          </div>
+        `).join('')}
+      </div>
+    </section>`,
+
+  'cta-with-form': (ctx) => `
+    <section style="padding: 80px 40px; background: linear-gradient(135deg, ${ctx.colors.primary}, ${ctx.colors.secondary || ctx.colors.primary});">
+      <div style="max-width: 600px; margin: 0 auto; text-align: center;">
+        <h2 style="font-size: 36px; color: white; margin-bottom: 16px; font-family: ${ctx.fonts.heading};">Ready to Get Started?</h2>
+        <p style="color: rgba(255,255,255,0.9); margin-bottom: 32px;">Contact us today for a free consultation</p>
+        <div style="background: white; padding: 32px; border-radius: ${ctx.borderRadius};">
+          <input placeholder="Your Name" style="width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 6px;">
+          <input placeholder="Email Address" style="width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 6px;">
+          <input placeholder="Phone Number" style="width: 100%; padding: 14px; margin-bottom: 16px; border: 1px solid #ddd; border-radius: 6px;">
+          <button style="width: 100%; padding: 16px; background: ${ctx.colors.primary}; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Submit Request</button>
+        </div>
+      </div>
+    </section>`,
+
+  'about-split': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.background};">
+      <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;">
+        <div style="background: linear-gradient(135deg, ${ctx.colors.primary}22, ${ctx.colors.primary}44); border-radius: ${ctx.borderRadius}; height: 400px; display: flex; align-items: center; justify-content: center; font-size: 64px;">🏢</div>
+        <div>
+          <h2 style="font-size: 36px; color: ${ctx.colors.text}; margin-bottom: 20px; font-family: ${ctx.fonts.heading};">About ${ctx.businessName}</h2>
+          <p style="color: ${ctx.colors.textMuted}; line-height: 1.8; margin-bottom: 20px;">We've been serving our community with dedication and excellence. Our team of experienced professionals is committed to delivering the best results for every client.</p>
+          <p style="color: ${ctx.colors.textMuted}; line-height: 1.8;">With years of experience and a passion for what we do, we've built a reputation for quality and trust.</p>
+        </div>
+      </div>
+    </section>`,
+
+  'hero-minimal': (ctx) => `
+    <section style="padding: 100px 40px; background: ${ctx.colors.background}; text-align: center;">
+      <h1 style="font-size: 48px; color: ${ctx.colors.text}; margin-bottom: 20px; font-family: ${ctx.fonts.heading}; font-weight: 400;">${ctx.businessName}</h1>
+      <p style="font-size: 18px; color: ${ctx.colors.textMuted}; max-width: 500px; margin: 0 auto 32px auto; line-height: 1.7;">${ctx.tagline}</p>
+      <button style="padding: 14px 32px; background: transparent; color: ${ctx.colors.primary}; border: 2px solid ${ctx.colors.primary}; border-radius: 6px; font-weight: 500;">${ctx.cta}</button>
+    </section>`,
+
+  'services-list': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.background};">
+      <div style="max-width: 800px; margin: 0 auto;">
+        <h2 style="font-size: 36px; color: ${ctx.colors.text}; text-align: center; margin-bottom: 48px; font-family: ${ctx.fonts.heading};">Our Services</h2>
+        ${['Service One', 'Service Two', 'Service Three', 'Service Four'].map((s, i) => `
+          <div style="display: flex; gap: 24px; padding: 24px 0; border-bottom: 1px solid ${ctx.isDark ? 'rgba(255,255,255,0.1)' : '#eee'}; align-items: center;">
+            <div style="width: 60px; height: 60px; background: ${ctx.colors.primary}22; border-radius: ${ctx.borderRadius}; display: flex; align-items: center; justify-content: center; font-size: 24px; color: ${ctx.colors.primary};">0${i+1}</div>
+            <div style="flex: 1;">
+              <h3 style="font-size: 20px; color: ${ctx.colors.text}; margin: 0 0 8px 0;">${s}</h3>
+              <p style="color: ${ctx.colors.textMuted}; margin: 0; line-height: 1.6;">Professional service tailored to meet your specific needs and requirements.</p>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </section>`,
+
+  'testimonials-featured': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.surface};">
+      <div style="max-width: 900px; margin: 0 auto; text-align: center;">
+        <h2 style="font-size: 36px; color: ${ctx.colors.text}; margin-bottom: 48px; font-family: ${ctx.fonts.heading};">What Our Clients Say</h2>
+        <div style="background: white; padding: 48px; border-radius: ${ctx.borderRadius}; box-shadow: 0 10px 40px rgba(0,0,0,0.08);">
+          <div style="font-size: 48px; margin-bottom: 24px;">⭐⭐⭐⭐⭐</div>
+          <p style="font-size: 22px; color: ${ctx.colors.text}; line-height: 1.8; margin-bottom: 32px; font-style: italic;">"Absolutely exceptional service! The team went above and beyond our expectations. Highly recommend to anyone looking for quality and professionalism."</p>
+          <div style="display: flex; align-items: center; justify-content: center; gap: 16px;">
+            <div style="width: 56px; height: 56px; background: ${ctx.colors.primary}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">JD</div>
+            <div style="text-align: left;">
+              <div style="font-weight: 600; color: ${ctx.colors.text};">John D.</div>
+              <div style="color: ${ctx.colors.textMuted}; font-size: 14px;">Verified Customer</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>`,
+
+  'stats-bar': (ctx) => `
+    <section style="padding: 60px 40px; background: ${ctx.colors.primary};">
+      <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 40px;">
+        ${[['500+', 'Happy Clients'], ['15+', 'Years Experience'], ['98%', 'Satisfaction'], ['24/7', 'Support']].map(([num, label]) => `
+          <div style="text-align: center; color: white;">
+            <div style="font-size: 42px; font-weight: 700; margin-bottom: 8px;">${num}</div>
+            <div style="font-size: 14px; opacity: 0.9;">${label}</div>
+          </div>
+        `).join('')}
+      </div>
+    </section>`,
+
+  'quick-actions': (ctx) => `
+    <section style="padding: 60px 40px; background: ${ctx.colors.background};">
+      <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+        ${[['📅', 'Book Appointment'], ['📞', 'Call Us'], ['💬', 'Live Chat'], ['📍', 'Find Location']].map(([icon, label]) => `
+          <div style="padding: 24px; background: ${ctx.colors.surface}; border-radius: ${ctx.borderRadius}; text-align: center; cursor: pointer; transition: all 0.2s;">
+            <div style="font-size: 32px; margin-bottom: 12px;">${icon}</div>
+            <div style="color: ${ctx.colors.text}; font-weight: 500; font-size: 14px;">${label}</div>
+          </div>
+        `).join('')}
+      </div>
+    </section>`,
+
+  'insurance-info': (ctx) => `
+    <section style="padding: 60px 40px; background: ${ctx.colors.surface};">
+      <div style="max-width: 1000px; margin: 0 auto; text-align: center;">
+        <h2 style="font-size: 28px; color: ${ctx.colors.text}; margin-bottom: 16px; font-family: ${ctx.fonts.heading};">Insurance & Payment</h2>
+        <p style="color: ${ctx.colors.textMuted}; margin-bottom: 32px;">We accept most major insurance plans</p>
+        <div style="display: flex; justify-content: center; gap: 24px; flex-wrap: wrap;">
+          ${['Aetna', 'Blue Cross', 'Cigna', 'United', 'Medicare'].map(ins => `
+            <div style="padding: 16px 24px; background: white; border-radius: ${ctx.inputRadius || '8px'}; color: ${ctx.colors.textMuted}; font-weight: 500;">${ins}</div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`,
+
+  // Restaurant/Food specific
+  'menu-tabs': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.background};">
+      <div style="max-width: 1000px; margin: 0 auto;">
+        <h2 style="font-size: 36px; color: ${ctx.colors.text}; text-align: center; margin-bottom: 32px; font-family: ${ctx.fonts.heading};">Our Menu</h2>
+        <div style="display: flex; justify-content: center; gap: 16px; margin-bottom: 48px;">
+          ${['Appetizers', 'Mains', 'Desserts', 'Drinks'].map((tab, i) => `
+            <button style="padding: 12px 24px; background: ${i === 0 ? ctx.colors.primary : 'transparent'}; color: ${i === 0 ? 'white' : ctx.colors.text}; border: ${i === 0 ? 'none' : '1px solid #ddd'}; border-radius: 25px; cursor: pointer;">${tab}</button>
+          `).join('')}
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;">
+          ${[['Signature Dish', '$24'], ['House Special', '$18'], ['Chef\'s Choice', '$32'], ['Classic Favorite', '$16']].map(([name, price]) => `
+            <div style="display: flex; justify-content: space-between; padding: 20px; background: ${ctx.colors.surface}; border-radius: ${ctx.borderRadius};">
+              <div>
+                <h3 style="font-size: 18px; color: ${ctx.colors.text}; margin: 0 0 4px 0;">${name}</h3>
+                <p style="color: ${ctx.colors.textMuted}; margin: 0; font-size: 14px;">Fresh ingredients, expertly prepared</p>
+              </div>
+              <div style="color: ${ctx.colors.primary}; font-weight: 700; font-size: 18px;">${price}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`,
+
+  'ordering-cta': (ctx) => `
+    <section style="padding: 80px 40px; background: linear-gradient(135deg, ${ctx.colors.primary}, ${ctx.colors.secondary || ctx.colors.primary});">
+      <div style="max-width: 800px; margin: 0 auto; text-align: center; color: white;">
+        <h2 style="font-size: 40px; margin-bottom: 16px; font-family: ${ctx.fonts.heading};">Ready to Order?</h2>
+        <p style="font-size: 18px; opacity: 0.9; margin-bottom: 32px;">Order online for pickup or delivery</p>
+        <div style="display: flex; gap: 16px; justify-content: center;">
+          <button style="padding: 16px 32px; background: white; color: ${ctx.colors.primary}; border: none; border-radius: ${ctx.inputRadius || '8px'}; font-weight: 600; cursor: pointer;">Order Online</button>
+          <button style="padding: 16px 32px; background: transparent; color: white; border: 2px solid white; border-radius: ${ctx.inputRadius || '8px'}; font-weight: 600; cursor: pointer;">View Menu</button>
+        </div>
+      </div>
+    </section>`,
+
+  // ============================================
+  // PAGE-SPECIFIC HERO SECTIONS
+  // ============================================
+
+  'about-hero': (ctx) => `
+    <section style="padding: 80px 40px; background: linear-gradient(135deg, ${ctx.colors.primary}11, ${ctx.colors.primary}22); text-align: center;">
+      <h1 style="font-size: 48px; color: ${ctx.colors.text}; margin-bottom: 16px; font-family: ${ctx.fonts.heading};">About ${ctx.businessName}</h1>
+      <p style="font-size: 18px; color: ${ctx.colors.textMuted}; max-width: 600px; margin: 0 auto;">Learn more about our story, mission, and the team behind our success.</p>
+    </section>`,
+
+  'services-hero': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.primary}; text-align: center;">
+      <h1 style="font-size: 48px; color: white; margin-bottom: 16px; font-family: ${ctx.fonts.heading};">Our Services</h1>
+      <p style="font-size: 18px; color: rgba(255,255,255,0.9); max-width: 600px; margin: 0 auto;">Comprehensive solutions tailored to meet your specific needs.</p>
+    </section>`,
+
+  'contact-hero': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.surface}; text-align: center;">
+      <h1 style="font-size: 48px; color: ${ctx.colors.text}; margin-bottom: 16px; font-family: ${ctx.fonts.heading};">Contact Us</h1>
+      <p style="font-size: 18px; color: ${ctx.colors.textMuted}; max-width: 600px; margin: 0 auto;">We'd love to hear from you. Reach out today.</p>
+    </section>`,
+
+  'team-hero': (ctx) => `
+    <section style="padding: 80px 40px; background: linear-gradient(135deg, ${ctx.colors.primary}, ${ctx.colors.secondary || ctx.colors.primary}); text-align: center;">
+      <h1 style="font-size: 48px; color: white; margin-bottom: 16px; font-family: ${ctx.fonts.heading};">Meet Our Team</h1>
+      <p style="font-size: 18px; color: rgba(255,255,255,0.9); max-width: 600px; margin: 0 auto;">The dedicated professionals behind ${ctx.businessName}.</p>
+    </section>`,
+
+  'gallery-hero': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.background}; text-align: center;">
+      <h1 style="font-size: 48px; color: ${ctx.colors.text}; margin-bottom: 16px; font-family: ${ctx.fonts.heading};">Our Gallery</h1>
+      <p style="font-size: 18px; color: ${ctx.colors.textMuted}; max-width: 600px; margin: 0 auto;">A visual showcase of our work and results.</p>
+    </section>`,
+
+  'testimonials-hero': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.surface}; text-align: center;">
+      <h1 style="font-size: 48px; color: ${ctx.colors.text}; margin-bottom: 16px; font-family: ${ctx.fonts.heading};">Client Testimonials</h1>
+      <p style="font-size: 18px; color: ${ctx.colors.textMuted}; max-width: 600px; margin: 0 auto;">See what our customers have to say about us.</p>
+    </section>`,
+
+  'faq-hero': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.background}; text-align: center;">
+      <h1 style="font-size: 48px; color: ${ctx.colors.text}; margin-bottom: 16px; font-family: ${ctx.fonts.heading};">Frequently Asked Questions</h1>
+      <p style="font-size: 18px; color: ${ctx.colors.textMuted}; max-width: 600px; margin: 0 auto;">Find answers to common questions about our services.</p>
+    </section>`,
+
+  'pricing-hero': (ctx) => `
+    <section style="padding: 80px 40px; background: linear-gradient(135deg, ${ctx.colors.primary}11, ${ctx.colors.accent || ctx.colors.primary}22); text-align: center;">
+      <h1 style="font-size: 48px; color: ${ctx.colors.text}; margin-bottom: 16px; font-family: ${ctx.fonts.heading};">Pricing & Plans</h1>
+      <p style="font-size: 18px; color: ${ctx.colors.textMuted}; max-width: 600px; margin: 0 auto;">Transparent pricing for our services.</p>
+    </section>`,
+
+  'menu-hero': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.primary}; text-align: center;">
+      <h1 style="font-size: 48px; color: white; margin-bottom: 16px; font-family: ${ctx.fonts.heading};">Our Menu</h1>
+      <p style="font-size: 18px; color: rgba(255,255,255,0.9); max-width: 600px; margin: 0 auto;">Explore our delicious offerings.</p>
+    </section>`,
+
+  'booking-hero': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.surface}; text-align: center;">
+      <h1 style="font-size: 48px; color: ${ctx.colors.text}; margin-bottom: 16px; font-family: ${ctx.fonts.heading};">Book an Appointment</h1>
+      <p style="font-size: 18px; color: ${ctx.colors.textMuted}; max-width: 600px; margin: 0 auto;">Schedule your visit with us today.</p>
+    </section>`,
+
+  'listings-hero': (ctx) => `
+    <section style="padding: 80px 40px; background: linear-gradient(135deg, ${ctx.colors.primary}11, ${ctx.colors.primary}33); text-align: center;">
+      <h1 style="font-size: 48px; color: ${ctx.colors.text}; margin-bottom: 16px; font-family: ${ctx.fonts.heading};">Property Listings</h1>
+      <p style="font-size: 18px; color: ${ctx.colors.textMuted}; max-width: 600px; margin: 0 auto;">Browse our current properties for sale.</p>
+    </section>`,
+
+  'portfolio-hero': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.background}; text-align: center;">
+      <h1 style="font-size: 48px; color: ${ctx.colors.text}; margin-bottom: 16px; font-family: ${ctx.fonts.heading};">Our Portfolio</h1>
+      <p style="font-size: 18px; color: ${ctx.colors.textMuted}; max-width: 600px; margin: 0 auto;">Explore our featured projects and case studies.</p>
+    </section>`,
+
+  // ============================================
+  // ADDITIONAL PAGE SECTIONS
+  // ============================================
+
+  'about-values': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.surface};">
+      <div style="max-width: 1200px; margin: 0 auto;">
+        <h2 style="font-size: 36px; color: ${ctx.colors.text}; text-align: center; margin-bottom: 48px; font-family: ${ctx.fonts.heading};">Our Core Values</h2>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;">
+          ${[['🎯', 'Excellence', 'We strive for the highest standards'], ['🤝', 'Integrity', 'Honest and transparent in all we do'], ['💡', 'Innovation', 'Always finding better solutions'], ['❤️', 'Care', 'Putting our clients first']].map(([icon, title, desc]) => `
+            <div style="text-align: center; padding: 32px 24px; background: ${ctx.colors.background}; border-radius: ${ctx.borderRadius};">
+              <div style="font-size: 40px; margin-bottom: 16px;">${icon}</div>
+              <h3 style="font-size: 20px; color: ${ctx.colors.text}; margin-bottom: 8px;">${title}</h3>
+              <p style="color: ${ctx.colors.textMuted}; font-size: 14px; line-height: 1.6;">${desc}</p>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`,
+
+  'process-steps': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.background};">
+      <div style="max-width: 1000px; margin: 0 auto;">
+        <h2 style="font-size: 36px; color: ${ctx.colors.text}; text-align: center; margin-bottom: 48px; font-family: ${ctx.fonts.heading};">How It Works</h2>
+        <div style="display: flex; justify-content: space-between; position: relative;">
+          ${[['1', 'Consultation', 'Discuss your needs'], ['2', 'Planning', 'Create your strategy'], ['3', 'Execution', 'Deliver results'], ['4', 'Support', 'Ongoing care']].map(([num, title, desc], i) => `
+            <div style="flex: 1; text-align: center; position: relative; z-index: 1;">
+              <div style="width: 60px; height: 60px; background: ${ctx.colors.primary}; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; margin: 0 auto 16px auto;">${num}</div>
+              <h3 style="font-size: 18px; color: ${ctx.colors.text}; margin-bottom: 8px;">${title}</h3>
+              <p style="color: ${ctx.colors.textMuted}; font-size: 14px;">${desc}</p>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`,
+
+  'pricing-cards': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.background};">
+      <div style="max-width: 1200px; margin: 0 auto;">
+        <h2 style="font-size: 36px; color: ${ctx.colors.text}; text-align: center; margin-bottom: 48px; font-family: ${ctx.fonts.heading};">Our Pricing</h2>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+          ${[['Basic', '$99', 'Essential features'], ['Professional', '$199', 'Most popular'], ['Enterprise', '$399', 'Full service']].map(([name, price, desc], i) => `
+            <div style="padding: 40px 32px; background: ${i === 1 ? ctx.colors.primary : ctx.colors.surface}; border-radius: ${ctx.borderRadius}; text-align: center; ${i === 1 ? 'transform: scale(1.05);' : ''}">
+              <h3 style="font-size: 24px; color: ${i === 1 ? 'white' : ctx.colors.text}; margin-bottom: 8px;">${name}</h3>
+              <div style="font-size: 48px; font-weight: 700; color: ${i === 1 ? 'white' : ctx.colors.primary}; margin-bottom: 8px;">${price}</div>
+              <p style="color: ${i === 1 ? 'rgba(255,255,255,0.8)' : ctx.colors.textMuted}; margin-bottom: 24px;">${desc}</p>
+              <button style="padding: 14px 28px; background: ${i === 1 ? 'white' : ctx.colors.primary}; color: ${i === 1 ? ctx.colors.primary : 'white'}; border: none; border-radius: ${ctx.inputRadius || '8px'}; font-weight: 600; cursor: pointer;">Get Started</button>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`,
+
+  'credentials-list': (ctx) => `
+    <section style="padding: 60px 40px; background: ${ctx.colors.surface};">
+      <div style="max-width: 1000px; margin: 0 auto;">
+        <h2 style="font-size: 28px; color: ${ctx.colors.text}; text-align: center; margin-bottom: 32px; font-family: ${ctx.fonts.heading};">Certifications & Credentials</h2>
+        <div style="display: flex; justify-content: center; gap: 32px; flex-wrap: wrap;">
+          ${['✓ Licensed Professional', '✓ Board Certified', '✓ 15+ Years Experience', '✓ Award Winning'].map(cred => `
+            <div style="display: flex; align-items: center; gap: 8px; color: ${ctx.colors.text}; font-weight: 500;">${cred}</div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`,
+
+  'contact-split': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.background};">
+      <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px;">
+        <div>
+          <h2 style="font-size: 36px; color: ${ctx.colors.text}; margin-bottom: 24px; font-family: ${ctx.fonts.heading};">Get In Touch</h2>
+          <div style="margin-bottom: 20px;">
+            <div style="font-weight: 600; color: ${ctx.colors.text}; margin-bottom: 4px;">📍 Address</div>
+            <div style="color: ${ctx.colors.textMuted};">123 Business Street, City, State 12345</div>
+          </div>
+          <div style="margin-bottom: 20px;">
+            <div style="font-weight: 600; color: ${ctx.colors.text}; margin-bottom: 4px;">📞 Phone</div>
+            <div style="color: ${ctx.colors.textMuted};">(555) 123-4567</div>
+          </div>
+          <div style="margin-bottom: 20px;">
+            <div style="font-weight: 600; color: ${ctx.colors.text}; margin-bottom: 4px;">✉️ Email</div>
+            <div style="color: ${ctx.colors.textMuted};">info@${ctx.businessName.toLowerCase().replace(/\s+/g, '')}.com</div>
+          </div>
+        </div>
+        <div style="background: ${ctx.colors.surface}; padding: 40px; border-radius: ${ctx.borderRadius};">
+          <h3 style="font-size: 24px; color: ${ctx.colors.text}; margin-bottom: 24px;">Send a Message</h3>
+          <input placeholder="Your Name" style="width: 100%; padding: 14px; margin-bottom: 16px; border: 1px solid ${ctx.isDark ? 'rgba(255,255,255,0.1)' : '#ddd'}; border-radius: ${ctx.inputRadius || '8px'}; background: ${ctx.colors.background}; color: ${ctx.colors.text};">
+          <input placeholder="Email" style="width: 100%; padding: 14px; margin-bottom: 16px; border: 1px solid ${ctx.isDark ? 'rgba(255,255,255,0.1)' : '#ddd'}; border-radius: ${ctx.inputRadius || '8px'}; background: ${ctx.colors.background}; color: ${ctx.colors.text};">
+          <textarea placeholder="Your Message" style="width: 100%; padding: 14px; height: 120px; margin-bottom: 16px; border: 1px solid ${ctx.isDark ? 'rgba(255,255,255,0.1)' : '#ddd'}; border-radius: ${ctx.inputRadius || '8px'}; resize: none; background: ${ctx.colors.background}; color: ${ctx.colors.text};"></textarea>
+          <button style="width: 100%; padding: 16px; background: ${ctx.colors.primary}; color: white; border: none; border-radius: ${ctx.inputRadius || '8px'}; font-weight: 600; cursor: pointer;">Send Message</button>
+        </div>
+      </div>
+    </section>`,
+
+  'contact-minimal': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.surface};">
+      <div style="max-width: 600px; margin: 0 auto; text-align: center;">
+        <h2 style="font-size: 36px; color: ${ctx.colors.text}; margin-bottom: 16px; font-family: ${ctx.fonts.heading};">Ready to Begin?</h2>
+        <p style="color: ${ctx.colors.textMuted}; margin-bottom: 32px;">Taking the first step is often the hardest. We're here to help.</p>
+        <div style="background: ${ctx.colors.background}; padding: 40px; border-radius: ${ctx.borderRadius};">
+          <input placeholder="Your Name" style="width: 100%; padding: 14px; margin-bottom: 16px; border: 1px solid ${ctx.isDark ? 'rgba(255,255,255,0.1)' : '#ddd'}; border-radius: ${ctx.inputRadius || '8px'}; background: ${ctx.colors.surface}; color: ${ctx.colors.text};">
+          <input placeholder="Phone or Email" style="width: 100%; padding: 14px; margin-bottom: 16px; border: 1px solid ${ctx.isDark ? 'rgba(255,255,255,0.1)' : '#ddd'}; border-radius: ${ctx.inputRadius || '8px'}; background: ${ctx.colors.surface}; color: ${ctx.colors.text};">
+          <button style="width: 100%; padding: 16px; background: ${ctx.colors.primary}; color: white; border: none; border-radius: ${ctx.inputRadius || '8px'}; font-weight: 600;">Schedule Consultation</button>
+        </div>
+      </div>
+    </section>`,
+
+  'service-areas': (ctx) => `
+    <section style="padding: 60px 40px; background: ${ctx.colors.surface};">
+      <div style="max-width: 1000px; margin: 0 auto; text-align: center;">
+        <h2 style="font-size: 28px; color: ${ctx.colors.text}; margin-bottom: 24px; font-family: ${ctx.fonts.heading};">Service Areas</h2>
+        <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+          ${['Downtown', 'North Side', 'South Side', 'West End', 'East District', 'Suburbs'].map(area => `
+            <div style="padding: 12px 24px; background: ${ctx.colors.background}; border-radius: 25px; color: ${ctx.colors.text}; font-size: 14px;">${area}</div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`,
+
+  'emergency-info': (ctx) => `
+    <section style="padding: 40px; background: #dc262622; border: 1px solid #dc262644;">
+      <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+        <div style="font-size: 24px; margin-bottom: 12px;">🚨</div>
+        <h2 style="font-size: 24px; color: #dc2626; margin-bottom: 8px;">Emergency?</h2>
+        <p style="color: ${ctx.colors.textMuted}; margin-bottom: 16px;">For medical emergencies, please call 911 or go to your nearest emergency room.</p>
+        <div style="font-size: 24px; font-weight: 700; color: ${ctx.colors.text};">Emergency Line: (555) 911-1234</div>
+      </div>
+    </section>`,
+
+  'gallery-grid': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.background};">
+      <div style="max-width: 1200px; margin: 0 auto;">
+        <h2 style="font-size: 36px; color: ${ctx.colors.text}; text-align: center; margin-bottom: 48px; font-family: ${ctx.fonts.heading};">Photo Gallery</h2>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+          ${Array(8).fill(0).map((_, i) => `
+            <div style="aspect-ratio: 1; background: linear-gradient(135deg, ${ctx.colors.primary}${20 + i*5}, ${ctx.colors.primary}${40 + i*5}); border-radius: ${ctx.borderRadius}; display: flex; align-items: center; justify-content: center; font-size: 32px;">📷</div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`,
+
+  'office-hours': (ctx) => `
+    <section style="padding: 60px 40px; background: ${ctx.colors.surface};">
+      <div style="max-width: 600px; margin: 0 auto;">
+        <h2 style="font-size: 28px; color: ${ctx.colors.text}; text-align: center; margin-bottom: 32px; font-family: ${ctx.fonts.heading};">Hours of Operation</h2>
+        <div style="background: ${ctx.colors.background}; border-radius: ${ctx.borderRadius}; overflow: hidden;">
+          ${[['Monday - Friday', '9:00 AM - 6:00 PM'], ['Saturday', '10:00 AM - 4:00 PM'], ['Sunday', 'Closed']].map(([day, hours]) => `
+            <div style="display: flex; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid ${ctx.isDark ? 'rgba(255,255,255,0.1)' : '#eee'};">
+              <span style="color: ${ctx.colors.text}; font-weight: 500;">${day}</span>
+              <span style="color: ${ctx.colors.textMuted};">${hours}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`,
+
+  'portfolio-grid': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.background};">
+      <div style="max-width: 1200px; margin: 0 auto;">
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+          ${[['Brand Redesign', 'Client: TechCorp'], ['Website Launch', 'Client: StartupXYZ'], ['Marketing Campaign', 'Client: LocalBiz'], ['Mobile App', 'Client: HealthCo'], ['E-commerce Store', 'Client: RetailPro'], ['Social Strategy', 'Client: FoodCo']].map(([title, client]) => `
+            <div style="background: ${ctx.colors.surface}; border-radius: ${ctx.borderRadius}; overflow: hidden;">
+              <div style="height: 200px; background: linear-gradient(135deg, ${ctx.colors.primary}33, ${ctx.colors.accent || ctx.colors.primary}44); display: flex; align-items: center; justify-content: center; font-size: 48px;">💼</div>
+              <div style="padding: 24px;">
+                <h3 style="font-size: 18px; color: ${ctx.colors.text}; margin-bottom: 4px;">${title}</h3>
+                <p style="color: ${ctx.colors.textMuted}; font-size: 14px; margin: 0;">${client}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`,
+
+  'specializations': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.surface};">
+      <div style="max-width: 1000px; margin: 0 auto;">
+        <h2 style="font-size: 36px; color: ${ctx.colors.text}; text-align: center; margin-bottom: 48px; font-family: ${ctx.fonts.heading};">Areas of Specialization</h2>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+          ${['Anxiety & Stress', 'Depression', 'Relationship Issues', 'Trauma & PTSD', 'Life Transitions', 'Self-Esteem'].map(area => `
+            <div style="padding: 20px; background: ${ctx.colors.background}; border-radius: ${ctx.borderRadius}; border-left: 4px solid ${ctx.colors.primary};">
+              <h3 style="font-size: 16px; color: ${ctx.colors.text}; margin: 0;">${area}</h3>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`,
+
+  'market-stats': (ctx) => `
+    <section style="padding: 60px 40px; background: ${ctx.colors.primary};">
+      <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 32px;">
+        ${[['$2.5M', 'Avg. Sale Price'], ['45', 'Homes Sold This Year'], ['98%', 'Client Satisfaction'], ['12', 'Days Avg. on Market']].map(([num, label]) => `
+          <div style="text-align: center; color: white;">
+            <div style="font-size: 48px; font-weight: 700; margin-bottom: 8px;">${num}</div>
+            <div style="font-size: 14px; opacity: 0.9;">${label}</div>
+          </div>
+        `).join('')}
+      </div>
+    </section>`,
+
+  'class-schedule': (ctx) => `
+    <section style="padding: 80px 40px; background: ${ctx.colors.surface};">
+      <div style="max-width: 1000px; margin: 0 auto;">
+        <h2 style="font-size: 36px; color: ${ctx.colors.text}; text-align: center; margin-bottom: 48px; font-family: ${ctx.fonts.heading};">Class Schedule</h2>
+        <div style="background: ${ctx.colors.background}; border-radius: ${ctx.borderRadius}; overflow: hidden;">
+          ${[['Morning Flow', '6:00 AM', 'Mon, Wed, Fri'], ['Power Hour', '12:00 PM', 'Tue, Thu'], ['Evening Zen', '6:00 PM', 'Mon - Fri'], ['Weekend Warrior', '9:00 AM', 'Sat, Sun']].map(([name, time, days]) => `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid ${ctx.isDark ? 'rgba(255,255,255,0.1)' : '#eee'};">
+              <div>
+                <div style="font-weight: 600; color: ${ctx.colors.text};">${name}</div>
+                <div style="font-size: 14px; color: ${ctx.colors.textMuted};">${days}</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="color: ${ctx.colors.primary}; font-weight: 600;">${time}</div>
+                <button style="padding: 6px 16px; background: ${ctx.colors.primary}22; color: ${ctx.colors.primary}; border: none; border-radius: 4px; font-size: 12px; cursor: pointer; margin-top: 4px;">Book</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`
+};
+
+/**
+ * Build a layout-aware HTML preview
+ * Uses page-specific layouts per industry to generate different structures
+ *
+ * @param {string} pageId - Page identifier (home, about, services, contact, etc.)
+ * @param {string} businessName - Name of the business
+ * @param {string} industryKey - Industry key for page-specific layouts
+ * @param {Object} layoutConfig - Layout configuration (optional, for home page override)
+ * @param {Object} promptConfig - Prompt configuration with colors, etc.
+ * @param {Object} moodSliders - Mood slider values
+ * @returns {string} HTML string for the page preview
+ */
+function buildLayoutAwarePreview(pageId, businessName, industryKey, layoutConfig, promptConfig, moodSliders) {
+  const sliderStyles = getSliderStyles(moodSliders, promptConfig?.colors);
+  const colors = sliderStyles.colors;
+
+  // Build theme-aware colors based on explicit theme mode
+  const theme = sliderStyles.theme || 'light';
+  let themeColors;
+
+  if (theme === 'dark') {
+    themeColors = {
+      background: '#0a0a0f',
+      surface: '#1a1a2e',
+      text: '#e4e4e4',
+      textMuted: '#888'
+    };
+  } else if (theme === 'medium') {
+    themeColors = {
+      background: '#e8e8e8',
+      surface: '#f5f5f5',
+      text: '#1f2937',
+      textMuted: '#4b5563'
+    };
+  } else {
+    // Light theme (default)
+    themeColors = {
+      background: colors.background || '#ffffff',
+      surface: colors.surface || '#f8f9fa',
+      text: colors.text || '#1a1a2e',
+      textMuted: colors.textMuted || '#64748b'
+    };
+  }
+
+  // Build context object for section generators
+  const ctx = {
+    businessName: businessName || 'Your Business',
+    pageId: pageId,
+    tagline: promptConfig?.tagline || 'Experience the finest quality and craftsmanship',
+    cta: sliderStyles.copyTone?.cta || 'Get Started',
+    colors: {
+      primary: colors.primary || '#6366f1',
+      secondary: colors.secondary || '#8b5cf6',
+      accent: colors.accent || '#06b6d4',
+      background: themeColors.background,
+      surface: themeColors.surface,
+      text: themeColors.text,
+      textMuted: themeColors.textMuted,
+    },
+    fonts: {
+      heading: sliderStyles.fontHeading || "'Inter', sans-serif",
+      body: sliderStyles.fontBody || "system-ui, sans-serif"
+    },
+    theme: theme,
+    isDark: theme === 'dark',
+    isMedium: theme === 'medium',
+    // Border radius based on era slider (90+ = sharp/squared, <35 = subtle, else = rounded)
+    borderRadius: sliderStyles.borderRadius || '12px',
+    // Input/button radius (slightly less than card radius)
+    inputRadius: sliderStyles.borderRadius === '2px' ? '2px' : (sliderStyles.borderRadius === '4px' ? '4px' : '8px')
+  };
+
+  // Get section order for this specific page and industry
+  let sectionOrder = [];
+
+  // For home page, prefer the layout variant's sectionOrder if available
+  if (pageId === 'home' && layoutConfig?.layout?.sectionOrder) {
+    sectionOrder = layoutConfig.layout.sectionOrder;
+  } else {
+    // Use page-specific layouts based on industry
+    sectionOrder = getPageLayout(industryKey, pageId);
+  }
+
+  // Generate HTML for each section
+  const sectionsHtml = sectionOrder.map(sectionKey => {
+    const generator = SECTION_GENERATORS[sectionKey];
+    if (generator) {
+      return generator(ctx);
+    } else {
+      // Fallback for unknown sections - show wireframe placeholder
+      return `
+        <section style="padding: 60px 40px; background: ${ctx.colors.surface}; text-align: center; border: 2px dashed ${ctx.colors.primary}44;">
+          <div style="color: ${ctx.colors.textMuted}; font-size: 14px;">
+            <div style="font-size: 32px; margin-bottom: 12px;">📐</div>
+            <strong style="color: ${ctx.colors.primary};">${sectionKey}</strong>
+            <div style="font-size: 12px; opacity: 0.7; margin-top: 4px;">Section wireframe - AI will generate full content</div>
+          </div>
+        </section>`;
+    }
+  }).join('\n');
+
+  return sectionsHtml;
 }
 
 module.exports = {
@@ -4548,6 +5994,8 @@ module.exports = {
   detectIndustryFromDescription,
   buildPrompt,
   buildSmartContextGuide,
+  buildMoodSliderContext,
+  getSliderStyles,
   buildLayoutContextFromPreview,
   extractBusinessStats,
   generateDefaultStats,
@@ -4564,5 +6012,12 @@ module.exports = {
   buildOrchestratorPagePrompt,
   buildFallbackPage,
   getIndustryHeaderConfig,
-  buildFallbackThemeCss
+  buildFallbackThemeCss,
+  buildLayoutAwarePreview,
+  // Layout Intelligence exports
+  getLayoutCategory,
+  buildDetailedLayoutContext,
+  getAvailableLayouts,
+  getLayoutConfigFull,
+  INDUSTRY_LAYOUTS
 };

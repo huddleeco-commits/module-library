@@ -1,0 +1,38 @@
+{
+  "projectName": "test-corner-spa-massage-bold-energetic-booking-focused",
+  "savedAt": "2026-01-26T23:37:22.210Z",
+  "resources": {
+    "name": "test-corner-spa-massage-bold-energetic-booking-focused",
+    "sanitizedName": "test-corner-spa-massage-bold-energetic-booking-focused",
+    "github": {
+      "repos": [
+        {
+          "name": "test-corner-spa-massage-bold-energetic-booking-focused-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-corner-spa-massage-bold-energetic-booking-focused-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-corner-spa-massage-bold-energetic-booking-focused-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

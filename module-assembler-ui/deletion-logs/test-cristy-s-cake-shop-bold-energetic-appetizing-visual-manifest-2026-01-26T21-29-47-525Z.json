@@ -1,0 +1,38 @@
+{
+  "projectName": "test-cristy-s-cake-shop-bold-energetic-appetizing-visual",
+  "savedAt": "2026-01-26T21:29:47.525Z",
+  "resources": {
+    "name": "test-cristy-s-cake-shop-bold-energetic-appetizing-visual",
+    "sanitizedName": "test-cristy-s-cake-shop-bold-energetic-appetizing-visual",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-bold-energetic-appetizing-visual-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-bold-energetic-appetizing-visual-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-bold-energetic-appetizing-visual-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

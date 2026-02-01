@@ -1,0 +1,114 @@
+{
+  "id": "nx7ufQHO0IZvEcCedrz4BA",
+  "name": "Floyd's 99 Barbershop",
+  "address": "775 North Denton Tap Rd, Coppell, TX, 75019",
+  "phone": "+19724595861",
+  "category": "barbers",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 3.7,
+  "reviewCount": 115,
+  "photos": [
+    "https://s3-media0.fl.yelpcdn.com/bphoto/J9kG6bkq_ykDlp21fay2_Q/o.jpg"
+  ],
+  "hours": null,
+  "fixtureId": "barbershop",
+  "source": "yelp",
+  "yelpUrl": "https://www.yelp.com/biz/floyds-99-barbershop-coppell?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+  "raw": {
+    "id": "nx7ufQHO0IZvEcCedrz4BA",
+    "alias": "floyds-99-barbershop-coppell",
+    "name": "Floyd's 99 Barbershop",
+    "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/J9kG6bkq_ykDlp21fay2_Q/o.jpg",
+    "is_closed": false,
+    "url": "https://www.yelp.com/biz/floyds-99-barbershop-coppell?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+    "review_count": 115,
+    "categories": [
+      {
+        "alias": "barbers",
+        "title": "Barbers"
+      }
+    ],
+    "rating": 3.7,
+    "coordinates": {
+      "latitude": 32.98897,
+      "longitude": -96.99395
+    },
+    "transactions": [],
+    "price": "$$",
+    "location": {
+      "address1": "775 North Denton Tap Rd",
+      "address2": "Ste 110",
+      "address3": "",
+      "city": "Coppell",
+      "zip_code": "75019",
+      "country": "US",
+      "state": "TX",
+      "display_address": [
+        "775 North Denton Tap Rd",
+        "Ste 110",
+        "Coppell, TX 75019"
+      ]
+    },
+    "phone": "+19724595861",
+    "display_phone": "(972) 459-5861",
+    "distance": 5307.67640204274,
+    "business_hours": [
+      {
+        "open": [
+          {
+            "is_overnight": false,
+            "start": "0900",
+            "end": "2100",
+            "day": 0
+          },
+          {
+            "is_overnight": false,
+            "start": "0900",
+            "end": "2100",
+            "day": 1
+          },
+          {
+            "is_overnight": false,
+            "start": "0900",
+            "end": "2100",
+            "day": 2
+          },
+          {
+            "is_overnight": false,
+            "start": "0900",
+            "end": "2100",
+            "day": 3
+          },
+          {
+            "is_overnight": false,
+            "start": "0900",
+            "end": "2000",
+            "day": 4
+          },
+          {
+            "is_overnight": false,
+            "start": "0900",
+            "end": "2000",
+            "day": 5
+          },
+          {
+            "is_overnight": false,
+            "start": "0900",
+            "end": "1800",
+            "day": 6
+          }
+        ],
+        "hours_type": "REGULAR",
+        "is_open_now": false
+      }
+    ],
+    "attributes": {
+      "business_temp_closed": null,
+      "menu_url": "https://www.floydsbarbershop.com/locations/texas/dallas/coppell",
+      "waitlist_reservation": null
+    }
+  },
+  "scannedAt": "2026-01-25T14:23:35.929Z",
+  "readyForGeneration": true
+}

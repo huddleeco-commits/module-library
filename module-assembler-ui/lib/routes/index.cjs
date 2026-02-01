@@ -8,6 +8,7 @@ const { createConfigRoutes } = require('./config.cjs');
 const { createUtilityRoutes } = require('./utility.cjs');
 const { createDeployRoutes, autoDeployProject } = require('./deploy.cjs');
 const { createOrchestratorRoutes } = require('./orchestrator.cjs');
+const { createStudioRoutes } = require('./studio.cjs');
 
 module.exports = {
   createAuthRoutes,
@@ -15,5 +16,6 @@ module.exports = {
   createUtilityRoutes,
   createDeployRoutes,
   autoDeployProject,
-  createOrchestratorRoutes
+  createOrchestratorRoutes,
+  createStudioRoutes
 };

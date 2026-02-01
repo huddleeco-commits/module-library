@@ -1,0 +1,38 @@
+{
+  "projectName": "Glamour-Salon-Full",
+  "savedAt": "2026-01-24T13:44:30.587Z",
+  "resources": {
+    "name": "Glamour-Salon-Full",
+    "sanitizedName": "glamour-salon-full",
+    "github": {
+      "repos": [
+        {
+          "name": "glamour-salon-full-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "glamour-salon-full-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "glamour-salon-full-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

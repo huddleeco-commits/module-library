@@ -1,0 +1,35 @@
+{
+  "projectPath": "output\\prospects\\cristy-s-cake-shop\\full-test",
+  "capturedAt": "2026-01-26T13:08:26.801Z",
+  "screenshots": [],
+  "errors": [
+    {
+      "page": "/home",
+      "viewport": "desktop",
+      "error": "page.waitForTimeout is not a function"
+    },
+    {
+      "page": "/menu",
+      "viewport": "desktop",
+      "error": "page.waitForTimeout is not a function"
+    },
+    {
+      "page": "/about",
+      "viewport": "desktop",
+      "error": "page.waitForTimeout is not a function"
+    },
+    {
+      "page": "/contact",
+      "viewport": "desktop",
+      "error": "page.waitForTimeout is not a function"
+    }
+  ],
+  "summary": {
+    "totalPages": 4,
+    "totalScreenshots": 0,
+    "totalErrors": 4,
+    "viewports": [
+      "desktop"
+    ]
+  }
+}

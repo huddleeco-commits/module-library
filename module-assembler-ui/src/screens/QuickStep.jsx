@@ -1,16 +1,188 @@
 /**
  * QuickStep Screen
  * Quick business description and industry detection
+ * Now includes MoodSliders for quick creative customization
+ * WITH LIVE STRUCTURE PREVIEW - SIDE BY SIDE LAYOUT
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { styles } from '../styles';
+import { MoodSliders, THEME_MODES } from '../components/MoodSliders';
+import { LayoutSelector } from '../components/LayoutSelector';
+import { PagePackageSelector } from '../components/PagePackageSelector';
+import { API_BASE } from '../constants';
+import { getIndustryPages } from '../constants/industry-config';
+
+// Side-by-side layout styles
+const quickStepStyles = {
+  container: {
+    display: 'flex',
+    minHeight: 'calc(100vh - 120px)',
+    gap: '24px',
+    padding: '20px',
+    maxWidth: '1600px',
+    margin: '0 auto'
+  },
+  leftPanel: {
+    flex: '0 0 420px',
+    maxWidth: '420px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px'
+  },
+  rightPanel: {
+    flex: 1,
+    minWidth: '500px',
+    background: 'rgba(255,255,255,0.02)',
+    borderRadius: '16px',
+    border: '1px solid rgba(255,255,255,0.08)',
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden'
+  },
+  previewHeader: {
+    padding: '16px 20px',
+    borderBottom: '1px solid rgba(255,255,255,0.08)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: '12px'
+  },
+  previewTitle: {
+    fontSize: '16px',
+    fontWeight: '600',
+    color: '#e4e4e4',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px'
+  },
+  themeTabs: {
+    display: 'flex',
+    gap: '6px',
+    background: 'rgba(255,255,255,0.05)',
+    padding: '4px',
+    borderRadius: '8px'
+  },
+  themeTab: {
+    padding: '8px 16px',
+    background: 'transparent',
+    border: 'none',
+    borderRadius: '6px',
+    color: '#888',
+    fontSize: '13px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    transition: 'all 0.2s'
+  },
+  themeTabActive: {
+    background: 'rgba(99, 102, 241, 0.2)',
+    color: '#a5b4fc'
+  },
+  structureBanner: {
+    padding: '12px 20px',
+    background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)',
+    borderBottom: '1px solid rgba(99, 102, 241, 0.2)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px'
+  },
+  previewContent: {
+    flex: 1,
+    position: 'relative',
+    background: '#fff',
+    minHeight: '500px'
+  },
+  previewIframe: {
+    width: '100%',
+    height: '100%',
+    border: 'none',
+    position: 'absolute',
+    top: 0,
+    left: 0
+  },
+  emptyPreview: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
+    background: 'linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%)',
+    color: '#666'
+  },
+  statusBar: {
+    padding: '12px 20px',
+    borderTop: '1px solid rgba(255,255,255,0.08)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    fontSize: '12px',
+    color: '#888'
+  },
+  costBadge: {
+    padding: '4px 10px',
+    background: 'rgba(34, 197, 94, 0.15)',
+    borderRadius: '12px',
+    color: '#22c55e',
+    fontWeight: '600',
+    fontSize: '11px'
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    background: 'rgba(0,0,0,0.8)',
+    padding: '16px 28px',
+    borderRadius: '12px',
+    color: '#fff',
+    fontSize: '14px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    zIndex: 10
+  },
+  // Mobile responsive
+  mobileContainer: {
+    flexDirection: 'column',
+    padding: '16px'
+  },
+  mobileLeftPanel: {
+    flex: 'none',
+    maxWidth: '100%',
+    width: '100%'
+  },
+  mobileRightPanel: {
+    minWidth: 'auto',
+    minHeight: '400px'
+  }
+};
 
 export function QuickStep({ industries, projectData, updateProject, onContinue, onBack }) {
   const [input, setInput] = useState('');
   const [detecting, setDetecting] = useState(false);
   const [detected, setDetected] = useState(null);
   const [nameAvailability, setNameAvailability] = useState(null);
+  const [moodSliders, setMoodSliders] = useState(projectData.moodSliders || null);
+
+  // Live preview state
+  const [previewHtml, setPreviewHtml] = useState(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewTheme, setPreviewTheme] = useState('medium'); // light, medium, dark
+  const [selectedLayout, setSelectedLayout] = useState(null);
+  const [selectedPages, setSelectedPages] = useState([]);
+  const debounceRef = useRef(null);
+
+  // Responsive detection
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 900);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const examples = [
     'Pizza restaurant in Brooklyn',
@@ -96,13 +268,18 @@ export function QuickStep({ industries, projectData, updateProject, onContinue, 
 
     setTimeout(async () => {
       setDetected({ industry: matchedIndustry, key: matchedKey });
+
+      // Get recommended pages for this industry
+      const recommendedPages = getIndustryPages(matchedKey, 'recommended');
+      setSelectedPages(recommendedPages);
+
       updateProject({
         businessName: input,
         industry: matchedIndustry,
         industryKey: matchedKey,
         layoutKey: matchedIndustry?.defaultLayout || null,
         effects: matchedIndustry?.effects || [],
-        selectedPages: matchedIndustry?.defaultPages || ['home', 'about', 'services', 'contact']
+        selectedPages: recommendedPages
       });
       setDetecting(false);
 
@@ -119,110 +296,297 @@ export function QuickStep({ industries, projectData, updateProject, onContinue, 
     }, 800);
   };
 
+  // Handle mood slider changes
+  const handleMoodChange = (values) => {
+    setMoodSliders(values);
+    updateProject({ moodSliders: values });
+  };
+
+  // Live preview generation with debounce
+  useEffect(() => {
+    if (!detected?.key) return;
+
+    // Clear existing timeout
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    setPreviewLoading(true);
+
+    // Debounce preview generation (400ms for snappier feel)
+    debounceRef.current = setTimeout(async () => {
+      try {
+        // Merge theme into mood sliders
+        const slidersWithTheme = {
+          ...(moodSliders || {}),
+          theme: previewTheme
+        };
+
+        const response = await fetch(`${API_BASE}/api/preview-style`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            industry: detected.key,
+            businessName: input || 'Demo Business',
+            pages: ['home'],
+            moodSliders: slidersWithTheme,
+            layoutKey: selectedLayout,
+            sandboxMode: true // Use real images from fixtures
+          })
+        });
+
+        const data = await response.json();
+        if (data.success && data.pages?.home) {
+          setPreviewHtml(data.pages.home);
+        }
+      } catch (err) {
+        console.error('Preview generation failed:', err);
+      } finally {
+        setPreviewLoading(false);
+      }
+    }, 400);
+
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, [moodSliders, detected?.key, previewTheme, selectedLayout, input]);
+
+  // Theme options for preview
+  const themeOptions = [
+    { id: 'light', label: 'Light', icon: '☀️' },
+    { id: 'medium', label: 'Medium', icon: '🌤️' },
+    { id: 'dark', label: 'Dark', icon: '🌙' }
+  ];
+
   return (
-    <div style={styles.stepContainer}>
-      <button style={styles.backBtn} onClick={onBack}>← Back</button>
+    <>
+      {/* CSS Animations */}
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
 
-      <h1 style={styles.stepTitle}>⚡ What are you building?</h1>
-      <p style={styles.stepSubtitle}>Describe your business in a few words</p>
+      <div style={{
+        ...quickStepStyles.container,
+        ...(isMobile ? quickStepStyles.mobileContainer : {})
+      }}>
+        {/* Left Panel - Form Controls */}
+        <div style={{
+          ...quickStepStyles.leftPanel,
+          ...(isMobile ? quickStepStyles.mobileLeftPanel : {})
+        }}>
+          <button style={styles.backBtn} onClick={onBack}>← Back</button>
 
-      <div style={styles.inputRow}>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleDetect()}
-          placeholder="e.g., BBQ restaurant in Dallas"
-          style={styles.bigInput}
-          autoFocus
-        />
-        <button
-          onClick={handleDetect}
-          disabled={detecting || !input.trim()}
-          style={{...styles.primaryBtn, opacity: detecting || !input.trim() ? 0.5 : 1}}
-        >
-          {detecting ? '🔍 Detecting...' : 'Continue →'}
-        </button>
-      </div>
+          <div>
+            <h1 style={{ ...styles.stepTitle, marginBottom: '8px' }}>⚡ What are you building?</h1>
+            <p style={{ ...styles.stepSubtitle, marginBottom: '16px' }}>Describe your business in a few words</p>
+          </div>
 
-      {/* Example chips */}
-      <div style={styles.examples}>
-        <p style={styles.examplesLabel}>Try these:</p>
-        <div style={styles.exampleChips}>
-          {examples.map(ex => (
-            <button key={ex} style={styles.exampleChip} onClick={() => setInput(ex)}>
-              {ex}
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleDetect()}
+              placeholder="e.g., BBQ restaurant in Dallas"
+              style={{ ...styles.bigInput, flex: 1 }}
+              autoFocus
+            />
+            <button
+              onClick={handleDetect}
+              disabled={detecting || !input.trim()}
+              style={{
+                ...styles.primaryBtn,
+                padding: '14px 20px',
+                whiteSpace: 'nowrap',
+                opacity: detecting || !input.trim() ? 0.5 : 1
+              }}
+            >
+              {detecting ? '🔍...' : 'Go →'}
             </button>
-          ))}
-        </div>
-      </div>
+          </div>
 
-      {/* Detection result */}
-      {detected && (
-        <div style={styles.detectedCard}>
-          <div style={styles.detectedIcon}>{detected.industry?.icon || '✨'}</div>
-          <div style={styles.detectedContent}>
-            <h3 style={styles.detectedTitle}>{detected.industry?.name || 'Business'} Detected!</h3>
-            <p style={styles.detectedDesc}>Perfect template selected. Ready to customize.</p>
-            {nameAvailability && (
-              <div style={{ marginTop: '8px' }}>
-                <p style={{
-                  fontSize: '13px',
-                  color: nameAvailability.available ? '#10b981' : '#ef4444',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px'
-                }}>
-                  {nameAvailability.available ? '✓' : '✗'}
-                  {nameAvailability.available
-                    ? `"${nameAvailability.sanitizedName}" is available`
-                    : `"${nameAvailability.sanitizedName}" already exists`
-                  }
-                </p>
-                {!nameAvailability.available && nameAvailability.suggestions?.length > 0 && (
-                  <div style={{ marginTop: '6px' }}>
-                    <p style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>Try instead:</p>
-                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                      {nameAvailability.suggestions.map(s => (
-                        <button
-                          key={s}
-                          onClick={() => {
-                            setInput(s);
-                            setDetected(null);
-                            setNameAvailability(null);
-                          }}
-                          style={{
-                            padding: '4px 10px',
-                            fontSize: '12px',
-                            background: '#2a2a2a',
-                            border: '1px solid #444',
-                            borderRadius: '4px',
-                            color: '#fff',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          {s}
-                        </button>
-                      ))}
-                    </div>
+          {/* Example chips */}
+          <div style={{ marginTop: '8px' }}>
+            <p style={{ ...styles.examplesLabel, marginBottom: '8px', fontSize: '11px' }}>Try these:</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+              {examples.map(ex => (
+                <button key={ex} style={{ ...styles.exampleChip, fontSize: '11px', padding: '5px 10px' }} onClick={() => setInput(ex)}>
+                  {ex}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Detection result */}
+          {detected && (
+            <>
+              <div style={{ ...styles.detectedCard, marginTop: '16px', padding: '14px' }}>
+                <div style={styles.detectedIcon}>{detected.industry?.icon || '✨'}</div>
+                <div style={styles.detectedContent}>
+                  <h3 style={{ ...styles.detectedTitle, fontSize: '15px', marginBottom: '2px' }}>{detected.industry?.name || 'Business'} Detected!</h3>
+                  {nameAvailability && (
+                    <p style={{
+                      fontSize: '11px',
+                      color: nameAvailability.available ? '#10b981' : '#ef4444',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      margin: 0
+                    }}>
+                      {nameAvailability.available ? '✓' : '✗'}
+                      {nameAvailability.available
+                        ? `"${nameAvailability.sanitizedName}" available`
+                        : `Name taken`
+                      }
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Layout Selector - Pick different layouts */}
+              <LayoutSelector
+                industryKey={detected.key}
+                selectedLayout={selectedLayout}
+                onLayoutSelect={(layoutKey) => {
+                  setSelectedLayout(layoutKey);
+                  updateProject({ layoutKey });
+                }}
+                showSectionPreview={false}
+                compact={true}
+              />
+
+              {/* Page Package Selector */}
+              <PagePackageSelector
+                industryKey={detected.key}
+                selectedPages={selectedPages}
+                onPagesChange={(pages) => {
+                  setSelectedPages(pages);
+                  updateProject({ selectedPages: pages });
+                }}
+                compact={true}
+              />
+
+              {/* Mood Sliders - Compact version */}
+              <MoodSliders
+                values={moodSliders}
+                onChange={handleMoodChange}
+                compact={true}
+              />
+
+              {/* Continue button */}
+              <button
+                style={{
+                  ...styles.continueBtn,
+                  width: '100%',
+                  padding: '16px',
+                  marginTop: '12px',
+                  opacity: nameAvailability && !nameAvailability.available ? 0.5 : 1,
+                  cursor: nameAvailability && !nameAvailability.available ? 'not-allowed' : 'pointer'
+                }}
+                onClick={onContinue}
+                disabled={nameAvailability && !nameAvailability.available}
+              >
+                {nameAvailability && !nameAvailability.available ? 'Name Taken' : 'Continue with this Style →'}
+              </button>
+            </>
+          )}
+        </div>
+
+        {/* Right Panel - Live Preview */}
+        <div style={{
+          ...quickStepStyles.rightPanel,
+          ...(isMobile ? quickStepStyles.mobileRightPanel : {})
+        }}>
+          {/* Preview Header */}
+          <div style={quickStepStyles.previewHeader}>
+            <div style={quickStepStyles.previewTitle}>
+              <span>🏗️</span>
+              <span>Structure Preview</span>
+              {previewLoading && (
+                <span style={{ fontSize: '12px', color: '#888', fontWeight: '400' }}>
+                  <span style={{ animation: 'spin 1s linear infinite', display: 'inline-block', marginRight: '4px' }}>⟳</span>
+                  updating...
+                </span>
+              )}
+            </div>
+
+            {/* Theme Tabs */}
+            <div style={quickStepStyles.themeTabs}>
+              {themeOptions.map(theme => (
+                <button
+                  key={theme.id}
+                  onClick={() => setPreviewTheme(theme.id)}
+                  style={{
+                    ...quickStepStyles.themeTab,
+                    ...(previewTheme === theme.id ? quickStepStyles.themeTabActive : {})
+                  }}
+                >
+                  <span>{theme.icon}</span>
+                  <span>{theme.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Structure Banner */}
+          <div style={quickStepStyles.structureBanner}>
+            <span style={{ fontSize: '18px' }}>👁️</span>
+            <span style={{ fontSize: '12px', color: '#a5b4fc', lineHeight: '1.4' }}>
+              <strong>Live Preview</strong> with sample images. Pick a layout, adjust sliders, switch themes - see changes instantly!
+              Your final site will have AI-generated content tailored to your business.
+            </span>
+          </div>
+
+          {/* Preview Content */}
+          <div style={quickStepStyles.previewContent}>
+            {detected && previewHtml ? (
+              <>
+                <iframe
+                  srcDoc={previewHtml}
+                  title="Structure Preview"
+                  sandbox="allow-scripts allow-same-origin"
+                  style={{
+                    ...quickStepStyles.previewIframe,
+                    opacity: previewLoading ? 0.5 : 1,
+                    transition: 'opacity 0.2s'
+                  }}
+                />
+                {previewLoading && (
+                  <div style={quickStepStyles.loadingOverlay}>
+                    <span style={{ animation: 'spin 1s linear infinite', display: 'inline-block' }}>⟳</span>
+                    <span>Updating preview...</span>
                   </div>
                 )}
+              </>
+            ) : (
+              <div style={quickStepStyles.emptyPreview}>
+                <span style={{ fontSize: '48px', marginBottom: '16px' }}>🎨</span>
+                <span style={{ fontSize: '16px', fontWeight: '500', marginBottom: '8px' }}>
+                  {previewLoading ? 'Generating preview...' : 'Enter your business above'}
+                </span>
+                <span style={{ fontSize: '13px', color: '#999' }}>
+                  {!detected ? 'Preview will appear here' : 'Adjust sliders to see changes'}
+                </span>
               </div>
             )}
           </div>
-          <button
-            style={{
-              ...styles.continueBtn,
-              opacity: nameAvailability && !nameAvailability.available ? 0.5 : 1,
-              cursor: nameAvailability && !nameAvailability.available ? 'not-allowed' : 'pointer'
-            }}
-            onClick={onContinue}
-            disabled={nameAvailability && !nameAvailability.available}
-          >
-            {nameAvailability && !nameAvailability.available ? 'Name Taken' : 'Customize →'}
-          </button>
+
+          {/* Status Bar */}
+          <div style={quickStepStyles.statusBar}>
+            <span>
+              {detected
+                ? `${detected.industry?.name || 'Business'} • ${selectedPages.length} pages • ${previewTheme.charAt(0).toUpperCase() + previewTheme.slice(1)}`
+                : 'Enter your business to see preview'}
+            </span>
+            <span style={quickStepStyles.costBadge}>$0 API Cost</span>
+          </div>
         </div>
-      )}
-    </div>
+      </div>
+    </>
   );
 }

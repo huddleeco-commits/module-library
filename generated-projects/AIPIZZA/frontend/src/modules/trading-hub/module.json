@@ -1,0 +1,10 @@
+{
+  "name": "trading-hub",
+  "type": "frontend",
+  "source": "financial",
+  "extractedAt": "2026-01-08T13:05:46.426Z",
+  "files": [
+    "components/trading/TradingHub.js",
+    "components/trading/Calculator.js"
+  ]
+}

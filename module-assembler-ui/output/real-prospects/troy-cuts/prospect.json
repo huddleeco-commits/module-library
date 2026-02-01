@@ -1,0 +1,65 @@
+{
+  "id": "_SNf07Y80LNPooxGnfSGZA",
+  "name": "Troy Cuts",
+  "address": "1940 Justin Rd, Lewisville, TX, 75077",
+  "phone": "+19729661388",
+  "category": "barbers",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 4.6,
+  "reviewCount": 12,
+  "photos": [
+    "https://s3-media0.fl.yelpcdn.com/bphoto/mWl2vEud4_IonCmJXAA3gQ/o.jpg"
+  ],
+  "hours": null,
+  "fixtureId": "barbershop",
+  "source": "yelp",
+  "yelpUrl": "https://www.yelp.com/biz/troy-cuts-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+  "raw": {
+    "id": "_SNf07Y80LNPooxGnfSGZA",
+    "alias": "troy-cuts-lewisville",
+    "name": "Troy Cuts",
+    "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/mWl2vEud4_IonCmJXAA3gQ/o.jpg",
+    "is_closed": false,
+    "url": "https://www.yelp.com/biz/troy-cuts-lewisville?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+    "review_count": 12,
+    "categories": [
+      {
+        "alias": "barbers",
+        "title": "Barbers"
+      }
+    ],
+    "rating": 4.6,
+    "coordinates": {
+      "latitude": 33.07222,
+      "longitude": -97.04754
+    },
+    "transactions": [],
+    "price": "$",
+    "location": {
+      "address1": "1940 Justin Rd",
+      "address2": "Ste 106",
+      "address3": "",
+      "city": "Lewisville",
+      "zip_code": "75077",
+      "country": "US",
+      "state": "TX",
+      "display_address": [
+        "1940 Justin Rd",
+        "Ste 106",
+        "Lewisville, TX 75077"
+      ]
+    },
+    "phone": "+19729661388",
+    "display_phone": "(972) 966-1388",
+    "distance": 5881.297638514348,
+    "business_hours": [],
+    "attributes": {
+      "business_temp_closed": null,
+      "menu_url": null,
+      "waitlist_reservation": null
+    }
+  },
+  "scannedAt": "2026-01-25T14:23:35.929Z",
+  "readyForGeneration": true
+}

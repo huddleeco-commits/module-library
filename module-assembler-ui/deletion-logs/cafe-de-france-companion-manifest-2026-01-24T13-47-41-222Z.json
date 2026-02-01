@@ -1,0 +1,38 @@
+{
+  "projectName": "cafe-de-france-companion",
+  "savedAt": "2026-01-24T13:47:41.222Z",
+  "resources": {
+    "name": "cafe-de-france-companion",
+    "sanitizedName": "cafe-de-france-companion",
+    "github": {
+      "repos": [
+        {
+          "name": "cafe-de-france-companion-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "cafe-de-france-companion-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "cafe-de-france-companion-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

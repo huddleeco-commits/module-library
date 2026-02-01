@@ -1,0 +1,38 @@
+{
+  "projectName": "LewyDental",
+  "savedAt": "2026-01-24T13:55:50.106Z",
+  "resources": {
+    "name": "LewyDental",
+    "sanitizedName": "lewydental",
+    "github": {
+      "repos": [
+        {
+          "name": "lewydental-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "lewydental-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "lewydental-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\LewyDental",
+      "exists": true
+    }
+  }
+}

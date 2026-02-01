@@ -1,0 +1,212 @@
+{
+  "businessName": "158 Bakery",
+  "address": "240 Legacy Dr # 220, Plano, TX 75023, USA",
+  "phone": "(972) 575-8726",
+  "industry": "bakery",
+  "generatedAt": "2026-01-25T23:02:26.366Z",
+  "generatedBy": "MasterAgent",
+  "testMode": true,
+  "prospect": {
+    "id": "ChIJ_19dZBIZTIYRp8Nh6xAgPLk",
+    "name": "158 Bakery",
+    "address": "240 Legacy Dr # 220, Plano, TX 75023, USA",
+    "phone": "(972) 575-8726",
+    "category": "bakery",
+    "website": null,
+    "hasWebsite": false,
+    "rating": 5,
+    "reviewCount": 11,
+    "photo": "https://places.googleapis.com/v1/places/ChIJ_19dZBIZTIYRp8Nh6xAgPLk/photos/AcnlKN0T0qmsDp2YCd7FS_akgbmAmUcuhi3stuN6ZaKzYwycZDJEZZJZHfI3uqbYDbX69WAry8wPrQsJymhl4lxb_Mdd7tVcw09tsIgfE7PEmZ5C5tfGTCQ1Wxq0rbNvFVAVir7eVfETdmCwUT86Y2tiHMM59k1bm2nr3ELi-uvsZUDn2aXV3yDtXUBfh3vQ6BML92UJ96E9BCYJmJR5GlvR88S9hS4Ovy--69b_wMikVJWkA2WJB7Qo2CJ2n8yUFu8c_AthaOLNvUxkVv6MqxdPvXBdUuXpekirRkXG2KvAX2eLJQ/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+    "photos": [
+      "https://places.googleapis.com/v1/places/ChIJ_19dZBIZTIYRp8Nh6xAgPLk/photos/AcnlKN0T0qmsDp2YCd7FS_akgbmAmUcuhi3stuN6ZaKzYwycZDJEZZJZHfI3uqbYDbX69WAry8wPrQsJymhl4lxb_Mdd7tVcw09tsIgfE7PEmZ5C5tfGTCQ1Wxq0rbNvFVAVir7eVfETdmCwUT86Y2tiHMM59k1bm2nr3ELi-uvsZUDn2aXV3yDtXUBfh3vQ6BML92UJ96E9BCYJmJR5GlvR88S9hS4Ovy--69b_wMikVJWkA2WJB7Qo2CJ2n8yUFu8c_AthaOLNvUxkVv6MqxdPvXBdUuXpekirRkXG2KvAX2eLJQ/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+      "https://places.googleapis.com/v1/places/ChIJ_19dZBIZTIYRp8Nh6xAgPLk/photos/AcnlKN2TG2XfvS8OKr-sFJdjr43Z7LAWduWhw7vTNJZ1m655JZWzdwR1hzbZ20vANLcedTskoSsXwBB9M1weVP1q40y50qsnYGZEIXJZlgLDqTgWa6Tx5z1d4gOvumZCi02E_JFDpWfEkvojVbB2kT_5YwaWbooSkHpkrYNFq_WfgMr6NWC1r9M95d0L2xXjKCs7nJV9K-W5dVMQmZxnvf852XG5QJtUtIO5kbhAaWaVwalsWoezG1LwY8IUo39AJ58Jo9lbUclVD1xv3941fM_FyEf7bLIDCDT6ij10weJHn75chQ/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+      "https://places.googleapis.com/v1/places/ChIJ_19dZBIZTIYRp8Nh6xAgPLk/photos/AcnlKN3FHlbd2RtKth8A4fZoFjNd50JgWV4WzJ8HoCXztKEevlTLpl12SRvfRd1xCa3YpwRZjkOkdKq4hvzD4AB8SVXm-rnqhC3hLSBiNPPu6_2jtj98APyI_IWhfFVELhQDZDlxAoNPK0CPwLKb1z18u7xzPFGKvCLZRiYXnHRC2Pevjq79eu6MRum5zBxvvpRUMnxMrOb547Zd976o9944ZophpedtSajA3UHPISiu70gkSh7MPk3zZoqa7j4Fj8neR_MZOoCAMKhInPrxj-HU5S6mJSlCIKvcdI_abZuFTHApkg/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+      "https://places.googleapis.com/v1/places/ChIJ_19dZBIZTIYRp8Nh6xAgPLk/photos/AcnlKN0m5JO9J11G5WEXH2LYFjTPGaR7STlTUqqiMYyv6J37OQRv4asZdwFGHKJEvpDZILCvHdDwX0Q2v-b2If6j_QfEkULBudT2P02BKt6gcb_6nnt6PXxXrQ6x1YVU-88j3xvzRWam7fm_Lnz28rKYbw0YLSFjx-qkTuYdRs5nI8-7pXVZveavjTt_NhGUa00ZqGDGqljY2mWEbHUCKx-S2R6vih-8CJF1Ov8GS6Ys0HAtdWwvzcORsa3EFTl7gOmHKB1Xx50JeNW3o0ujdveJnrqF5gYRrWBO8v8d7ouLzePPeg/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+      "https://places.googleapis.com/v1/places/ChIJ_19dZBIZTIYRp8Nh6xAgPLk/photos/AcnlKN3rMqfcu3-Wus0b6RjPjig9Kh3D8ANat4vff28feJ3SmCE9izpnCcZVgWddKa59xvw_PW79VQMikAJOrSPz5lrOkw5XGu0R65xy0h-XgIqx94ptFRZDPj5paE2S0h8msApsan31uPLfUSXpfpSikB1Gt7vaL7o-S5dFzOxC8wIzzJ8KcOdUebskAiMNbi2A1mdVixLIGIp5U6rbhbMT7hudJCrjoJkxxynUc7T-SzqPfP3cCz--GHu1wWe2w_XzMnuwwAdomXDfRZi_z3I2-1uO7pFbY7Woh4ybHKqNaTbZEQ/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+      "https://places.googleapis.com/v1/places/ChIJ_19dZBIZTIYRp8Nh6xAgPLk/photos/AcnlKN31vp15wqpgGFiWcFyvBQEGewnI0DiMtjOHdBsFyDRXUQJh5ckx06c8ykJVA1Ipj7NKGLfx9ztu5YZJm_mhZzh9mpfouwbrsFib4PvjL99v_4Q0IPBsA8SQ7kmSXKM_4i79Kt3TSudMYJwJF3ayMXBrQpyooycmcXubmjgWAQQcbShvbxOk0UavNyXLDJRfVQv1h8PBBUjOgKbX-Fy9VPyHnvmrQvi-EI1WkPmTzAfqYXhRylVby6_EdavtAFSGcS76sxBPA5lzlOvp1wRyFQi2QfZ2CdGXz5b2paFdk9PLQA/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+      "https://places.googleapis.com/v1/places/ChIJ_19dZBIZTIYRp8Nh6xAgPLk/photos/AcnlKN1SDx_NRzcvl_dlZM3IEiYrxSgep6_WVICvdAMdN9fVObh11eMMvaKBNLCcQyGwDEO4UHTfJ0M0FyjbkAHYe5Q1llnUPXXx2DzjO3zE1etzsCoBBU0aHAN3F34Yb3kHUBflFD4bLZnAIHeExJX-e-icw-V6zDLI_v6RSRSbh83xTF9MIxICWMgQZO7Jeyw9cBLlb5q_qUOPc1kexue8ZJS8asaq_QAialbuUFhn-Z2xYuxRcBD7ApfhC4qwcYLE8H8jMZs_WOjjd9-oI0Iwu0ZOv1t3ulpYKUHdKvTQ-BQLEw/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+      "https://places.googleapis.com/v1/places/ChIJ_19dZBIZTIYRp8Nh6xAgPLk/photos/AcnlKN0lIYKLUOnbqo3EdaDqIxfDoLHQ6OQNRgQFlE8Ic0LFk06yE20nnpr9uge2KFXbgiMK4Ndk3_SnjGohLewbqPoqmYH6q0rDalczioQuEj-m96fXKzISxNnnsbf8ZFnl4XjCwBCY_rwd5_pay3G-hjjtgizvdrZV5Tp570xNuqubs9E9WQY6-2BwzjSR3Iqlb73fWXN6LjJ3qdxIrEnTLtUHppCPOdH98LdYkRrFA1o7oyF9BDVnECPz_CnXb7c1ydO7os89KDTxlZx6QOHFxzZIjYYVm-Sb7yNnLe7NvMh3Jw/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+      "https://places.googleapis.com/v1/places/ChIJ_19dZBIZTIYRp8Nh6xAgPLk/photos/AcnlKN2xVwsRNt3BjeFmeKH29QhuxHRb-6vrYwUCJdw1Cuvus-crkioCbFI-wgkzqXwjfO0u4L20UGPI8ZW_qGxhZKx0OgX1T64GvbBzD0399AbT7ssYZz7S73fDAf4btCALF-PyXMdKovoHddJgOKtCRi2QMC_Rn5rj45qhbCg99R_fJFj9A4Uuk64gKoRjRDiiINMolLbuqDSdR2FRKkJIARjXxjCm1d7t3uLJyW7MvmgxuHXXOxfztm8g4edSJwso9Ahauv7i_YzlzAG0L0gZAQLyM0hhcmTNFo8tO2pNpWtLvg/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k",
+      "https://places.googleapis.com/v1/places/ChIJ_19dZBIZTIYRp8Nh6xAgPLk/photos/AcnlKN3l-YtU5fD3yXJYaqhiy-kz9Iohw6gM5fkWAH1Gt8t7O5LPenMkorYcqbQY2HUlbU4KtupNNK21pC-On09CBOWaOscX_R1LRf3XzZHHeRMW-7vm5UrIb41_VovGAWGnj_EL-r6ED11JPyhqvSNNuVeYayj4EbX3jacfkvB3cz99L5wqu_4tqgdeW0weEAFpNMewqJrt0eyf6oknJowzHjDfMfWQO7m39feKXfbeELUy0v0ZzuyVFTy1GYGEHobBPtK6cSq2UVNhjNLvenMU9H_T2FPtX_STztiDNgAaHZ70lw/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyD6tJf1OGZhnNNeoa3SiPEt9Hh7O-66Z2k"
+    ],
+    "fixtureId": "bakery",
+    "source": "google",
+    "googleMapsUrl": "https://maps.google.com/?cid=13347578652659925927&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "coordinates": {
+      "latitude": 33.0673027,
+      "longitude": -96.69569489999999
+    },
+    "raw": {
+      "id": "ChIJ_19dZBIZTIYRp8Nh6xAgPLk",
+      "types": [
+        "bakery",
+        "food_store",
+        "store",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "nationalPhoneNumber": "(972) 575-8726",
+      "formattedAddress": "240 Legacy Dr # 220, Plano, TX 75023, USA",
+      "location": {
+        "latitude": 33.0673027,
+        "longitude": -96.69569489999999
+      },
+      "rating": 5,
+      "googleMapsUri": "https://maps.google.com/?cid=13347578652659925927&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+      "userRatingCount": 11,
+      "displayName": {
+        "text": "158 Bakery",
+        "languageCode": "en"
+      },
+      "primaryType": "bakery",
+      "photos": [
+        {
+          "name": "places/ChIJ_19dZBIZTIYRp8Nh6xAgPLk/photos/AcnlKN0T0qmsDp2YCd7FS_akgbmAmUcuhi3stuN6ZaKzYwycZDJEZZJZHfI3uqbYDbX69WAry8wPrQsJymhl4lxb_Mdd7tVcw09tsIgfE7PEmZ5C5tfGTCQ1Wxq0rbNvFVAVir7eVfETdmCwUT86Y2tiHMM59k1bm2nr3ELi-uvsZUDn2aXV3yDtXUBfh3vQ6BML92UJ96E9BCYJmJR5GlvR88S9hS4Ovy--69b_wMikVJWkA2WJB7Qo2CJ2n8yUFu8c_AthaOLNvUxkVv6MqxdPvXBdUuXpekirRkXG2KvAX2eLJQ",
+          "widthPx": 4032,
+          "heightPx": 3024,
+          "authorAttributions": [
+            {
+              "displayName": "158 bakery",
+              "uri": "https://maps.google.com/maps/contrib/117947149782280315088",
+              "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocIk2tauYIKdi2QHOKmrTis_BRmlmYVzlY6FpXbG7PM0CUkl-Q=s100-p-k-no-mo"
+            }
+          ],
+          "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipOi-wH6gpOUbQSnaP4PH9IZjvEqhQRBBfrM136p&hl=en",
+          "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipOi-wH6gpOUbQSnaP4PH9IZjvEqhQRBBfrM136p!2e10!4m2!3m1!1s0x864c1912645d5fff:0xb93c2010eb61c3a7"
+        },
+        {
+          "name": "places/ChIJ_19dZBIZTIYRp8Nh6xAgPLk/photos/AcnlKN2TG2XfvS8OKr-sFJdjr43Z7LAWduWhw7vTNJZ1m655JZWzdwR1hzbZ20vANLcedTskoSsXwBB9M1weVP1q40y50qsnYGZEIXJZlgLDqTgWa6Tx5z1d4gOvumZCi02E_JFDpWfEkvojVbB2kT_5YwaWbooSkHpkrYNFq_WfgMr6NWC1r9M95d0L2xXjKCs7nJV9K-W5dVMQmZxnvf852XG5QJtUtIO5kbhAaWaVwalsWoezG1LwY8IUo39AJ58Jo9lbUclVD1xv3941fM_FyEf7bLIDCDT6ij10weJHn75chQ",
+          "widthPx": 3024,
+          "heightPx": 4032,
+          "authorAttributions": [
+            {
+              "displayName": "158 bakery",
+              "uri": "https://maps.google.com/maps/contrib/117947149782280315088",
+              "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocIk2tauYIKdi2QHOKmrTis_BRmlmYVzlY6FpXbG7PM0CUkl-Q=s100-p-k-no-mo"
+            }
+          ],
+          "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipNUtzxG54XPhfZdIR7uxW4kjiGUuSHqeUbvaUo-&hl=en",
+          "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipNUtzxG54XPhfZdIR7uxW4kjiGUuSHqeUbvaUo-!2e10!4m2!3m1!1s0x864c1912645d5fff:0xb93c2010eb61c3a7"
+        },
+        {
+          "name": "places/ChIJ_19dZBIZTIYRp8Nh6xAgPLk/photos/AcnlKN3FHlbd2RtKth8A4fZoFjNd50JgWV4WzJ8HoCXztKEevlTLpl12SRvfRd1xCa3YpwRZjkOkdKq4hvzD4AB8SVXm-rnqhC3hLSBiNPPu6_2jtj98APyI_IWhfFVELhQDZDlxAoNPK0CPwLKb1z18u7xzPFGKvCLZRiYXnHRC2Pevjq79eu6MRum5zBxvvpRUMnxMrOb547Zd976o9944ZophpedtSajA3UHPISiu70gkSh7MPk3zZoqa7j4Fj8neR_MZOoCAMKhInPrxj-HU5S6mJSlCIKvcdI_abZuFTHApkg",
+          "widthPx": 1279,
+          "heightPx": 1706,
+          "authorAttributions": [
+            {
+              "displayName": "158 bakery",
+              "uri": "https://maps.google.com/maps/contrib/117947149782280315088",
+              "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocIk2tauYIKdi2QHOKmrTis_BRmlmYVzlY6FpXbG7PM0CUkl-Q=s100-p-k-no-mo"
+            }
+          ],
+          "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipPK41ecrVZmkFYdmYPEFnETXPr9VXPqyRTaGaEz&hl=en",
+          "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipPK41ecrVZmkFYdmYPEFnETXPr9VXPqyRTaGaEz!2e10!4m2!3m1!1s0x864c1912645d5fff:0xb93c2010eb61c3a7"
+        },
+        {
+          "name": "places/ChIJ_19dZBIZTIYRp8Nh6xAgPLk/photos/AcnlKN0m5JO9J11G5WEXH2LYFjTPGaR7STlTUqqiMYyv6J37OQRv4asZdwFGHKJEvpDZILCvHdDwX0Q2v-b2If6j_QfEkULBudT2P02BKt6gcb_6nnt6PXxXrQ6x1YVU-88j3xvzRWam7fm_Lnz28rKYbw0YLSFjx-qkTuYdRs5nI8-7pXVZveavjTt_NhGUa00ZqGDGqljY2mWEbHUCKx-S2R6vih-8CJF1Ov8GS6Ys0HAtdWwvzcORsa3EFTl7gOmHKB1Xx50JeNW3o0ujdveJnrqF5gYRrWBO8v8d7ouLzePPeg",
+          "widthPx": 1279,
+          "heightPx": 1706,
+          "authorAttributions": [
+            {
+              "displayName": "158 bakery",
+              "uri": "https://maps.google.com/maps/contrib/117947149782280315088",
+              "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocIk2tauYIKdi2QHOKmrTis_BRmlmYVzlY6FpXbG7PM0CUkl-Q=s100-p-k-no-mo"
+            }
+          ],
+          "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipPsNQhr5zHmJpxS0eOG2wTMaCsPB1tlnbDKxL52&hl=en",
+          "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipPsNQhr5zHmJpxS0eOG2wTMaCsPB1tlnbDKxL52!2e10!4m2!3m1!1s0x864c1912645d5fff:0xb93c2010eb61c3a7"
+        },
+        {
+          "name": "places/ChIJ_19dZBIZTIYRp8Nh6xAgPLk/photos/AcnlKN3rMqfcu3-Wus0b6RjPjig9Kh3D8ANat4vff28feJ3SmCE9izpnCcZVgWddKa59xvw_PW79VQMikAJOrSPz5lrOkw5XGu0R65xy0h-XgIqx94ptFRZDPj5paE2S0h8msApsan31uPLfUSXpfpSikB1Gt7vaL7o-S5dFzOxC8wIzzJ8KcOdUebskAiMNbi2A1mdVixLIGIp5U6rbhbMT7hudJCrjoJkxxynUc7T-SzqPfP3cCz--GHu1wWe2w_XzMnuwwAdomXDfRZi_z3I2-1uO7pFbY7Woh4ybHKqNaTbZEQ",
+          "widthPx": 1279,
+          "heightPx": 1706,
+          "authorAttributions": [
+            {
+              "displayName": "158 bakery",
+              "uri": "https://maps.google.com/maps/contrib/117947149782280315088",
+              "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocIk2tauYIKdi2QHOKmrTis_BRmlmYVzlY6FpXbG7PM0CUkl-Q=s100-p-k-no-mo"
+            }
+          ],
+          "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipNw9eGGmQyliGhJrPI6RT3CYJH6N4sJyLbrzftV&hl=en",
+          "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipNw9eGGmQyliGhJrPI6RT3CYJH6N4sJyLbrzftV!2e10!4m2!3m1!1s0x864c1912645d5fff:0xb93c2010eb61c3a7"
+        },
+        {
+          "name": "places/ChIJ_19dZBIZTIYRp8Nh6xAgPLk/photos/AcnlKN31vp15wqpgGFiWcFyvBQEGewnI0DiMtjOHdBsFyDRXUQJh5ckx06c8ykJVA1Ipj7NKGLfx9ztu5YZJm_mhZzh9mpfouwbrsFib4PvjL99v_4Q0IPBsA8SQ7kmSXKM_4i79Kt3TSudMYJwJF3ayMXBrQpyooycmcXubmjgWAQQcbShvbxOk0UavNyXLDJRfVQv1h8PBBUjOgKbX-Fy9VPyHnvmrQvi-EI1WkPmTzAfqYXhRylVby6_EdavtAFSGcS76sxBPA5lzlOvp1wRyFQi2QfZ2CdGXz5b2paFdk9PLQA",
+          "widthPx": 1278,
+          "heightPx": 1706,
+          "authorAttributions": [
+            {
+              "displayName": "158 bakery",
+              "uri": "https://maps.google.com/maps/contrib/117947149782280315088",
+              "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocIk2tauYIKdi2QHOKmrTis_BRmlmYVzlY6FpXbG7PM0CUkl-Q=s100-p-k-no-mo"
+            }
+          ],
+          "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipPFuJVu8sU4HkeESZ21TCytShA3m83bTCFsgqM-&hl=en",
+          "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipPFuJVu8sU4HkeESZ21TCytShA3m83bTCFsgqM-!2e10!4m2!3m1!1s0x864c1912645d5fff:0xb93c2010eb61c3a7"
+        },
+        {
+          "name": "places/ChIJ_19dZBIZTIYRp8Nh6xAgPLk/photos/AcnlKN1SDx_NRzcvl_dlZM3IEiYrxSgep6_WVICvdAMdN9fVObh11eMMvaKBNLCcQyGwDEO4UHTfJ0M0FyjbkAHYe5Q1llnUPXXx2DzjO3zE1etzsCoBBU0aHAN3F34Yb3kHUBflFD4bLZnAIHeExJX-e-icw-V6zDLI_v6RSRSbh83xTF9MIxICWMgQZO7Jeyw9cBLlb5q_qUOPc1kexue8ZJS8asaq_QAialbuUFhn-Z2xYuxRcBD7ApfhC4qwcYLE8H8jMZs_WOjjd9-oI0Iwu0ZOv1t3ulpYKUHdKvTQ-BQLEw",
+          "widthPx": 1279,
+          "heightPx": 1706,
+          "authorAttributions": [
+            {
+              "displayName": "158 bakery",
+              "uri": "https://maps.google.com/maps/contrib/117947149782280315088",
+              "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocIk2tauYIKdi2QHOKmrTis_BRmlmYVzlY6FpXbG7PM0CUkl-Q=s100-p-k-no-mo"
+            }
+          ],
+          "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipP9avp3hU5l3dYTmO2lGjRcsP2q7KmnJbaJoJjY&hl=en",
+          "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipP9avp3hU5l3dYTmO2lGjRcsP2q7KmnJbaJoJjY!2e10!4m2!3m1!1s0x864c1912645d5fff:0xb93c2010eb61c3a7"
+        },
+        {
+          "name": "places/ChIJ_19dZBIZTIYRp8Nh6xAgPLk/photos/AcnlKN0lIYKLUOnbqo3EdaDqIxfDoLHQ6OQNRgQFlE8Ic0LFk06yE20nnpr9uge2KFXbgiMK4Ndk3_SnjGohLewbqPoqmYH6q0rDalczioQuEj-m96fXKzISxNnnsbf8ZFnl4XjCwBCY_rwd5_pay3G-hjjtgizvdrZV5Tp570xNuqubs9E9WQY6-2BwzjSR3Iqlb73fWXN6LjJ3qdxIrEnTLtUHppCPOdH98LdYkRrFA1o7oyF9BDVnECPz_CnXb7c1ydO7os89KDTxlZx6QOHFxzZIjYYVm-Sb7yNnLe7NvMh3Jw",
+          "widthPx": 1279,
+          "heightPx": 1706,
+          "authorAttributions": [
+            {
+              "displayName": "158 bakery",
+              "uri": "https://maps.google.com/maps/contrib/117947149782280315088",
+              "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocIk2tauYIKdi2QHOKmrTis_BRmlmYVzlY6FpXbG7PM0CUkl-Q=s100-p-k-no-mo"
+            }
+          ],
+          "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipOlzAEWXCHaSeDLtqG2mE9DlIZXzt-rsX5VHfkT&hl=en",
+          "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipOlzAEWXCHaSeDLtqG2mE9DlIZXzt-rsX5VHfkT!2e10!4m2!3m1!1s0x864c1912645d5fff:0xb93c2010eb61c3a7"
+        },
+        {
+          "name": "places/ChIJ_19dZBIZTIYRp8Nh6xAgPLk/photos/AcnlKN2xVwsRNt3BjeFmeKH29QhuxHRb-6vrYwUCJdw1Cuvus-crkioCbFI-wgkzqXwjfO0u4L20UGPI8ZW_qGxhZKx0OgX1T64GvbBzD0399AbT7ssYZz7S73fDAf4btCALF-PyXMdKovoHddJgOKtCRi2QMC_Rn5rj45qhbCg99R_fJFj9A4Uuk64gKoRjRDiiINMolLbuqDSdR2FRKkJIARjXxjCm1d7t3uLJyW7MvmgxuHXXOxfztm8g4edSJwso9Ahauv7i_YzlzAG0L0gZAQLyM0hhcmTNFo8tO2pNpWtLvg",
+          "widthPx": 1279,
+          "heightPx": 1706,
+          "authorAttributions": [
+            {
+              "displayName": "158 bakery",
+              "uri": "https://maps.google.com/maps/contrib/117947149782280315088",
+              "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocIk2tauYIKdi2QHOKmrTis_BRmlmYVzlY6FpXbG7PM0CUkl-Q=s100-p-k-no-mo"
+            }
+          ],
+          "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipP2M0jP765siv6xBgOopYhwVgeElN-A8cO6shBG&hl=en",
+          "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipP2M0jP765siv6xBgOopYhwVgeElN-A8cO6shBG!2e10!4m2!3m1!1s0x864c1912645d5fff:0xb93c2010eb61c3a7"
+        },
+        {
+          "name": "places/ChIJ_19dZBIZTIYRp8Nh6xAgPLk/photos/AcnlKN3l-YtU5fD3yXJYaqhiy-kz9Iohw6gM5fkWAH1Gt8t7O5LPenMkorYcqbQY2HUlbU4KtupNNK21pC-On09CBOWaOscX_R1LRf3XzZHHeRMW-7vm5UrIb41_VovGAWGnj_EL-r6ED11JPyhqvSNNuVeYayj4EbX3jacfkvB3cz99L5wqu_4tqgdeW0weEAFpNMewqJrt0eyf6oknJowzHjDfMfWQO7m39feKXfbeELUy0v0ZzuyVFTy1GYGEHobBPtK6cSq2UVNhjNLvenMU9H_T2FPtX_STztiDNgAaHZ70lw",
+          "widthPx": 1279,
+          "heightPx": 1706,
+          "authorAttributions": [
+            {
+              "displayName": "158 bakery",
+              "uri": "https://maps.google.com/maps/contrib/117947149782280315088",
+              "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocIk2tauYIKdi2QHOKmrTis_BRmlmYVzlY6FpXbG7PM0CUkl-Q=s100-p-k-no-mo"
+            }
+          ],
+          "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipOGjJzg2cI55_5sapQU_ZUOm5o6XjevZwzexuJN&hl=en",
+          "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipOGjJzg2cI55_5sapQU_ZUOm5o6XjevZwzexuJN!2e10!4m2!3m1!1s0x864c1912645d5fff:0xb93c2010eb61c3a7"
+        }
+      ]
+    },
+    "detectedWebsite": null,
+    "scannedAt": "2026-01-25T19:11:47.156Z",
+    "readyForGeneration": true,
+    "generationTimeMs": 31658,
+    "status": "scouted"
+  }
+}

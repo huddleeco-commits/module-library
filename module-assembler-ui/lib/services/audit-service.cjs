@@ -274,12 +274,12 @@ async function ensureDependencies(projectPath, options = {}) {
     const maxAgeMs = options.maxCacheAge || 24 * 60 * 60 * 1000; // 24 hours default
 
     if (ageMs < maxAgeMs) {
-      console.log('   📦 Using cached node_modules');
+      console.log(`   📦 Using cached node_modules for ${path.basename(projectPath)}`);
       return { success: true, cached: true };
     }
   }
 
-  console.log('   📦 Installing dependencies...');
+  console.log(`   📦 Installing dependencies for ${path.basename(projectPath)}...`);
   const startTime = Date.now();
 
   try {
@@ -301,6 +301,33 @@ async function ensureDependencies(projectPath, options = {}) {
       stderr: error.stderr?.toString() || ''
     };
   }
+}
+
+/**
+ * Create .env file from .env.example if it doesn't exist
+ */
+function ensureEnvFile(projectPath) {
+  const envPath = path.join(projectPath, '.env');
+  const envExamplePath = path.join(projectPath, '.env.example');
+
+  // If .env already exists, skip
+  if (fs.existsSync(envPath)) {
+    return { created: false, reason: 'already exists' };
+  }
+
+  // If .env.example exists, copy it
+  if (fs.existsSync(envExamplePath)) {
+    try {
+      fs.copyFileSync(envExamplePath, envPath);
+      console.log(`   📄 Created .env from .env.example in ${path.basename(projectPath)}`);
+      return { created: true, source: '.env.example' };
+    } catch (err) {
+      console.warn(`   ⚠️ Failed to copy .env.example: ${err.message}`);
+      return { created: false, error: err.message };
+    }
+  }
+
+  return { created: false, reason: 'no .env.example found' };
 }
 
 /**
@@ -367,7 +394,8 @@ async function runViteBuild(projectPath, options = {}) {
  * AUDIT 1: Post-Generation Full Build Validation
  *
  * Runs after AI generates code, before marking as "completed"
- * - Full npm install (or use cache)
+ * - Full npm install for ALL directories (frontend, backend, admin)
+ * - Create .env files from templates
  * - Full vite build
  * - Parse and classify errors
  * - Attempt auto-fixes
@@ -375,6 +403,8 @@ async function runViteBuild(projectPath, options = {}) {
  */
 async function audit1PostGeneration(projectPath, options = {}) {
   const frontendPath = path.join(projectPath, 'frontend');
+  const backendPath = path.join(projectPath, 'backend');
+  const adminPath = path.join(projectPath, 'admin');
   const maxRetries = options.maxRetries || 2;
   const auditResult = {
     auditType: 'audit1',
@@ -384,7 +414,9 @@ async function audit1PostGeneration(projectPath, options = {}) {
     warnings: [],
     autoFixesApplied: [],
     buildLog: '',
-    retryCount: 0
+    retryCount: 0,
+    dependencyResults: {},
+    envFilesCreated: []
   };
 
   const startTime = Date.now();
@@ -403,18 +435,80 @@ async function audit1PostGeneration(projectPath, options = {}) {
     return auditResult;
   }
 
-  // Install dependencies
-  console.log('   📦 Step 1: Checking dependencies...');
-  const depsResult = await ensureDependencies(frontendPath, options);
-  if (!depsResult.success) {
+  // =====================================================
+  // Step 0: Create .env files from templates
+  // =====================================================
+  console.log('   📄 Step 0: Checking .env files...');
+
+  // Create .env for frontend
+  const frontendEnv = ensureEnvFile(frontendPath);
+  if (frontendEnv.created) {
+    auditResult.envFilesCreated.push('frontend/.env');
+  }
+
+  // Create .env for backend (if exists)
+  if (fs.existsSync(backendPath)) {
+    const backendEnv = ensureEnvFile(backendPath);
+    if (backendEnv.created) {
+      auditResult.envFilesCreated.push('backend/.env');
+    }
+  }
+
+  // Create .env for admin (if exists)
+  if (fs.existsSync(adminPath)) {
+    const adminEnv = ensureEnvFile(adminPath);
+    if (adminEnv.created) {
+      auditResult.envFilesCreated.push('admin/.env');
+    }
+  }
+
+  // =====================================================
+  // Step 1: Install dependencies for ALL directories
+  // =====================================================
+  console.log('   📦 Step 1: Installing dependencies...');
+
+  // Install frontend dependencies (required)
+  const frontendDeps = await ensureDependencies(frontendPath, options);
+  auditResult.dependencyResults.frontend = frontendDeps;
+  if (!frontendDeps.success) {
     auditResult.errors.push({
       type: 'DEPENDENCY_ERROR',
-      message: depsResult.error,
+      message: `Frontend: ${frontendDeps.error}`,
       severity: 'error'
     });
-    auditResult.buildLog = depsResult.stderr || '';
+    auditResult.buildLog = frontendDeps.stderr || '';
     auditResult.durationMs = Date.now() - startTime;
     return auditResult;
+  }
+
+  // Install backend dependencies (if exists)
+  if (fs.existsSync(backendPath) && fs.existsSync(path.join(backendPath, 'package.json'))) {
+    const backendDeps = await ensureDependencies(backendPath, options);
+    auditResult.dependencyResults.backend = backendDeps;
+    if (!backendDeps.success) {
+      // Log warning but don't fail the audit - backend is optional for build validation
+      console.warn(`   ⚠️ Backend dependencies failed: ${backendDeps.error}`);
+      auditResult.warnings.push({
+        type: 'DEPENDENCY_WARNING',
+        message: `Backend: ${backendDeps.error}`,
+        severity: 'warning'
+      });
+    }
+  }
+
+  // Install admin dependencies (if exists)
+  if (fs.existsSync(adminPath) && fs.existsSync(path.join(adminPath, 'package.json'))) {
+    const adminDeps = await ensureDependencies(adminPath, options);
+    auditResult.dependencyResults.admin = adminDeps;
+    if (!adminDeps.success) {
+      // Log warning but don't fail the audit - admin is optional for build validation
+      console.warn(`   ⚠️ Admin dependencies failed: ${adminDeps.error}`);
+      auditResult.warnings.push({
+        type: 'DEPENDENCY_WARNING',
+        message: `Admin: ${adminDeps.error}`,
+        severity: 'warning'
+      });
+    }
   }
 
   // Pre-build font fix (proactively fix known AI mistakes)
@@ -729,8 +823,9 @@ module.exports = {
   getAuditSummary,
   calculateProjectHash,
 
-  // For testing
+  // For testing / standalone use
   ERROR_PATTERNS,
   runViteBuild,
-  ensureDependencies
+  ensureDependencies,
+  ensureEnvFile
 };

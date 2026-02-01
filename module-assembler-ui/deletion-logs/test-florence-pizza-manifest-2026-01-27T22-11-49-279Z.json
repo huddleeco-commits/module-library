@@ -1,0 +1,84 @@
+{
+  "projectName": "test-florence-pizza",
+  "savedAt": "2026-01-27T22:11:49.279Z",
+  "resources": {
+    "name": "test-florence-pizza",
+    "sanitizedName": "test-florence-pizza",
+    "github": {
+      "repos": [
+        {
+          "name": "test-florence-pizza-backend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "test-florence-pizza-frontend",
+          "owner": "huddleeco-commits",
+          "exists": true
+        },
+        {
+          "name": "test-florence-pizza-admin",
+          "owner": "huddleeco-commits",
+          "exists": true
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "8705d942-4af9-4ef8-9633-0eefd246d292",
+        "name": "test-florence-pizza",
+        "createdAt": "2026-01-26T23:14:39.651Z",
+        "environments": [
+          {
+            "id": "c51829c7-4c6f-4acb-beca-d7d9ea2e1766",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "23b1ce83-c125-4d44-8cf2-e2bcce19817d",
+          "name": "admin"
+        },
+        {
+          "id": "592ba591-8781-4b03-aeea-17e1813412a6",
+          "name": "frontend"
+        },
+        {
+          "id": "d795675b-bac2-4da0-ab82-351aefbec2b3",
+          "name": "backend"
+        },
+        {
+          "id": "eba77365-9fc4-44af-95cf-35b54b26caed",
+          "name": "postgres"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": [
+        {
+          "id": "ff9a7020d3e59365df2a0687406b2a9d",
+          "name": "test-florence-pizza.be1st.io",
+          "type": "CNAME",
+          "content": "d3np6sd2.up.railway.app"
+        },
+        {
+          "id": "40c46b41fd9a60c29db8026794a40f05",
+          "name": "api.test-florence-pizza.be1st.io",
+          "type": "CNAME",
+          "content": "gcqs3mww.up.railway.app"
+        },
+        {
+          "id": "8cec486c34dd648dd5884b499ef11937",
+          "name": "admin.test-florence-pizza.be1st.io",
+          "type": "CNAME",
+          "content": "9gvune3y.up.railway.app"
+        }
+      ]
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  }
+}

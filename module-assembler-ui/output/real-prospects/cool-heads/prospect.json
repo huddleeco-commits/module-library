@@ -1,0 +1,73 @@
+{
+  "id": "9KxWVKNkYiq5xUsY0UqmFQ",
+  "name": "Cool Heads",
+  "address": "1050 Flower Mound Rd, Flower Mound, TX, 75028",
+  "phone": "+19728992488",
+  "category": "barbers",
+  "website": null,
+  "hasWebsite": false,
+  "rating": 4.1,
+  "reviewCount": 43,
+  "photos": [
+    "https://s3-media0.fl.yelpcdn.com/bphoto/oQ_Enwe0eG5RAO8OoN2JCw/o.jpg"
+  ],
+  "hours": null,
+  "fixtureId": "barbershop",
+  "source": "yelp",
+  "yelpUrl": "https://www.yelp.com/biz/cool-heads-flower-mound-2?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+  "raw": {
+    "id": "9KxWVKNkYiq5xUsY0UqmFQ",
+    "alias": "cool-heads-flower-mound-2",
+    "name": "Cool Heads",
+    "image_url": "https://s3-media0.fl.yelpcdn.com/bphoto/oQ_Enwe0eG5RAO8OoN2JCw/o.jpg",
+    "is_closed": false,
+    "url": "https://www.yelp.com/biz/cool-heads-flower-mound-2?adjust_creative=aM6E7mgISsIaSBYxudG5oQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=aM6E7mgISsIaSBYxudG5oQ",
+    "review_count": 43,
+    "categories": [
+      {
+        "alias": "barbers",
+        "title": "Barbers"
+      },
+      {
+        "alias": "menshair",
+        "title": "Men's Hair Salons"
+      },
+      {
+        "alias": "hairstylists",
+        "title": "Hair Stylists"
+      }
+    ],
+    "rating": 4.1,
+    "coordinates": {
+      "latitude": 33.011609,
+      "longitude": -97.04413
+    },
+    "transactions": [],
+    "price": "$$",
+    "location": {
+      "address1": "1050 Flower Mound Rd",
+      "address2": "Ste 300",
+      "address3": "",
+      "city": "Flower Mound",
+      "zip_code": "75028",
+      "country": "US",
+      "state": "TX",
+      "display_address": [
+        "1050 Flower Mound Rd",
+        "Ste 300",
+        "Flower Mound, TX 75028"
+      ]
+    },
+    "phone": "+19728992488",
+    "display_phone": "(972) 899-2488",
+    "distance": 4810.524959910843,
+    "business_hours": [],
+    "attributes": {
+      "business_temp_closed": null,
+      "menu_url": "https://coolheadsmen.com/Services",
+      "waitlist_reservation": null
+    }
+  },
+  "scannedAt": "2026-01-25T14:23:35.929Z",
+  "readyForGeneration": true
+}

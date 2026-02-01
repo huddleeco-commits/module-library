@@ -1,0 +1,38 @@
+{
+  "projectName": "cc7",
+  "savedAt": "2026-01-21T20:47:31.513Z",
+  "resources": {
+    "name": "cc7",
+    "sanitizedName": "cc7",
+    "github": {
+      "repos": [
+        {
+          "name": "cc7-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "cc7-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "cc7-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": "C:\\Users\\huddl\\OneDrive\\Desktop\\generated-projects\\cc7",
+      "exists": true
+    }
+  }
+}

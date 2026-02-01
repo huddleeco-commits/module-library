@@ -1,0 +1,80 @@
+{
+  "projectName": "test-cristy-s-cake-shop-modern-minimal-appetizing-visual",
+  "deletedAt": "2026-01-26T21:19:25.752Z",
+  "resourcesFound": {
+    "name": "test-cristy-s-cake-shop-modern-minimal-appetizing-visual",
+    "sanitizedName": "test-cristy-s-cake-shop-modern-minimal-appetizing-visual",
+    "github": {
+      "repos": [
+        {
+          "name": "test-cristy-s-cake-shop-modern-minimal-appetizing-visual-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-modern-minimal-appetizing-visual-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "test-cristy-s-cake-shop-modern-minimal-appetizing-visual-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": null,
+      "services": []
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-modern-minimal-appetizing-visual-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-modern-minimal-appetizing-visual-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/test-cristy-s-cake-shop-modern-minimal-appetizing-visual-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": null,
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "test-cristy-s-cake-shop-modern-minimal-appetizing-visual",
+          "verified": true
+        },
+        {
+          "subdomain": "api.test-cristy-s-cake-shop-modern-minimal-appetizing-visual",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.test-cristy-s-cake-shop-modern-minimal-appetizing-visual",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

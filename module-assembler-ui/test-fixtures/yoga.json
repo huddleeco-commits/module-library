@@ -1,0 +1,208 @@
+{
+  "id": "yoga",
+  "name": "Yoga Studio",
+  "icon": "🧘",
+  "business": {
+    "name": "Serenity Yoga Studio",
+    "location": "Denver, CO",
+    "tagline": "Find Your Balance, Transform Your Life",
+    "industry": "yoga",
+    "teamSize": "10-15",
+    "priceRange": "$$",
+    "established": "2017",
+    "phone": "(555) 234-YOGA",
+    "email": "namaste@serenityyoga-demo.com",
+    "address": "456 Zen Way, Denver, CO 80202",
+    "hours": {
+      "monday": "6:00 AM - 9:00 PM",
+      "tuesday": "6:00 AM - 9:00 PM",
+      "wednesday": "6:00 AM - 9:00 PM",
+      "thursday": "6:00 AM - 9:00 PM",
+      "friday": "6:00 AM - 8:00 PM",
+      "saturday": "7:00 AM - 6:00 PM",
+      "sunday": "8:00 AM - 5:00 PM"
+    }
+  },
+  "theme": {
+    "colors": {
+      "primary": "#7C3AED",
+      "secondary": "#A78BFA",
+      "accent": "#C4B5FD",
+      "background": "#FAF5FF",
+      "text": "#4C1D95"
+    },
+    "fonts": {
+      "heading": "Cormorant Garamond",
+      "body": "Lato"
+    },
+    "style": "calm-spiritual"
+  },
+  "pages": {
+    "home": {
+      "hero": {
+        "headline": "Find Your Balance, Transform Your Life",
+        "subheadline": "A welcoming space for all levels to explore yoga, meditation, and mindfulness in the heart of Denver.",
+        "cta": "View Class Schedule",
+        "secondaryCta": "First Class Free",
+        "backgroundImage": "https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=1920"
+      },
+      "sections": [
+        {
+          "type": "intro-offer",
+          "title": "New to Serenity?",
+          "offer": "First Class FREE",
+          "description": "Experience our studio with a complimentary class. No commitment, just yoga.",
+          "cta": "Claim Your Free Class"
+        },
+        {
+          "type": "features",
+          "title": "The Serenity Experience",
+          "items": [
+            { "icon": "Heart", "title": "All Levels Welcome", "description": "From first-timers to advanced practitioners" },
+            { "icon": "Sun", "title": "Diverse Class Styles", "description": "Vinyasa, Hatha, Yin, Hot, Restorative, and more" },
+            { "icon": "Users", "title": "Expert Teachers", "description": "Certified instructors with 500+ hours training" },
+            { "icon": "Sparkles", "title": "Modern Studio", "description": "Heated rooms, premium mats, full amenities" }
+          ]
+        },
+        {
+          "type": "classes-preview",
+          "title": "Popular Classes",
+          "items": [
+            { "name": "Vinyasa Flow", "level": "All Levels", "duration": "60 min", "description": "Dynamic, breath-linked movement" },
+            { "name": "Hot Power Yoga", "level": "Intermediate", "duration": "75 min", "description": "Challenging practice in heated room" },
+            { "name": "Gentle Yoga", "level": "Beginner", "duration": "60 min", "description": "Slow, accessible, perfect for beginners" },
+            { "name": "Yin & Meditation", "level": "All Levels", "duration": "75 min", "description": "Deep stretches and guided meditation" }
+          ]
+        },
+        {
+          "type": "pricing-preview",
+          "title": "Membership Options",
+          "items": [
+            { "name": "Drop-In", "price": 25, "description": "Single class" },
+            { "name": "10-Class Pack", "price": 200, "description": "$20/class, expires in 3 months" },
+            { "name": "Unlimited Monthly", "price": 129, "description": "Unlimited classes, cancel anytime" }
+          ]
+        },
+        {
+          "type": "testimonials",
+          "title": "Student Stories",
+          "items": [
+            { "name": "Jessica M.", "text": "Serenity changed my life. I came for exercise and found a community that supports my whole wellbeing.", "rating": 5 },
+            { "name": "David L.", "text": "As a guy who was intimidated by yoga, the teachers here made me feel welcome from day one.", "rating": 5 },
+            { "name": "Amanda R.", "text": "The variety of classes keeps me coming back. Hot yoga Tuesday, Yin Sunday - perfect balance!", "rating": 5 }
+          ]
+        }
+      ]
+    },
+    "classes": {
+      "hero": {
+        "headline": "Class Schedule",
+        "subheadline": "Find the perfect class for your practice"
+      },
+      "classTypes": [
+        {
+          "name": "Vinyasa Flow",
+          "level": "All Levels",
+          "duration": "60 min",
+          "description": "A dynamic practice linking breath with movement. Build strength, flexibility, and focus.",
+          "benefits": ["Builds strength", "Improves flexibility", "Reduces stress"]
+        },
+        {
+          "name": "Hot Power Yoga",
+          "level": "Intermediate/Advanced",
+          "duration": "75 min",
+          "description": "Vigorous practice in a heated room (95°F). Detoxify, challenge yourself, transform.",
+          "benefits": ["Deep detox", "Increased endurance", "Mental toughness"]
+        },
+        {
+          "name": "Gentle/Beginner Yoga",
+          "level": "Beginner",
+          "duration": "60 min",
+          "description": "Slow-paced class perfect for newcomers. Learn fundamentals in a supportive environment.",
+          "benefits": ["Build foundation", "Gain confidence", "Reduce anxiety"]
+        },
+        {
+          "name": "Yin Yoga",
+          "level": "All Levels",
+          "duration": "75 min",
+          "description": "Long-held passive poses targeting deep connective tissue. Meditative and restorative.",
+          "benefits": ["Deep flexibility", "Joint health", "Stress relief"]
+        },
+        {
+          "name": "Restorative Yoga",
+          "level": "All Levels",
+          "duration": "60 min",
+          "description": "Fully supported poses for complete relaxation. Perfect for recovery and stress relief.",
+          "benefits": ["Deep relaxation", "Nervous system reset", "Better sleep"]
+        },
+        {
+          "name": "Meditation & Breathwork",
+          "level": "All Levels",
+          "duration": "45 min",
+          "description": "Guided meditation and pranayama techniques for mental clarity and calm.",
+          "benefits": ["Mental clarity", "Emotional balance", "Present-moment awareness"]
+        }
+      ]
+    },
+    "pricing": {
+      "hero": {
+        "headline": "Pricing & Memberships",
+        "subheadline": "Flexible options for every yogi"
+      },
+      "options": [
+        { "name": "Drop-In", "price": 25, "period": "per class", "features": ["Any class", "Mat rental included", "No commitment"] },
+        { "name": "5-Class Pack", "price": 110, "period": "$22/class", "features": ["Any classes", "Valid 2 months", "Shareable"] },
+        { "name": "10-Class Pack", "price": 200, "period": "$20/class", "features": ["Any classes", "Valid 3 months", "Shareable", "1 guest pass"] },
+        { "name": "Unlimited Monthly", "price": 129, "period": "per month", "features": ["Unlimited classes", "10% retail discount", "Guest passes", "Cancel anytime"], "popular": true },
+        { "name": "Annual Unlimited", "price": 1188, "period": "$99/month", "features": ["Unlimited classes", "15% retail discount", "Priority booking", "Free workshops"], "savings": "Save $360/year" }
+      ],
+      "newStudent": {
+        "offer": "New Student Special",
+        "price": 49,
+        "description": "30 days of unlimited yoga",
+        "note": "First-time students only"
+      }
+    },
+    "about": {
+      "hero": {
+        "headline": "Our Story",
+        "subheadline": "Creating space for transformation since 2017"
+      },
+      "sections": [
+        {
+          "type": "story",
+          "title": "The Serenity Story",
+          "content": "Serenity Yoga was founded in 2017 by Sarah Chen after her own transformative yoga journey. What began as a small studio in a converted warehouse has grown into Denver's most welcoming yoga community. Our mission remains simple: make yoga accessible to everyone."
+        },
+        {
+          "type": "philosophy",
+          "title": "Our Philosophy",
+          "content": "We believe yoga is for every body. Whether you're seeking fitness, flexibility, stress relief, or spiritual growth, there's a place for you here. Our diverse class offerings and inclusive environment ensure everyone can find their practice."
+        }
+      ],
+      "team": [
+        { "name": "Sarah Chen", "role": "Founder/Lead Teacher", "bio": "E-RYT 500, trained in India, 15 years teaching", "specialties": ["Vinyasa", "Meditation"], "image": "teacher1.jpg" },
+        { "name": "Marcus Johnson", "role": "Senior Teacher", "bio": "Former athlete, E-RYT 200, specializing in athletic yoga", "specialties": ["Hot Power", "Vinyasa"], "image": "teacher2.jpg" },
+        { "name": "Luna Martinez", "role": "Teacher", "bio": "Yin and restorative specialist, trauma-informed", "specialties": ["Yin", "Restorative"], "image": "teacher3.jpg" },
+        { "name": "Amy Williams", "role": "Teacher", "bio": "Prenatal certified, gentle yoga specialist", "specialties": ["Gentle", "Prenatal"], "image": "teacher4.jpg" }
+      ]
+    },
+    "contact": {
+      "hero": {
+        "headline": "Visit Us",
+        "subheadline": "Your journey begins here"
+      },
+      "info": {
+        "address": "456 Zen Way, Denver, CO 80202",
+        "phone": "(555) 234-YOGA",
+        "email": "namaste@serenityyoga-demo.com",
+        "hours": "Mon-Thu: 6am-9pm, Fri: 6am-8pm, Sat: 7am-6pm, Sun: 8am-5pm"
+      },
+      "amenities": ["Free parking", "Showers & lockers", "Mat rentals", "Retail boutique", "Filtered water"],
+      "form": {
+        "fields": ["name", "email", "interest", "message"],
+        "submitText": "Send Message"
+      }
+    }
+  }
+}

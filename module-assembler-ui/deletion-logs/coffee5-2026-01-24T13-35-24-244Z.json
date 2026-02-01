@@ -1,0 +1,110 @@
+{
+  "projectName": "coffee5",
+  "deletedAt": "2026-01-24T13:35:24.244Z",
+  "resourcesFound": {
+    "name": "coffee5",
+    "sanitizedName": "coffee5",
+    "github": {
+      "repos": [
+        {
+          "name": "coffee5-backend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "coffee5-frontend",
+          "owner": "huddleeco-commits",
+          "exists": false
+        },
+        {
+          "name": "coffee5-admin",
+          "owner": "huddleeco-commits",
+          "exists": false
+        }
+      ]
+    },
+    "railway": {
+      "project": {
+        "id": "4eeee8e0-230c-4e81-956f-15d4d35b5184",
+        "name": "coffee5",
+        "createdAt": "2026-01-22T20:46:01.735Z",
+        "environments": [
+          {
+            "id": "78bb6994-d5ff-46d9-80c3-de31c6e330b9",
+            "name": "production"
+          }
+        ]
+      },
+      "services": [
+        {
+          "id": "603ce084-636e-462f-8654-bde1dc16b463",
+          "name": "postgres"
+        },
+        {
+          "id": "618c39e0-3c03-4462-9bbc-891cf0145dfd",
+          "name": "frontend"
+        },
+        {
+          "id": "67f4dcdd-4a40-498f-9cd8-2b280bb3b47f",
+          "name": "backend"
+        },
+        {
+          "id": "f63b19ee-8f23-40f2-9e12-0615761fe317",
+          "name": "admin"
+        }
+      ]
+    },
+    "cloudflare": {
+      "records": []
+    },
+    "local": {
+      "path": null,
+      "exists": false
+    }
+  },
+  "deletionResults": {
+    "github": [
+      {
+        "repo": "huddleeco-commits/coffee5-backend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/coffee5-frontend",
+        "success": true,
+        "message": "Not found"
+      },
+      {
+        "repo": "huddleeco-commits/coffee5-admin",
+        "success": true,
+        "message": "Not found"
+      }
+    ],
+    "railway": {
+      "success": true,
+      "message": "Deleted Railway project 4eeee8e0-230c-4e81-956f-15d4d35b5184"
+    },
+    "cloudflare": [],
+    "local": null,
+    "errors": [],
+    "verification": {
+      "github": [],
+      "railway": true,
+      "cloudflare": [
+        {
+          "subdomain": "coffee5",
+          "verified": true
+        },
+        {
+          "subdomain": "api.coffee5",
+          "verified": true
+        },
+        {
+          "subdomain": "admin.coffee5",
+          "verified": true
+        }
+      ],
+      "local": true
+    }
+  }
+}

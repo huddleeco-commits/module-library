@@ -1,0 +1,11 @@
+{
+  "name": "marketplace-ui",
+  "type": "frontend",
+  "source": "financial",
+  "extractedAt": "2026-01-08T13:05:46.430Z",
+  "files": [
+    "components/marketplace/Marketplace.js",
+    "components/marketplace/Filters.js",
+    "components/marketplace/Stats.js"
+  ]
+}

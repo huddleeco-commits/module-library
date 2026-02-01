@@ -1,0 +1,426 @@
+{
+  "businessName": "Cristy's Cake Shop",
+  "address": "3721 Justin Rd #150, Flower Mound, TX 75028, USA",
+  "phone": "(214) 513-2253",
+  "industry": "bakery",
+  "generatedAt": "2026-01-27T23:21:14.160Z",
+  "generatedBy": "MasterAgent",
+  "testMode": true,
+  "prospect": {
+    "id": "ChIJKeWGtqUzTIYRSv9AqwkiiOY",
+    "name": "Cristy's Cake Shop",
+    "address": "3721 Justin Rd #150, Flower Mound, TX 75028, USA",
+    "phone": "(214) 513-2253",
+    "category": "bakery",
+    "website": null,
+    "hasWebsite": false,
+    "rating": 3.8,
+    "reviewCount": 64,
+    "photos": [
+      "places/ChIJKeWGtqUzTIYRSv9AqwkiiOY/photos/AcnlKN2gMJp2cwCU17o-UhCzsNDxofIJb_CifbYfBxR7NYxjDXxOhKwUrlD2KND2arNetPd7QtxJPsL4h5o3ASwoigTae9C5hdaMaKxV_vQGOJKvTv_hTdmR4nRGzTbMi_KhAcJ1im7CHPpejdEg9Z_r5oPAfuotlpjpo5BF89OSkFM-2_CYUWqnnewd9mnoLRFGOCkJFBL7qRIFExTGsw7Kl9ESmr1fl_8FoJqoeP0zYesXH3o-uN2gKRjZWUzo5BXqv8cKDWSjp-i7fR9uDr1iG_2NayP7MblSU7jttBlVy6h69w",
+      "places/ChIJKeWGtqUzTIYRSv9AqwkiiOY/photos/AcnlKN0yZSVx0WmascwGH30DAxOM15avS-Tl48dAby2Ak_3e34uJrZqB-en0DKrC44f7WJfaAnjbTzFbKnkJOulVSuszuljg5tbagxde-hf_Zo9GdL6dmCkigY5Lkr1qIkjYPzL6GdxXPAzJFwFB3rb23BY0-7NRuTxlMweoqDh9rtTNFr_c7NV0hNM3gEDSH8sgc0GPqUYlfdB9wWW9XSsqsP6r9HgcGNl3BcJwHRlvaO7ICum-vw2rUJe733D064VzzQzqRkHnJJowyY41m3vkZtF3Wqa-WkdCLSnqfidSGTh8_p3MWqX9HF9eTUWfiBaUCbg_dS_gETLmK-zx8xG_NvGtGfSccihRMh6LC9hIqrZSvNVzbqAxmhDZoSzs6-vl5LBvfTMluU4PfGohG8qpxK8TmjdEeFWcqzC3TRzxazyNqDhF",
+      "places/ChIJKeWGtqUzTIYRSv9AqwkiiOY/photos/AcnlKN2GKXfrxVyJ5vHN5AOg5Q61LXNMpED5VKrNIiAl-7299YCOnQK3VoSeWU1YuTMdWuQpbdsoQR53oHitP65EP9Ri6CCM4t6jC_gMz2Aq0xWakqHmcyaJiyeruGS-ZQTKh6MgNVJbeacv9E9RbLhLOKLg58tZAHg7bIje-_0ZBDG1vzouYZlakSwe82ROOx2HnGhXwUJRK_cxVcormkcDX56Gv3nP4xJOZldPqq1g6mb5Nvv9UrrNtdL2NUA89TD1kRUUMZyGCOn8Rl3yog1HnCr7kF0HmbHplF_flwJQv0r48FpfQfNvrIu4EMoNW1R6OsU8Xoexo3aRFMdmtUxb4C8oJSg2bq4j2ujXMolXK0YphK8TODhsyLZNkzMRrCp0kN3MtN0suf_lZXYFb-kWKJ5TARzYy2mJGbgFHzbhfQJABPVH",
+      "places/ChIJKeWGtqUzTIYRSv9AqwkiiOY/photos/AcnlKN3C-nXqQSQA75GfS3u5VW4HMD_5QVEc7R6fRqzpQcO3lMRpXoY-CIxdNv9dELVSarK0Gc8Cr39KlCMn-RZBM-tHjL32lDBunJd23J3QwR2Y7qNuFY6Ee6IDR5EWynARkTWYPsf93nlqX1ycs7CHLCbb7OF7vaAE22m0eOcZhgRkVLgi2CQIGwf-AUvCyjgDEYsRh6IXGlcmst20NFFsQHB-a9MPb4XD4ZXuiJW8Eo2d9UvmAIUfe-b3yZYR7Y-94KeuxEPf_H3ciMZryqmD0YsRV7ptXE7L4A1kvOF6E_zYMum4-fuJ9hhOisXIzXbc8WCW1rE_pDvygvhcP1dY-Jj2G3efRIVKPVGdF59tyAPV58Kouvcwci6KW9tTKrZjh_p4YqrZML7wKmkynxzTRlTKndJawVPX7OgSHRwKfTco13jI",
+      "places/ChIJKeWGtqUzTIYRSv9AqwkiiOY/photos/AcnlKN2sFs28wqWZlhdFkWP1p8RIavjc3g0FpOaCpFbBP_DXBkQOxZ1pflOavRoamDrZW92PCTvs073Ymm5ykwch9XnSQ-_LBjXQaByBVQE_tQsXSOmUKBNHzjDnVLDCrnlGfgMTbk84M3ROSbIMa9LePW47loOXaS3q2sJltZR2kpou0_V0_uz3Agm2nMl5EsfHESQiiNjXtuMN8PNWEaRROGS_JVuPy6XNnGiG6DoqfB4VLSDJcbhXFlVZNDzH-bVXKdONrwE7YBxPlnXEYq092NR7Hv0cO8uzLlF4ekr5DiwNJ6GMoaZvyoHrsHFGvsZ6UJCDTJWkV3LgnVEJe9D73xOIk1op4VYAniVL43RmdX2qyK_ccyuV0L081AEe96Qg_P9YkZBJzOwLUGc4vTskir-iYF5efDip8hTez6NuK_SeifJc",
+      "places/ChIJKeWGtqUzTIYRSv9AqwkiiOY/photos/AcnlKN0ObSD2cZxuM0jCkZav_wP5xbs6aa91PVx85qONA8Wv7uVnsO4H9nRI6wDJLeaMqQew0IG6IC8AmJLpTeMfvnLYUJLDWImrPxFuwklPxDPlkBWVJBZWU_vnLGWTPGd9QegZCWZdnlI74GVr2cBF2qgovPlU1nuDfgRNpySnCICnr1L9kVEKtQzTgIaWzYjQN0So5TryLwX5WeB5qMSz7Vu3SoVYKeShKd5o_kcJDJVKAsByMfDdIEF0MnDapWc1SRl0y8sTucjr6VwQB9OpwZhi6E4HjyR9ILRkr2lGYKKLij7fjwoS68Ls2lNz1sOUZkdUryeqcnEM4efCyBaiqHQ-FlJ_LvDesx_zo9Sf_75hbC4ZHv7ZBcFVuchmtPwHa8aqDpA4xmx6nkoidkbKj-rRQHrCqJr1jq7pNTQW0FcaZZp3",
+      "places/ChIJKeWGtqUzTIYRSv9AqwkiiOY/photos/AcnlKN2zAZZlRP30rZ9OrVkFaPD0gWxC0IZrk73dNp19uxZLzUc8_g7waBmljk6eLoh06BPvlnu8yuk7kBdNrvDG6P_ymbHgxK1bOlpGh1PH7oFKzhghUy3A_3BxZdmPp044-oHpGY-tTeG6QFgnBItGQ-W1kyagneoE8uUnIgHCP5yaTvRl3SyzUJ42XAyYcyJ_nTqtssjakEdYVAvVXaKmQjwIMOsPb968-rOiX_zj9J9MzYyxQKotPNIs2O8txWV5tkwp-fJXwTR_ZS7x_kjmaTatAmhaQjTi1yIonPkbfFHwmz3PYINa6IDQSLXhPtogk8uoDEEltm8k_SPHGaygRJN2Eh1fHnzNRHzTg0D9JQJKk_m_D23dZX8XOdKLRH0MdvGltttt69a7Puk2j7Ds-l5ld3_Jo8eACSq_QyVeS1dHgrWs",
+      "places/ChIJKeWGtqUzTIYRSv9AqwkiiOY/photos/AcnlKN1qQN0Vf5XsOiKhlghxKucvqT5oOeRhTGmpe9jlgNbjyXVW3jxdSOFk6PbpRQFo5iyOVAdD4oXd5sFvUmOOtUiak1ViKqBpTUt1nTvwkdyb4NGvZ3pZ_TYMUL3CJXTvKbx3Jn403oKrhabcBiGuYC5gkGaJ48uUBhplVdpKwi36G6gxkUU1jR6PuNiImdQEh_TmiAv2x0xtVUcxqRcWPfLOH9cezytama0MFjrq6sjHxi1bDaw_hMBqSQovJjY5XB4mxTd8y_9cQp__GL81b4jfTqHwW9jBrjUpMCYmFFiVxms7K60Z-9X6tHQLkgfJAgKLeB-fuM-_Lv0879qIQXWIr3PgSzNGKUjJB359kN4wD5IIu2Joxj9YZ-lmT2CLWT5iSJVeC_d3JE-9hpubzhWfUUoFjxIrSGI6vUwj5-88wA",
+      "places/ChIJKeWGtqUzTIYRSv9AqwkiiOY/photos/AcnlKN1w_wbWxXNULcI26023630_iRlENaRXEvkbwC3simhyYni0nQhq0ILyibrXhsETTi7B4EqSuwq-IWqB2tuhj_3nmnBx-gqnOlavYZPG4g2FvWpOAZ-KUQyi2yJSK3MPUkFVZe_chr6sH8NrVz8r-GoBtwNiLUcVZsoptYf5wgKfXPsItqigVVOXBaKplLdZxPsTERIUXEyqD5SYasZtXyRRxwkFSQh_H2-vvmh9Uu8XqY9Vqnbkzbu2pvnPeRwZYNC7ZQDboOg43kcbjH7-OJsLWdTwplbU8DJzJOfEJpAmVtHnSLEaJJ-mvEcSH5KobSmXCZnzZJSKRv8fY3VMFcErBYd_41maAeVFShM5wX6fSlur6P2tc1--H9D7xYfmJmLQjfiBrDgFNSPwmR937lMbAKjkAToSVdqWVpdGfLU",
+      "places/ChIJKeWGtqUzTIYRSv9AqwkiiOY/photos/AcnlKN0wPNP49hvXhtFOMc_HWvRiUGyspj-DU3UvQbsMsQEexVHGYSQKNVleaFiSRXqpsnpc2ZjrEbhVTCQrpdoBKN9UI329orxUrZ0_K3344e-pIpWClqVVO6QEjDNRDEpArJgR-bjX3ix5718m6Z3U1wW84eUItAgsLbLwkGJx37JtElGVTi-VWg0FkIFEwFjYKUUv0AZfE3zdCOosUOble3SVqxRlDDN8xOdIVdqhjRWBaf5Y9zW0X4Qcdao-beN9bolBZ65Q6lHsc90aiITJKPHNsl8g1TAtjk9dzhmZWXxDXLZQWmE-1OndvENgHf4uWzkdd11tl0Rf25C_ajsjnHvWkQ1FJp_TLNvnM2WR8YZZiRxRP17MB1teGLANPSJ6QucRYC9p2rdnXAjuNVr4xYQd0E53oLWwGrZbpEd3vmiQrnbd"
+    ],
+    "fixtureId": "bakery",
+    "source": "google",
+    "googleMapsUrl": "https://maps.google.com/?cid=16611564650479288138&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+    "coordinates": {
+      "latitude": 33.0711648,
+      "longitude": -97.08745619999999
+    },
+    "raw": {
+      "id": "ChIJKeWGtqUzTIYRSv9AqwkiiOY",
+      "types": [
+        "bakery",
+        "wholesaler",
+        "food_store",
+        "store",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "nationalPhoneNumber": "(214) 513-2253",
+      "formattedAddress": "3721 Justin Rd #150, Flower Mound, TX 75028, USA",
+      "location": {
+        "latitude": 33.0711648,
+        "longitude": -97.08745619999999
+      },
+      "rating": 3.8,
+      "googleMapsUri": "https://maps.google.com/?cid=16611564650479288138&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+      "userRatingCount": 64,
+      "displayName": {
+        "text": "Cristy's Cake Shop",
+        "languageCode": "en"
+      },
+      "primaryType": "bakery",
+      "photos": [
+        {
+          "name": "places/ChIJKeWGtqUzTIYRSv9AqwkiiOY/photos/AcnlKN2gMJp2cwCU17o-UhCzsNDxofIJb_CifbYfBxR7NYxjDXxOhKwUrlD2KND2arNetPd7QtxJPsL4h5o3ASwoigTae9C5hdaMaKxV_vQGOJKvTv_hTdmR4nRGzTbMi_KhAcJ1im7CHPpejdEg9Z_r5oPAfuotlpjpo5BF89OSkFM-2_CYUWqnnewd9mnoLRFGOCkJFBL7qRIFExTGsw7Kl9ESmr1fl_8FoJqoeP0zYesXH3o-uN2gKRjZWUzo5BXqv8cKDWSjp-i7fR9uDr1iG_2NayP7MblSU7jttBlVy6h69w",
+          "widthPx": 3262,
+          "heightPx": 2962,
+          "authorAttributions": [
+            {
+              "displayName": "Cristy's Cake Shop",
+              "uri": "https://maps.google.com/maps/contrib/107322615032930438943",
+              "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocIOWmnB8gQUqeyyQjuVkFNLMtBDLcR2-dwIC5S24TfaeBnQdQ=s100-p-k-no-mo"
+            }
+          ],
+          "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipMTshFThIjee29ntkmgHw4zZHKtE4JxjdQJUnO2&hl=en",
+          "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipMTshFThIjee29ntkmgHw4zZHKtE4JxjdQJUnO2!2e10!4m2!3m1!1s0x864c33a5b686e529:0xe6882209ab40ff4a"
+        },
+        {
+          "name": "places/ChIJKeWGtqUzTIYRSv9AqwkiiOY/photos/AcnlKN0yZSVx0WmascwGH30DAxOM15avS-Tl48dAby2Ak_3e34uJrZqB-en0DKrC44f7WJfaAnjbTzFbKnkJOulVSuszuljg5tbagxde-hf_Zo9GdL6dmCkigY5Lkr1qIkjYPzL6GdxXPAzJFwFB3rb23BY0-7NRuTxlMweoqDh9rtTNFr_c7NV0hNM3gEDSH8sgc0GPqUYlfdB9wWW9XSsqsP6r9HgcGNl3BcJwHRlvaO7ICum-vw2rUJe733D064VzzQzqRkHnJJowyY41m3vkZtF3Wqa-WkdCLSnqfidSGTh8_p3MWqX9HF9eTUWfiBaUCbg_dS_gETLmK-zx8xG_NvGtGfSccihRMh6LC9hIqrZSvNVzbqAxmhDZoSzs6-vl5LBvfTMluU4PfGohG8qpxK8TmjdEeFWcqzC3TRzxazyNqDhF",
+          "widthPx": 2048,
+          "heightPx": 1751,
+          "authorAttributions": [
+            {
+              "displayName": "Sarah Montgomery",
+              "uri": "https://maps.google.com/maps/contrib/114609746943430807051",
+              "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocKs2Zobnv9OBbqpDHrDl-PYad1e4cHfpFhcNdW3X20kZvQmVTk=s100-p-k-no-mo"
+            }
+          ],
+          "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICG_9y2gwE&hl=en",
+          "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICG_9y2gwE!2e10!4m2!3m1!1s0x864c33a5b686e529:0xe6882209ab40ff4a"
+        },
+        {
+          "name": "places/ChIJKeWGtqUzTIYRSv9AqwkiiOY/photos/AcnlKN2GKXfrxVyJ5vHN5AOg5Q61LXNMpED5VKrNIiAl-7299YCOnQK3VoSeWU1YuTMdWuQpbdsoQR53oHitP65EP9Ri6CCM4t6jC_gMz2Aq0xWakqHmcyaJiyeruGS-ZQTKh6MgNVJbeacv9E9RbLhLOKLg58tZAHg7bIje-_0ZBDG1vzouYZlakSwe82ROOx2HnGhXwUJRK_cxVcormkcDX56Gv3nP4xJOZldPqq1g6mb5Nvv9UrrNtdL2NUA89TD1kRUUMZyGCOn8Rl3yog1HnCr7kF0HmbHplF_flwJQv0r48FpfQfNvrIu4EMoNW1R6OsU8Xoexo3aRFMdmtUxb4C8oJSg2bq4j2ujXMolXK0YphK8TODhsyLZNkzMRrCp0kN3MtN0suf_lZXYFb-kWKJ5TARzYy2mJGbgFHzbhfQJABPVH",
+          "widthPx": 3024,
+          "heightPx": 4032,
+          "authorAttributions": [
+            {
+              "displayName": "Simba Business Ventures",
+              "uri": "https://maps.google.com/maps/contrib/118252107963382087177",
+              "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocLE8pCOgsFzR_mwYw-ig4Vz02uJyK2_Sng52ZIPHG32FCJR5w=s100-p-k-no-mo"
+            }
+          ],
+          "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDd_eO9vAE&hl=en",
+          "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDd_eO9vAE!2e10!4m2!3m1!1s0x864c33a5b686e529:0xe6882209ab40ff4a"
+        },
+        {
+          "name": "places/ChIJKeWGtqUzTIYRSv9AqwkiiOY/photos/AcnlKN3C-nXqQSQA75GfS3u5VW4HMD_5QVEc7R6fRqzpQcO3lMRpXoY-CIxdNv9dELVSarK0Gc8Cr39KlCMn-RZBM-tHjL32lDBunJd23J3QwR2Y7qNuFY6Ee6IDR5EWynARkTWYPsf93nlqX1ycs7CHLCbb7OF7vaAE22m0eOcZhgRkVLgi2CQIGwf-AUvCyjgDEYsRh6IXGlcmst20NFFsQHB-a9MPb4XD4ZXuiJW8Eo2d9UvmAIUfe-b3yZYR7Y-94KeuxEPf_H3ciMZryqmD0YsRV7ptXE7L4A1kvOF6E_zYMum4-fuJ9hhOisXIzXbc8WCW1rE_pDvygvhcP1dY-Jj2G3efRIVKPVGdF59tyAPV58Kouvcwci6KW9tTKrZjh_p4YqrZML7wKmkynxzTRlTKndJawVPX7OgSHRwKfTco13jI",
+          "widthPx": 3024,
+          "heightPx": 4032,
+          "authorAttributions": [
+            {
+              "displayName": "Rachel",
+              "uri": "https://maps.google.com/maps/contrib/114847993339635387059",
+              "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocK2T90Y3oRAtdwLF5Hh2jJskChTLyXBvCYUYIHcAwWOXi4D4w=s100-p-k-no-mo"
+            }
+          ],
+          "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICLgsub0gE&hl=en",
+          "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICLgsub0gE!2e10!4m2!3m1!1s0x864c33a5b686e529:0xe6882209ab40ff4a"
+        },
+        {
+          "name": "places/ChIJKeWGtqUzTIYRSv9AqwkiiOY/photos/AcnlKN2sFs28wqWZlhdFkWP1p8RIavjc3g0FpOaCpFbBP_DXBkQOxZ1pflOavRoamDrZW92PCTvs073Ymm5ykwch9XnSQ-_LBjXQaByBVQE_tQsXSOmUKBNHzjDnVLDCrnlGfgMTbk84M3ROSbIMa9LePW47loOXaS3q2sJltZR2kpou0_V0_uz3Agm2nMl5EsfHESQiiNjXtuMN8PNWEaRROGS_JVuPy6XNnGiG6DoqfB4VLSDJcbhXFlVZNDzH-bVXKdONrwE7YBxPlnXEYq092NR7Hv0cO8uzLlF4ekr5DiwNJ6GMoaZvyoHrsHFGvsZ6UJCDTJWkV3LgnVEJe9D73xOIk1op4VYAniVL43RmdX2qyK_ccyuV0L081AEe96Qg_P9YkZBJzOwLUGc4vTskir-iYF5efDip8hTez6NuK_SeifJc",
+          "widthPx": 3024,
+          "heightPx": 4032,
+          "authorAttributions": [
+            {
+              "displayName": "Christina E",
+              "uri": "https://maps.google.com/maps/contrib/100107956333121646115",
+              "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocJLlmQekwIdHGwN1mQPAxgrWgciPy1Km1IbgF48BYXy_210BA=s100-p-k-no-mo"
+            }
+          ],
+          "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDymtCV1wE&hl=en",
+          "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDymtCV1wE!2e10!4m2!3m1!1s0x864c33a5b686e529:0xe6882209ab40ff4a"
+        },
+        {
+          "name": "places/ChIJKeWGtqUzTIYRSv9AqwkiiOY/photos/AcnlKN0ObSD2cZxuM0jCkZav_wP5xbs6aa91PVx85qONA8Wv7uVnsO4H9nRI6wDJLeaMqQew0IG6IC8AmJLpTeMfvnLYUJLDWImrPxFuwklPxDPlkBWVJBZWU_vnLGWTPGd9QegZCWZdnlI74GVr2cBF2qgovPlU1nuDfgRNpySnCICnr1L9kVEKtQzTgIaWzYjQN0So5TryLwX5WeB5qMSz7Vu3SoVYKeShKd5o_kcJDJVKAsByMfDdIEF0MnDapWc1SRl0y8sTucjr6VwQB9OpwZhi6E4HjyR9ILRkr2lGYKKLij7fjwoS68Ls2lNz1sOUZkdUryeqcnEM4efCyBaiqHQ-FlJ_LvDesx_zo9Sf_75hbC4ZHv7ZBcFVuchmtPwHa8aqDpA4xmx6nkoidkbKj-rRQHrCqJr1jq7pNTQW0FcaZZp3",
+          "widthPx": 3024,
+          "heightPx": 4032,
+          "authorAttributions": [
+            {
+              "displayName": "Safa Asad",
+              "uri": "https://maps.google.com/maps/contrib/115499475590382342162",
+              "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjURVFytwT2INShXOHjL1UoqL438yeGaCB0M3_ItWhBLvPP5Qb-pHA=s100-p-k-no-mo"
+            }
+          ],
+          "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDW6YWY5AE&hl=en",
+          "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDW6YWY5AE!2e10!4m2!3m1!1s0x864c33a5b686e529:0xe6882209ab40ff4a"
+        },
+        {
+          "name": "places/ChIJKeWGtqUzTIYRSv9AqwkiiOY/photos/AcnlKN2zAZZlRP30rZ9OrVkFaPD0gWxC0IZrk73dNp19uxZLzUc8_g7waBmljk6eLoh06BPvlnu8yuk7kBdNrvDG6P_ymbHgxK1bOlpGh1PH7oFKzhghUy3A_3BxZdmPp044-oHpGY-tTeG6QFgnBItGQ-W1kyagneoE8uUnIgHCP5yaTvRl3SyzUJ42XAyYcyJ_nTqtssjakEdYVAvVXaKmQjwIMOsPb968-rOiX_zj9J9MzYyxQKotPNIs2O8txWV5tkwp-fJXwTR_ZS7x_kjmaTatAmhaQjTi1yIonPkbfFHwmz3PYINa6IDQSLXhPtogk8uoDEEltm8k_SPHGaygRJN2Eh1fHnzNRHzTg0D9JQJKk_m_D23dZX8XOdKLRH0MdvGltttt69a7Puk2j7Ds-l5ld3_Jo8eACSq_QyVeS1dHgrWs",
+          "widthPx": 3024,
+          "heightPx": 4032,
+          "authorAttributions": [
+            {
+              "displayName": "Chloe Jenkins",
+              "uri": "https://maps.google.com/maps/contrib/108251312982440904444",
+              "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocLvKF--ROmN1zwarhkUzDN5QhzHsR_kRiKAvEluMiLRMjamVg=s100-p-k-no-mo"
+            }
+          ],
+          "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgMDw1qCbtAE&hl=en",
+          "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgMDw1qCbtAE!2e10!4m2!3m1!1s0x864c33a5b686e529:0xe6882209ab40ff4a"
+        },
+        {
+          "name": "places/ChIJKeWGtqUzTIYRSv9AqwkiiOY/photos/AcnlKN1qQN0Vf5XsOiKhlghxKucvqT5oOeRhTGmpe9jlgNbjyXVW3jxdSOFk6PbpRQFo5iyOVAdD4oXd5sFvUmOOtUiak1ViKqBpTUt1nTvwkdyb4NGvZ3pZ_TYMUL3CJXTvKbx3Jn403oKrhabcBiGuYC5gkGaJ48uUBhplVdpKwi36G6gxkUU1jR6PuNiImdQEh_TmiAv2x0xtVUcxqRcWPfLOH9cezytama0MFjrq6sjHxi1bDaw_hMBqSQovJjY5XB4mxTd8y_9cQp__GL81b4jfTqHwW9jBrjUpMCYmFFiVxms7K60Z-9X6tHQLkgfJAgKLeB-fuM-_Lv0879qIQXWIr3PgSzNGKUjJB359kN4wD5IIu2Joxj9YZ-lmT2CLWT5iSJVeC_d3JE-9hpubzhWfUUoFjxIrSGI6vUwj5-88wA",
+          "widthPx": 3024,
+          "heightPx": 4032,
+          "authorAttributions": [
+            {
+              "displayName": "Safa Asad",
+              "uri": "https://maps.google.com/maps/contrib/100248140184167745059",
+              "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocL1TPW_yrwMhjt7MP8_SReT035BVz6lnNak-Wch1e3NaPARYw=s100-p-k-no-mo"
+            }
+          ],
+          "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDVh4CtHQ&hl=en",
+          "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDVh4CtHQ!2e10!4m2!3m1!1s0x864c33a5b686e529:0xe6882209ab40ff4a"
+        },
+        {
+          "name": "places/ChIJKeWGtqUzTIYRSv9AqwkiiOY/photos/AcnlKN1w_wbWxXNULcI26023630_iRlENaRXEvkbwC3simhyYni0nQhq0ILyibrXhsETTi7B4EqSuwq-IWqB2tuhj_3nmnBx-gqnOlavYZPG4g2FvWpOAZ-KUQyi2yJSK3MPUkFVZe_chr6sH8NrVz8r-GoBtwNiLUcVZsoptYf5wgKfXPsItqigVVOXBaKplLdZxPsTERIUXEyqD5SYasZtXyRRxwkFSQh_H2-vvmh9Uu8XqY9Vqnbkzbu2pvnPeRwZYNC7ZQDboOg43kcbjH7-OJsLWdTwplbU8DJzJOfEJpAmVtHnSLEaJJ-mvEcSH5KobSmXCZnzZJSKRv8fY3VMFcErBYd_41maAeVFShM5wX6fSlur6P2tc1--H9D7xYfmJmLQjfiBrDgFNSPwmR937lMbAKjkAToSVdqWVpdGfLU",
+          "widthPx": 3024,
+          "heightPx": 4032,
+          "authorAttributions": [
+            {
+              "displayName": "Christina E",
+              "uri": "https://maps.google.com/maps/contrib/100107956333121646115",
+              "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocJLlmQekwIdHGwN1mQPAxgrWgciPy1Km1IbgF48BYXy_210BA=s100-p-k-no-mo"
+            }
+          ],
+          "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDymoijCg&hl=en",
+          "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDymoijCg!2e10!4m2!3m1!1s0x864c33a5b686e529:0xe6882209ab40ff4a"
+        },
+        {
+          "name": "places/ChIJKeWGtqUzTIYRSv9AqwkiiOY/photos/AcnlKN0wPNP49hvXhtFOMc_HWvRiUGyspj-DU3UvQbsMsQEexVHGYSQKNVleaFiSRXqpsnpc2ZjrEbhVTCQrpdoBKN9UI329orxUrZ0_K3344e-pIpWClqVVO6QEjDNRDEpArJgR-bjX3ix5718m6Z3U1wW84eUItAgsLbLwkGJx37JtElGVTi-VWg0FkIFEwFjYKUUv0AZfE3zdCOosUOble3SVqxRlDDN8xOdIVdqhjRWBaf5Y9zW0X4Qcdao-beN9bolBZ65Q6lHsc90aiITJKPHNsl8g1TAtjk9dzhmZWXxDXLZQWmE-1OndvENgHf4uWzkdd11tl0Rf25C_ajsjnHvWkQ1FJp_TLNvnM2WR8YZZiRxRP17MB1teGLANPSJ6QucRYC9p2rdnXAjuNVr4xYQd0E53oLWwGrZbpEd3vmiQrnbd",
+          "widthPx": 3024,
+          "heightPx": 4032,
+          "authorAttributions": [
+            {
+              "displayName": "Mitra Kalyani",
+              "uri": "https://maps.google.com/maps/contrib/108841224722251842521",
+              "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUbtQWv5m4I9_Ig-ezGOkuta4-oafRLvr5KJfZ0G0UJ9PmcQvw=s100-p-k-no-mo"
+            }
+          ],
+          "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICzp53V_QE&hl=en",
+          "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICzp53V_QE!2e10!4m2!3m1!1s0x864c33a5b686e529:0xe6882209ab40ff4a"
+        }
+      ]
+    },
+    "detectedWebsite": null,
+    "scannedAt": "2026-01-25T16:21:49.926Z",
+    "readyForGeneration": true,
+    "testTier": "premium",
+    "testPages": [
+      "Home",
+      "Menu",
+      "About",
+      "Gallery",
+      "Order Online",
+      "Catering",
+      "Contact"
+    ],
+    "testFeatures": [
+      "Online Menu",
+      "Online Ordering",
+      "Catering",
+      "Gallery"
+    ],
+    "testLayout": "menu-focused",
+    "industryGroup": "Food & Beverage",
+    "generationTimeMs": 143874,
+    "siteAdminCredentials": {
+      "email": "admin@be1st.io",
+      "password": "ffb80c77909b9d55",
+      "note": "Credentials for the deployed business site admin panel"
+    },
+    "testArchetype": "luxury",
+    "research": {
+      "source": "yelp",
+      "enrichedAt": "2026-01-27T15:40:21.816Z",
+      "matched": true,
+      "yelpId": "0XkTdcgwM_hGzf14yOJKBQ",
+      "matchStatus": "found",
+      "rating": 4.8,
+      "reviewCount": 15,
+      "categories": [
+        "Custom Cakes",
+        "Patisserie/Cake Shop",
+        "Cupcakes"
+      ],
+      "photos": [],
+      "hours": null,
+      "transactions": [
+        "delivery"
+      ]
+    },
+    "opportunityScore": 65,
+    "scoreBreakdown": [
+      {
+        "factor": "No website (base)",
+        "points": 50,
+        "source": "Google"
+      },
+      {
+        "factor": "Excellent rating (4.8★)",
+        "points": 15,
+        "source": "Yelp"
+      }
+    ],
+    "city": "Flower Mound",
+    "lastUnifiedGeneration": {
+      "inputLevel": "extreme",
+      "config": {
+        "tier": "premium",
+        "pages": [
+          "home",
+          "menu",
+          "contact",
+          "about",
+          "gallery",
+          "order"
+        ],
+        "features": [
+          "contact-form",
+          "service-list",
+          "about"
+        ],
+        "layout": "artisan-craft",
+        "moodSliders": {
+          "vibe": 0.5,
+          "energy": 0.6,
+          "era": 0.5,
+          "density": 0.5,
+          "price": 0.4
+        },
+        "archetype": "local",
+        "enablePortal": true,
+        "inputLevel": "extreme",
+        "generatedInputs": {
+          "businessName": "Cristy's Cake Shop",
+          "industry": "bakery",
+          "address": "3721 Justin Rd #150, Flower Mound, TX 75028, USA",
+          "city": "Flower Mound",
+          "phone": "(214) 513-2253",
+          "rating": 4.8,
+          "reviewCount": 15,
+          "categories": [
+            "Custom Cakes",
+            "Patisserie/Cake Shop",
+            "Cupcakes"
+          ],
+          "hours": null,
+          "photos": [],
+          "googleMapsUrl": "https://maps.google.com/?cid=16611564650479288138&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgEIAA",
+          "reviewHighlights": [],
+          "inputLevel": "extreme",
+          "generatedAt": "2026-01-27T23:16:00.200Z",
+          "prospectId": "ChIJKeWGtqUzTIYRSv9AqwkiiOY",
+          "preset": "friendly",
+          "theme": "light",
+          "pageTier": "standard",
+          "pages": [
+            "home",
+            "menu",
+            "contact",
+            "about",
+            "gallery",
+            "order"
+          ],
+          "archetype": "local",
+          "layout": "artisan-craft",
+          "tagline": "Serving Flower Mound with pride",
+          "moodSliders": {
+            "vibe": 0.5,
+            "energy": 0.6,
+            "era": 0.5,
+            "density": 0.5,
+            "price": 0.4
+          },
+          "colors": {
+            "primary": "#1E3A5F",
+            "secondary": "#3B82F6",
+            "accent": "#10B981"
+          },
+          "typography": {
+            "heading": "'Poppins', sans-serif",
+            "body": "'Open Sans', sans-serif"
+          },
+          "heroHeadline": "Cristy's Cake Shop",
+          "heroSubheadline": "Rated 4.8★ by 15 happy customers",
+          "aboutText": "Cristy's Cake Shop has been proudly serving Flower Mound with exceptional bakery services. Our team is dedicated to providing the highest quality experience for every customer who walks through our doors.",
+          "features": [
+            "contact-form",
+            "service-list",
+            "about"
+          ],
+          "heroStyle": "image-left",
+          "cardStyle": {
+            "borderRadius": "12px",
+            "shadow": "soft",
+            "border": false
+          },
+          "sectionSpacing": "balanced"
+        }
+      },
+      "variants": {
+        "enabled": true,
+        "smartPairing": false,
+        "presets": [
+          "friendly",
+          "bold-energetic",
+          "modern-minimal",
+          "classic-elegant",
+          "sharp-corporate",
+          "luxury"
+        ],
+        "layouts": [
+          "appetizing-visual",
+          "menu-focused",
+          "story-driven"
+        ]
+      },
+      "generatedAt": "2026-01-27T23:16:00.201Z"
+    },
+    "unifiedGenerated": true,
+    "unifiedGeneratedAt": "2026-01-27T22:43:05.023Z",
+    "status": "scouted"
+  },
+  "layout": "menu-focused",
+  "industryGroup": null,
+  "layoutStyle": {
+    "fontHeading": "'Inter', 'Outfit', system-ui, sans-serif",
+    "fontBody": "'Inter', system-ui, sans-serif",
+    "borderRadius": "16px",
+    "sectionPadding": "80px 20px",
+    "cardPadding": "28px",
+    "gap": "32px",
+    "buttonStyle": {
+      "padding": "16px 32px",
+      "borderRadius": "16px",
+      "fontWeight": "600",
+      "textTransform": "none"
+    },
+    "headlineStyle": "none",
+    "isDark": true,
+    "isMedium": false,
+    "colors": {
+      "primary": "#b8860b",
+      "accent": "#daa520",
+      "text": "#f1f5f9",
+      "textMuted": "#94a3b8",
+      "background": "#0a0a0f",
+      "surface": "#0f172a"
+    },
+    "sectionOrder": [
+      "hero-centered",
+      "services-tabs",
+      "gallery-grid",
+      "about-team",
+      "testimonials-grid",
+      "cta-split"
+    ],
+    "emphasis": [
+      "menu",
+      "ordering",
+      "convenience"
+    ]
+  },
+  "archetype": "ecommerce"
+}
