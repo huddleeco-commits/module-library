@@ -4,3 +4,19 @@ node_modules/
 dist/
 *.log
 .DS_Store
+
+# API Keys and secrets - NEVER COMMIT
+.scout-config.json
+*.scout-config.json
+
+# Prospect data with embedded API keys
+output/prospects/
+**/prospect.json
+**/brain.json
+
+# Generated projects (may contain sensitive data)
+generated-projects/
+deletion-logs/
+
+# Scan results
+output/prospects/scan-*.json
