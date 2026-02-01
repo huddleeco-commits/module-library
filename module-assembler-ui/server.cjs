@@ -466,6 +466,15 @@ app.use('/api', orchestratorRouter);
 const adminTiersRouter = require('./lib/routes/admin-tiers.cjs');
 app.use('/api/admin/tiers', adminTiersRouter);
 
+// Simple health endpoint for Railway/deployment health checks
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
 // Health check routes (platform-wide health monitoring)
 const healthCheckRouter = require('./lib/routes/health-check.cjs');
 app.use('/api/health-check', healthCheckRouter);
