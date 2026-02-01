@@ -1,0 +1,789 @@
+{
+  "$schema": "../template-schema.d.ts",
+  "meta": {
+    "id": "cafe-modern",
+    "name": "Modern Cafe",
+    "version": "1.0.0",
+    "description": "A warm, inviting template designed for cafes, coffee shops, and bakeries",
+    "author": "BLINK",
+    "category": "business-website",
+    "industries": ["cafe"],
+    "tags": ["coffee", "bakery", "cozy", "modern", "food-service"],
+    "previewImage": "/templates/cafe-modern/preview.png"
+  },
+  "style": {
+    "colors": {
+      "primary": "#6F4E37",
+      "secondary": "#C4A77D",
+      "accent": "#E8B89D",
+      "background": "#FFFBF5",
+      "backgroundAlt": "#F5EDE4",
+      "surface": "#FFFFFF",
+      "text": "#2C1810",
+      "textMuted": "#6B5B4F",
+      "textOnPrimary": "#FFFFFF",
+      "success": "#4A7C59",
+      "warning": "#D4A03C",
+      "error": "#C44536",
+      "border": "#E8DED4",
+      "divider": "#F0E6DC"
+    },
+    "typography": {
+      "headingFont": "Playfair Display",
+      "bodyFont": "Inter",
+      "weights": {
+        "light": 300,
+        "normal": 400,
+        "medium": 500,
+        "semibold": 600,
+        "bold": 700
+      },
+      "sizes": {
+        "xs": "0.75rem",
+        "sm": "0.875rem",
+        "base": "1rem",
+        "lg": "1.125rem",
+        "xl": "1.25rem",
+        "2xl": "1.5rem",
+        "3xl": "1.875rem",
+        "4xl": "2.25rem",
+        "5xl": "3rem",
+        "6xl": "3.75rem"
+      },
+      "lineHeights": {
+        "tight": "1.25",
+        "normal": "1.5",
+        "relaxed": "1.75"
+      },
+      "letterSpacing": {
+        "tight": "-0.025em",
+        "normal": "0",
+        "wide": "0.05em"
+      }
+    },
+    "spacing": {
+      "unit": "0.25rem",
+      "scale": {
+        "0": "0",
+        "1": "0.25rem",
+        "2": "0.5rem",
+        "3": "0.75rem",
+        "4": "1rem",
+        "5": "1.25rem",
+        "6": "1.5rem",
+        "8": "2rem",
+        "10": "2.5rem",
+        "12": "3rem",
+        "16": "4rem",
+        "20": "5rem",
+        "24": "6rem"
+      },
+      "sectionPadding": {
+        "mobile": "3rem 1rem",
+        "tablet": "4rem 2rem",
+        "desktop": "5rem 3rem"
+      },
+      "containerMaxWidth": {
+        "sm": "640px",
+        "md": "768px",
+        "lg": "1024px",
+        "xl": "1280px",
+        "2xl": "1536px"
+      },
+      "borderRadius": {
+        "none": "0",
+        "sm": "0.25rem",
+        "md": "0.5rem",
+        "lg": "0.75rem",
+        "xl": "1rem",
+        "full": "9999px"
+      }
+    },
+    "effects": {
+      "shadows": {
+        "none": "none",
+        "sm": "0 1px 2px rgba(44, 24, 16, 0.05)",
+        "md": "0 4px 6px rgba(44, 24, 16, 0.07)",
+        "lg": "0 10px 15px rgba(44, 24, 16, 0.1)",
+        "xl": "0 20px 25px rgba(44, 24, 16, 0.12)"
+      },
+      "transitions": {
+        "fast": "150ms ease",
+        "normal": "300ms ease",
+        "slow": "500ms ease"
+      },
+      "hoverEffects": {
+        "scale": "scale(1.02)",
+        "lift": "translateY(-4px)"
+      }
+    }
+  },
+  "defaultMoodSliders": {
+    "vibe": 60,
+    "energy": 45,
+    "era": 65,
+    "density": 40,
+    "price": 55
+  },
+  "header": {
+    "layout": "centered",
+    "sticky": true,
+    "transparent": true,
+    "logo": {
+      "type": "both",
+      "text": "{{businessName}}",
+      "width": "120px",
+      "height": "40px"
+    },
+    "nav": {
+      "style": "minimal",
+      "position": "center",
+      "items": [
+        { "label": "Home", "href": "/" },
+        { "label": "Menu", "href": "/menu" },
+        { "label": "About", "href": "/about" },
+        { "label": "Gallery", "href": "/gallery" },
+        { "label": "Contact", "href": "/contact" }
+      ]
+    },
+    "cta": {
+      "text": "Order Online",
+      "href": "/order",
+      "style": "primary"
+    },
+    "elements": ["cart"]
+  },
+  "footer": {
+    "layout": "standard",
+    "columns": [
+      {
+        "title": "Visit Us",
+        "links": [
+          { "label": "Find a Location", "href": "/locations" },
+          { "label": "Hours & Directions", "href": "/contact" }
+        ]
+      },
+      {
+        "title": "Menu",
+        "links": [
+          { "label": "Coffee & Espresso", "href": "/menu#coffee" },
+          { "label": "Pastries", "href": "/menu#pastries" },
+          { "label": "Seasonal Specials", "href": "/menu#specials" }
+        ]
+      },
+      {
+        "title": "Company",
+        "links": [
+          { "label": "Our Story", "href": "/about" },
+          { "label": "Careers", "href": "/careers" },
+          { "label": "Contact", "href": "/contact" }
+        ]
+      }
+    ],
+    "social": [
+      { "platform": "instagram", "url": "https://instagram.com" },
+      { "platform": "facebook", "url": "https://facebook.com" },
+      { "platform": "yelp", "url": "https://yelp.com" }
+    ],
+    "copyright": "© {{year}} {{businessName}}. All rights reserved.",
+    "bottomLinks": [
+      { "label": "Privacy Policy", "href": "/privacy" },
+      { "label": "Terms of Service", "href": "/terms" }
+    ],
+    "newsletter": {
+      "enabled": true,
+      "title": "Stay in the loop",
+      "description": "Get updates on new menu items and special offers.",
+      "placeholder": "Enter your email",
+      "buttonText": "Subscribe"
+    }
+  },
+  "pages": [
+    {
+      "type": "home",
+      "path": "/",
+      "title": "{{businessName}} | Fresh Coffee & Pastries",
+      "description": "Welcome to {{businessName}}. Serving artisan coffee and freshly baked goods daily.",
+      "layout": "default",
+      "sections": [
+        {
+          "type": "hero",
+          "variant": "image-background",
+          "content": {
+            "fields": [
+              { "key": "headline", "label": "Headline", "type": "text", "required": true },
+              { "key": "subheadline", "label": "Subheadline", "type": "text" },
+              { "key": "backgroundImage", "label": "Background Image", "type": "image", "required": true },
+              { "key": "ctaText", "label": "CTA Button Text", "type": "text" },
+              { "key": "ctaLink", "label": "CTA Button Link", "type": "url" }
+            ],
+            "defaults": {
+              "headline": "Start Your Day Right",
+              "subheadline": "Artisan coffee and freshly baked goods, made with love",
+              "ctaText": "View Our Menu",
+              "ctaLink": "/menu"
+            },
+            "aiPrompt": "Generate a warm, inviting headline and subheadline for a cafe hero section. Focus on the sensory experience of coffee and fresh pastries."
+          },
+          "options": {
+            "padding": "xl",
+            "textAlign": "center"
+          }
+        },
+        {
+          "type": "trust-strip",
+          "content": {
+            "fields": [
+              {
+                "key": "stats",
+                "label": "Statistics",
+                "type": "array",
+                "fields": [
+                  { "key": "value", "label": "Value", "type": "text" },
+                  { "key": "label", "label": "Label", "type": "text" }
+                ],
+                "minItems": 3,
+                "maxItems": 4
+              }
+            ],
+            "defaults": {
+              "stats": [
+                { "value": "15+", "label": "Years Serving" },
+                { "value": "100%", "label": "Organic Beans" },
+                { "value": "50+", "label": "Menu Items" },
+                { "value": "4.9★", "label": "Customer Rating" }
+              ]
+            }
+          },
+          "options": {
+            "background": "primary",
+            "padding": "md"
+          }
+        },
+        {
+          "type": "intro",
+          "content": {
+            "fields": [
+              { "key": "eyebrow", "label": "Eyebrow Text", "type": "text" },
+              { "key": "headline", "label": "Headline", "type": "text", "required": true },
+              { "key": "body", "label": "Body Text", "type": "richtext", "required": true },
+              { "key": "image", "label": "Image", "type": "image" }
+            ],
+            "defaults": {
+              "eyebrow": "Our Story",
+              "headline": "Crafted with Care",
+              "body": "Every cup we serve is a labor of love..."
+            },
+            "aiPrompt": "Write a brief introduction about the cafe's commitment to quality coffee and warm hospitality. Keep it personal and inviting."
+          },
+          "options": {
+            "padding": "lg"
+          }
+        },
+        {
+          "type": "menu-categories",
+          "variant": "grid",
+          "content": {
+            "fields": [
+              { "key": "headline", "label": "Section Headline", "type": "text" },
+              {
+                "key": "categories",
+                "label": "Categories",
+                "type": "array",
+                "fields": [
+                  { "key": "name", "label": "Category Name", "type": "text" },
+                  { "key": "description", "label": "Description", "type": "text" },
+                  { "key": "image", "label": "Image", "type": "image" },
+                  { "key": "link", "label": "Link", "type": "url" }
+                ]
+              }
+            ],
+            "defaults": {
+              "headline": "Explore Our Menu",
+              "categories": [
+                { "name": "Coffee & Espresso", "description": "Expertly crafted beverages", "link": "/menu#coffee" },
+                { "name": "Fresh Pastries", "description": "Baked in-house daily", "link": "/menu#pastries" },
+                { "name": "Light Bites", "description": "Sandwiches and salads", "link": "/menu#bites" }
+              ]
+            }
+          },
+          "options": {
+            "background": "light",
+            "padding": "lg"
+          }
+        },
+        {
+          "type": "testimonials",
+          "variant": "carousel",
+          "content": {
+            "fields": [
+              { "key": "headline", "label": "Section Headline", "type": "text" },
+              {
+                "key": "testimonials",
+                "label": "Testimonials",
+                "type": "array",
+                "fields": [
+                  { "key": "quote", "label": "Quote", "type": "textarea" },
+                  { "key": "author", "label": "Author Name", "type": "text" },
+                  { "key": "role", "label": "Role/Title", "type": "text" },
+                  { "key": "avatar", "label": "Avatar", "type": "image" }
+                ],
+                "minItems": 3
+              }
+            ],
+            "defaults": {
+              "headline": "What Our Guests Say"
+            },
+            "aiPrompt": "Generate 3-4 realistic customer testimonials for a cozy neighborhood cafe. Focus on the atmosphere, coffee quality, and friendly staff."
+          },
+          "options": {
+            "padding": "lg"
+          }
+        },
+        {
+          "type": "cta-banner",
+          "content": {
+            "fields": [
+              { "key": "headline", "label": "Headline", "type": "text" },
+              { "key": "description", "label": "Description", "type": "text" },
+              { "key": "ctaText", "label": "Button Text", "type": "text" },
+              { "key": "ctaLink", "label": "Button Link", "type": "url" }
+            ],
+            "defaults": {
+              "headline": "Visit Us Today",
+              "description": "Stop by for your morning coffee or afternoon treat",
+              "ctaText": "Get Directions",
+              "ctaLink": "/contact"
+            }
+          },
+          "options": {
+            "background": "gradient",
+            "padding": "lg",
+            "textAlign": "center"
+          }
+        }
+      ]
+    },
+    {
+      "type": "menu",
+      "path": "/menu",
+      "title": "Menu | {{businessName}}",
+      "description": "Browse our full menu of coffee, espresso, pastries, and more.",
+      "layout": "default",
+      "sections": [
+        {
+          "type": "hero",
+          "variant": "simple",
+          "content": {
+            "fields": [
+              { "key": "headline", "label": "Headline", "type": "text" },
+              { "key": "subheadline", "label": "Subheadline", "type": "text" }
+            ],
+            "defaults": {
+              "headline": "Our Menu",
+              "subheadline": "Crafted with care, served with a smile"
+            }
+          },
+          "options": {
+            "padding": "md",
+            "background": "light"
+          }
+        },
+        {
+          "type": "menu",
+          "variant": "categorized",
+          "content": {
+            "fields": [
+              {
+                "key": "categories",
+                "label": "Menu Categories",
+                "type": "array",
+                "fields": [
+                  { "key": "id", "label": "Category ID", "type": "text" },
+                  { "key": "name", "label": "Category Name", "type": "text" },
+                  { "key": "description", "label": "Description", "type": "text" },
+                  {
+                    "key": "items",
+                    "label": "Items",
+                    "type": "array",
+                    "fields": [
+                      { "key": "name", "label": "Item Name", "type": "text" },
+                      { "key": "description", "label": "Description", "type": "text" },
+                      { "key": "price", "label": "Price", "type": "text" },
+                      { "key": "image", "label": "Image", "type": "image" },
+                      { "key": "tags", "label": "Tags", "type": "multiselect", "options": [
+                        { "value": "popular", "label": "Popular" },
+                        { "value": "new", "label": "New" },
+                        { "value": "vegan", "label": "Vegan" },
+                        { "value": "gf", "label": "Gluten-Free" }
+                      ]}
+                    ]
+                  }
+                ]
+              }
+            ],
+            "aiPrompt": "Generate a cafe menu with categories for coffee/espresso, teas, pastries, and light bites. Include realistic prices and appealing descriptions."
+          },
+          "options": {
+            "padding": "lg"
+          }
+        }
+      ]
+    },
+    {
+      "type": "about",
+      "path": "/about",
+      "title": "About Us | {{businessName}}",
+      "description": "Learn about our story, our passion for coffee, and our commitment to the community.",
+      "layout": "default",
+      "sections": [
+        {
+          "type": "hero-split",
+          "content": {
+            "fields": [
+              { "key": "headline", "label": "Headline", "type": "text" },
+              { "key": "body", "label": "Body", "type": "richtext" },
+              { "key": "image", "label": "Image", "type": "image" }
+            ],
+            "defaults": {
+              "headline": "Our Story"
+            },
+            "aiPrompt": "Write a compelling origin story for a neighborhood cafe. Include the founders' passion for coffee, their journey, and their vision."
+          },
+          "options": {
+            "padding": "lg"
+          }
+        },
+        {
+          "type": "features",
+          "variant": "icons",
+          "content": {
+            "fields": [
+              { "key": "headline", "label": "Section Headline", "type": "text" },
+              {
+                "key": "features",
+                "label": "Features",
+                "type": "array",
+                "fields": [
+                  { "key": "icon", "label": "Icon", "type": "icon" },
+                  { "key": "title", "label": "Title", "type": "text" },
+                  { "key": "description", "label": "Description", "type": "text" }
+                ]
+              }
+            ],
+            "defaults": {
+              "headline": "What Makes Us Special",
+              "features": [
+                { "icon": "coffee", "title": "Ethically Sourced", "description": "Direct relationships with farmers" },
+                { "icon": "heart", "title": "Made with Love", "description": "Every item crafted by hand" },
+                { "icon": "leaf", "title": "Sustainability First", "description": "Eco-friendly practices throughout" }
+              ]
+            }
+          },
+          "options": {
+            "padding": "lg",
+            "background": "light"
+          }
+        },
+        {
+          "type": "team",
+          "variant": "grid",
+          "content": {
+            "fields": [
+              { "key": "headline", "label": "Section Headline", "type": "text" },
+              {
+                "key": "members",
+                "label": "Team Members",
+                "type": "array",
+                "fields": [
+                  { "key": "name", "label": "Name", "type": "text" },
+                  { "key": "role", "label": "Role", "type": "text" },
+                  { "key": "bio", "label": "Bio", "type": "textarea" },
+                  { "key": "image", "label": "Photo", "type": "image" }
+                ]
+              }
+            ],
+            "defaults": {
+              "headline": "Meet Our Baristas"
+            },
+            "aiPrompt": "Generate 3-4 team member profiles for a cafe, including the owner and baristas. Give them distinct personalities and specialties."
+          },
+          "options": {
+            "padding": "lg"
+          }
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "showFooter": true
+      }
+    },
+    {
+      "type": "contact",
+      "path": "/contact",
+      "title": "Contact | {{businessName}}",
+      "description": "Find our location, hours, and get in touch with us.",
+      "layout": "default",
+      "sections": [
+        {
+          "type": "hero",
+          "variant": "simple",
+          "content": {
+            "fields": [
+              { "key": "headline", "label": "Headline", "type": "text" },
+              { "key": "subheadline", "label": "Subheadline", "type": "text" }
+            ],
+            "defaults": {
+              "headline": "Visit Us",
+              "subheadline": "We'd love to see you"
+            }
+          },
+          "options": {
+            "padding": "md"
+          }
+        },
+        {
+          "type": "contact-info",
+          "variant": "split-map",
+          "content": {
+            "fields": [
+              { "key": "address", "label": "Address", "type": "textarea" },
+              { "key": "phone", "label": "Phone", "type": "phone" },
+              { "key": "email", "label": "Email", "type": "email" },
+              {
+                "key": "hours",
+                "label": "Hours",
+                "type": "array",
+                "fields": [
+                  { "key": "days", "label": "Days", "type": "text" },
+                  { "key": "hours", "label": "Hours", "type": "text" }
+                ]
+              },
+              { "key": "mapCoordinates", "label": "Map Coordinates", "type": "object" }
+            ],
+            "defaults": {
+              "hours": [
+                { "days": "Monday - Friday", "hours": "7:00 AM - 6:00 PM" },
+                { "days": "Saturday - Sunday", "hours": "8:00 AM - 5:00 PM" }
+              ]
+            }
+          },
+          "options": {
+            "padding": "lg"
+          }
+        },
+        {
+          "type": "contact-form",
+          "content": {
+            "fields": [
+              { "key": "headline", "label": "Form Headline", "type": "text" },
+              { "key": "description", "label": "Description", "type": "text" },
+              { "key": "submitText", "label": "Submit Button Text", "type": "text" }
+            ],
+            "defaults": {
+              "headline": "Send Us a Message",
+              "description": "Have a question or feedback? We'd love to hear from you.",
+              "submitText": "Send Message"
+            }
+          },
+          "options": {
+            "padding": "lg",
+            "background": "light"
+          }
+        }
+      ]
+    },
+    {
+      "type": "gallery",
+      "path": "/gallery",
+      "title": "Gallery | {{businessName}}",
+      "description": "Take a look inside our cafe and see what we're all about.",
+      "layout": "default",
+      "sections": [
+        {
+          "type": "hero",
+          "variant": "simple",
+          "content": {
+            "fields": [
+              { "key": "headline", "label": "Headline", "type": "text" }
+            ],
+            "defaults": {
+              "headline": "Gallery"
+            }
+          },
+          "options": {
+            "padding": "md"
+          }
+        },
+        {
+          "type": "gallery-masonry",
+          "content": {
+            "fields": [
+              {
+                "key": "images",
+                "label": "Gallery Images",
+                "type": "array",
+                "fields": [
+                  { "key": "src", "label": "Image", "type": "image" },
+                  { "key": "alt", "label": "Alt Text", "type": "text" },
+                  { "key": "category", "label": "Category", "type": "select", "options": [
+                    { "value": "interior", "label": "Interior" },
+                    { "value": "food", "label": "Food & Drinks" },
+                    { "value": "team", "label": "Our Team" },
+                    { "value": "events", "label": "Events" }
+                  ]}
+                ]
+              }
+            ]
+          },
+          "options": {
+            "padding": "lg"
+          }
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "showFooter": true
+      }
+    }
+  ],
+  "tiers": [
+    {
+      "id": "essential",
+      "name": "Essential",
+      "description": "Perfect for getting started with a professional online presence",
+      "price": 49,
+      "currency": "USD",
+      "pages": ["home", "menu", "about", "contact"],
+      "features": [
+        "responsive-design",
+        "seo-optimized",
+        "contact-form",
+        "social-links"
+      ]
+    },
+    {
+      "id": "recommended",
+      "name": "Recommended",
+      "description": "Everything you need to showcase your cafe and engage customers",
+      "price": 79,
+      "currency": "USD",
+      "pages": ["home", "menu", "about", "gallery", "contact"],
+      "features": [
+        "responsive-design",
+        "seo-optimized",
+        "contact-form",
+        "social-links",
+        "gallery",
+        "newsletter-signup",
+        "google-maps"
+      ]
+    },
+    {
+      "id": "premium",
+      "name": "Premium",
+      "description": "The complete package with customer portal and loyalty features",
+      "price": 129,
+      "currency": "USD",
+      "pages": ["home", "menu", "about", "gallery", "team", "events", "blog", "contact"],
+      "features": [
+        "responsive-design",
+        "seo-optimized",
+        "contact-form",
+        "social-links",
+        "gallery",
+        "newsletter-signup",
+        "google-maps",
+        "blog",
+        "events-calendar",
+        "team-profiles",
+        "online-ordering"
+      ],
+      "portalPages": ["dashboard", "rewards", "profile"]
+    }
+  ],
+  "variants": {
+    "coffee-shop": {
+      "id": "coffee-shop",
+      "name": "Coffee Shop",
+      "description": "Focused on specialty coffee and espresso drinks",
+      "terminology": {
+        "services": "Drinks",
+        "service": "Drink",
+        "team": "Our Baristas",
+        "teamMember": "Barista"
+      },
+      "defaultMoodSliders": {
+        "vibe": 55,
+        "energy": 50,
+        "era": 70,
+        "density": 35,
+        "price": 60
+      }
+    },
+    "bakery-cafe": {
+      "id": "bakery-cafe",
+      "name": "Bakery Cafe",
+      "description": "Emphasis on fresh baked goods and pastries",
+      "terminology": {
+        "services": "Baked Goods",
+        "service": "Item",
+        "team": "Our Bakers",
+        "teamMember": "Baker"
+      },
+      "defaultMoodSliders": {
+        "vibe": 65,
+        "energy": 40,
+        "era": 55,
+        "density": 45,
+        "price": 50
+      }
+    },
+    "tea-house": {
+      "id": "tea-house",
+      "name": "Tea House",
+      "description": "Focused on tea service and a calm atmosphere",
+      "terminology": {
+        "services": "Teas",
+        "service": "Tea",
+        "team": "Our Team",
+        "teamMember": "Tea Specialist"
+      },
+      "styleOverrides": {
+        "colors": {
+          "primary": "#5D8A66",
+          "secondary": "#C9D4C5",
+          "accent": "#E8C4A0",
+          "background": "#FAFCFA",
+          "text": "#2A3C2E"
+        }
+      },
+      "defaultMoodSliders": {
+        "vibe": 30,
+        "energy": 25,
+        "era": 45,
+        "density": 30,
+        "price": 65
+      }
+    }
+  },
+  "terminology": {
+    "services": "Menu",
+    "service": "Item",
+    "team": "Our Baristas",
+    "teamMember": "Barista",
+    "booking": "Order",
+    "customer": "Guest",
+    "location": "Cafe"
+  },
+  "features": [
+    "responsive-design",
+    "seo-optimized",
+    "accessibility",
+    "dark-mode",
+    "newsletter-signup",
+    "social-integration",
+    "google-maps",
+    "contact-form"
+  ]
+}
