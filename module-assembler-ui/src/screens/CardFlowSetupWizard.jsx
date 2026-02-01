@@ -12,6 +12,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { WizardBreadcrumb, CollapsibleSection } from '../components/wizard';
+import CardFlowAssistant from '../components/CardFlowAssistant';
 
 const STEPS = [
   { id: 'welcome', name: 'Welcome', icon: '👋' },
@@ -991,6 +992,28 @@ export function CardFlowSetupWizard({
           </button>
         )}
       </div>
+
+      {/* AI Assistant */}
+      <CardFlowAssistant
+        currentStep={STEPS[currentStep].id}
+        wizardContext={{
+          projectType,
+          businessName,
+          industry,
+          location,
+          workflowMode,
+          enableTutorials,
+          autoSave
+        }}
+        onSuggestion={(suggestion) => {
+          // Apply AI suggestions to wizard state
+          if (suggestion.projectType) setProjectType(suggestion.projectType);
+          if (suggestion.workflowMode) setWorkflowMode(suggestion.workflowMode);
+          if (suggestion.businessName) setBusinessName(suggestion.businessName);
+          if (suggestion.industry) setIndustry(suggestion.industry);
+          if (suggestion.location) setLocation(suggestion.location);
+        }}
+      />
 
       {/* Responsive Styles */}
       <style>{`
