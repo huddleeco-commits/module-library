@@ -67,7 +67,11 @@ const {
   createUtilityRoutes,
   createDeployRoutes,
   createOrchestratorRoutes,
-  createStudioRoutes
+  createStudioRoutes,
+  createContentGeneratorRoutes,
+  createContentSchedulerRoutes,
+  createPlatformPublisherRoutes,
+  createSocialMediaRoutes
 } = require('./lib/routes/index.cjs');
 
 
@@ -426,6 +430,30 @@ const deployRouter = createDeployRoutes({
   db  // Pass db to check build status before allowing deployment
 });
 app.use('/api', deployRouter);
+
+// One-Click Deploy routes (simplified deployment with SSE streaming)
+const { createOneClickDeployRoutes } = require('./lib/routes/one-click-deploy.cjs');
+const oneClickDeployRouter = createOneClickDeployRoutes({
+  deployService,
+  db
+});
+app.use('/api/one-click-deploy', oneClickDeployRouter);
+
+// Content Generator routes (content/generate, content/generate-package, etc.)
+const contentGeneratorRouter = createContentGeneratorRoutes({ db });
+app.use('/api/content', contentGeneratorRouter);
+
+// Content Scheduler routes (scheduler/schedule, scheduler/calendar, etc.)
+const contentSchedulerRouter = createContentSchedulerRoutes({ db });
+app.use('/api/scheduler', contentSchedulerRouter);
+
+// Platform Publisher routes (publisher/publish, publisher/connections, etc.)
+const platformPublisherRouter = createPlatformPublisherRoutes({ db, queueService });
+app.use('/api/publisher', platformPublisherRouter);
+
+// Social Media routes (social-media/setup, social-media/generate-caption, etc.)
+const socialMediaRouter = createSocialMediaRoutes({ db });
+app.use('/api/social-media', socialMediaRouter);
 
 // Orchestrator routes (orchestrate, orchestrate/detect-intent, etc.)
 const orchestratorRouter = createOrchestratorRoutes({
@@ -2881,6 +2909,47 @@ Only include fields you're specifically recommending. Omit the block entirely if
   } catch (error) {
     console.error('CardFlow AI chat error:', error.message);
     captureException(error, { tags: { component: 'cardflow-chat' } });
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get AI response'
+    });
+  }
+});
+
+// ============================================
+// SOCIAL MEDIA AI ASSISTANT ENDPOINT
+// ============================================
+app.post('/api/ai/social-media-chat', async (req, res) => {
+  const { message, currentStep, wizardContext, conversationHistory } = req.body;
+
+  if (!message) {
+    return res.status(400).json({ success: false, error: 'Message is required' });
+  }
+
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    return res.status(500).json({ success: false, error: 'AI service not configured' });
+  }
+
+  try {
+    const { SocialMediaService } = require('./lib/services/social-media.cjs');
+    const service = new SocialMediaService();
+
+    const result = await service.handleAssistantChat({
+      message,
+      currentStep,
+      wizardContext,
+      conversationHistory
+    });
+
+    res.json({
+      success: true,
+      ...result
+    });
+
+  } catch (error) {
+    console.error('Social Media AI chat error:', error.message);
+    captureException(error, { tags: { component: 'social-media-chat' } });
     res.status(500).json({
       success: false,
       error: 'Failed to get AI response'

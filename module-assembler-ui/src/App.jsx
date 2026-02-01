@@ -32,6 +32,7 @@ import {
   LayoutStyleSelector,
   LivePreviewRenderer,
   TestGenerator,
+  MainPlatform,
   wizardStyles,
   collapsibleStyles,
   tooltipStyles,
@@ -79,7 +80,8 @@ import {
   MyDeploymentsPage,
   StylePreviewAdmin,
   StudioMode,
-  CardFlowSetupWizard
+  CardFlowSetupWizard,
+  DeploymentDashboard
 } from './screens';
 
 // Admin Dashboard import
@@ -1252,6 +1254,18 @@ export default function App() {
         <div style={styles.headerRight}>
           <p style={styles.headerTagline} key={taglineIndex}>{TAGLINES[taglineIndex]}</p>
           <button
+            onClick={() => setStep('deployment-dashboard')}
+            style={{
+              ...styles.logoutBtn,
+              background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+              color: '#fff',
+              marginRight: '8px',
+              boxShadow: '0 2px 8px rgba(99, 102, 241, 0.3)'
+            }}
+          >
+            Deploy
+          </button>
+          <button
             onClick={() => setStep('my-deployments')}
             style={{
               ...styles.logoutBtn,
@@ -1276,6 +1290,43 @@ export default function App() {
           <MyDeploymentsPage
             onBack={() => setStep('choose-path')}
             onCreateNew={() => setStep('choose-path')}
+          />
+        )}
+
+        {step === 'deployment-dashboard' && (
+          <DeploymentDashboard
+            onBack={() => setStep('choose-path')}
+            selectedProject={result ? { path: result.path, name: result.name } : null}
+          />
+        )}
+
+        {step === 'platform' && (
+          <MainPlatform
+            onNavigate={(featureId) => {
+              // Map feature IDs to steps
+              const featureToStep = {
+                'website': 'quick',
+                'app': 'orchestrator',
+                'tools': 'orchestrator',
+                'content': 'content-generator',
+                'scheduler': 'content-scheduler',
+                'social': 'social-media',
+                'customer-service': 'customer-service',
+                'cardflow': 'cardflow',
+                'analytics': 'analytics',
+                'dashboard': 'platform',
+                'projects': 'my-deployments',
+                'create': 'choose-path',
+                'settings': 'settings',
+              };
+              const targetStep = featureToStep[featureId] || 'choose-path';
+              if (featureId === 'tools') {
+                setIsToolMode(true);
+              }
+              setStep(targetStep);
+            }}
+            onLogout={handleLogout}
+            user={{ name: 'User' }}
           />
         )}
 

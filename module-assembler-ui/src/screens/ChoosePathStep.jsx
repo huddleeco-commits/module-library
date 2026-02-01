@@ -804,6 +804,51 @@ export function ChoosePathStep({ onSelect, isDevUnlocked }) {
       <h1 style={premiumStyles.heroTitle}>What would you like to build?</h1>
       <p style={premiumStyles.heroSubtitle}>Create professional websites or powerful tool dashboards</p>
 
+      {/* Platform Dashboard Quick Access */}
+      <button
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '12px',
+          width: '100%',
+          padding: '16px 24px',
+          marginBottom: '32px',
+          background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.08))',
+          border: '1px solid rgba(99, 102, 241, 0.3)',
+          borderRadius: '14px',
+          color: '#a5b4fc',
+          fontSize: '15px',
+          fontWeight: '600',
+          cursor: 'pointer',
+          transition: 'all 0.2s ease',
+        }}
+        onClick={() => onSelect('platform')}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = 'linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.12))';
+          e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.5)';
+          e.currentTarget.style.transform = 'translateY(-2px)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.08))';
+          e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.3)';
+          e.currentTarget.style.transform = 'translateY(0)';
+        }}
+      >
+        <span style={{ fontSize: '20px' }}>🏠</span>
+        Open Platform Dashboard
+        <span style={{
+          padding: '4px 10px',
+          background: 'rgba(99, 102, 241, 0.2)',
+          borderRadius: '8px',
+          fontSize: '11px',
+          fontWeight: '700',
+          letterSpacing: '0.5px',
+        }}>
+          NEW
+        </span>
+      </button>
+
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 1: BUILD A WEBSITE
           ═══════════════════════════════════════════════════════════════ */}

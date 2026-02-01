@@ -1,0 +1,73 @@
+{
+  "name": "auth",
+  "type": "backend",
+  "source": "slabtrack",
+  "version": "1.0.0",
+  "description": "Complete JWT-based authentication system with dual-mode support (database + test mode)",
+  "extractedAt": "2026-01-31T00:00:00.000Z",
+  "files": [
+    "routes/auth.cjs",
+    "middleware/auth.cjs",
+    "middleware/rateLimiter.cjs",
+    "middleware/index.cjs",
+    "models/User.cjs",
+    "models/index.cjs",
+    "services/password-reset.cjs",
+    "database/schema.sql"
+  ],
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "express-rate-limit": "^7.1.5",
+    "express-validator": "^7.0.1",
+    "resend": "^2.0.0"
+  },
+  "optionalDependencies": {
+    "resend": "For password reset emails"
+  },
+  "features": [
+    "JWT authentication with 24h expiration",
+    "User registration with email validation",
+    "Secure password hashing (bcrypt, 12 rounds)",
+    "Password strength validation",
+    "Rate limiting for brute force protection",
+    "Password reset via email",
+    "Profile management",
+    "Role-based access control (isAdmin)",
+    "Subscription tier support",
+    "Dual-mode: Database + Test mode fallback"
+  ],
+  "endpoints": {
+    "POST /auth/register": "Register new user",
+    "POST /auth/login": "User login with JWT",
+    "POST /auth/logout": "Logout (stateless)",
+    "GET /auth/me": "Get current user profile",
+    "GET /auth/profile": "Alias for /auth/me",
+    "PUT /auth/profile": "Update user profile",
+    "POST /auth/change-password": "Change password",
+    "POST /auth/forgot-password": "Request password reset",
+    "POST /auth/reset-password": "Reset password with token",
+    "GET /auth/verify": "Verify JWT token",
+    "POST /auth/validate": "Legacy simple password check",
+    "POST /auth/validate-dev": "Developer access"
+  },
+  "environmentVariables": {
+    "JWT_SECRET": "Secret key for JWT signing (required for production)",
+    "DATABASE_URL": "PostgreSQL connection string",
+    "RESEND_API_KEY": "Resend API key for password reset emails",
+    "APP_NAME": "Application name for emails",
+    "APP_URL": "Application URL for email links",
+    "BLINK_ADMIN_PASSWORD": "Admin password for legacy validation",
+    "BLINK_DEV_PASSWORD": "Developer password (default: abc123)"
+  },
+  "testAccounts": {
+    "demo@demo.com": {
+      "password": "demo1234",
+      "role": "user"
+    },
+    "admin@demo.com": {
+      "password": "admin1234",
+      "role": "admin"
+    }
+  }
+}

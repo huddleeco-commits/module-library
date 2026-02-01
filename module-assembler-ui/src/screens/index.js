@@ -73,3 +73,6 @@ export { default as StudioMode } from './StudioMode.jsx';
 
 // Generation Studio (New Unified Interface)
 export { default as StudioPage } from './StudioPage.jsx';
+
+// Deployment Dashboard (One-Click Deploy)
+export { DeploymentDashboard } from './DeploymentDashboard.jsx';
