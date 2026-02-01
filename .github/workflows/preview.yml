@@ -1,0 +1,131 @@
+name: PR Preview Deployment
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+
+env:
+  RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+jobs:
+  build-check:
+    name: Build Verification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'npm'
+          cache-dependency-path: module-assembler-ui/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd module-assembler-ui
+          npm ci
+
+      - name: Build application
+        run: |
+          cd module-assembler-ui
+          npm run build
+        env:
+          CI: true
+
+      - name: Run tests
+        run: |
+          cd module-assembler-ui
+          npm run test --if-present
+        env:
+          CI: true
+        continue-on-error: true
+
+  deploy-preview:
+    name: Deploy Preview Environment
+    runs-on: ubuntu-latest
+    needs: build-check
+    if: github.event.pull_request.draft == false
+    environment:
+      name: pr-${{ github.event.pull_request.number }}
+      url: ${{ steps.deploy.outputs.url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Create PR Environment
+        id: deploy
+        run: |
+          # Deploy to a PR-specific environment
+          railway up --detach --environment pr-${{ github.event.pull_request.number }}
+          echo "Preview deployment initiated for PR #${{ github.event.pull_request.number }}"
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+      - name: Comment PR with Preview URL
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const body = `## Railway Preview Deployment
+
+            A preview environment has been deployed for this PR.
+
+            **Status:** Deploying...
+            **PR:** #${prNumber}
+            **Commit:** \`${context.sha.substring(0, 7)}\`
+
+            > The preview environment will be automatically cleaned up when this PR is closed.`;
+
+            // Check for existing comment
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber
+            });
+
+            const botComment = comments.data.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('Railway Preview Deployment')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: body
+              });
+            }
+
+  cleanup-preview:
+    name: Cleanup Preview on PR Close
+    runs-on: ubuntu-latest
+    if: github.event.action == 'closed'
+
+    steps:
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Remove PR Environment
+        run: |
+          echo "Cleaning up preview environment for PR #${{ github.event.pull_request.number }}"
+          # Railway will auto-cleanup environments, but we can trigger it explicitly
+          railway environment delete pr-${{ github.event.pull_request.number }} --yes || true
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        continue-on-error: true

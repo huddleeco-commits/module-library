@@ -2,11 +2,36 @@
 
 Deploy BLINK to Railway with PostgreSQL and configure blink.be1st.io domain.
 
+## CI/CD Pipeline
+
+This project uses GitHub Actions for automated deployments:
+
+| Workflow | Trigger | Purpose |
+|----------|---------|---------|
+| `test.yml` | Push/PR to main, develop | Runs tests and build verification |
+| `deploy.yml` | Push to main, manual | Deploys to production/staging |
+| `preview.yml` | PR to main | Creates preview environments |
+
+### GitHub Secrets Required
+
+Add these secrets in GitHub repo settings (Settings → Secrets → Actions):
+
+```
+RAILWAY_TOKEN     # Railway API token (from railway.app/account/tokens)
+```
+
+### Manual Deployment
+
+Trigger deployment manually from GitHub Actions → Deploy to Railway → Run workflow.
+
+---
+
 ## Prerequisites
 
 1. Railway account (https://railway.app)
 2. GitHub repo: `huddleeco-commits/blink-platform`
 3. Cloudflare access for be1st.io domain
+4. `RAILWAY_TOKEN` secret added to GitHub repository
 
 ## Step 1: Update Railway Workspace ID
 
@@ -123,3 +148,13 @@ curl -X POST "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE_ID/dns
 ### Build fails
 - Ensure all dependencies installed: `npm install`
 - Build frontend: `npm run build`
+
+### GitHub Actions deployment fails
+- Verify `RAILWAY_TOKEN` secret is set in GitHub repo settings
+- Check Railway token has not expired
+- Ensure Railway project is linked to GitHub repo
+
+### Preview environment not creating
+- PR preview requires `RAILWAY_TOKEN` secret
+- Only non-draft PRs trigger preview deployments
+- Check Railway plan supports multiple environments
