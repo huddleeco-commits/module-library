@@ -113,10 +113,10 @@ function generateAdminDashboard(adminDir, businessData, industryId) {
   }
 
   // Generate common pages
-  fs.writeFileSync(path.join(pagesDir, 'Notifications.jsx'), generateNotificationsPage(businessName, primaryColor));
+  fs.writeFileSync(path.join(pagesDir, 'Notifications.jsx'), generateNotificationsPage(businessName, primaryColor, industryModules));
   files.push('src/pages/Notifications.jsx');
 
-  fs.writeFileSync(path.join(pagesDir, 'AgentChat.jsx'), generateAgentChatPage(businessName, primaryColor));
+  fs.writeFileSync(path.join(pagesDir, 'AgentChat.jsx'), generateAgentChatPage(businessName, primaryColor, industryModules));
   files.push('src/pages/AgentChat.jsx');
 
   fs.writeFileSync(path.join(pagesDir, 'Settings.jsx'), generateSettingsPage(businessName, primaryColor));
@@ -961,776 +961,36 @@ const styles = {
 `;
 }
 
-function generateMenuEditorPage(businessName, primaryColor) {
-  return `import React, { useState, useEffect, useCallback } from 'react';
-import {
-  Plus, Edit2, Trash2, GripVertical, Check, X, ChevronDown, ChevronRight,
-  Leaf, Star, Eye, EyeOff, Save, RefreshCw, AlertCircle
-} from 'lucide-react';
 
-const API_BASE = '/api/menu';
+function generateNotificationsPage(businessName, primaryColor, industryModules) {
+  // Build industry-aware notification templates
+  const modules = Object.entries(industryModules || {});
+  const bookingMod = modules.find(([, type]) => type === 'booking');
+  const inquiryMod = modules.find(([, type]) => type === 'inquiries');
+  const catalogMod = modules.find(([, type]) => type === 'catalog');
 
-// Demo menu data when API is unavailable
-const DEMO_CATEGORIES = [
-  {
-    id: 1,
-    name: 'Popular Items',
-    description: 'Customer favorites',
-    items: [
-      { id: 1, name: 'House Special', price: 14.99, description: 'Our signature dish', available: true, popular: true },
-      { id: 2, name: 'Classic Combo', price: 12.99, description: 'A timeless favorite', available: true, popular: true }
-    ]
-  },
-  {
-    id: 2,
-    name: 'Main Courses',
-    description: 'Hearty entrees',
-    items: [
-      { id: 3, name: 'Grilled Selection', price: 18.99, description: 'Fresh and delicious', available: true },
-      { id: 4, name: 'Chef\\'s Choice', price: 22.99, description: 'Daily special', available: false }
-    ]
-  },
-  {
-    id: 3,
-    name: 'Beverages',
-    description: 'Drinks and refreshments',
-    items: [
-      { id: 5, name: 'Fresh Lemonade', price: 4.99, description: 'House-made', available: true },
-      { id: 6, name: 'Iced Tea', price: 3.99, description: 'Unsweetened', available: true }
-    ]
-  }
-];
+  // Determine the primary action module for notifications
+  const actionMod = bookingMod || inquiryMod;
+  const actionLabel = actionMod ? (MODULE_LABELS[actionMod[0]]?.singular || 'Booking') : 'Booking';
 
-export default function MenuEditor() {
-  const [categories, setCategories] = useState(DEMO_CATEGORIES);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [usingDemoData, setUsingDemoData] = useState(false);
-  const [expandedCategories, setExpandedCategories] = useState({ 1: true, 2: true, 3: true });
-  const [editingItem, setEditingItem] = useState(null);
-  const [showAddCategory, setShowAddCategory] = useState(false);
-  const [showAddItem, setShowAddItem] = useState(null);
-  const [newCategory, setNewCategory] = useState({ name: '', description: '' });
-  const [newItem, setNewItem] = useState({ name: '', price: '', description: '' });
+  const templates = [
+    `  { id: '${actionMod ? actionMod[0] : 'booking'}_confirmation', name: '${actionLabel} Confirmation', icon: CheckCircle, color: '#22c55e' }`,
+    `  { id: '${actionMod ? actionMod[0] : 'booking'}_reminder', name: '${actionLabel} Reminder', icon: Bell, color: '#3b82f6' }`,
+    `  { id: 'cancellation', name: 'Cancellation Notice', icon: XCircle, color: '#ef4444' }`,
+    `  { id: 'custom', name: 'Custom Message', icon: Mail, color: '#8b5cf6' }`
+  ];
 
-  const fetchMenu = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await fetch(\`\${API_BASE}/admin\`);
-      if (!res.ok) {
-        setUsingDemoData(true);
-        return;
-      }
-      const data = await res.json();
-      if (data.success) {
-        setCategories(data.categories);
-        // Expand all categories by default
-        const expanded = {};
-        data.categories.forEach(cat => expanded[cat.id] = true);
-        setExpandedCategories(expanded);
-        setError(null);
-        setUsingDemoData(false);
-      }
-    } catch (err) {
-      console.log('Using demo menu data');
-      setUsingDemoData(true);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const recentItems = [
+    `    { id: 1, template: '${actionMod ? actionMod[0] : 'booking'}_confirmation', to: 'john@example.com', status: 'sent', time: '2 hours ago' }`,
+    `    { id: 2, template: '${actionMod ? actionMod[0] : 'booking'}_reminder', to: 'sarah@example.com', status: 'sent', time: '5 hours ago' }`,
+    `    { id: 3, template: 'cancellation', to: 'mike@example.com', status: 'failed', time: '1 day ago' }`
+  ];
 
-  useEffect(() => {
-    fetchMenu();
-
-    // SSE for real-time updates
-    const eventSource = new EventSource(\`\${API_BASE}/events\`);
-    eventSource.onmessage = (e) => {
-      const data = JSON.parse(e.data);
-      if (data.type !== 'connected' && data.type !== 'initial_state' && data.type !== 'heartbeat') {
-        fetchMenu();
-      }
-    };
-    eventSource.onerror = () => {
-      console.log('SSE connection error - using polling fallback');
-      eventSource.close();
-    };
-    return () => eventSource.close();
-  }, [fetchMenu]);
-
-  const toggleAvailability = async (itemId, available) => {
-    try {
-      await fetch(\`\${API_BASE}/admin/item/\${itemId}/availability\`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ available })
-      });
-      fetchMenu(); // Refresh after update
-    } catch (err) {
-      console.error('Failed to toggle availability:', err);
-    }
-  };
-
-  const deleteItem = async (itemId) => {
-    if (!confirm('Delete this item?')) return;
-    try {
-      await fetch(\`\${API_BASE}/admin/item/\${itemId}\`, { method: 'DELETE' });
-      fetchMenu(); // Refresh after delete
-    } catch (err) {
-      console.error('Failed to delete item:', err);
-    }
-  };
-
-  const addCategory = async () => {
-    if (!newCategory.name) return;
-    try {
-      await fetch(\`\${API_BASE}/admin/category\`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newCategory)
-      });
-      setNewCategory({ name: '', description: '' });
-      setShowAddCategory(false);
-      fetchMenu(); // Refresh after add
-    } catch (err) {
-      console.error('Failed to add category:', err);
-    }
-  };
-
-  const addItem = async (categoryId) => {
-    if (!newItem.name || !newItem.price) return;
-    try {
-      await fetch(\`\${API_BASE}/admin/item\`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...newItem, category_id: categoryId })
-      });
-      setNewItem({ name: '', price: '', description: '' });
-      setShowAddItem(null);
-      fetchMenu(); // Refresh after add
-    } catch (err) {
-      console.error('Failed to add item:', err);
-    }
-  };
-
-  const updateItem = async (itemId, updates) => {
-    try {
-      await fetch(\`\${API_BASE}/admin/item/\${itemId}\`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updates)
-      });
-      setEditingItem(null);
-      fetchMenu(); // Refresh after update
-    } catch (err) {
-      console.error('Failed to update item:', err);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div style={styles.loading}>
-        <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite' }} />
-        <p>Loading menu...</p>
-      </div>
-    );
-  }
-
-  return (
-    <div style={styles.container}>
-      {usingDemoData && (
-        <div style={styles.demoBanner}>
-          <span>📋 Demo Mode - Changes won't be saved (API not connected)</span>
-        </div>
-      )}
-
-      <div style={styles.header}>
-        <div>
-          <h1 style={styles.title}>Menu Editor</h1>
-          <p style={styles.subtitle}>Manage your menu items and categories</p>
-        </div>
-        <div style={styles.headerActions}>
-          <button onClick={fetchMenu} style={styles.refreshBtn}>
-            <RefreshCw size={18} /> Refresh
-          </button>
-          <button onClick={() => setShowAddCategory(true)} style={styles.addBtn}>
-            <Plus size={18} /> Add Category
-          </button>
-        </div>
-      </div>
-
-      {error && (
-        <div style={styles.error}>
-          <AlertCircle size={18} /> {error}
-          <button onClick={() => setError(null)} style={styles.dismissBtn}><X size={16} /></button>
-        </div>
-      )}
-
-      {showAddCategory && (
-        <div style={styles.addForm}>
-          <h3>New Category</h3>
-          <input
-            placeholder="Category name"
-            value={newCategory.name}
-            onChange={e => setNewCategory({ ...newCategory, name: e.target.value })}
-            style={styles.input}
-          />
-          <input
-            placeholder="Description (optional)"
-            value={newCategory.description}
-            onChange={e => setNewCategory({ ...newCategory, description: e.target.value })}
-            style={styles.input}
-          />
-          <div style={styles.formActions}>
-            <button onClick={() => setShowAddCategory(false)} style={styles.cancelBtn}>Cancel</button>
-            <button onClick={addCategory} style={styles.saveBtn}><Plus size={16} /> Create</button>
-          </div>
-        </div>
-      )}
-
-      <div style={styles.categoriesList}>
-        {categories.map(category => (
-          <div key={category.id} style={styles.categoryCard}>
-            <div
-              style={styles.categoryHeader}
-              onClick={() => setExpandedCategories(prev => ({ ...prev, [category.id]: !prev[category.id] }))}
-            >
-              {expandedCategories[category.id] ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
-              <h3 style={styles.categoryName}>{category.name}</h3>
-              <span style={styles.itemCount}>{category.items?.length || 0} items</span>
-              <button
-                onClick={(e) => { e.stopPropagation(); setShowAddItem(category.id); }}
-                style={styles.addItemBtn}
-              >
-                <Plus size={16} /> Add Item
-              </button>
-            </div>
-
-            {expandedCategories[category.id] && (
-              <div style={styles.itemsList}>
-                {showAddItem === category.id && (
-                  <div style={styles.addItemForm}>
-                    <input
-                      placeholder="Item name"
-                      value={newItem.name}
-                      onChange={e => setNewItem({ ...newItem, name: e.target.value })}
-                      style={styles.input}
-                    />
-                    <input
-                      placeholder="Price"
-                      type="number"
-                      step="0.01"
-                      value={newItem.price}
-                      onChange={e => setNewItem({ ...newItem, price: e.target.value })}
-                      style={{ ...styles.input, width: '100px' }}
-                    />
-                    <button onClick={() => addItem(category.id)} style={styles.saveBtn}>Add</button>
-                    <button onClick={() => setShowAddItem(null)} style={styles.cancelBtn}>Cancel</button>
-                  </div>
-                )}
-
-                {(category.items || []).map(item => (
-                  <div key={item.id} style={{ ...styles.itemRow, opacity: item.available ? 1 : 0.5 }}>
-                    <GripVertical size={16} style={{ color: '#9ca3af', cursor: 'grab' }} />
-
-                    {editingItem === item.id ? (
-                      <div style={styles.editForm}>
-                        <input
-                          defaultValue={item.name}
-                          style={styles.input}
-                          id={\`edit-name-\${item.id}\`}
-                        />
-                        <input
-                          defaultValue={item.price}
-                          type="number"
-                          step="0.01"
-                          style={{ ...styles.input, width: '80px' }}
-                          id={\`edit-price-\${item.id}\`}
-                        />
-                        <button
-                          onClick={() => updateItem(item.id, {
-                            name: document.getElementById(\`edit-name-\${item.id}\`).value,
-                            price: parseFloat(document.getElementById(\`edit-price-\${item.id}\`).value)
-                          })}
-                          style={styles.saveBtn}
-                        >
-                          <Check size={14} />
-                        </button>
-                        <button onClick={() => setEditingItem(null)} style={styles.cancelBtn}>
-                          <X size={14} />
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        <div style={styles.itemInfo}>
-                          <span style={styles.itemName}>
-                            {item.name}
-                            {item.popular && <Star size={14} style={{ color: '#f59e0b', marginLeft: '6px' }} fill="#f59e0b" />}
-                          </span>
-                          <span style={styles.itemDesc}>{item.description}</span>
-                        </div>
-                        <span style={styles.itemPrice}>\${parseFloat(item.price).toFixed(2)}</span>
-                        <div style={styles.itemActions}>
-                          <button
-                            onClick={() => toggleAvailability(item.id, !item.available)}
-                            style={{ ...styles.iconBtn, color: item.available ? '#22c55e' : '#ef4444' }}
-                            title={item.available ? 'Mark unavailable' : 'Mark available'}
-                          >
-                            {item.available ? <Eye size={16} /> : <EyeOff size={16} />}
-                          </button>
-                          <button onClick={() => setEditingItem(item.id)} style={styles.iconBtn} title="Edit">
-                            <Edit2 size={16} />
-                          </button>
-                          <button onClick={() => deleteItem(item.id)} style={{ ...styles.iconBtn, color: '#ef4444' }} title="Delete">
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                ))}
-
-                {(!category.items || category.items.length === 0) && !showAddItem && (
-                  <p style={styles.emptyCategory}>No items in this category</p>
-                )}
-              </div>
-            )}
-          </div>
-        ))}
-
-        {categories.length === 0 && (
-          <div style={styles.emptyState}>
-            <p>No menu categories yet</p>
-            <button onClick={() => setShowAddCategory(true)} style={styles.addBtn}>
-              <Plus size={18} /> Create your first category
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-const styles = {
-  container: { maxWidth: '900px' },
-  demoBanner: {
-    background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-    border: '1px solid #f59e0b',
-    borderRadius: '8px',
-    padding: '12px 16px',
-    marginBottom: '20px',
-    fontSize: '14px',
-    color: '#92400e'
-  },
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' },
-  title: { fontSize: '28px', fontWeight: '700', margin: 0 },
-  subtitle: { color: '#6b7280', marginTop: '4px' },
-  headerActions: { display: 'flex', gap: '12px' },
-  refreshBtn: {
-    display: 'flex', alignItems: 'center', gap: '8px',
-    padding: '10px 16px', background: '#fff', border: '1px solid #e5e7eb',
-    borderRadius: '8px', cursor: 'pointer', fontSize: '14px'
-  },
-  addBtn: {
-    display: 'flex', alignItems: 'center', gap: '8px',
-    padding: '10px 16px', background: '${primaryColor}', color: '#fff',
-    border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '500'
-  },
-  error: {
-    display: 'flex', alignItems: 'center', gap: '8px',
-    padding: '12px 16px', background: '#fef2f2', color: '#dc2626',
-    borderRadius: '8px', marginBottom: '16px'
-  },
-  dismissBtn: { marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: '#dc2626' },
-  addForm: { background: '#fff', padding: '20px', borderRadius: '12px', marginBottom: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' },
-  input: {
-    padding: '10px 12px', border: '1px solid #e5e7eb', borderRadius: '8px',
-    fontSize: '14px', marginRight: '8px', marginBottom: '8px'
-  },
-  formActions: { display: 'flex', gap: '8px', marginTop: '12px' },
-  cancelBtn: {
-    padding: '8px 16px', background: '#f3f4f6', border: 'none',
-    borderRadius: '6px', cursor: 'pointer', fontSize: '14px'
-  },
-  saveBtn: {
-    display: 'flex', alignItems: 'center', gap: '6px',
-    padding: '8px 16px', background: '${primaryColor}', color: '#fff',
-    border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px'
-  },
-  categoriesList: { display: 'flex', flexDirection: 'column', gap: '16px' },
-  categoryCard: { background: '#fff', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' },
-  categoryHeader: {
-    display: 'flex', alignItems: 'center', gap: '12px',
-    padding: '16px 20px', cursor: 'pointer', background: '#f9fafb'
-  },
-  categoryName: { fontSize: '16px', fontWeight: '600', margin: 0, flex: 1 },
-  itemCount: { fontSize: '13px', color: '#6b7280' },
-  addItemBtn: {
-    display: 'flex', alignItems: 'center', gap: '4px',
-    padding: '6px 12px', background: '${primaryColor}20', color: '${primaryColor}',
-    border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px'
-  },
-  itemsList: { padding: '8px 0' },
-  addItemForm: { display: 'flex', alignItems: 'center', padding: '12px 20px', gap: '8px', background: '#fefce8' },
-  itemRow: {
-    display: 'flex', alignItems: 'center', gap: '12px',
-    padding: '12px 20px', borderBottom: '1px solid #f3f4f6'
-  },
-  itemInfo: { flex: 1 },
-  itemName: { display: 'flex', alignItems: 'center', fontWeight: '500' },
-  itemDesc: { fontSize: '13px', color: '#6b7280' },
-  itemPrice: { fontWeight: '600', color: '${primaryColor}' },
-  itemActions: { display: 'flex', gap: '4px' },
-  iconBtn: {
-    padding: '6px', background: 'none', border: 'none',
-    cursor: 'pointer', color: '#6b7280', borderRadius: '4px'
-  },
-  editForm: { display: 'flex', alignItems: 'center', flex: 1, gap: '8px' },
-  emptyCategory: { padding: '20px', textAlign: 'center', color: '#9ca3af' },
-  emptyState: { textAlign: 'center', padding: '60px 20px', background: '#fff', borderRadius: '12px' },
-  loading: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '400px', color: '#6b7280' }
-};
-
-// Add keyframes for spin animation
-const styleSheet = document.createElement('style');
-styleSheet.textContent = \`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }\`;
-document.head.appendChild(styleSheet);
-`;
-}
-
-function generateReservationsPage(businessName, primaryColor) {
-  return `import React, { useState, useEffect, useCallback } from 'react';
-import {
-  Calendar, Clock, Users, Check, X, Bell, ChevronLeft, ChevronRight,
-  RefreshCw, AlertCircle, Mail, Phone
-} from 'lucide-react';
-
-const API_BASE = '/api/reservations';
-
-export default function Reservations() {
-  const [view, setView] = useState('week');
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [reservations, setReservations] = useState([]);
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [selectedRes, setSelectedRes] = useState(null);
-  const [statusFilter, setStatusFilter] = useState('all');
-
-  const getDateRange = useCallback(() => {
-    const start = new Date(currentDate);
-    const end = new Date(currentDate);
-    if (view === 'day') {
-      // Just today
-    } else if (view === 'week') {
-      start.setDate(start.getDate() - start.getDay());
-      end.setDate(start.getDate() + 6);
-    } else {
-      start.setDate(1);
-      end.setMonth(end.getMonth() + 1);
-      end.setDate(0);
-    }
-    return { from: start.toISOString().split('T')[0], to: end.toISOString().split('T')[0] };
-  }, [currentDate, view]);
-
-  const fetchReservations = useCallback(async () => {
-    try {
-      setLoading(true);
-      const { from, to } = getDateRange();
-      const params = new URLSearchParams({ from, to });
-      if (statusFilter !== 'all') params.append('status', statusFilter);
-
-      const res = await fetch(\`\${API_BASE}/admin/all?\${params}\`);
-      const data = await res.json();
-      if (data.success) setReservations(data.reservations);
-
-      const statsRes = await fetch(\`\${API_BASE}/admin/stats\`);
-      const statsData = await statsRes.json();
-      if (statsData.success) setStats(statsData.stats);
-    } catch (err) {
-      console.error('Failed to fetch reservations:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [getDateRange, statusFilter]);
-
-  useEffect(() => {
-    fetchReservations();
-    const eventSource = new EventSource(\`\${API_BASE}/events\`);
-    eventSource.onmessage = () => fetchReservations();
-    eventSource.onerror = () => eventSource.close();
-    return () => eventSource.close();
-  }, [fetchReservations]);
-
-  const navigate = (dir) => {
-    const newDate = new Date(currentDate);
-    if (view === 'day') newDate.setDate(newDate.getDate() + dir);
-    else if (view === 'week') newDate.setDate(newDate.getDate() + dir * 7);
-    else newDate.setMonth(newDate.getMonth() + dir);
-    setCurrentDate(newDate);
-  };
-
-  const confirmReservation = async (res) => {
-    await fetch(\`\${API_BASE}/admin/\${res.id}/confirm\`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ send_notification: true })
-    });
-    setSelectedRes(null);
-    fetchReservations();
-  };
-
-  const cancelReservation = async (res) => {
-    const reason = prompt('Cancellation reason (optional):');
-    await fetch(\`\${API_BASE}/admin/\${res.id}/cancel\`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ reason, notify: true })
-    });
-    setSelectedRes(null);
-    fetchReservations();
-  };
-
-  const sendReminder = async (res) => {
-    alert('Reminder sent!'); // Note: reminder endpoint not implemented yet
-  };
-
-  const groupByDate = reservations.reduce((acc, r) => {
-    if (!acc[r.date]) acc[r.date] = [];
-    acc[r.date].push(r);
-    return acc;
-  }, {});
-
-  const getDays = () => {
-    const { from, to } = getDateRange();
-    const days = [];
-    const current = new Date(from);
-    const end = new Date(to);
-    while (current <= end) {
-      days.push(new Date(current));
-      current.setDate(current.getDate() + 1);
-    }
-    return days;
-  };
-
-  const days = getDays();
-  const today = new Date().toISOString().split('T')[0];
-
-  const statusColors = {
-    pending: { bg: '#fef3c7', text: '#92400e' },
-    confirmed: { bg: '#dcfce7', text: '#166534' },
-    cancelled: { bg: '#fee2e2', text: '#991b1b' }
-  };
-
-  return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <div>
-          <h1 style={styles.title}>Reservations</h1>
-          {stats && <p style={styles.subtitle}>{stats.needsAction} pending | {stats.today?.confirmed || 0} confirmed today</p>}
-        </div>
-        <div style={styles.controls}>
-          <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={styles.select}>
-            <option value="all">All Status</option>
-            <option value="pending">Pending</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-          <div style={styles.viewToggle}>
-            {['day', 'week', 'month'].map(v => (
-              <button key={v} onClick={() => setView(v)} style={{ ...styles.viewBtn, ...(view === v ? styles.viewBtnActive : {}) }}>
-                {v.charAt(0).toUpperCase() + v.slice(1)}
-              </button>
-            ))}
-          </div>
-          <button onClick={fetchReservations} style={styles.refreshBtn}><RefreshCw size={18} /></button>
-        </div>
-      </div>
-
-      {/* Stats */}
-      {stats && (
-        <div style={styles.statsRow}>
-          <div style={{ ...styles.statCard, borderLeft: '4px solid #eab308' }}>
-            <span style={styles.statValue}>{stats.needsAction}</span>
-            <span style={styles.statLabel}>Needs Action</span>
-          </div>
-          <div style={{ ...styles.statCard, borderLeft: '4px solid #22c55e' }}>
-            <span style={styles.statValue}>{stats.today?.confirmed || 0}</span>
-            <span style={styles.statLabel}>Confirmed Today</span>
-          </div>
-          <div style={{ ...styles.statCard, borderLeft: '4px solid #3b82f6' }}>
-            <span style={styles.statValue}>{stats.thisWeek?.total || 0}</span>
-            <span style={styles.statLabel}>This Week</span>
-          </div>
-        </div>
-      )}
-
-      {/* Navigation */}
-      <div style={styles.navRow}>
-        <div style={styles.navButtons}>
-          <button onClick={() => navigate(-1)} style={styles.navBtn}><ChevronLeft size={20} /></button>
-          <button onClick={() => navigate(1)} style={styles.navBtn}><ChevronRight size={20} /></button>
-          <button onClick={() => setCurrentDate(new Date())} style={styles.todayBtn}>Today</button>
-        </div>
-        <h2 style={styles.dateTitle}>
-          {view === 'month'
-            ? currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-            : view === 'week'
-              ? \`\${days[0]?.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - \${days[days.length-1]?.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}\`
-              : currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
-          }
-        </h2>
-      </div>
-
-      {/* Calendar */}
-      {loading ? (
-        <div style={styles.loading}><RefreshCw size={24} style={{ animation: 'spin 1s linear infinite' }} /></div>
-      ) : (
-        <div style={{ ...styles.calendar, gridTemplateColumns: view === 'month' ? 'repeat(7, 1fr)' : view === 'week' ? 'repeat(7, 1fr)' : '1fr' }}>
-          {view === 'month' && ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
-            <div key={d} style={styles.dayHeader}>{d}</div>
-          ))}
-          {days.map((day, idx) => {
-            const dateStr = day.toISOString().split('T')[0];
-            const dayRes = (groupByDate[dateStr] || []).sort((a, b) => a.time.localeCompare(b.time));
-            const isToday = dateStr === today;
-
-            return (
-              <div key={idx} style={{ ...styles.dayCard, ...(isToday ? styles.todayCard : {}) }}>
-                <div style={styles.dayLabel}>
-                  <span style={styles.dayName}>{day.toLocaleDateString('en-US', { weekday: 'short' })}</span>
-                  <span style={{ ...styles.dayNum, ...(isToday ? { color: '${primaryColor}' } : {}) }}>{day.getDate()}</span>
-                </div>
-                <div style={styles.resList}>
-                  {dayRes.slice(0, view === 'month' ? 3 : 10).map(r => (
-                    <div
-                      key={r.id}
-                      onClick={() => setSelectedRes(r)}
-                      style={{ ...styles.resCard, background: statusColors[r.status]?.bg }}
-                    >
-                      <span style={styles.resTime}>{r.time}</span>
-                      <span style={styles.resName}>{r.customer_name}</span>
-                      <span style={styles.resGuests}>{r.party_size}</span>
-                    </div>
-                  ))}
-                  {dayRes.length > (view === 'month' ? 3 : 10) && (
-                    <span style={styles.moreCount}>+{dayRes.length - (view === 'month' ? 3 : 10)} more</span>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Detail Modal */}
-      {selectedRes && (
-        <div style={styles.modalOverlay} onClick={() => setSelectedRes(null)}>
-          <div style={styles.modal} onClick={e => e.stopPropagation()}>
-            <div style={{ ...styles.modalHeader, background: statusColors[selectedRes.status]?.bg }}>
-              <h3 style={styles.modalTitle}>{selectedRes.customer_name}</h3>
-              <span style={{ ...styles.statusBadge, background: statusColors[selectedRes.status]?.bg, color: statusColors[selectedRes.status]?.text }}>
-                {selectedRes.status}
-              </span>
-            </div>
-            <div style={styles.modalBody}>
-              <p style={styles.refCode}>{selectedRes.reference_code}</p>
-              <div style={styles.detailGrid}>
-                <div style={styles.detailItem}><Calendar size={18} /> {new Date(selectedRes.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
-                <div style={styles.detailItem}><Clock size={18} /> {selectedRes.time}</div>
-                <div style={styles.detailItem}><Users size={18} /> {selectedRes.party_size} guests</div>
-              </div>
-              <div style={styles.contactInfo}>
-                <div style={styles.detailItem}><Mail size={16} /> {selectedRes.customer_email}</div>
-                {selectedRes.customer_phone && <div style={styles.detailItem}><Phone size={16} /> {selectedRes.customer_phone}</div>}
-              </div>
-              {selectedRes.special_requests && (
-                <div style={styles.requests}>
-                  <strong>Special Requests:</strong>
-                  <p>{selectedRes.special_requests}</p>
-                </div>
-              )}
-            </div>
-            <div style={styles.modalActions}>
-              {selectedRes.status === 'pending' && (
-                <>
-                  <button onClick={() => confirmReservation(selectedRes)} style={styles.confirmBtn}><Check size={16} /> Confirm</button>
-                  <button onClick={() => cancelReservation(selectedRes)} style={styles.cancelActionBtn}><X size={16} /> Cancel</button>
-                </>
-              )}
-              {selectedRes.status === 'confirmed' && (
-                <button onClick={() => sendReminder(selectedRes)} style={styles.reminderBtn}><Bell size={16} /> Send Reminder</button>
-              )}
-              <button onClick={() => setSelectedRes(null)} style={styles.closeBtn}>Close</button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-const styles = {
-  container: { maxWidth: '1200px' },
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' },
-  title: { fontSize: '28px', fontWeight: '700', margin: 0 },
-  subtitle: { color: '#6b7280', marginTop: '4px' },
-  controls: { display: 'flex', gap: '12px', alignItems: 'center' },
-  select: { padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '14px' },
-  viewToggle: { display: 'flex', background: '#f3f4f6', borderRadius: '8px', padding: '4px' },
-  viewBtn: { padding: '6px 12px', border: 'none', background: 'transparent', borderRadius: '6px', cursor: 'pointer', fontSize: '13px' },
-  viewBtnActive: { background: '#fff', boxShadow: '0 1px 2px rgba(0,0,0,0.1)' },
-  refreshBtn: { padding: '8px', background: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', cursor: 'pointer' },
-  statsRow: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' },
-  statCard: { background: '#fff', padding: '16px 20px', borderRadius: '8px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' },
-  statValue: { fontSize: '24px', fontWeight: '700', display: 'block' },
-  statLabel: { fontSize: '13px', color: '#6b7280' },
-  navRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' },
-  navButtons: { display: 'flex', gap: '8px' },
-  navBtn: { padding: '8px', background: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', cursor: 'pointer' },
-  todayBtn: { padding: '8px 16px', background: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' },
-  dateTitle: { fontSize: '18px', fontWeight: '600', margin: 0 },
-  calendar: { display: 'grid', gap: '8px' },
-  dayHeader: { textAlign: 'center', fontSize: '12px', fontWeight: '600', color: '#6b7280', padding: '8px' },
-  dayCard: { background: '#fff', borderRadius: '8px', padding: '12px', minHeight: '120px' },
-  todayCard: { border: '2px solid ${primaryColor}' },
-  dayLabel: { display: 'flex', justifyContent: 'space-between', marginBottom: '8px' },
-  dayName: { fontSize: '12px', color: '#6b7280' },
-  dayNum: { fontSize: '16px', fontWeight: '600' },
-  resList: { display: 'flex', flexDirection: 'column', gap: '4px' },
-  resCard: { padding: '6px 8px', borderRadius: '4px', fontSize: '12px', cursor: 'pointer', display: 'flex', gap: '6px', alignItems: 'center' },
-  resTime: { fontWeight: '600', minWidth: '50px' },
-  resName: { flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
-  resGuests: { color: '#6b7280' },
-  moreCount: { fontSize: '11px', color: '#6b7280', textAlign: 'center' },
-  loading: { display: 'flex', justifyContent: 'center', padding: '60px' },
-  modalOverlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 },
-  modal: { background: '#fff', borderRadius: '12px', width: '100%', maxWidth: '400px', overflow: 'hidden' },
-  modalHeader: { padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-  modalTitle: { fontSize: '18px', fontWeight: '600', margin: 0 },
-  statusBadge: { padding: '4px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: '500', textTransform: 'capitalize' },
-  modalBody: { padding: '20px' },
-  refCode: { fontSize: '13px', color: '#6b7280', marginBottom: '16px' },
-  detailGrid: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '16px' },
-  detailItem: { display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: '#374151' },
-  contactInfo: { padding: '12px 0', borderTop: '1px solid #f3f4f6', display: 'flex', flexDirection: 'column', gap: '8px' },
-  requests: { padding: '12px 0', borderTop: '1px solid #f3f4f6', fontSize: '14px' },
-  modalActions: { display: 'flex', gap: '8px', padding: '16px 20px', borderTop: '1px solid #f3f4f6' },
-  confirmBtn: { flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px', background: '#22c55e', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '500' },
-  cancelActionBtn: { flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '500' },
-  reminderBtn: { flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '500' },
-  closeBtn: { padding: '10px 16px', background: '#f3f4f6', border: 'none', borderRadius: '8px', cursor: 'pointer' }
-};
-`;
-}
-
-function generateNotificationsPage(businessName, primaryColor) {
   return `import React, { useState } from 'react';
 import { Bell, Mail, Phone, Send, CheckCircle, XCircle, Clock, X } from 'lucide-react';
 
 const TEMPLATES = [
-  { id: 'reservation_confirmation', name: 'Reservation Confirmation', icon: CheckCircle, color: '#22c55e' },
-  { id: 'reservation_reminder', name: 'Reservation Reminder', icon: Bell, color: '#3b82f6' },
-  { id: 'reservation_cancellation', name: 'Cancellation Notice', icon: XCircle, color: '#ef4444' },
-  { id: 'custom', name: 'Custom Message', icon: Mail, color: '#8b5cf6' }
+${templates.join(',\n')}
 ];
 
 export default function Notifications() {
@@ -1741,9 +1001,7 @@ export default function Notifications() {
   const [customMessage, setCustomMessage] = useState({ subject: '', body: '' });
 
   const [recentNotifications] = useState([
-    { id: 1, template: 'reservation_confirmation', to: 'john@example.com', status: 'sent', time: '2 hours ago' },
-    { id: 2, template: 'reservation_reminder', to: 'sarah@example.com', status: 'sent', time: '5 hours ago' },
-    { id: 3, template: 'reservation_cancellation', to: 'mike@example.com', status: 'failed', time: '1 day ago' }
+${recentItems.join(',\n')}
   ]);
 
   const handleSend = async () => {
@@ -1946,16 +1204,52 @@ const styles = {
 `;
 }
 
-function generateAgentChatPage(businessName, primaryColor) {
+function generateAgentChatPage(businessName, primaryColor, industryModules) {
+  // Build industry-aware icon imports and agent icon map
+  const modules = Object.entries(industryModules || {});
+  const iconImportMap = {
+    catalog: 'Package', booking: 'Calendar', listings: 'Home', inquiries: 'MessageSquare'
+  };
+  const moduleIconEntries = modules.map(([name, type]) => {
+    const icon = iconImportMap[type] || 'Package';
+    return `  '${name}-manager': ${icon}`;
+  });
+  const extraIcons = new Set(modules.map(([, type]) => iconImportMap[type] || 'Package'));
+  const iconImports = ['Send', 'Bot', 'User', 'Loader', 'ChevronRight', 'PenTool', 'Headphones', 'BarChart3', ...extraIcons].join(', ');
+
+  // Build industry-aware chat suggestions
+  const hintMap = {
+    menu: '"Show me today\'s menu"',
+    services: '"Show me our services"',
+    classes: '"What classes are available?"',
+    features: '"Show me our features"',
+    products: '"Show me our products"',
+    programs: '"What programs do we offer?"',
+    listings: '"Show me active listings"',
+    reservations: '"What reservations do we have?"',
+    appointments: '"Show me today\'s appointments"',
+    consultations: '"Any consultations scheduled?"',
+    demos: '"What demos are booked?"',
+    bookings: '"Show today\'s bookings"',
+    orders: '"Show me recent orders"',
+    quotes: '"Any new quote requests?"',
+    memberships: '"Show new membership signups"',
+    enrollments: '"Show enrollment requests"',
+    inquiries: '"Show me new inquiries"'
+  };
+  const moduleNames = Object.keys(industryModules || {});
+  const hint1 = hintMap[moduleNames[0]] || '"Show me today\'s activity"';
+  const hint2 = hintMap[moduleNames[1]] || '"How is business this week?"';
+  const welcomeHint = `Try: ${hint1} or ${hint2}`;
+
   return `import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Send, Bot, User, Loader, ChevronRight, Utensils, Calendar, PenTool, Headphones, BarChart3 } from 'lucide-react';
+import { ${iconImports} } from 'lucide-react';
 
 const API_BASE = '/api/admin';
 
 const AGENT_ICONS = {
-  'menu-manager': Utensils,
-  'reservations': Calendar,
+${moduleIconEntries.join(',\n')},
   'website-editor': PenTool,
   'support': Headphones,
   'analytics': BarChart3,
@@ -2101,7 +1395,7 @@ export default function AgentChat() {
               {messages.length === 0 && (
                 <div style={styles.welcome}>
                   <p>Chat with {selectedAgent.name} to manage your {selectedAgent.capabilities?.join(', ') || 'business'}.</p>
-                  <p style={styles.welcomeHint}>Try: "Show me today's menu" or "What reservations do we have?"</p>
+                  <p style={styles.welcomeHint}>${welcomeHint}</p>
                 </div>
               )}
               {messages.map((msg, idx) => (
