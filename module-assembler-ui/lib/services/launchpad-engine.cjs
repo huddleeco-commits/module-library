@@ -204,6 +204,7 @@ function buildBusinessData(detection, overrides = {}) {
   // Start with fixture data
   const base = fixture ? {
     name: detection.businessName,
+    logo: fixture.business?.logo || null,
     tagline: fixture.business?.tagline || `Welcome to ${detection.businessName}`,
     phone: fixture.business?.phone || '(555) 123-4567',
     email: fixture.business?.email || `hello@${detection.businessName.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`,
@@ -224,6 +225,7 @@ function buildBusinessData(detection, overrides = {}) {
     industryName: detection.industryName
   } : {
     name: detection.businessName,
+    logo: null,
     tagline: `Welcome to ${detection.businessName}`,
     phone: '(555) 123-4567',
     email: `hello@${detection.businessName.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`,
@@ -563,7 +565,7 @@ async function generateSite(input, variant = 'A', mode = 'test', options = {}) {
   // Step 6: Generate shared components
   console.log('   Generating Navbar...');
   const allPages = enablePortal ? [...pageTypes, ...portalPages] : pageTypes;
-  const navbarCode = generateNavbar(businessData, pageTypes, enablePortal);
+  const navbarCode = generateNavbar(businessData, pageTypes, enablePortal, moodSliders);
   fs.writeFileSync(path.join(componentsDir, 'Navbar.jsx'), navbarCode);
 
   console.log('   Generating Footer...');
@@ -9172,8 +9174,11 @@ export default AuthContext;
 /**
  * Generate Navbar component
  */
-function generateNavbar(businessData, pageTypes, enablePortal = false) {
-  const colors = getColors({}, businessData);
+function generateNavbar(businessData, pageTypes, enablePortal = false, moodSliders = {}) {
+  const dt = getDesignTokens(moodSliders, businessData);
+
+  // Ensure logo color has enough contrast on dark backgrounds
+  const logoColor = dt.isDark ? ensureContrast(dt.primary, dt.background) : dt.primary;
 
   // Get trend-aware primary CTA
   const trendCta = getTrendNavCta(businessData);
@@ -9245,15 +9250,15 @@ import { User, ChevronDown, LogOut } from 'lucide-react';` : '';
   const portalStyles = enablePortal ? `
   userMenu: { position: 'relative' },
   userBtn: { display: 'flex', alignItems: 'center', gap: '8px', background: 'transparent', border: 'none', cursor: 'pointer', padding: '8px' },
-  userAvatar: { width: '32px', height: '32px', borderRadius: '50%', background: '${colors.primary}', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem', fontWeight: '600' },
-  userName: { color: '#374151', fontWeight: '500', fontSize: '0.9rem' },
-  userDropdown: { position: 'absolute', top: '100%', right: 0, background: '#fff', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.15)', padding: '8px 0', minWidth: '160px', marginTop: '8px', zIndex: 101 },
-  dropdownItem: { display: 'block', padding: '10px 16px', color: '#374151', textDecoration: 'none', fontSize: '0.9rem', transition: 'background 0.2s' },
-  dropdownLogout: { display: 'flex', alignItems: 'center', gap: '8px', width: '100%', padding: '10px 16px', color: '#dc2626', background: 'transparent', border: 'none', borderTop: '1px solid #e5e7eb', cursor: 'pointer', fontSize: '0.9rem', marginTop: '4px' },
+  userAvatar: { width: '32px', height: '32px', borderRadius: '50%', background: '${dt.primary}', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem', fontWeight: '600' },
+  userName: { color: '${dt.isDark ? '#e5e7eb' : '#374151'}', fontWeight: '500', fontSize: '0.9rem' },
+  userDropdown: { position: 'absolute', top: '100%', right: 0, background: '${dt.cardBg}', borderRadius: '${dt.borderRadius}', boxShadow: '${dt.shadow}', padding: '8px 0', minWidth: '160px', marginTop: '8px', zIndex: 101, border: '1px solid ${dt.border}' },
+  dropdownItem: { display: 'block', padding: '10px 16px', color: '${dt.text}', textDecoration: 'none', fontSize: '0.9rem', transition: 'background 0.2s' },
+  dropdownLogout: { display: 'flex', alignItems: 'center', gap: '8px', width: '100%', padding: '10px 16px', color: '#dc2626', background: 'transparent', border: 'none', borderTop: '1px solid ${dt.border}', cursor: 'pointer', fontSize: '0.9rem', marginTop: '4px' },
   authButtons: { display: 'flex', alignItems: 'center', gap: '12px' },
-  loginBtn: { color: '${colors.primary}', textDecoration: 'none', fontWeight: '500', fontSize: '0.9rem' },
-  registerBtn: { background: '${colors.primary}', color: '#fff', padding: '8px 16px', borderRadius: '6px', textDecoration: 'none', fontWeight: '500', fontSize: '0.9rem' },
-  mobileLogout: { display: 'block', width: '100%', padding: '12px 0', color: '#dc2626', background: 'transparent', border: 'none', borderTop: '1px solid #e5e7eb', textAlign: 'left', fontWeight: '500', cursor: 'pointer', marginTop: '8px' },` : '';
+  loginBtn: { color: '${dt.primary}', textDecoration: 'none', fontWeight: '500', fontSize: '0.9rem' },
+  registerBtn: { background: '${dt.primary}', color: '#fff', padding: '8px 16px', borderRadius: '${dt.borderRadius}', textDecoration: 'none', fontWeight: '500', fontSize: '0.9rem' },
+  mobileLogout: { display: 'block', width: '100%', padding: '12px 0', color: '#dc2626', background: 'transparent', border: 'none', borderTop: '1px solid ${dt.border}', textAlign: 'left', fontWeight: '500', cursor: 'pointer', marginTop: '8px' },` : '';
 
   return `/**
  * Navbar - ${businessData.name}
@@ -9273,7 +9278,9 @@ export default function Navbar() {
   return (
     <nav style={styles.nav}>
       <div style={styles.container}>
-        <Link to="/" style={styles.logo}>${escapeQuotes(businessData.name)}</Link>
+        <Link to="/" style={styles.logoLink}>
+          ${businessData.logo ? `<img src="${escapeQuotes(businessData.logo)}" alt="${escapeQuotes(businessData.name)}" style={styles.logoImg} />` : `<span style={styles.logoText}>${escapeQuotes(businessData.name)}</span>`}
+        </Link>
 
         <div className="desktop-links" style={styles.desktopLinks}>
           {links.map((link, idx) => (
@@ -9282,7 +9289,7 @@ export default function Navbar() {
               to={link.path}
               style={{
                 ...styles.link,
-                color: location.pathname === link.path ? '${colors.primary}' : '#4b5563'
+                color: location.pathname === link.path ? '${dt.primary}' : '${dt.isDark ? '#d1d5db' : dt.textMuted}'
               }}
             >
               {link.label}
@@ -9326,19 +9333,21 @@ export default function Navbar() {
 }
 
 const styles = {
-  nav: { position: 'fixed', top: 0, left: 0, right: 0, background: '#fff', borderBottom: '1px solid #e5e7eb', zIndex: 100 },
+  nav: { position: 'fixed', top: 0, left: 0, right: 0, background: '${dt.isDark ? dt.background : dt.isMedium ? dt.surface : '#fff'}', borderBottom: '1px solid ${dt.border}', zIndex: 100, fontFamily: "${dt.fontBody}" },
   container: { maxWidth: '1200px', margin: '0 auto', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
-  logo: { fontSize: '1.25rem', fontWeight: '700', color: '${colors.primary}', textDecoration: 'none' },
+  logoLink: { textDecoration: 'none', display: 'flex', alignItems: 'center' },
+  logoImg: { height: '36px', width: 'auto', objectFit: 'contain' },
+  logoText: { fontSize: '1.25rem', fontWeight: '700', color: '${logoColor}', fontFamily: "${dt.fontHeading}" },
   desktopLinks: { display: 'flex', gap: '32px', flex: 1, justifyContent: 'center' },
-  link: { textDecoration: 'none', fontWeight: '500', fontSize: '15px', letterSpacing: '0.5px', transition: 'color 0.2s' },
+  link: { textDecoration: 'none', fontWeight: '500', fontSize: '15px', letterSpacing: ${dt.isLuxury ? "'1px'" : "'0.5px'"}, transition: 'color 0.2s', fontFamily: "${dt.fontBody}"${dt.isLuxury ? ", textTransform: 'uppercase', fontSize: '13px'" : ''} },
   rightSection: { display: 'flex', alignItems: 'center', gap: '16px' },
-  phone: { display: 'flex', alignItems: 'center', gap: '6px', color: '${colors.primary}', textDecoration: 'none', fontWeight: '500', fontSize: '14px' },
+  phone: { display: 'flex', alignItems: 'center', gap: '6px', color: '${dt.primary}', textDecoration: 'none', fontWeight: '500', fontSize: '14px' },
   phoneText: { display: 'inline' },
-  primaryCta: { background: '${colors.primary}', color: '#fff', padding: '10px 20px', borderRadius: '8px', textDecoration: 'none', fontWeight: '600', fontSize: '14px', transition: 'opacity 0.2s' },
-  mobileBtn: { display: 'none', background: 'transparent', border: 'none', cursor: 'pointer', color: '#1f2937', padding: '8px' },
-  mobileMenu: { display: 'none', padding: '16px 24px', borderTop: '1px solid #e5e7eb', background: '#fff' },
-  mobileLink: { display: 'block', padding: '12px 0', color: '#4b5563', textDecoration: 'none', fontWeight: '500', borderBottom: '1px solid #f3f4f6' },
-  mobileCta: { display: 'block', marginTop: '16px', padding: '14px 20px', background: '${colors.primary}', color: '#fff', textAlign: 'center', borderRadius: '8px', textDecoration: 'none', fontWeight: '600' },${portalStyles}
+  primaryCta: { background: '${dt.primary}', color: '#fff', padding: '10px 20px', borderRadius: '${dt.borderRadius}', textDecoration: 'none', fontWeight: '${dt.buttonWeight}', fontSize: '14px', transition: 'opacity 0.2s', textTransform: '${dt.buttonTransform}', letterSpacing: ${dt.isLuxury ? "'1px'" : "'0'"} },
+  mobileBtn: { display: 'none', background: 'transparent', border: 'none', cursor: 'pointer', color: '${dt.isDark ? '#e5e7eb' : '#1f2937'}', padding: '8px' },
+  mobileMenu: { display: 'none', padding: '16px 24px', borderTop: '1px solid ${dt.border}', background: '${dt.isDark ? dt.background : dt.isMedium ? dt.surface : '#fff'}' },
+  mobileLink: { display: 'block', padding: '12px 0', color: '${dt.isDark ? '#d1d5db' : '#4b5563'}', textDecoration: 'none', fontWeight: '500', borderBottom: '1px solid ${dt.border}' },
+  mobileCta: { display: 'block', marginTop: '16px', padding: '14px 20px', background: '${dt.primary}', color: '#fff', textAlign: 'center', borderRadius: '${dt.borderRadius}', textDecoration: 'none', fontWeight: '${dt.buttonWeight}' },${portalStyles}
 };
 
 // Add responsive styles via media query injection
@@ -11826,6 +11835,24 @@ function getDesignTokens(moodSliders, businessData) {
     border: moodSliders.isDark ? '#334155' : moodSliders.isMedium ? '#d1d5db' : '#e5e7eb',
     inputBg: moodSliders.isDark ? '#0f172a' : moodSliders.isMedium ? '#ffffff' : '#ffffff'
   };
+}
+
+function ensureContrast(foreground, background) {
+  // Simple luminance check: if both colors are dark, lighten the foreground
+  const hex2lum = (hex) => {
+    const c = hex.replace('#', '');
+    const r = parseInt(c.substr(0, 2), 16) / 255;
+    const g = parseInt(c.substr(2, 2), 16) / 255;
+    const b = parseInt(c.substr(4, 2), 16) / 255;
+    return 0.299 * r + 0.587 * g + 0.114 * b;
+  };
+  const fgLum = hex2lum(foreground);
+  const bgLum = hex2lum(background);
+  // If contrast ratio is too low (both dark or both light), return white or primary lightened
+  if (Math.abs(fgLum - bgLum) < 0.3) {
+    return bgLum < 0.5 ? '#f8fafc' : '#1f2937';
+  }
+  return foreground;
 }
 
 function capitalize(str) {

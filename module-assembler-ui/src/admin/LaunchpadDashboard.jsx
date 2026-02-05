@@ -540,6 +540,7 @@ export default function LaunchpadDashboard() {
 
   // Mood sliders for design customization
   const [moodSliders, setMoodSliders] = useState(null);
+  const [logoUrl, setLogoUrl] = useState('');
 
   // Debounce ref for detection
   const detectTimeoutRef = useRef(null);
@@ -762,7 +763,8 @@ export default function LaunchpadDashboard() {
           menuStyle: selectedMenuStyle,
           moodSliders: moodSliders || {},
           trendOverrides: trendsApplied ? selectedTrends : null,
-          customMenu: customMenuParsed
+          customMenu: customMenuParsed,
+          businessData: logoUrl ? { logo: logoUrl } : undefined
         })
       });
 
@@ -790,7 +792,7 @@ export default function LaunchpadDashboard() {
       const res = await fetch('/api/launchpad/generate-all', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ input, mode: selectedMode, menuStyle: selectedMenuStyle, moodSliders: moodSliders || {} })
+        body: JSON.stringify({ input, mode: selectedMode, menuStyle: selectedMenuStyle, moodSliders: moodSliders || {}, businessData: logoUrl ? { logo: logoUrl } : undefined })
       });
 
       const data = await res.json();
@@ -819,7 +821,8 @@ export default function LaunchpadDashboard() {
           variant: selectedVariant,
           mode: selectedMode,
           moodSliders: moodSliders || {},
-          trendOverrides: trendsApplied ? selectedTrends : null
+          trendOverrides: trendsApplied ? selectedTrends : null,
+          businessData: logoUrl ? { logo: logoUrl } : undefined
         })
       });
 
@@ -1430,6 +1433,27 @@ Or use JSON:
               onChange={(values) => setMoodSliders(values)}
               compact={true}
             />
+          </div>
+
+          <div style={styles.optionGroup}>
+            <h3 style={styles.optionTitle}>
+              Logo
+              <span style={{ fontSize: '0.75rem', fontWeight: '400', color: '#6B7280', marginLeft: '8px' }}>
+                (optional URL - leave blank for text logo)
+              </span>
+            </h3>
+            <input
+              type="text"
+              value={logoUrl}
+              onChange={e => setLogoUrl(e.target.value)}
+              placeholder="https://example.com/logo.png"
+              style={{ width: '100%', padding: '10px 14px', border: '1px solid #D1D5DB', borderRadius: '8px', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }}
+            />
+            {logoUrl && (
+              <div style={{ marginTop: '8px', padding: '12px', background: '#F9FAFB', borderRadius: '8px', textAlign: 'center' }}>
+                <img src={logoUrl} alt="Logo preview" style={{ maxHeight: '40px', width: 'auto' }} onError={e => { e.target.style.display = 'none'; }} />
+              </div>
+            )}
           </div>
         </div>
       )}

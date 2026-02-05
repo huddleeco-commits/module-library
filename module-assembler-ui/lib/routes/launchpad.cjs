@@ -292,6 +292,12 @@ function createLaunchpadRoutes(deps = {}) {
     console.log(`   Mode: ${mode}`);
     console.log(`   Menu Style: ${menuStyle || '(auto)'}`);
     console.log(`   Request body keys: ${Object.keys(req.body).join(', ')}`);
+    if (moodSliders && Object.keys(moodSliders).length > 0) {
+      console.log(`   Mood Sliders: vibe=${moodSliders.vibe || '-'} energy=${moodSliders.energy || '-'} era=${moodSliders.era || '-'} density=${moodSliders.density || '-'} price=${moodSliders.price || '-'} theme=${moodSliders.theme || '-'}`);
+    }
+    if (businessData?.logo) {
+      console.log(`   Logo: ${businessData.logo}`);
+    }
     if (req.body.menuStyle !== undefined) {
       console.log(`   menuStyle from body: "${req.body.menuStyle}" (type: ${typeof req.body.menuStyle})`);
     }
