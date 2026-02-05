@@ -309,6 +309,34 @@ if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
 }
 
+// Serve output/prospects folder for industry test viewer and generated site previews
+const outputPath = path.join(__dirname, 'output');
+if (fs.existsSync(outputPath)) {
+  app.use('/output', express.static(outputPath));
+}
+
+// Preview route for design research generated sites - serves as SPA
+// URL: /preview/:industry/:layout (e.g., /preview/research-auto-shop/layout-a)
+app.use('/preview/:folder/:variant', (req, res, next) => {
+  const { folder, variant } = req.params;
+  const distPath = path.join(outputPath, 'prospects', folder, variant, 'frontend', 'dist');
+
+  if (!fs.existsSync(distPath)) {
+    return res.status(404).send(`Preview not found: ${folder}/${variant}`);
+  }
+
+  // Serve static assets from dist
+  express.static(distPath)(req, res, () => {
+    // If no static file matched, serve index.html (SPA fallback)
+    const indexPath = path.join(distPath, 'index.html');
+    if (fs.existsSync(indexPath)) {
+      res.sendFile(indexPath);
+    } else {
+      res.status(404).send('index.html not found');
+    }
+  });
+});
+
 // AI Assist routes (must be before generic admin routes to avoid auth interception)
 const aiAssistRouter = require('./lib/routes/ai-assist.cjs');
 app.use('/api/admin/ai-assist', aiAssistRouter);
@@ -592,6 +620,20 @@ app.use('/api/business', businessGeneratorRouter);
 // Scout routes (find businesses without websites)
 const scoutRouter = require('./lib/routes/scout.cjs');
 app.use('/api/scout', scoutRouter);
+
+// Research Lab routes (structural design research testing)
+const researchLabRouter = require('./lib/routes/research-lab.cjs');
+app.use('/api/research-lab', researchLabRouter);
+
+// Launchpad routes (unified generation + deployment pipeline)
+const { createLaunchpadRoutes } = require('./lib/routes/launchpad.cjs');
+const launchpadRouter = createLaunchpadRoutes({ deployService, db });
+app.use('/api/launchpad', launchpadRouter);
+
+// QA Suite routes (batch industry generation & testing)
+const { createQASuiteRoutes } = require('./lib/routes/qa-suite.cjs');
+const qaSuiteRouter = createQASuiteRoutes();
+app.use('/api/qa-suite', qaSuiteRouter);
 
 // Browser test routes (ClawdBot / Claude --chrome integration)
 const browserTestRouter = require('./lib/routes/browser-test.cjs');

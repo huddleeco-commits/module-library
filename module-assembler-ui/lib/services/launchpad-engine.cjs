@@ -467,7 +467,7 @@ async function generateSite(input, variant = 'A', mode = 'test', options = {}) {
   // Step 4: Create output directory
   const projectSlug = businessData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 30);
   const menuStyleSuffix = businessData.menuStyle ? `-${businessData.menuStyle}` : '';
-  const projectDir = path.join(OUTPUT_DIR, `${projectSlug}-${variant.toLowerCase()}${menuStyleSuffix}`);
+  const projectDir = options.outputDir || path.join(OUTPUT_DIR, `${projectSlug}-${variant.toLowerCase()}${menuStyleSuffix}`);
   const frontendDir = path.join(projectDir, 'frontend');
   const srcDir = path.join(frontendDir, 'src');
   const pagesDir = path.join(srcDir, 'pages');

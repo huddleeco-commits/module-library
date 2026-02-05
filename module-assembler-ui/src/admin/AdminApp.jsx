@@ -36,7 +36,8 @@ import {
   Archive,
   Rocket,
   Sparkles,
-  Camera
+  Camera,
+  ClipboardCheck
 } from 'lucide-react';
 
 // Import Platform Health Page
@@ -50,6 +51,9 @@ import QuickStartDevTool from './QuickStartDevTool';
 import ScoutDashboard from './ScoutDashboard';
 import ScreenshotGallery from './ScreenshotGallery';
 import StylePreviewPage from './StylePreviewPage';
+import ResearchTestLab from './ResearchTestLab';
+import LaunchpadDashboard from './LaunchpadDashboard';
+import QADashboard from './QADashboard';
 
 // ============================================
 // CONTEXT & API
@@ -2242,7 +2246,10 @@ function LoginPage({ onLogin }) {
 function Sidebar({ currentPage, setPage, onLogout }) {
   const navItems = [
     { id: 'overview', label: 'Overview', icon: <LayoutDashboard size={20} /> },
+    { id: 'launchpad', label: 'Launchpad', icon: <Rocket size={20} />, highlight: true },
+    { id: 'qa-suite', label: 'QA Suite', icon: <ClipboardCheck size={20} />, highlight: true },
     { id: 'scout', label: 'Scout', icon: <Search size={20} />, highlight: true },
+    { id: 'research-lab', label: 'Research Lab', icon: <FlaskConical size={20} />, highlight: true },
     { id: 'style-preview', label: 'Style Preview', icon: <Layers size={20} />, highlight: true },
     { id: 'quickstart-dev', label: 'QuickStart Dev', icon: <Zap size={20} />, highlight: true },
     { id: 'test-lab', label: 'Test Lab', icon: <FlaskConical size={20} />, highlight: true },
@@ -2344,7 +2351,10 @@ export default function AdminApp({ skipAuth = false, startPage = 'overview' }) {
   const renderPage = () => {
     switch (currentPage) {
       case 'overview': return <OverviewPage />;
+      case 'launchpad': return <LaunchpadDashboard />;
+      case 'qa-suite': return <QADashboard />;
       case 'scout': return <ScoutDashboard />;
+      case 'research-lab': return <ResearchTestLab />;
       case 'style-preview': return <StylePreviewPage />;
       case 'quickstart-dev': return <QuickStartDevTool />;
       case 'test-lab': return <TestLabPage />;
