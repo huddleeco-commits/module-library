@@ -9762,6 +9762,687 @@ export default defineConfig({
 }
 
 // ============================================
+// AI AGENT DEFINITIONS & GENERATORS
+// ============================================
+
+const AGENT_DEFINITIONS = {
+  support: {
+    id: 'support', name: 'Support', role: 'Customer Support',
+    icon: '🎧', color: '#10B981', category: 'operations',
+    capabilities: ['Answer questions about services and hours', 'Help schedule appointments', 'Handle customer complaints', 'Provide directions and contact info']
+  },
+  content: {
+    id: 'content', name: 'Content', role: 'Content Creation',
+    icon: '✍️', color: '#8B5CF6', category: 'operations',
+    capabilities: ['Create social media posts', 'Write blog outlines', 'Craft email marketing copy', 'Generate promotional content']
+  },
+  ads: {
+    id: 'ads', name: 'Ads', role: 'Advertising',
+    icon: '📢', color: '#F59E0B', category: 'revenue',
+    capabilities: ['Create ad copy for Facebook/Google/Instagram', 'Suggest targeting audiences', 'Recommend ad budgets', 'A/B test variations']
+  },
+  monitor: {
+    id: 'monitor', name: 'Monitor', role: 'System Monitoring',
+    icon: '📊', color: '#EF4444', category: 'operations',
+    capabilities: ['Track website traffic', 'Monitor social engagement', 'Alert on significant changes', 'Provide daily/weekly summaries']
+  },
+  scout: {
+    id: 'scout', name: 'Scout', role: 'Market Research',
+    icon: '🔍', color: '#06B6D4', category: 'revenue',
+    capabilities: ['Research local competitors', 'Track competitor pricing', 'Identify market trends', 'Find partnership opportunities']
+  }
+};
+
+const INDUSTRY_AGENT_MAP = {
+  bakery: ['support', 'content', 'ads', 'monitor'],
+  restaurant: ['support', 'content', 'ads', 'monitor'],
+  cafe: ['support', 'content', 'ads', 'monitor'],
+  pizza: ['support', 'content', 'ads', 'monitor'],
+  bar: ['support', 'content', 'ads', 'monitor'],
+  'salon-spa': ['support', 'content', 'ads', 'monitor'],
+  barbershop: ['support', 'content', 'ads', 'monitor'],
+  fitness: ['support', 'content', 'ads', 'monitor'],
+  'yoga-studio': ['support', 'content', 'ads', 'monitor'],
+  'auto-repair': ['support', 'content', 'ads', 'monitor'],
+  cleaning: ['support', 'content', 'ads', 'monitor'],
+  'pet-care': ['support', 'content', 'ads', 'monitor'],
+  'real-estate': ['support', 'content', 'ads', 'monitor', 'scout'],
+  ecommerce: ['support', 'content', 'ads', 'monitor', 'scout'],
+  saas: ['support', 'content', 'ads', 'monitor'],
+  photography: ['support', 'content', 'ads', 'monitor'],
+  'home-improvement': ['support', 'content', 'ads', 'monitor'],
+  education: ['support', 'content', 'ads', 'monitor']
+};
+
+function generateAgentPrompt(agentId, businessData) {
+  const name = businessData.name || 'this business';
+  const industry = businessData.industry || 'General';
+  const location = businessData.location || businessData.address || '';
+
+  const prompts = {
+    support: `You are the customer support agent for ${name}.
+
+BUSINESS INFO:
+- Name: ${name}
+- Industry: ${industry}
+- Location: ${location}
+
+YOUR ROLE:
+- Answer customer questions about services, hours, and location
+- Help schedule appointments or reservations
+- Handle complaints with empathy and solutions
+- Escalate complex issues appropriately
+
+TONE: Professional, friendly, helpful. Match the business's brand voice.
+
+When you need to create a support ticket, output:
+[TICKET]
+priority: low|medium|high
+subject: Brief description
+details: Full details
+[/TICKET]`,
+
+    content: `You are the content creation specialist for ${name}.
+
+BUSINESS INFO:
+- Name: ${name}
+- Industry: ${industry}
+- Location: ${location}
+
+YOUR ROLE:
+- Create social media posts (Facebook, Instagram, Twitter)
+- Write blog post outlines and content
+- Craft email marketing copy
+- Generate promotional content
+
+TONE: Match the business's established brand. Professional but approachable.
+
+When creating content, always include:
+1. A headline/hook
+2. Main content
+3. Call to action
+4. Suggested hashtags (for social)`,
+
+    ads: `You are the advertising specialist for ${name}.
+
+BUSINESS INFO:
+- Name: ${name}
+- Industry: ${industry}
+- Location: ${location}
+
+YOUR ROLE:
+- Create ad copy for Facebook, Google, Instagram
+- Suggest targeting audiences
+- Recommend ad budgets
+- Write compelling headlines and descriptions
+- A/B test variations
+
+AD GUIDELINES:
+- Keep headlines under 30 characters when possible
+- Descriptions under 90 characters for Google
+- Always include a clear CTA`,
+
+    monitor: `You are the monitoring and analytics agent for ${name}.
+
+BUSINESS INFO:
+- Name: ${name}
+- Industry: ${industry}
+
+YOUR ROLE:
+- Track website traffic and conversions
+- Monitor social media engagement
+- Watch review platforms for new reviews
+- Alert on significant changes
+- Provide daily/weekly summaries
+
+ALERT THRESHOLDS:
+- New negative review: Immediate alert
+- Traffic drop >20%: Alert
+- No leads in 48 hours: Alert`,
+
+    scout: `You are the market research agent for ${name}.
+
+BUSINESS INFO:
+- Name: ${name}
+- Industry: ${industry}
+- Location: ${location}
+
+YOUR ROLE:
+- Research local competitors
+- Track competitor pricing and offerings
+- Identify market trends
+- Find partnership opportunities
+- Monitor industry news`
+  };
+
+  return prompts[agentId] || `You are an AI assistant for ${name}.`;
+}
+
+/**
+ * Generate agents.json config for a given industry
+ */
+function generateAgentsJson(businessData, industry) {
+  const agentIds = INDUSTRY_AGENT_MAP[industry] || INDUSTRY_AGENT_MAP.bakery;
+
+  // Build available tools set based on industry modules
+  const modules = getIndustryModulesConfig(industry);
+  const availableTools = new Set(['get_business_info']);
+  for (const [, type] of Object.entries(modules)) {
+    if (type === 'catalog') availableTools.add('get_catalog');
+    if (type === 'booking') { availableTools.add('get_bookings_today'); availableTools.add('get_booking_stats'); }
+    if (type === 'listings') availableTools.add('get_listings');
+    if (type === 'inquiries') availableTools.add('get_inquiry_stats');
+  }
+
+  // Agent → desired tools mapping
+  const agentToolMap = {
+    support: ['get_catalog', 'get_listings', 'get_bookings_today', 'get_booking_stats', 'get_inquiry_stats', 'get_business_info'],
+    content: ['get_catalog', 'get_business_info'],
+    ads: ['get_catalog', 'get_business_info'],
+    monitor: ['get_catalog', 'get_listings', 'get_booking_stats', 'get_inquiry_stats', 'get_business_info'],
+    scout: ['get_business_info']
+  };
+
+  const agents = agentIds.map(id => {
+    const def = AGENT_DEFINITIONS[id];
+    const desiredTools = agentToolMap[id] || ['get_business_info'];
+    const tools = desiredTools.filter(t => availableTools.has(t));
+    return {
+      ...def,
+      tools,
+      systemPrompt: generateAgentPrompt(id, businessData)
+    };
+  });
+
+  const categories = [
+    { id: 'operations', name: 'Operations', agents: agents.filter(a => a.category === 'operations').map(a => a.id) },
+    { id: 'revenue', name: 'Revenue', agents: agents.filter(a => a.category === 'revenue').map(a => a.id) }
+  ].filter(c => c.agents.length > 0);
+
+  return {
+    business: {
+      name: businessData.name,
+      industry: industry,
+      generatedAt: new Date().toISOString()
+    },
+    agents,
+    categories
+  };
+}
+
+/**
+ * Generate routes/ai.js Express router for AI agent chat
+ * Includes tool-use loop and usage/cost tracking
+ */
+function generateAIRoutes(businessData, industry) {
+  const businessName = escapeQuotes(businessData.name);
+
+  // Get industry modules to build tool definitions
+  const modules = getIndustryModulesConfig(industry);
+  // modules is { moduleName: moduleType } e.g. { menu: 'catalog', orders: 'inquiries' }
+
+  // Find which module names map to each type
+  let catalogModule = null;
+  let bookingModule = null;
+  let listingsModule = null;
+  let inquiriesModule = null;
+
+  for (const [name, type] of Object.entries(modules)) {
+    if (type === 'catalog') catalogModule = name;
+    if (type === 'booking') bookingModule = name;
+    if (type === 'listings') listingsModule = name;
+    if (type === 'inquiries') inquiriesModule = name;
+  }
+
+  // Build the tool definitions object literal as a string
+  // Each tool has: name, description, input_schema, endpoint
+  const toolDefs = [];
+
+  if (catalogModule) {
+    toolDefs.push(`  get_catalog: {
+    name: 'get_catalog',
+    description: 'Get the full ${catalogModule} catalog with all items, categories, and prices',
+    input_schema: { type: 'object', properties: {}, required: [] },
+    endpoint: '/api/${catalogModule}/admin'
+  }`);
+  }
+
+  if (bookingModule) {
+    toolDefs.push(`  get_bookings_today: {
+    name: 'get_bookings_today',
+    description: 'Get today\\'s ${bookingModule} - includes customer names, times, and status',
+    input_schema: { type: 'object', properties: {}, required: [] },
+    endpoint: '/api/${bookingModule}/admin/today'
+  }`);
+    toolDefs.push(`  get_booking_stats: {
+    name: 'get_booking_stats',
+    description: 'Get ${bookingModule} statistics - counts, trends, busiest times',
+    input_schema: { type: 'object', properties: {}, required: [] },
+    endpoint: '/api/${bookingModule}/admin/stats'
+  }`);
+  }
+
+  if (listingsModule) {
+    toolDefs.push(`  get_listings: {
+    name: 'get_listings',
+    description: 'Get all ${listingsModule} with status, details, and images',
+    input_schema: { type: 'object', properties: {}, required: [] },
+    endpoint: '/api/${listingsModule}/admin'
+  }`);
+  }
+
+  if (inquiriesModule) {
+    toolDefs.push(`  get_inquiry_stats: {
+    name: 'get_inquiry_stats',
+    description: 'Get ${inquiriesModule} statistics - new, pending, resolved counts and trends',
+    input_schema: { type: 'object', properties: {}, required: [] },
+    endpoint: '/api/${inquiriesModule}/admin/stats'
+  }`);
+  }
+
+  // Business info is always available
+  toolDefs.push(`  get_business_info: {
+    name: 'get_business_info',
+    description: 'Get business information - name, hours, location, contact details',
+    input_schema: { type: 'object', properties: {}, required: [] },
+    endpoint: '/api/brain'
+  }`);
+
+  const allToolDefsStr = toolDefs.join(',\n');
+
+  // Build agent→tools mapping
+  // Only include tools that exist for this industry
+  const agentToolNames = {};
+
+  const supportTools = ['get_catalog', 'get_bookings_today', 'get_booking_stats', 'get_inquiry_stats', 'get_business_info'];
+  const contentTools = ['get_catalog', 'get_business_info'];
+  const adsTools = ['get_catalog', 'get_business_info'];
+  const monitorTools = ['get_catalog', 'get_booking_stats', 'get_inquiry_stats', 'get_business_info'];
+  const scoutTools = ['get_business_info'];
+
+  // Add listings tools where applicable
+  if (listingsModule) {
+    supportTools.splice(1, 0, 'get_listings');
+    monitorTools.splice(1, 0, 'get_listings');
+  }
+
+  // All available tool names for this industry
+  const availableTools = new Set(toolDefs.map(td => {
+    const match = td.match(/name: '([^']+)'/);
+    return match ? match[1] : null;
+  }).filter(Boolean));
+
+  agentToolNames.support = supportTools.filter(t => availableTools.has(t));
+  agentToolNames.content = contentTools.filter(t => availableTools.has(t));
+  agentToolNames.ads = adsTools.filter(t => availableTools.has(t));
+  agentToolNames.monitor = monitorTools.filter(t => availableTools.has(t));
+  agentToolNames.scout = scoutTools.filter(t => availableTools.has(t));
+
+  const agentToolMapStr = Object.entries(agentToolNames)
+    .map(([agent, tools]) => `  ${agent}: [${tools.map(t => `'${t}'`).join(', ')}]`)
+    .join(',\n');
+
+  return `/**
+ * AI Agent Routes - ${businessName}
+ * Generated by Launchpad
+ *
+ * Endpoints:
+ *   GET  /agents        - List available agents
+ *   POST /chat          - Chat with an agent (tool-use enabled)
+ *   GET  /health        - AI health check
+ *   GET  /usage         - Full usage/cost tracking data
+ *   GET  /usage/summary - Today's cost summary
+ */
+
+const express = require('express');
+const path = require('path');
+const fs = require('fs');
+const router = express.Router();
+
+// ============================================
+// TOOL DEFINITIONS (industry-specific)
+// ============================================
+
+const TOOL_DEFINITIONS = {
+${allToolDefsStr}
+};
+
+// Agent → allowed tool names
+const AGENT_TOOLS = {
+${agentToolMapStr}
+};
+
+// ============================================
+// USAGE TRACKING
+// ============================================
+
+const USAGE_FILE = path.join(__dirname, '..', 'data', 'ai-usage.json');
+const MAX_RECENT_CALLS = 200;
+
+// Cost per million tokens (Claude Sonnet)
+const COST_INPUT = 3.00;
+const COST_OUTPUT = 15.00;
+
+function calculateCost(inputTokens, outputTokens) {
+  return (inputTokens / 1_000_000 * COST_INPUT) + (outputTokens / 1_000_000 * COST_OUTPUT);
+}
+
+function loadUsageData() {
+  try {
+    if (fs.existsSync(USAGE_FILE)) {
+      return JSON.parse(fs.readFileSync(USAGE_FILE, 'utf8'));
+    }
+  } catch (e) {
+    console.error('[AI] Failed to read usage file:', e.message);
+  }
+  return {
+    totals: { calls: 0, inputTokens: 0, outputTokens: 0, totalCost: 0, toolCalls: 0 },
+    byAgent: {},
+    byDay: {},
+    recentCalls: []
+  };
+}
+
+function saveUsageData(data) {
+  try {
+    const dir = path.dirname(USAGE_FILE);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(USAGE_FILE, JSON.stringify(data, null, 2));
+  } catch (e) {
+    console.error('[AI] Failed to write usage file:', e.message);
+  }
+}
+
+function trackUsage(agentId, model, inputTokens, outputTokens, toolsUsed, durationMs) {
+  const data = loadUsageData();
+  const cost = calculateCost(inputTokens, outputTokens);
+  const today = new Date().toISOString().split('T')[0];
+  const toolCallCount = toolsUsed.length;
+
+  // Update totals
+  data.totals.calls += 1;
+  data.totals.inputTokens += inputTokens;
+  data.totals.outputTokens += outputTokens;
+  data.totals.totalCost += cost;
+  data.totals.toolCalls += toolCallCount;
+
+  // Update byAgent
+  if (!data.byAgent[agentId]) {
+    data.byAgent[agentId] = { calls: 0, inputTokens: 0, outputTokens: 0, totalCost: 0, toolCalls: 0 };
+  }
+  data.byAgent[agentId].calls += 1;
+  data.byAgent[agentId].inputTokens += inputTokens;
+  data.byAgent[agentId].outputTokens += outputTokens;
+  data.byAgent[agentId].totalCost += cost;
+  data.byAgent[agentId].toolCalls += toolCallCount;
+
+  // Update byDay
+  if (!data.byDay[today]) {
+    data.byDay[today] = { calls: 0, inputTokens: 0, outputTokens: 0, totalCost: 0, toolCalls: 0 };
+  }
+  data.byDay[today].calls += 1;
+  data.byDay[today].inputTokens += inputTokens;
+  data.byDay[today].outputTokens += outputTokens;
+  data.byDay[today].totalCost += cost;
+  data.byDay[today].toolCalls += toolCallCount;
+
+  // Add to recent calls (capped)
+  data.recentCalls.unshift({
+    timestamp: new Date().toISOString(),
+    agentId,
+    model,
+    inputTokens,
+    outputTokens,
+    cost,
+    toolsUsed,
+    durationMs
+  });
+  if (data.recentCalls.length > MAX_RECENT_CALLS) {
+    data.recentCalls = data.recentCalls.slice(0, MAX_RECENT_CALLS);
+  }
+
+  saveUsageData(data);
+  return { cost, inputTokens, outputTokens, toolsUsed, toolCallCount };
+}
+
+// ============================================
+// TOOL EXECUTOR
+// ============================================
+
+async function executeTool(toolName, toolInput) {
+  const tool = TOOL_DEFINITIONS[toolName];
+  if (!tool) {
+    return { error: 'Unknown tool: ' + toolName };
+  }
+
+  try {
+    // Internal fetch to our own server
+    const port = process.env.PORT || 3001;
+    const url = 'http://localhost:' + port + tool.endpoint;
+    const res = await fetch(url);
+    if (!res.ok) {
+      return { error: 'Endpoint returned ' + res.status + ': ' + res.statusText };
+    }
+    return await res.json();
+  } catch (e) {
+    return { error: 'Tool execution failed: ' + e.message };
+  }
+}
+
+// ============================================
+// AGENT HELPERS
+// ============================================
+
+// Load agents config
+function loadAgents() {
+  // Clear require cache so edits to agents.json are picked up
+  const agentsPath = path.join(__dirname, '..', '..', 'admin', 'agents.json');
+  delete require.cache[require.resolve(agentsPath)];
+  return require(agentsPath);
+}
+
+function getToolsForAgent(agentId) {
+  const toolNames = AGENT_TOOLS[agentId] || [];
+  return toolNames
+    .filter(name => TOOL_DEFINITIONS[name])
+    .map(name => ({
+      name: TOOL_DEFINITIONS[name].name,
+      description: TOOL_DEFINITIONS[name].description,
+      input_schema: TOOL_DEFINITIONS[name].input_schema
+    }));
+}
+
+// ============================================
+// ROUTES
+// ============================================
+
+// GET /agents - list available agents (without system prompts)
+router.get('/agents', (req, res) => {
+  try {
+    const config = loadAgents();
+    const safeAgents = config.agents.map(a => ({
+      id: a.id,
+      name: a.name,
+      role: a.role,
+      icon: a.icon,
+      color: a.color,
+      category: a.category,
+      capabilities: a.capabilities || [],
+      tools: a.tools || []
+    }));
+
+    res.json({
+      success: true,
+      agents: safeAgents,
+      categories: config.categories,
+      business: config.business
+    });
+  } catch (error) {
+    console.error('[AI] Failed to load agents:', error.message);
+    res.status(500).json({ success: false, error: 'Failed to load agents' });
+  }
+});
+
+// POST /chat - chat with an agent (tool-use loop)
+router.post('/chat', async (req, res) => {
+  const startTime = Date.now();
+  try {
+    const { agentId, message, conversationHistory = [] } = req.body;
+
+    if (!agentId || !message) {
+      return res.status(400).json({ success: false, error: 'agentId and message are required' });
+    }
+
+    // Load agent config
+    const config = loadAgents();
+    const agent = config.agents.find(a => a.id === agentId);
+    if (!agent) {
+      return res.status(404).json({ success: false, error: 'Agent not found' });
+    }
+
+    // Check for API key
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return res.status(503).json({
+        success: false,
+        error: 'AI not configured',
+        message: 'Add ANTHROPIC_API_KEY to your .env file to enable AI chat. Get a key at https://console.anthropic.com'
+      });
+    }
+
+    // Call Anthropic API with tools
+    const Anthropic = require('@anthropic-ai/sdk');
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    const MODEL = 'claude-sonnet-4-20250514';
+
+    const tools = getToolsForAgent(agentId);
+    const messages = [
+      ...conversationHistory.filter(m => m.role === 'user' || m.role === 'assistant'),
+      { role: 'user', content: message }
+    ];
+
+    let totalInputTokens = 0;
+    let totalOutputTokens = 0;
+    const toolsUsed = [];
+    let apiCalls = 0;
+
+    // Initial API call
+    const apiParams = {
+      model: MODEL,
+      max_tokens: 2048,
+      system: agent.systemPrompt,
+      messages
+    };
+    if (tools.length > 0) {
+      apiParams.tools = tools;
+    }
+
+    let response = await anthropic.messages.create(apiParams);
+    apiCalls++;
+    totalInputTokens += response.usage.input_tokens;
+    totalOutputTokens += response.usage.output_tokens;
+
+    // Tool-use loop
+    while (response.stop_reason === 'tool_use') {
+      // Find all tool_use blocks
+      const toolUseBlocks = response.content.filter(b => b.type === 'tool_use');
+
+      // Execute each tool and build results
+      const toolResults = [];
+      for (const block of toolUseBlocks) {
+        toolsUsed.push(block.name);
+        const result = await executeTool(block.name, block.input);
+        toolResults.push({
+          type: 'tool_result',
+          tool_use_id: block.id,
+          content: JSON.stringify(result)
+        });
+      }
+
+      // Append assistant response + tool results to messages
+      messages.push({ role: 'assistant', content: response.content });
+      messages.push({ role: 'user', content: toolResults });
+
+      // Call API again
+      response = await anthropic.messages.create({
+        model: MODEL,
+        max_tokens: 2048,
+        system: agent.systemPrompt,
+        messages,
+        tools: tools.length > 0 ? tools : undefined
+      });
+      apiCalls++;
+      totalInputTokens += response.usage.input_tokens;
+      totalOutputTokens += response.usage.output_tokens;
+    }
+
+    // Extract final text
+    const textBlock = response.content.find(b => b.type === 'text');
+    const assistantMessage = textBlock ? textBlock.text : '';
+
+    // Track usage
+    const durationMs = Date.now() - startTime;
+    const usageInfo = trackUsage(agentId, MODEL, totalInputTokens, totalOutputTokens, toolsUsed, durationMs);
+
+    res.json({
+      success: true,
+      agentId,
+      agentName: agent.name,
+      message: assistantMessage,
+      usage: {
+        inputTokens: totalInputTokens,
+        outputTokens: totalOutputTokens,
+        cost: usageInfo.cost,
+        toolsUsed: [...new Set(toolsUsed)],
+        apiCalls
+      }
+    });
+  } catch (error) {
+    console.error('[AI] Chat error:', error.message);
+    res.status(500).json({ success: false, error: 'AI request failed', details: error.message });
+  }
+});
+
+// GET /usage - full usage tracking data
+router.get('/usage', (req, res) => {
+  try {
+    const data = loadUsageData();
+    res.json({ success: true, ...data });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Failed to load usage data' });
+  }
+});
+
+// GET /usage/summary - lightweight today's cost only
+router.get('/usage/summary', (req, res) => {
+  try {
+    const data = loadUsageData();
+    const today = new Date().toISOString().split('T')[0];
+    res.json({
+      success: true,
+      totals: data.totals,
+      today: data.byDay[today] || { calls: 0, inputTokens: 0, outputTokens: 0, totalCost: 0, toolCalls: 0 }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Failed to load usage summary' });
+  }
+});
+
+// GET /health - AI health check
+router.get('/health', (req, res) => {
+  res.json({
+    success: true,
+    status: 'ok',
+    aiConfigured: !!process.env.ANTHROPIC_API_KEY,
+    toolsAvailable: Object.keys(TOOL_DEFINITIONS).length,
+    timestamp: new Date().toISOString()
+  });
+});
+
+module.exports = router;
+`;
+}
+
+// ============================================
 // BACKEND GENERATION
 // ============================================
 
@@ -9811,13 +10492,25 @@ function generateBackend(backendDir, businessData, industry, enablePortal = true
   fs.writeFileSync(path.join(backendDir, '.env.example'), envExample);
   generatedFiles.push('.env.example');
 
-  // 7. Generate industry-specific routes if needed
+  // 7. Generate AI agent routes and config
+  const aiRouteCode = generateAIRoutes(businessData, industry);
+  fs.writeFileSync(path.join(routesDir, 'ai.js'), aiRouteCode);
+  generatedFiles.push('routes/ai.js');
+
+  // Generate agents.json in admin directory (sibling to backend)
+  const adminDir = path.join(backendDir, '..', 'admin');
+  if (!fs.existsSync(adminDir)) fs.mkdirSync(adminDir, { recursive: true });
+  const agentsConfig = generateAgentsJson(businessData, industry);
+  fs.writeFileSync(path.join(adminDir, 'agents.json'), JSON.stringify(agentsConfig, null, 2));
+  generatedFiles.push('../admin/agents.json');
+
+  // 8. Generate industry-specific routes if needed
   const industryRoutes = generateIndustryRoutes(industry, modulesDir, businessData);
   generatedFiles.push(...industryRoutes);
 
   return {
     files: generatedFiles.length,
-    modules: ['auth', ...getIndustryModules(industry)]
+    modules: ['auth', 'ai', ...getIndustryModules(industry)]
   };
 }
 
@@ -9892,6 +10585,18 @@ ${moduleImports}
 ${routeRegistrations}
 
 // ============================================
+// AI AGENT ROUTES
+// ============================================
+
+try {
+  const aiRoutes = require('./routes/ai.js');
+  app.use('/api/admin/ai', aiRoutes);
+  console.log('[AI] Agent routes loaded');
+} catch (e) {
+  console.log('[AI] Agent routes not available:', e.message);
+}
+
+// ============================================
 // CORE ROUTES
 // ============================================
 
@@ -9941,6 +10646,7 @@ app.listen(PORT, () => {
   console.log(\`  🚀 Server running on port \${PORT}\`);
   console.log(\`  📍 http://localhost:\${PORT}\`);
   console.log(\`  🔐 Auth: http://localhost:\${PORT}/api/auth\`);
+  console.log(\`  🤖 AI Agents: http://localhost:\${PORT}/api/admin/ai/agents\`);
   console.log(\`  💚 Health: http://localhost:\${PORT}/health\`);
   console.log('');
   console.log('  Demo accounts:');
@@ -10285,7 +10991,8 @@ function generateBackendPackageJson(businessName) {
       'helmet': '^7.1.0',
       'dotenv': '^16.3.1',
       'bcryptjs': '^2.4.3',
-      'jsonwebtoken': '^9.0.2'
+      'jsonwebtoken': '^9.0.2',
+      '@anthropic-ai/sdk': '^0.39.0'
     },
     engines: {
       node: '>=18.0.0'
@@ -10312,6 +11019,9 @@ JWT_SECRET=your-super-secret-jwt-key-change-me
 
 # Frontend URL (for CORS)
 FRONTEND_URL=http://localhost:5000
+
+# AI Agents (optional - enables AI chat in admin)
+# ANTHROPIC_API_KEY=sk-ant-...
 `;
 }
 

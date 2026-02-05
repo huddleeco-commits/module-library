@@ -122,6 +122,26 @@ function generateAdminDashboard(adminDir, businessData, industryId) {
   fs.writeFileSync(path.join(pagesDir, 'Settings.jsx'), generateSettingsPage(businessName, primaryColor));
   files.push('src/pages/Settings.jsx');
 
+  // Generate assets directory structure organized by industry
+  const assetsDir = path.join(adminDir, 'public', 'assets');
+  if (!fs.existsSync(assetsDir)) fs.mkdirSync(assetsDir, { recursive: true });
+
+  // Build combined manifest from all catalog modules
+  const manifest = {};
+  for (const [modName, modType] of Object.entries(industryModules)) {
+    if (modType === 'catalog') {
+      const assets = getIndustryAssets(modName);
+      manifest[modName] = assets;
+      // Create per-category subdirectories
+      for (const group of assets) {
+        const catDir = path.join(assetsDir, modName, group.category.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+        if (!fs.existsSync(catDir)) fs.mkdirSync(catDir, { recursive: true });
+      }
+    }
+  }
+  fs.writeFileSync(path.join(assetsDir, 'manifest.json'), JSON.stringify(manifest, null, 2));
+  files.push('public/assets/manifest.json');
+
   return {
     success: true,
     files: files.length,
@@ -1210,7 +1230,7 @@ function generateAgentChatPage(businessName, primaryColor, industryModules) {
     return `  '${name}-manager': ${icon}`;
   });
   const extraIcons = new Set(modules.map(([, type]) => iconImportMap[type] || 'Package'));
-  const iconImports = ['Send', 'Bot', 'User', 'Loader', 'ChevronRight', 'PenTool', 'Headphones', 'BarChart3', ...extraIcons].join(', ');
+  const iconImports = ['Send', 'Bot', 'User', 'Loader', 'ChevronRight', 'PenTool', 'Headphones', 'BarChart3', 'Zap', 'Wrench', ...extraIcons].join(', ');
 
   // Build industry-aware chat suggestions
   const hintMap = {
@@ -1314,15 +1334,11 @@ export default function AgentChat() {
 
       const data = await res.json();
       if (data.success) {
-        setMessages(prev => [...prev, { role: 'assistant', content: data.message }]);
-
-        // Show action results if any
-        if (data.actions?.executed > 0) {
-          setMessages(prev => [...prev, {
-            role: 'system',
-            content: \`Executed \${data.actions.executed} action(s): \${data.actions.results.map(r => r.message || r.type).join(', ')}\`
-          }]);
-        }
+        setMessages(prev => [...prev, {
+          role: 'assistant',
+          content: data.message,
+          usage: data.usage || null
+        }]);
       }
     } catch (err) {
       setMessages(prev => [...prev, { role: 'error', content: 'Failed to get response' }]);
@@ -1410,6 +1426,26 @@ export default function AgentChat() {
                   )}
                   <div style={styles.msgContent}>
                     <pre style={styles.msgText}>{msg.content}</pre>
+                    {msg.usage && (
+                      <div style={styles.usageBar}>
+                        <span style={styles.usageItem}>
+                          <Zap size={12} /> {msg.usage.inputTokens + msg.usage.outputTokens} tokens
+                        </span>
+                        <span style={styles.usageItem}>
+                          $\{msg.usage.cost?.toFixed(4) || '0.0000'}
+                        </span>
+                        {msg.usage.toolsUsed?.length > 0 && (
+                          <span style={styles.usageItem}>
+                            <Wrench size={12} /> {msg.usage.toolsUsed.join(', ')}
+                          </span>
+                        )}
+                        {msg.usage.apiCalls > 1 && (
+                          <span style={styles.usageItem}>
+                            {msg.usage.apiCalls} API calls
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -1477,6 +1513,8 @@ const styles = {
   msgIcon: { width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   msgContent: { maxWidth: '70%' },
   msgText: { margin: 0, padding: '12px 16px', borderRadius: '12px', background: '#f3f4f6', fontSize: '14px', whiteSpace: 'pre-wrap', fontFamily: 'inherit' },
+  usageBar: { display: 'flex', gap: '12px', marginTop: '6px', padding: '0 4px', flexWrap: 'wrap' },
+  usageItem: { display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#9ca3af' },
   typing: { display: 'flex', alignItems: 'center', gap: '8px', color: '#6b7280', fontSize: '13px' },
   inputArea: { display: 'flex', gap: '12px', padding: '16px 20px', borderTop: '1px solid #f3f4f6' },
   input: {
@@ -1692,23 +1730,155 @@ const styles = {
 // ============================================
 
 /**
+ * Industry-specific sample assets — images + prefilled items per module type.
+ * Uses picsum.photos (seeded) for stable placeholder images.
+ */
+function getIndustryAssets(moduleName) {
+  const p = 'https://picsum.photos/seed';
+  const assets = {
+    menu: [
+      { category: 'Breads', items: [
+        { name: 'Sourdough Loaf', price: '6.50', description: 'Artisan sourdough with a crispy crust and tangy crumb', image_url: `${p}/bread-sourdough/400/300`, dietary_flags: { vegetarian: true, vegan: true } },
+        { name: 'French Baguette', price: '4.00', description: 'Classic French baguette, baked fresh daily', image_url: `${p}/bread-baguette/400/300`, dietary_flags: { vegetarian: true, vegan: true } },
+        { name: 'Ciabatta Roll', price: '3.50', description: 'Light and airy Italian bread with olive oil', image_url: `${p}/bread-ciabatta/400/300`, dietary_flags: { vegetarian: true, vegan: true } },
+      ]},
+      { category: 'Pastries', items: [
+        { name: 'Butter Croissant', price: '3.75', description: 'Flaky, buttery layers of perfection', image_url: `${p}/pastry-croissant/400/300`, dietary_flags: { vegetarian: true } },
+        { name: 'Blueberry Muffin', price: '3.25', description: 'Loaded with fresh blueberries and a crumb topping', image_url: `${p}/pastry-muffin/400/300`, dietary_flags: { vegetarian: true } },
+        { name: 'Chocolate Eclair', price: '4.50', description: 'Choux pastry filled with cream, topped with chocolate', image_url: `${p}/pastry-eclair/400/300`, dietary_flags: { vegetarian: true } },
+      ]},
+      { category: 'Cakes', items: [
+        { name: 'Chocolate Cake Slice', price: '5.50', description: 'Rich, moist chocolate cake with ganache frosting', image_url: `${p}/cake-chocolate/400/300`, dietary_flags: { vegetarian: true } },
+        { name: 'Carrot Cake', price: '5.00', description: 'Spiced carrot cake with cream cheese frosting', image_url: `${p}/cake-carrot/400/300`, dietary_flags: { vegetarian: true } },
+        { name: 'New York Cheesecake', price: '6.00', description: 'Creamy classic cheesecake on a graham cracker crust', image_url: `${p}/cake-cheesecake/400/300`, dietary_flags: { vegetarian: true } },
+      ]},
+      { category: 'Drinks', items: [
+        { name: 'Espresso', price: '3.00', description: 'Double-shot espresso from locally roasted beans', image_url: `${p}/drink-espresso/400/300`, dietary_flags: { vegetarian: true, vegan: true, glutenFree: true } },
+        { name: 'Vanilla Latte', price: '4.50', description: 'Smooth espresso with steamed milk and vanilla', image_url: `${p}/drink-latte/400/300`, dietary_flags: { vegetarian: true } },
+        { name: 'Fresh Orange Juice', price: '4.00', description: 'Freshly squeezed orange juice', image_url: `${p}/drink-oj/400/300`, dietary_flags: { vegetarian: true, vegan: true, glutenFree: true } },
+      ]},
+    ],
+    services: [
+      { category: 'Hair', items: [
+        { name: 'Precision Haircut', price: '45.00', description: 'Expert cut tailored to your face shape and style', image_url: `${p}/svc-haircut/400/300` },
+        { name: 'Color & Highlights', price: '120.00', description: 'Full color treatment with balayage or foil highlights', image_url: `${p}/svc-hair-color/400/300` },
+        { name: 'Blowout & Style', price: '35.00', description: 'Professional blowout with styling finish', image_url: `${p}/svc-blowout/400/300` },
+      ]},
+      { category: 'Skin Care', items: [
+        { name: 'Classic Facial', price: '85.00', description: 'Deep cleansing facial with extraction and mask', image_url: `${p}/svc-facial/400/300` },
+        { name: 'Chemical Peel', price: '110.00', description: 'Professional-grade peel for skin renewal', image_url: `${p}/svc-peel/400/300` },
+        { name: 'Hydrating Treatment', price: '95.00', description: 'Intensive moisture therapy for dry or aging skin', image_url: `${p}/svc-hydrate/400/300` },
+      ]},
+      { category: 'Nails', items: [
+        { name: 'Gel Manicure', price: '40.00', description: 'Long-lasting gel polish with cuticle care', image_url: `${p}/svc-manicure/400/300` },
+        { name: 'Spa Pedicure', price: '55.00', description: 'Relaxing foot soak, scrub, and polish', image_url: `${p}/svc-pedicure/400/300` },
+        { name: 'Nail Art', price: '25.00', description: 'Custom nail art designs per nail', image_url: `${p}/svc-nail-art/400/300` },
+      ]},
+      { category: 'Body', items: [
+        { name: 'Swedish Massage', price: '90.00', description: '60-minute full body relaxation massage', image_url: `${p}/svc-massage/400/300` },
+        { name: 'Hot Stone Therapy', price: '110.00', description: 'Heated basalt stones for deep muscle relief', image_url: `${p}/svc-hotstone/400/300` },
+        { name: 'Body Scrub', price: '75.00', description: 'Exfoliating scrub with essential oils', image_url: `${p}/svc-scrub/400/300` },
+      ]},
+    ],
+    classes: [
+      { category: 'Cardio', items: [
+        { name: 'HIIT Blast', price: '25.00', description: 'High-intensity interval training for maximum burn', image_url: `${p}/cls-hiit/400/300` },
+        { name: 'Spin Class', price: '22.00', description: 'Indoor cycling with energizing music and coaching', image_url: `${p}/cls-spin/400/300` },
+        { name: 'Kickboxing', price: '28.00', description: 'Full-body cardio with boxing and martial arts moves', image_url: `${p}/cls-kickbox/400/300` },
+      ]},
+      { category: 'Strength', items: [
+        { name: 'Power Lifting', price: '30.00', description: 'Barbell-focused strength training for all levels', image_url: `${p}/cls-lift/400/300` },
+        { name: 'CrossFit WOD', price: '28.00', description: 'Workout of the day with varied functional movements', image_url: `${p}/cls-crossfit/400/300` },
+        { name: 'Kettlebell Flow', price: '25.00', description: 'Dynamic kettlebell exercises for strength and conditioning', image_url: `${p}/cls-kettle/400/300` },
+      ]},
+      { category: 'Mind & Body', items: [
+        { name: 'Vinyasa Yoga', price: '20.00', description: 'Flowing yoga sequences synced with breath', image_url: `${p}/cls-yoga/400/300` },
+        { name: 'Pilates Core', price: '22.00', description: 'Mat Pilates focusing on core stability and posture', image_url: `${p}/cls-pilates/400/300` },
+        { name: 'Meditation', price: '15.00', description: 'Guided meditation for stress relief and mindfulness', image_url: `${p}/cls-meditate/400/300` },
+      ]},
+    ],
+    features: [
+      { category: 'Analytics', items: [
+        { name: 'Real-Time Dashboard', price: '29.00', description: 'Live metrics and KPIs at a glance', image_url: `${p}/feat-dashboard/400/300` },
+        { name: 'Custom Reports', price: '19.00', description: 'Build and schedule custom report templates', image_url: `${p}/feat-reports/400/300` },
+        { name: 'Data Export', price: '9.00', description: 'Export data in CSV, JSON, or PDF formats', image_url: `${p}/feat-export/400/300` },
+      ]},
+      { category: 'Integrations', items: [
+        { name: 'API Access', price: '49.00', description: 'Full REST API with webhooks and SDKs', image_url: `${p}/feat-api/400/300` },
+        { name: 'Slack Integration', price: '15.00', description: 'Push notifications and commands in Slack', image_url: `${p}/feat-slack/400/300` },
+        { name: 'Zapier Connect', price: '19.00', description: 'Connect to 5,000+ apps via Zapier', image_url: `${p}/feat-zapier/400/300` },
+      ]},
+      { category: 'Security', items: [
+        { name: 'SSO / SAML', price: '39.00', description: 'Single sign-on with SAML 2.0 support', image_url: `${p}/feat-sso/400/300` },
+        { name: 'Audit Logs', price: '25.00', description: 'Complete activity audit trail with search', image_url: `${p}/feat-audit/400/300` },
+        { name: 'Two-Factor Auth', price: '0.00', description: 'Two-factor authentication for all accounts', image_url: `${p}/feat-2fa/400/300` },
+      ]},
+    ],
+    products: [
+      { category: 'New Arrivals', items: [
+        { name: 'Premium Headphones', price: '89.00', description: 'Wireless noise-canceling headphones with 30hr battery', image_url: `${p}/prod-headphones/400/300` },
+        { name: 'Smart Watch', price: '199.00', description: 'Fitness tracking, notifications, and GPS', image_url: `${p}/prod-watch/400/300` },
+        { name: 'Laptop Stand', price: '45.00', description: 'Ergonomic aluminum stand for better posture', image_url: `${p}/prod-stand/400/300` },
+      ]},
+      { category: 'Best Sellers', items: [
+        { name: 'Wireless Charger', price: '29.00', description: 'Fast Qi charging pad for all devices', image_url: `${p}/prod-charger/400/300` },
+        { name: 'USB-C Hub', price: '55.00', description: '7-in-1 hub with HDMI, USB-A, and SD card', image_url: `${p}/prod-hub/400/300` },
+        { name: 'Desk Organizer', price: '35.00', description: 'Bamboo desk organizer with device slots', image_url: `${p}/prod-organizer/400/300` },
+      ]},
+      { category: 'Accessories', items: [
+        { name: 'Phone Case', price: '19.00', description: 'Slim protective case with MagSafe support', image_url: `${p}/prod-case/400/300` },
+        { name: 'Cable Kit', price: '15.00', description: 'Braided cables: Lightning, USB-C, and Micro-USB', image_url: `${p}/prod-cables/400/300` },
+        { name: 'Screen Protector', price: '12.00', description: 'Tempered glass screen protector, bubble-free', image_url: `${p}/prod-protector/400/300` },
+      ]},
+    ],
+    programs: [
+      { category: 'Beginner', items: [
+        { name: 'Intro to Coding', price: '199.00', description: '8-week course covering HTML, CSS, and JavaScript basics', image_url: `${p}/prog-coding/400/300` },
+        { name: 'Digital Literacy', price: '149.00', description: 'Essential computer skills for the modern world', image_url: `${p}/prog-digital/400/300` },
+        { name: 'Creative Writing', price: '129.00', description: 'Find your voice through guided writing exercises', image_url: `${p}/prog-writing/400/300` },
+      ]},
+      { category: 'Intermediate', items: [
+        { name: 'Data Science', price: '349.00', description: 'Python, pandas, and data visualization', image_url: `${p}/prog-datasci/400/300` },
+        { name: 'UX Design', price: '299.00', description: 'User research, wireframing, and prototyping', image_url: `${p}/prog-ux/400/300` },
+        { name: 'Project Management', price: '249.00', description: 'Agile, Scrum, and project planning fundamentals', image_url: `${p}/prog-pm/400/300` },
+      ]},
+      { category: 'Advanced', items: [
+        { name: 'Machine Learning', price: '499.00', description: 'Build and deploy ML models with TensorFlow', image_url: `${p}/prog-ml/400/300` },
+        { name: 'Cloud Architecture', price: '449.00', description: 'AWS and GCP infrastructure design and deployment', image_url: `${p}/prog-cloud/400/300` },
+        { name: 'Leadership & Strategy', price: '399.00', description: 'Executive leadership skills and strategic thinking', image_url: `${p}/prog-lead/400/300` },
+      ]},
+    ],
+  };
+  return assets[moduleName] || assets.services;
+}
+
+/**
  * Generate Catalog Editor Page (Menu, Services, Classes, Features, Products, Programs)
  */
 function generateCatalogEditorPage(moduleName, labelConfig, primaryColor) {
   const { label, singular, plural } = labelConfig;
+  const isMenu = moduleName === 'menu';
+  const assetsJson = JSON.stringify(getIndustryAssets(moduleName), null, 2);
 
-  return `import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Edit2, Trash2, GripVertical, Eye, EyeOff, Save, X, ChevronDown, ChevronUp } from 'lucide-react';
+  return `import React, { useState, useEffect, useMemo } from 'react';
+import { Plus, Edit2, Trash2, GripVertical, Eye, EyeOff, Save, X, ChevronDown, ChevronUp, Image, Star, Leaf, Flame, WheatOff, Search, LayoutGrid, List, Monitor, Pencil, FolderOpen, Download } from 'lucide-react';
 
 const API_BASE = '/api/${moduleName}';
+const IS_MENU = ${isMenu};
+const SAMPLE_CONTENT = ${assetsJson};
 
 export default function ${capitalize(moduleName)}Page() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [editingItem, setEditingItem] = useState(null);
-  const [newItemForm, setNewItemForm] = useState({ category_id: null, name: '', price: '', description: '' });
-  const [showNewItemForm, setShowNewItemForm] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState({});
+  const [viewMode, setViewMode] = useState('split');
+  const [editModalItem, setEditModalItem] = useState(null);
+  const [isNewItem, setIsNewItem] = useState(false);
+  const [activePreviewCategory, setActivePreviewCategory] = useState(null);
+  const [previewSearch, setPreviewSearch] = useState('');
+  const [imgErrors, setImgErrors] = useState({});
+  const [showAssetPicker, setShowAssetPicker] = useState(false);
+  const [loadingSamples, setLoadingSamples] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -1726,6 +1896,9 @@ export default function ${capitalize(moduleName)}Page() {
           const expanded = {};
           (data.categories || []).forEach(cat => expanded[cat.id] = true);
           setExpandedCategories(expanded);
+          if (!activePreviewCategory && (data.categories || []).length > 0) {
+            setActivePreviewCategory(data.categories[0].id);
+          }
         }
       }
     } catch (err) {
@@ -1762,12 +1935,21 @@ export default function ${capitalize(moduleName)}Page() {
 
   const saveItem = async (item) => {
     try {
-      await fetch(\`\${API_BASE}/admin/item/\${item.id}\`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(item)
-      });
-      setEditingItem(null);
+      if (isNewItem) {
+        await fetch(\`\${API_BASE}/admin/item\`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(item)
+        });
+      } else {
+        await fetch(\`\${API_BASE}/admin/item/\${item.id}\`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(item)
+        });
+      }
+      setEditModalItem(null);
+      setIsNewItem(false);
     } catch (err) {
       console.error('Failed to save:', err);
     }
@@ -1782,18 +1964,59 @@ export default function ${capitalize(moduleName)}Page() {
     }
   };
 
-  const addItem = async () => {
-    if (!newItemForm.name || !newItemForm.category_id) return;
+  const openNewItemModal = () => {
+    setEditModalItem({
+      category_id: categories.length > 0 ? categories[0].id : null,
+      name: '', price: '', description: '', image_url: '', popular: false,
+      dietary_flags: IS_MENU ? { vegetarian: false, vegan: false, glutenFree: false, spicy: false } : undefined
+    });
+    setIsNewItem(true);
+  };
+
+  const openEditModal = (item) => {
+    setEditModalItem({
+      ...item,
+      dietary_flags: IS_MENU ? (item.dietary_flags || { vegetarian: false, vegan: false, glutenFree: false, spicy: false }) : undefined
+    });
+    setIsNewItem(false);
+  };
+
+  const loadSamples = async () => {
+    if (!confirm('Load sample ${plural.toLowerCase()}? This will add demo items to your catalog.')) return;
+    setLoadingSamples(true);
     try {
-      await fetch(\`\${API_BASE}/admin/item\`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newItemForm)
-      });
-      setNewItemForm({ category_id: null, name: '', price: '', description: '' });
-      setShowNewItemForm(false);
+      for (const group of SAMPLE_CONTENT) {
+        // Create category first
+        const catRes = await fetch(\`\${API_BASE}/admin/category\`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: group.category })
+        });
+        let catId = null;
+        if (catRes.ok) {
+          const catData = await catRes.json();
+          catId = catData.category?.id;
+        }
+        // If category creation fails, try to find existing one
+        if (!catId) {
+          const existing = categories.find(c => c.name === group.category);
+          catId = existing?.id;
+        }
+        if (!catId) continue;
+        // Add items
+        for (const item of group.items) {
+          await fetch(\`\${API_BASE}/admin/item\`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...item, category_id: catId, available: true })
+          });
+        }
+      }
+      await fetchData();
     } catch (err) {
-      console.error('Failed to add:', err);
+      console.error('Failed to load samples:', err);
+    } finally {
+      setLoadingSamples(false);
     }
   };
 
@@ -1801,120 +2024,349 @@ export default function ${capitalize(moduleName)}Page() {
     setExpandedCategories(prev => ({ ...prev, [catId]: !prev[catId] }));
   };
 
-  if (loading) return <div style={styles.loading}>Loading ${label.toLowerCase()}...</div>;
+  // All sample images flattened for the asset picker
+  const allSampleImages = useMemo(() => {
+    return SAMPLE_CONTENT.flatMap(g => g.items.map(i => ({ url: i.image_url, label: i.name, category: g.category })));
+  }, []);
+
+  // Merge editing item into categories for live preview
+  const previewCategories = useMemo(() => {
+    return categories.map(cat => ({
+      ...cat,
+      items: (cat.items || []).map(item => {
+        if (editModalItem && !isNewItem && item.id === editModalItem.id) {
+          return { ...item, ...editModalItem };
+        }
+        return item;
+      }).filter(item => item.available !== false)
+    }));
+  }, [categories, editModalItem, isNewItem]);
+
+  const filteredPreviewItems = useMemo(() => {
+    const activeCat = previewCategories.find(c => c.id === activePreviewCategory);
+    if (!activeCat) return [];
+    let items = activeCat.items || [];
+    if (previewSearch.trim()) {
+      const q = previewSearch.toLowerCase();
+      items = items.filter(i => i.name?.toLowerCase().includes(q) || i.description?.toLowerCase().includes(q));
+    }
+    return items;
+  }, [previewCategories, activePreviewCategory, previewSearch]);
+
+  if (loading) return <div style={st.loading}>Loading ${label.toLowerCase()}...</div>;
+
+  const showEditor = viewMode === 'editor' || viewMode === 'split';
+  const showPreview = viewMode === 'preview' || viewMode === 'split';
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
+    <div style={st.container}>
+      {/* Header */}
+      <div style={st.header}>
         <div>
-          <h1 style={styles.title}>${label} Editor</h1>
-          <p style={styles.subtitle}>Manage your ${plural.toLowerCase()} and categories</p>
+          <h1 style={st.title}>${label} Editor</h1>
+          <p style={st.subtitle}>Manage your ${plural.toLowerCase()} with live preview</p>
         </div>
-        <button onClick={() => setShowNewItemForm(true)} style={styles.addBtn}>
-          <Plus size={18} /> Add ${singular}
-        </button>
+        <div style={st.headerActions}>
+          <div style={st.viewToggle}>
+            {[['editor', List, 'Editor'], ['split', LayoutGrid, 'Split'], ['preview', Monitor, 'Preview']].map(([mode, Icon, lbl]) => (
+              <button key={mode} onClick={() => setViewMode(mode)} style={{ ...st.viewBtn, ...(viewMode === mode ? st.viewBtnActive : {}) }}>
+                <Icon size={14} /> {lbl}
+              </button>
+            ))}
+          </div>
+          <button onClick={loadSamples} disabled={loadingSamples} style={st.samplesBtn}>
+            <Download size={16} /> {loadingSamples ? 'Loading...' : 'Load Samples'}
+          </button>
+          <button onClick={openNewItemModal} style={st.addBtn}>
+            <Plus size={18} /> Add ${singular}
+          </button>
+        </div>
       </div>
 
-      {showNewItemForm && (
-        <div style={styles.modal}>
-          <div style={styles.modalContent}>
-            <div style={styles.modalHeader}>
-              <h3>Add New ${singular}</h3>
-              <button onClick={() => setShowNewItemForm(false)} style={styles.closeBtn}><X size={20} /></button>
+      {/* Main Layout */}
+      <div style={{ display: 'flex', gap: '20px' }}>
+        {/* Editor Panel */}
+        {showEditor && (
+          <div style={{ flex: viewMode === 'split' ? '0 0 50%' : '1 1 100%', minWidth: 0 }}>
+            {categories.map(category => (
+              <div key={category.id} style={st.category}>
+                <div style={st.categoryHeader} onClick={() => toggleCategory(category.id)}>
+                  <div style={st.categoryInfo}>
+                    <GripVertical size={16} style={{ color: '#9ca3af', cursor: 'grab' }} />
+                    <h2 style={st.categoryTitle}>{category.name}</h2>
+                    <span style={st.categoryCount}>{category.items?.length || 0}</span>
+                  </div>
+                  {expandedCategories[category.id] ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                </div>
+                {expandedCategories[category.id] && (
+                  <div style={st.items}>
+                    {(category.items || []).map(item => (
+                      <div key={item.id} style={{ ...st.item, opacity: item.available ? 1 : 0.5 }} onClick={() => openEditModal(item)}>
+                        <div style={st.itemInfo}>
+                          <GripVertical size={14} style={{ color: '#d1d5db', cursor: 'grab' }} />
+                          {item.image_url ? (
+                            <img src={item.image_url} alt="" style={st.itemThumb} onError={e => { e.target.style.display = 'none'; }} />
+                          ) : (
+                            <div style={st.itemThumbPlaceholder}><Image size={14} /></div>
+                          )}
+                          <div>
+                            <div style={st.itemNameRow}>
+                              <span style={st.itemName}>{item.name}</span>
+                              {item.popular && <Star size={12} style={{ color: '#f59e0b', fill: '#f59e0b' }} />}
+                              {IS_MENU && item.dietary_flags?.vegetarian && <Leaf size={12} style={{ color: '#22c55e' }} />}
+                              {IS_MENU && item.dietary_flags?.spicy && <Flame size={12} style={{ color: '#ef4444' }} />}
+                              {IS_MENU && item.dietary_flags?.glutenFree && <WheatOff size={12} style={{ color: '#a855f7' }} />}
+                            </div>
+                            {item.price && <span style={st.itemPrice}>\${parseFloat(item.price).toFixed(2)}</span>}
+                          </div>
+                        </div>
+                        <div style={st.itemActions} onClick={e => e.stopPropagation()}>
+                          <button onClick={() => toggleAvailability(item.id, item.available)} style={st.iconBtn} title={item.available ? 'Hide' : 'Show'}>
+                            {item.available ? <Eye size={16} /> : <EyeOff size={16} />}
+                          </button>
+                          <button onClick={() => openEditModal(item)} style={st.iconBtn}><Pencil size={16} /></button>
+                          <button onClick={() => deleteItem(item.id)} style={{ ...st.iconBtn, color: '#ef4444' }}><Trash2 size={16} /></button>
+                        </div>
+                      </div>
+                    ))}
+                    {(!category.items || category.items.length === 0) && <p style={st.emptyMsg}>No ${plural.toLowerCase()} in this category</p>}
+                  </div>
+                )}
+              </div>
+            ))}
+            {categories.length === 0 && <div style={st.emptyState}><p>No categories yet. Add your first category to get started.</p></div>}
+          </div>
+        )}
+
+        {/* Preview Panel */}
+        {showPreview && (
+          <div style={{ flex: viewMode === 'split' ? '0 0 50%' : '1 1 100%', minWidth: 0 }}>
+            <div style={st.previewContainer}>
+              <div style={st.previewHeader}>
+                <h3 style={st.previewTitle}>Customer Preview</h3>
+                <div style={st.previewSearchBox}>
+                  <Search size={14} style={{ color: '#9ca3af' }} />
+                  <input placeholder="Search ${plural.toLowerCase()}..." value={previewSearch} onChange={e => setPreviewSearch(e.target.value)} style={st.previewSearchInput} />
+                </div>
+              </div>
+
+              {/* Category pill tabs */}
+              <div style={st.previewTabs}>
+                {previewCategories.map(cat => (
+                  <button key={cat.id} onClick={() => setActivePreviewCategory(cat.id)} style={{ ...st.previewTab, ...(activePreviewCategory === cat.id ? st.previewTabActive : {}) }}>
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
+
+              {/* Card grid */}
+              <div style={st.previewGrid}>
+                {filteredPreviewItems.map(item => (
+                  <div key={item.id} style={st.previewCard} onClick={() => openEditModal(item)}>
+                    <div style={st.previewImageWrap}>
+                      {item.image_url && !imgErrors[item.id] ? (
+                        <img src={item.image_url} alt={item.name} style={st.previewImage} onError={() => setImgErrors(prev => ({ ...prev, [item.id]: true }))} />
+                      ) : (
+                        <div style={st.previewImageFallback}><Image size={32} style={{ color: '#d1d5db' }} /></div>
+                      )}
+                      {item.popular && <span style={st.previewBadge}><Star size={10} style={{ fill: '#fff' }} /> Popular</span>}
+                      <div style={st.previewCardOverlay}><Pencil size={16} /> Edit</div>
+                    </div>
+                    <div style={st.previewCardBody}>
+                      <div style={st.previewCardTop}>
+                        <span style={st.previewCardName}>{item.name}</span>
+                        {item.price && <span style={st.previewCardPrice}>\${parseFloat(item.price).toFixed(2)}</span>}
+                      </div>
+                      {IS_MENU && (
+                        <div style={st.previewDietary}>
+                          {item.dietary_flags?.vegetarian && <span style={{ ...st.dietaryIcon, background: '#dcfce7', color: '#16a34a' }}><Leaf size={10} /> Veg</span>}
+                          {item.dietary_flags?.vegan && <span style={{ ...st.dietaryIcon, background: '#d1fae5', color: '#059669' }}><Leaf size={10} /> Vegan</span>}
+                          {item.dietary_flags?.glutenFree && <span style={{ ...st.dietaryIcon, background: '#f3e8ff', color: '#9333ea' }}><WheatOff size={10} /> GF</span>}
+                          {item.dietary_flags?.spicy && <span style={{ ...st.dietaryIcon, background: '#fee2e2', color: '#dc2626' }}><Flame size={10} /> Spicy</span>}
+                        </div>
+                      )}
+                      {item.description && <p style={st.previewCardDesc}>{item.description}</p>}
+                    </div>
+                  </div>
+                ))}
+                {filteredPreviewItems.length === 0 && <p style={st.emptyMsg}>No visible ${plural.toLowerCase()} in this category</p>}
+              </div>
             </div>
-            <div style={styles.form}>
-              <select value={newItemForm.category_id || ''} onChange={e => setNewItemForm({ ...newItemForm, category_id: parseInt(e.target.value) })} style={styles.input}>
+          </div>
+        )}
+      </div>
+
+      {/* Rich Edit Modal */}
+      {editModalItem && (
+        <div style={st.modal} onClick={() => { setEditModalItem(null); setIsNewItem(false); }}>
+          <div style={st.modalContent} onClick={e => e.stopPropagation()}>
+            <div style={st.modalHeader}>
+              <h3 style={{ margin: 0 }}>{isNewItem ? 'Add New' : 'Edit'} ${singular}</h3>
+              <button onClick={() => { setEditModalItem(null); setIsNewItem(false); }} style={st.closeBtn}><X size={20} /></button>
+            </div>
+            <div style={st.form}>
+              {/* Category */}
+              <label style={st.fieldLabel}>Category</label>
+              <select value={editModalItem.category_id || ''} onChange={e => setEditModalItem({ ...editModalItem, category_id: parseInt(e.target.value) })} style={st.input}>
                 <option value="">Select Category</option>
                 {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
               </select>
-              <input placeholder="${singular} Name" value={newItemForm.name} onChange={e => setNewItemForm({ ...newItemForm, name: e.target.value })} style={styles.input} />
-              <input placeholder="Price" type="number" step="0.01" value={newItemForm.price} onChange={e => setNewItemForm({ ...newItemForm, price: e.target.value })} style={styles.input} />
-              <textarea placeholder="Description" value={newItemForm.description} onChange={e => setNewItemForm({ ...newItemForm, description: e.target.value })} style={{ ...styles.input, minHeight: '80px' }} />
-              <button onClick={addItem} style={styles.saveBtn}><Save size={16} /> Add ${singular}</button>
+
+              {/* Name */}
+              <label style={st.fieldLabel}>Name</label>
+              <input placeholder="${singular} Name" value={editModalItem.name || ''} onChange={e => setEditModalItem({ ...editModalItem, name: e.target.value })} style={st.input} />
+
+              {/* Price */}
+              <label style={st.fieldLabel}>Price</label>
+              <input placeholder="0.00" type="number" step="0.01" value={editModalItem.price || ''} onChange={e => setEditModalItem({ ...editModalItem, price: e.target.value })} style={st.input} />
+
+              {/* Description */}
+              <label style={st.fieldLabel}>Description</label>
+              <textarea placeholder="Description" value={editModalItem.description || ''} onChange={e => setEditModalItem({ ...editModalItem, description: e.target.value })} style={{ ...st.input, minHeight: '80px', resize: 'vertical' }} />
+
+              {/* Image URL */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label style={st.fieldLabel}>Image URL</label>
+                <button type="button" onClick={() => setShowAssetPicker(!showAssetPicker)} style={st.browseBtn}>
+                  <FolderOpen size={12} /> {showAssetPicker ? 'Hide' : 'Browse'} Assets
+                </button>
+              </div>
+              <input placeholder="https://..." value={editModalItem.image_url || ''} onChange={e => setEditModalItem({ ...editModalItem, image_url: e.target.value })} style={st.input} />
+              {showAssetPicker && (
+                <div style={st.assetPicker}>
+                  <div style={st.assetPickerGrid}>
+                    {allSampleImages.map((img, i) => (
+                      <div key={i} onClick={() => { setEditModalItem({ ...editModalItem, image_url: img.url }); setShowAssetPicker(false); }} style={{ ...st.assetPickerItem, border: editModalItem.image_url === img.url ? '2px solid ${primaryColor}' : '2px solid transparent' }}>
+                        <img src={img.url} alt={img.label} style={st.assetPickerImg} />
+                        <span style={st.assetPickerLabel}>{img.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {editModalItem.image_url && !showAssetPicker && (
+                <div style={st.imagePreview}>
+                  <img src={editModalItem.image_url} alt="Preview" style={st.imagePreviewImg} onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+                  <div style={{ ...st.imagePreviewFallback, display: 'none' }}>Invalid image URL</div>
+                </div>
+              )}
+
+              {/* Popular toggle */}
+              <label style={st.toggleRow}>
+                <input type="checkbox" checked={editModalItem.popular || false} onChange={e => setEditModalItem({ ...editModalItem, popular: e.target.checked })} />
+                <Star size={14} style={{ color: '#f59e0b' }} /> Popular / Featured
+              </label>
+
+              {/* Dietary flags (menu only) */}
+              ${isMenu ? `{IS_MENU && (
+                <div style={st.dietarySection}>
+                  <label style={st.fieldLabel}>Dietary Flags</label>
+                  <div style={st.dietaryGrid}>
+                    {[
+                      ['vegetarian', 'Vegetarian', '#22c55e'],
+                      ['vegan', 'Vegan', '#059669'],
+                      ['glutenFree', 'Gluten-Free', '#9333ea'],
+                      ['spicy', 'Spicy', '#ef4444']
+                    ].map(([key, lbl, color]) => (
+                      <label key={key} style={st.dietaryCheck}>
+                        <input type="checkbox" checked={editModalItem.dietary_flags?.[key] || false} onChange={e => setEditModalItem({ ...editModalItem, dietary_flags: { ...editModalItem.dietary_flags, [key]: e.target.checked } })} />
+                        <span style={{ color }}>{lbl}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}` : ''}
+
+              <button onClick={() => saveItem(editModalItem)} style={st.saveBtn}>
+                <Save size={16} /> {isNewItem ? 'Add' : 'Save'} ${singular}
+              </button>
             </div>
           </div>
         </div>
       )}
-
-      {categories.map(category => (
-        <div key={category.id} style={styles.category}>
-          <div style={styles.categoryHeader} onClick={() => toggleCategory(category.id)}>
-            <div style={styles.categoryInfo}>
-              <GripVertical size={16} style={{ color: '#9ca3af', cursor: 'grab' }} />
-              <h2 style={styles.categoryTitle}>{category.name}</h2>
-              <span style={styles.categoryCount}>{category.items?.length || 0} ${plural.toLowerCase()}</span>
-            </div>
-            {expandedCategories[category.id] ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-          </div>
-
-          {expandedCategories[category.id] && (
-            <div style={styles.items}>
-              {(category.items || []).map(item => (
-                <div key={item.id} style={{ ...styles.item, opacity: item.available ? 1 : 0.5 }}>
-                  {editingItem?.id === item.id ? (
-                    <div style={styles.editForm}>
-                      <input value={editingItem.name} onChange={e => setEditingItem({ ...editingItem, name: e.target.value })} style={styles.editInput} />
-                      <input value={editingItem.price || ''} onChange={e => setEditingItem({ ...editingItem, price: e.target.value })} style={{ ...styles.editInput, width: '100px' }} type="number" step="0.01" />
-                      <button onClick={() => saveItem(editingItem)} style={styles.iconBtn}><Save size={16} /></button>
-                      <button onClick={() => setEditingItem(null)} style={styles.iconBtn}><X size={16} /></button>
-                    </div>
-                  ) : (
-                    <>
-                      <div style={styles.itemInfo}>
-                        <GripVertical size={14} style={{ color: '#d1d5db', cursor: 'grab' }} />
-                        <span style={styles.itemName}>{item.name}</span>
-                        {item.price && <span style={styles.itemPrice}>\${parseFloat(item.price).toFixed(2)}</span>}
-                      </div>
-                      <div style={styles.itemActions}>
-                        <button onClick={() => toggleAvailability(item.id, item.available)} style={styles.iconBtn} title={item.available ? 'Hide' : 'Show'}>
-                          {item.available ? <Eye size={16} /> : <EyeOff size={16} />}
-                        </button>
-                        <button onClick={() => setEditingItem({ ...item })} style={styles.iconBtn}><Edit2 size={16} /></button>
-                        <button onClick={() => deleteItem(item.id)} style={{ ...styles.iconBtn, color: '#ef4444' }}><Trash2 size={16} /></button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              ))}
-              {(!category.items || category.items.length === 0) && <p style={styles.emptyMsg}>No ${plural.toLowerCase()} in this category</p>}
-            </div>
-          )}
-        </div>
-      ))}
-
-      {categories.length === 0 && <div style={styles.emptyState}><p>No categories yet. Add your first category to get started.</p></div>}
     </div>
   );
 }
 
-const styles = {
-  container: { padding: '0' },
+const st = {
+  container: { padding: 0 },
   loading: { padding: '40px', textAlign: 'center', color: '#6b7280' },
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' },
+  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' },
   title: { fontSize: '24px', fontWeight: '700', margin: 0, color: '#111827' },
   subtitle: { fontSize: '14px', color: '#6b7280', marginTop: '4px' },
+  headerActions: { display: 'flex', alignItems: 'center', gap: '12px' },
+  viewToggle: { display: 'flex', background: '#f3f4f6', borderRadius: '8px', padding: '2px' },
+  viewBtn: { display: 'flex', alignItems: 'center', gap: '4px', padding: '6px 12px', background: 'none', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', color: '#6b7280', whiteSpace: 'nowrap' },
+  viewBtnActive: { background: '#fff', color: '#111827', boxShadow: '0 1px 2px rgba(0,0,0,0.08)' },
   addBtn: { display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 16px', background: '${primaryColor}', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '500' },
+  samplesBtn: { display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 16px', background: '#fff', color: '#374151', border: '1px solid #e5e7eb', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '500' },
+
+  /* Editor styles */
   category: { background: '#fff', borderRadius: '12px', marginBottom: '16px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' },
   categoryHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', cursor: 'pointer', borderBottom: '1px solid #f3f4f6' },
   categoryInfo: { display: 'flex', alignItems: 'center', gap: '12px' },
   categoryTitle: { fontSize: '16px', fontWeight: '600', margin: 0 },
-  categoryCount: { fontSize: '13px', color: '#6b7280', background: '#f3f4f6', padding: '2px 8px', borderRadius: '12px' },
+  categoryCount: { fontSize: '12px', color: '#6b7280', background: '#f3f4f6', padding: '2px 8px', borderRadius: '12px' },
   items: { padding: '8px' },
-  item: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderRadius: '8px', transition: 'background 0.15s' },
-  itemInfo: { display: 'flex', alignItems: 'center', gap: '12px' },
-  itemName: { fontWeight: '500' },
-  itemPrice: { color: '#6b7280', fontSize: '14px' },
+  item: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', borderRadius: '8px', cursor: 'pointer', transition: 'background 0.15s' },
+  itemInfo: { display: 'flex', alignItems: 'center', gap: '10px' },
+  itemThumb: { width: '48px', height: '36px', objectFit: 'cover', borderRadius: '4px', background: '#f3f4f6' },
+  itemThumbPlaceholder: { width: '48px', height: '36px', borderRadius: '4px', background: '#f9fafb', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d1d5db' },
+  itemNameRow: { display: 'flex', alignItems: 'center', gap: '6px' },
+  itemName: { fontWeight: '500', fontSize: '14px' },
+  itemPrice: { color: '#6b7280', fontSize: '13px' },
   itemActions: { display: 'flex', gap: '4px' },
   iconBtn: { padding: '6px', background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280', borderRadius: '4px' },
-  editForm: { display: 'flex', gap: '8px', alignItems: 'center', flex: 1 },
-  editInput: { padding: '8px 12px', border: '1px solid #e5e7eb', borderRadius: '6px', fontSize: '14px' },
+
+  /* Preview styles */
+  previewContainer: { background: '#fff', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', position: 'sticky', top: '20px' },
+  previewHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' },
+  previewTitle: { margin: 0, fontSize: '16px', fontWeight: '600', color: '#111827' },
+  previewSearchBox: { display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', border: '1px solid #e5e7eb', borderRadius: '8px', background: '#f9fafb' },
+  previewSearchInput: { border: 'none', outline: 'none', background: 'none', fontSize: '13px', width: '140px' },
+  previewTabs: { display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '12px', marginBottom: '16px', borderBottom: '1px solid #f3f4f6' },
+  previewTab: { padding: '6px 14px', borderRadius: '20px', border: '1px solid #e5e7eb', background: '#fff', cursor: 'pointer', fontSize: '13px', color: '#6b7280', whiteSpace: 'nowrap' },
+  previewTabActive: { background: '${primaryColor}', color: '#fff', border: '1px solid ${primaryColor}' },
+  previewGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' },
+  previewCard: { borderRadius: '12px', overflow: 'hidden', border: '1px solid #e5e7eb', cursor: 'pointer', transition: 'box-shadow 0.2s, transform 0.2s', position: 'relative' },
+  previewImageWrap: { position: 'relative', aspectRatio: '4/3', overflow: 'hidden', background: '#f9fafb' },
+  previewImage: { width: '100%', height: '100%', objectFit: 'cover' },
+  previewImageFallback: { width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f3f4f6' },
+  previewBadge: { position: 'absolute', top: '8px', left: '8px', display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '6px', background: '${primaryColor}', color: '#fff', fontSize: '11px', fontWeight: '600' },
+  previewCardOverlay: { position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', color: '#fff', fontSize: '14px', fontWeight: '500', opacity: 0, transition: 'opacity 0.2s' },
+  previewCardBody: { padding: '12px' },
+  previewCardTop: { display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '4px' },
+  previewCardName: { fontWeight: '600', fontSize: '14px', color: '#111827' },
+  previewCardPrice: { fontWeight: '600', fontSize: '14px', color: '${primaryColor}' },
+  previewDietary: { display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '4px' },
+  dietaryIcon: { display: 'inline-flex', alignItems: 'center', gap: '3px', padding: '1px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: '500' },
+  previewCardDesc: { margin: 0, fontSize: '12px', color: '#6b7280', lineHeight: '1.4', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' },
+
+  /* Modal styles */
   modal: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 },
-  modalContent: { background: '#fff', borderRadius: '16px', width: '100%', maxWidth: '480px', padding: '24px' },
+  modalContent: { background: '#fff', borderRadius: '16px', width: '100%', maxWidth: '520px', padding: '24px', maxHeight: '90vh', overflowY: 'auto' },
   modalHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' },
   closeBtn: { background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' },
-  form: { display: 'flex', flexDirection: 'column', gap: '12px' },
-  input: { padding: '12px', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '14px', outline: 'none' },
-  saveBtn: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '12px', background: '${primaryColor}', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '500' },
+  form: { display: 'flex', flexDirection: 'column', gap: '10px' },
+  fieldLabel: { fontSize: '13px', fontWeight: '500', color: '#374151', marginBottom: '-4px' },
+  input: { padding: '10px 12px', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '14px', outline: 'none' },
+  imagePreview: { borderRadius: '8px', overflow: 'hidden', border: '1px solid #e5e7eb', height: '120px' },
+  imagePreviewImg: { width: '100%', height: '100%', objectFit: 'cover' },
+  imagePreviewFallback: { width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', color: '#ef4444', fontSize: '13px', background: '#fef2f2' },
+  toggleRow: { display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', cursor: 'pointer', padding: '4px 0' },
+  dietarySection: { borderTop: '1px solid #f3f4f6', paddingTop: '12px', marginTop: '4px' },
+  dietaryGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' },
+  dietaryCheck: { display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', cursor: 'pointer' },
+  saveBtn: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '12px', background: '${primaryColor}', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '500', marginTop: '8px' },
+
+  /* Asset picker styles */
+  browseBtn: { display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 10px', background: '#f3f4f6', border: '1px solid #e5e7eb', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', color: '#6b7280' },
+  assetPicker: { border: '1px solid #e5e7eb', borderRadius: '8px', padding: '10px', maxHeight: '200px', overflowY: 'auto', background: '#f9fafb' },
+  assetPickerGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '8px' },
+  assetPickerItem: { borderRadius: '6px', overflow: 'hidden', cursor: 'pointer', transition: 'border-color 0.15s', background: '#fff' },
+  assetPickerImg: { width: '100%', aspectRatio: '4/3', objectFit: 'cover', display: 'block' },
+  assetPickerLabel: { display: 'block', fontSize: '10px', color: '#6b7280', padding: '2px 4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
+
   emptyMsg: { padding: '20px', textAlign: 'center', color: '#9ca3af', fontSize: '14px' },
   emptyState: { padding: '60px 20px', textAlign: 'center', color: '#6b7280', background: '#fff', borderRadius: '12px' }
 };
