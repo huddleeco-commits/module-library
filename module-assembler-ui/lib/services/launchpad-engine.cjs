@@ -44,6 +44,12 @@ const { generateStructuralPage, generateAllVariants } = require('../generators/s
 // Admin dashboard generator
 const { generateAdminDashboard } = require('../generators/admin-dashboard-generator.cjs');
 
+// Archetype page generators (order, about, gallery, etc.)
+const { generateOrderPage: generateArchetypeOrderPage } = require('../generators/archetype-pages.cjs');
+
+// Layout archetype detection
+const { detectArchetype } = require('../config/layout-archetypes.cjs');
+
 // Metrics generator for index pages and comparison views
 const MetricsGenerator = require('./metrics-generator.cjs');
 
@@ -6842,7 +6848,16 @@ const styles = {
 const generateClassesPage = generateGenericPage;
 const generateTeamPage = generateGenericPage;
 const generateBookingPage = generateGenericPage;
-const generateOrderPage = generateGenericPage;
+function generateOrderPage(industryId, variant, moodSliders, businessData, pageType) {
+  const archetype = detectArchetype(businessData);
+  const colors = getColors(moodSliders, businessData);
+  const styleOverrides = {
+    isDark: moodSliders.isDark || false,
+    isMedium: moodSliders.isMedium || false,
+    primaryColor: colors.primary
+  };
+  return generateArchetypeOrderPage(archetype, { ...businessData, industry: industryId }, colors, styleOverrides);
+}
 const generateMembershipPage = generateGenericPage;
 const generatePricingPage = generateGenericPage;
 const generateFeaturesPage = generateGenericPage;
