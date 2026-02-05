@@ -6872,7 +6872,7 @@ const generateAccountPage = generateGenericPage;
  */
 function generatePublicReservationsPage(industryId, variant, moodSliders, businessData, pageType) {
   const colors = getColors(moodSliders, businessData);
-  const businessName = businessData.name || 'Our Restaurant';
+  const businessName = businessData.name || 'Our Business';
 
   // Determine reservation style based on industry + variant
   const styleMap = INDUSTRY_RESERVATION_STYLES[industryId] || {};

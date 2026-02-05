@@ -552,14 +552,9 @@ function generateDashboardHome(businessName, primaryColor, industryModules = {})
   const moduleNames = Object.keys(industryModules);
   const primaryModule = moduleNames[0] || 'services';
   const secondaryModule = moduleNames[1] || null;
-  const primaryType = industryModules[primaryModule] || 'catalog';
-  const secondaryType = secondaryModule ? industryModules[secondaryModule] : null;
-
   // Get labels for modules
   const primaryLabel = MODULE_LABELS[primaryModule]?.label || capitalize(primaryModule);
   const secondaryLabel = secondaryModule ? (MODULE_LABELS[secondaryModule]?.label || capitalize(secondaryModule)) : '';
-  const primarySingular = MODULE_LABELS[primaryModule]?.singular || 'Item';
-  const secondarySingular = secondaryModule ? (MODULE_LABELS[secondaryModule]?.singular || 'Item') : '';
 
   // Determine which stats API to call based on module types
   const hasBooking = Object.values(industryModules).includes('booking');
