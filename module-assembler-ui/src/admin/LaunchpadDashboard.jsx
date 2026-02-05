@@ -10,6 +10,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
+import { MoodSliders } from '../components/MoodSliders';
 
 // Generation mode cards
 const MODES = {
@@ -537,6 +538,9 @@ export default function LaunchpadDashboard() {
   const [trendsApplied, setTrendsApplied] = useState(false);
   const [selectedTrends, setSelectedTrends] = useState(null);
 
+  // Mood sliders for design customization
+  const [moodSliders, setMoodSliders] = useState(null);
+
   // Debounce ref for detection
   const detectTimeoutRef = useRef(null);
 
@@ -756,6 +760,7 @@ export default function LaunchpadDashboard() {
           variant: selectedVariant,
           mode: selectedMode,
           menuStyle: selectedMenuStyle,
+          moodSliders: moodSliders || {},
           trendOverrides: trendsApplied ? selectedTrends : null,
           customMenu: customMenuParsed
         })
@@ -785,7 +790,7 @@ export default function LaunchpadDashboard() {
       const res = await fetch('/api/launchpad/generate-all', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ input, mode: selectedMode, menuStyle: selectedMenuStyle })
+        body: JSON.stringify({ input, mode: selectedMode, menuStyle: selectedMenuStyle, moodSliders: moodSliders || {} })
       });
 
       const data = await res.json();
@@ -813,6 +818,7 @@ export default function LaunchpadDashboard() {
           input,
           variant: selectedVariant,
           mode: selectedMode,
+          moodSliders: moodSliders || {},
           trendOverrides: trendsApplied ? selectedTrends : null
         })
       });
@@ -978,7 +984,8 @@ export default function LaunchpadDashboard() {
         body: JSON.stringify({
           input,
           variant: selectedVariant,
-          mode: selectedMode
+          mode: selectedMode,
+          moodSliders: moodSliders || {}
         })
       });
 
@@ -1408,6 +1415,21 @@ Or use JSON:
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Mood Sliders */}
+          <div style={styles.optionGroup}>
+            <h3 style={styles.optionTitle}>
+              Design Mood
+              <span style={{ fontSize: '0.75rem', fontWeight: '400', color: '#6B7280', marginLeft: '8px' }}>
+                (controls fonts, spacing, shadows, colors)
+              </span>
+            </h3>
+            <MoodSliders
+              values={moodSliders}
+              onChange={(values) => setMoodSliders(values)}
+              compact={true}
+            />
           </div>
         </div>
       )}
