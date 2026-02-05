@@ -178,6 +178,134 @@ const MODULE_LABELS = {
 };
 
 // ============================================
+// VARIANT COLOR PALETTES
+// ============================================
+
+/**
+ * Each industry gets 3 distinct color palettes (A, B, C).
+ * Variant A = warm/classic, B = cool/modern, C = bold/distinctive.
+ * These are the base — mood sliders and trend overrides can still override.
+ */
+const VARIANT_PALETTES = {
+  // ========== FOOD & BEVERAGE ==========
+  'pizza-restaurant': {
+    A: { primary: '#C62828', accent: '#FF8F00', secondary: '#4E342E' },  // Classic red/gold
+    B: { primary: '#1B5E20', accent: '#F9A825', secondary: '#3E2723' },  // Italian green/gold
+    C: { primary: '#E65100', accent: '#1B5E20', secondary: '#BF360C' }   // Bold orange/green
+  },
+  'steakhouse': {
+    A: { primary: '#4E342E', accent: '#C9A227', secondary: '#1B1B1B' },  // Dark leather/gold
+    B: { primary: '#7B1F1F', accent: '#D4AF37', secondary: '#2C1810' },  // Burgundy/gold
+    C: { primary: '#1A1A2E', accent: '#C9A227', secondary: '#16213E' }   // Midnight/gold
+  },
+  'coffee-cafe': {
+    A: { primary: '#5D4037', accent: '#FF8F00', secondary: '#3E2723' },  // Espresso/amber
+    B: { primary: '#2E7D32', accent: '#795548', secondary: '#1B5E20' },  // Botanical/earth
+    C: { primary: '#1565C0', accent: '#FF6F00', secondary: '#0D47A1' }   // Modern blue/orange
+  },
+  'restaurant': {
+    A: { primary: '#B71C1C', accent: '#F57F17', secondary: '#3E2723' },  // Classic red/gold
+    B: { primary: '#004D40', accent: '#FF8F00', secondary: '#00251A' },  // Emerald/amber
+    C: { primary: '#311B92', accent: '#00BFA5', secondary: '#1A237E' }   // Royal purple/teal
+  },
+  'bakery': {
+    A: { primary: '#8B4513', accent: '#D4A574', secondary: '#5D3A1A' },  // Warm cinnamon
+    B: { primary: '#AD1457', accent: '#F8BBD0', secondary: '#880E4F' },  // Berry pink
+    C: { primary: '#00695C', accent: '#FFD54F', secondary: '#004D40' }   // Sage/honey
+  },
+
+  // ========== PERSONAL SERVICES ==========
+  'salon-spa': {
+    A: { primary: '#6A1B9A', accent: '#E1BEE7', secondary: '#4A148C' },  // Luxe plum
+    B: { primary: '#00796B', accent: '#B2DFDB', secondary: '#004D40' },  // Spa teal
+    C: { primary: '#C2185B', accent: '#FCE4EC', secondary: '#880E4F' }   // Rose
+  },
+  'barbershop': {
+    A: { primary: '#1A1A2E', accent: '#C9A227', secondary: '#16213E' },  // Classic dark/gold
+    B: { primary: '#1B5E20', accent: '#FFAB00', secondary: '#2E7D32' },  // Heritage green
+    C: { primary: '#4A148C', accent: '#CE93D8', secondary: '#311B92' }   // Modern purple
+  },
+  'dental': {
+    A: { primary: '#0277BD', accent: '#4FC3F7', secondary: '#01579B' },  // Clean blue
+    B: { primary: '#00695C', accent: '#80CBC4', secondary: '#004D40' },  // Calming teal
+    C: { primary: '#1565C0', accent: '#E8F5E9', secondary: '#0D47A1' }   // Trust blue/mint
+  },
+  'yoga': {
+    A: { primary: '#6A1B9A', accent: '#CE93D8', secondary: '#4A148C' },  // Spiritual purple
+    B: { primary: '#00695C', accent: '#A5D6A7', secondary: '#004D40' },  // Earth green
+    C: { primary: '#E65100', accent: '#FFCC80', secondary: '#BF360C' }   // Sunset warm
+  },
+  'fitness-gym': {
+    A: { primary: '#D32F2F', accent: '#FF8A80', secondary: '#B71C1C' },  // Energy red
+    B: { primary: '#1565C0', accent: '#42A5F5', secondary: '#0D47A1' },  // Power blue
+    C: { primary: '#2E7D32', accent: '#81C784', secondary: '#1B5E20' }   // Vital green
+  },
+
+  // ========== PROFESSIONAL SERVICES ==========
+  'law-firm': {
+    A: { primary: '#1B365D', accent: '#C9A227', secondary: '#0D1B2A' },  // Navy/gold classic
+    B: { primary: '#2E4057', accent: '#90A4AE', secondary: '#1A2639' },  // Slate/silver modern
+    C: { primary: '#3E2723', accent: '#D4AF37', secondary: '#1B0F0A' }   // Mahogany/gold
+  },
+  'healthcare': {
+    A: { primary: '#0277BD', accent: '#4FC3F7', secondary: '#01579B' },  // Medical blue
+    B: { primary: '#00695C', accent: '#80CBC4', secondary: '#004D40' },  // Healing teal
+    C: { primary: '#1565C0', accent: '#7C4DFF', secondary: '#283593' }   // Modern blue/violet
+  },
+  'real-estate': {
+    A: { primary: '#1B365D', accent: '#D4AF37', secondary: '#0D1B2A' },  // Classic navy/gold
+    B: { primary: '#004D40', accent: '#26A69A', secondary: '#00251A' },  // Green trust
+    C: { primary: '#37474F', accent: '#FF8F00', secondary: '#263238' }   // Modern slate/amber
+  },
+
+  // ========== TRADE SERVICES ==========
+  'plumber': {
+    A: { primary: '#0D47A1', accent: '#42A5F5', secondary: '#1565C0' },  // Reliable blue
+    B: { primary: '#2E7D32', accent: '#66BB6A', secondary: '#1B5E20' },  // Eco green
+    C: { primary: '#E65100', accent: '#FFB74D', secondary: '#BF360C' }   // Visible orange
+  },
+  'cleaning': {
+    A: { primary: '#00838F', accent: '#4DD0E1', secondary: '#006064' },  // Fresh teal
+    B: { primary: '#2E7D32', accent: '#A5D6A7', secondary: '#1B5E20' },  // Natural green
+    C: { primary: '#6A1B9A', accent: '#CE93D8', secondary: '#4A148C' }   // Clean purple
+  },
+  'auto-shop': {
+    A: { primary: '#C62828', accent: '#FF5252', secondary: '#B71C1C' },  // Garage red
+    B: { primary: '#1565C0', accent: '#42A5F5', secondary: '#0D47A1' },  // Mechanic blue
+    C: { primary: '#FF6F00', accent: '#FFB300', secondary: '#E65100' }   // High-vis orange
+  },
+
+  // ========== BUSINESS & TECH ==========
+  'saas': {
+    A: { primary: '#5C6BC0', accent: '#7C4DFF', secondary: '#3949AB' },  // Indigo/violet
+    B: { primary: '#00897B', accent: '#26A69A', secondary: '#00695C' },  // Growth teal
+    C: { primary: '#E91E63', accent: '#F48FB1', secondary: '#C2185B' }   // Bold pink
+  },
+  'ecommerce': {
+    A: { primary: '#1565C0', accent: '#FF6F00', secondary: '#0D47A1' },  // Trust blue/orange
+    B: { primary: '#2E7D32', accent: '#FFAB00', secondary: '#1B5E20' },  // Fresh green/gold
+    C: { primary: '#6A1B9A', accent: '#FFD600', secondary: '#4A148C' }   // Purple/gold
+  },
+  'school': {
+    A: { primary: '#1565C0', accent: '#FFA726', secondary: '#0D47A1' },  // Academic blue
+    B: { primary: '#2E7D32', accent: '#81C784', secondary: '#1B5E20' },  // Growth green
+    C: { primary: '#6A1B9A', accent: '#FFD54F', secondary: '#4A148C' }   // Creative purple
+  }
+};
+
+/**
+ * Get the color palette for an industry + variant combination
+ * @param {string} industry - Industry ID
+ * @param {string} variant - 'A', 'B', or 'C'
+ * @returns {object|null} - { primary, accent, secondary } or null if no custom palette
+ */
+function getVariantPalette(industry, variant) {
+  const palettes = VARIANT_PALETTES[industry];
+  if (!palettes) return null;
+  return palettes[variant.toUpperCase()] || palettes.A;
+}
+
+// ============================================
 // HELPER FUNCTIONS
 // ============================================
 
@@ -277,6 +405,7 @@ module.exports = {
   MODULE_TYPES,
   INDUSTRY_MODULES,
   MODULE_LABELS,
+  VARIANT_PALETTES,
   getIndustryModules,
   getModuleType,
   getModuleTypeDefinition,
@@ -284,5 +413,6 @@ module.exports = {
   getModuleNames,
   industryUsesModuleType,
   getAdminComponent,
-  moduleHasSSE
+  moduleHasSSE,
+  getVariantPalette
 };

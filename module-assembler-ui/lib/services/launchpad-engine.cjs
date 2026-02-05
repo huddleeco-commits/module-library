@@ -31,6 +31,7 @@ const {
   getModuleTypeDefinition,
   getModuleLabel,
   getModuleNames,
+  getVariantPalette,
   MODULE_TYPES,
   INDUSTRY_MODULES
 } = require('../../config/industry-modules.cjs');
@@ -403,6 +404,21 @@ async function generateSite(input, variant = 'A', mode = 'test', options = {}) {
 
   // Step 2: Build business data
   const businessData = buildBusinessData(detection, options.businessData || {});
+
+  // Step 2a: Apply variant-specific color palette
+  const variantPalette = getVariantPalette(detection.industry, variant);
+  if (variantPalette) {
+    businessData.theme = {
+      ...businessData.theme,
+      colors: {
+        ...(businessData.theme?.colors || {}),
+        primary: variantPalette.primary,
+        secondary: variantPalette.secondary,
+        accent: variantPalette.accent
+      }
+    };
+    console.log(`   Variant ${variant} palette: ${variantPalette.primary} / ${variantPalette.accent}`);
+  }
 
   // Step 2b: Apply trend overrides if provided
   const trendOverrides = options.trendOverrides;
