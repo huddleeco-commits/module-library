@@ -202,5 +202,42 @@
         "submitText": "Send Message"
       }
     }
-  }
+  },
+  "designResearch": {
+    "referenceWebsites": [
+      { "name": "Notion", "url": "https://www.notion.so", "notes": "Trial-focused with social proof logos" },
+      { "name": "Slack", "url": "https://slack.com", "notes": "Product video with feature showcase" },
+      { "name": "Figma", "url": "https://www.figma.com", "notes": "Demo-driven with case studies" }
+    ],
+    "layoutVariations": {
+      "A": { "name": "Trial-Focused", "description": "Trial CTA, logo carousel, feature grid" },
+      "B": { "name": "Demo-Driven", "description": "Product video, demo booking, integration logos" },
+      "C": { "name": "Enterprise-Ready", "description": "Enterprise badges, security certifications, sales contact" }
+    },
+    "winningElements": [
+      "Free trial CTA prominent",
+      "Social proof logo carousel",
+      "Feature comparison grid",
+      "Demo video or product tour",
+      "Customer case studies"
+    ],
+    "industryBenchmarks": {
+      "avgPageCount": 7,
+      "mustHavePages": ["features", "pricing", "about", "contact"],
+      "recommendedSections": ["hero", "social-proof", "features", "how-it-works", "pricing", "testimonials"],
+      "conversionGoals": ["trial-signup", "demo-request", "contact-sales"]
+    }
+  },
+  "demos": [
+    { "id": 1, "customer_name": "Sarah Chen", "customer_email": "schen@techcorp.com", "customer_phone": "(555) 111-2222", "date": "2025-02-06", "time": "10:00", "duration": 45, "company": "TechCorp Industries", "contact_title": "VP of Engineering", "team_size": "50-100", "status": "confirmed", "notes": "Interested in enterprise features, evaluating against Asana", "created_at": "2025-02-01T09:00:00Z" },
+    { "id": 2, "customer_name": "Michael Rodriguez", "customer_email": "mrodriguez@startupx.io", "customer_phone": "(555) 222-3333", "date": "2025-02-06", "time": "14:00", "duration": 30, "company": "StartupX", "contact_title": "Product Manager", "team_size": "10-25", "status": "confirmed", "notes": "Fast-growing startup, needs quick onboarding", "created_at": "2025-02-01T14:30:00Z" },
+    { "id": 3, "customer_name": "Jennifer Williams", "customer_email": "jwilliams@enterprise.co", "customer_phone": "(555) 333-4444", "date": "2025-02-06", "time": "16:00", "duration": 60, "company": "Enterprise Solutions Co", "contact_title": "CTO", "team_size": "500+", "status": "pending", "notes": "Enterprise evaluation - needs SSO and audit logs demo", "created_at": "2025-02-02T11:00:00Z" },
+    { "id": 4, "customer_name": "David Park", "customer_email": "dpark@innovatelabs.com", "customer_phone": "(555) 444-5555", "date": "2025-02-07", "time": "09:00", "duration": 45, "company": "Innovation Labs", "contact_title": "Operations Director", "team_size": "25-50", "status": "confirmed", "notes": "Migrating from Jira, needs import walkthrough", "created_at": "2025-02-02T16:00:00Z" },
+    { "id": 5, "customer_name": "Amanda Thompson", "customer_email": "athompson@agency.pro", "customer_phone": "(555) 555-6666", "date": "2025-02-05", "time": "11:00", "duration": 30, "company": "Digital Agency Pro", "contact_title": "Founder", "team_size": "5-10", "status": "completed", "notes": "Signed up for Pro plan after demo", "created_at": "2025-01-30T10:00:00Z" },
+    { "id": 6, "customer_name": "Kevin Lee", "customer_email": "klee@cloudnine.tech", "customer_phone": "(555) 666-7777", "date": "2025-02-06", "time": "11:30", "duration": 45, "company": "CloudNine Tech", "contact_title": "Engineering Manager", "team_size": "100-250", "status": "confirmed", "notes": "Focus on API integrations with their stack", "created_at": "2025-02-03T08:00:00Z" },
+    { "id": 7, "customer_name": "Lisa Martinez", "customer_email": "lmartinez@dataflow.io", "customer_phone": "(555) 777-8888", "date": "2025-02-04", "time": "15:00", "duration": 30, "company": "DataFlow Analytics", "contact_title": "Head of Product", "team_size": "25-50", "status": "cancelled", "notes": "Went with competitor - budget constraints", "created_at": "2025-01-28T13:00:00Z" },
+    { "id": 8, "customer_name": "Robert Anderson", "customer_email": "randerson@megacorp.com", "customer_phone": "(555) 888-9999", "date": "2025-02-07", "time": "14:00", "duration": 60, "company": "MegaCorp International", "contact_title": "Digital Transformation Lead", "team_size": "1000+", "status": "pending", "notes": "Global rollout consideration - 15 countries", "created_at": "2025-02-03T15:00:00Z" },
+    { "id": 9, "customer_name": "Emily Davis", "customer_email": "edavis@creativestudio.com", "customer_phone": "(555) 999-0000", "date": "2025-02-03", "time": "10:00", "duration": 30, "company": "Creative Studio NYC", "contact_title": "Studio Director", "team_size": "10-25", "status": "completed", "notes": "Now on Business plan, very happy with features", "created_at": "2025-01-25T09:00:00Z" },
+    { "id": 10, "customer_name": "Christopher Moore", "customer_email": "cmoore@fintech.io", "customer_phone": "(555) 000-1111", "date": "2025-02-08", "time": "11:00", "duration": 45, "company": "FinTech Solutions", "contact_title": "VP Operations", "team_size": "50-100", "status": "confirmed", "notes": "Security compliance important - SOC 2 discussion needed", "created_at": "2025-02-04T10:00:00Z" }
+  ]
 }

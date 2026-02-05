@@ -204,5 +204,42 @@
         "submitText": "Send Message"
       }
     }
-  }
+  },
+  "designResearch": {
+    "referenceWebsites": [
+      { "name": "YogaWorks", "url": "https://www.yogaworks.com", "notes": "Class schedule focus with teacher profiles" },
+      { "name": "CorePower Yoga", "url": "https://www.corepoweryoga.com", "notes": "New student offer prominent, modern design" },
+      { "name": "Y7 Studio", "url": "https://www.y7-studio.com", "notes": "Hip, modern aesthetic with studio vibe" }
+    ],
+    "layoutVariations": {
+      "A": { "name": "Class Schedule Focus", "description": "Live schedule, class descriptions, instructor bios" },
+      "B": { "name": "Wellness Journey", "description": "Calming video, workshop calendar, retreat info" },
+      "C": { "name": "Community Studio", "description": "Studio philosophy, teacher spotlight, community events" }
+    },
+    "winningElements": [
+      "Class schedule with type and level filtering",
+      "New student/first class free offer",
+      "Instructor bios with certifications",
+      "Membership/class pack pricing options",
+      "Workshop and retreat information"
+    ],
+    "industryBenchmarks": {
+      "avgPageCount": 6,
+      "mustHavePages": ["schedule", "classes", "teachers", "pricing", "contact"],
+      "recommendedSections": ["hero", "todays-classes", "class-types", "instructors", "pricing", "new-student-offer"],
+      "conversionGoals": ["new-student-signup", "class-booking", "membership-purchase"]
+    }
+  },
+  "bookings": [
+    { "id": 1, "customer_name": "Emma Wilson", "customer_email": "ewilson@email.com", "customer_phone": "(555) 111-2222", "date": "2025-02-06", "time": "06:00", "duration": 60, "class_name": "Vinyasa Flow", "instructor": "Sarah Chen", "status": "confirmed", "notes": "Bringing own mat", "created_at": "2025-02-01T08:00:00Z" },
+    { "id": 2, "customer_name": "Olivia Thompson", "customer_email": "othompson@email.com", "customer_phone": "(555) 222-3333", "date": "2025-02-06", "time": "07:30", "duration": 75, "class_name": "Hot Power Yoga", "instructor": "Marcus Johnson", "status": "confirmed", "notes": "First hot yoga class - needs towel", "created_at": "2025-02-01T12:30:00Z" },
+    { "id": 3, "customer_name": "Ava Martinez", "customer_email": "amartinez@email.com", "customer_phone": "(555) 333-4444", "date": "2025-02-06", "time": "12:00", "duration": 60, "class_name": "Gentle/Beginner Yoga", "instructor": "Amy Williams", "status": "pending", "notes": "Complete beginner - nervous", "created_at": "2025-02-02T10:00:00Z" },
+    { "id": 4, "customer_name": "Sophia Brown", "customer_email": "sbrown@email.com", "customer_phone": "(555) 444-5555", "date": "2025-02-07", "time": "17:30", "duration": 75, "class_name": "Yin Yoga", "instructor": "Luna Martinez", "status": "confirmed", "notes": "Has hip injury - needs modifications", "created_at": "2025-02-02T14:00:00Z" },
+    { "id": 5, "customer_name": "Isabella Davis", "customer_email": "idavis@email.com", "customer_phone": "(555) 555-6666", "date": "2025-02-05", "time": "09:00", "duration": 60, "class_name": "Vinyasa Flow", "instructor": "Sarah Chen", "status": "completed", "notes": "Loved the class!", "created_at": "2025-01-30T09:00:00Z" },
+    { "id": 6, "customer_name": "Mia Anderson", "customer_email": "manderson@email.com", "customer_phone": "(555) 666-7777", "date": "2025-02-06", "time": "19:00", "duration": 60, "class_name": "Restorative Yoga", "instructor": "Luna Martinez", "status": "confirmed", "notes": "Stress relief needed - long work week", "created_at": "2025-02-03T08:30:00Z" },
+    { "id": 7, "customer_name": "Charlotte Lee", "customer_email": "clee@email.com", "customer_phone": "(555) 777-8888", "date": "2025-02-04", "time": "06:00", "duration": 60, "class_name": "Vinyasa Flow", "instructor": "Sarah Chen", "status": "cancelled", "notes": "Family emergency", "created_at": "2025-01-28T11:00:00Z" },
+    { "id": 8, "customer_name": "Amelia Taylor", "customer_email": "ataylor@email.com", "customer_phone": "(555) 888-9999", "date": "2025-02-07", "time": "12:00", "duration": 45, "class_name": "Meditation & Breathwork", "instructor": "Sarah Chen", "status": "pending", "notes": "Wants to improve focus for work", "created_at": "2025-02-03T16:00:00Z" },
+    { "id": 9, "customer_name": "Harper Garcia", "customer_email": "hgarcia@email.com", "customer_phone": "(555) 999-0000", "date": "2025-02-03", "time": "07:30", "duration": 75, "class_name": "Hot Power Yoga", "instructor": "Marcus Johnson", "status": "completed", "notes": "Great workout, will be back", "created_at": "2025-01-25T07:00:00Z" },
+    { "id": 10, "customer_name": "Evelyn Moore", "customer_email": "emoore@email.com", "customer_phone": "(555) 000-1111", "date": "2025-02-08", "time": "08:00", "duration": 60, "class_name": "Gentle/Beginner Yoga", "instructor": "Amy Williams", "status": "confirmed", "notes": "Prenatal - 5 months along", "created_at": "2025-02-04T10:00:00Z" }
+  ]
 }

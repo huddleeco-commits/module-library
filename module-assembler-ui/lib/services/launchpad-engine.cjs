@@ -10050,8 +10050,11 @@ function generateMenuRoutes(industry, businessData) {
     categoryIdCounter = 4;
   }
 
-  // Convert to JSON string for embedding
-  const menuDataStr = JSON.stringify(menuCategories, null, 2).replace(/'/g, "\\'");
+  // Escape for safe embedding in template literal: backticks, ${, and backslashes
+  const menuDataStr = JSON.stringify(menuCategories, null, 2)
+    .replace(/\\/g, '\\\\')
+    .replace(/`/g, '\\`')
+    .replace(/\$\{/g, '\\${');
 
   return `/**
  * Menu Routes - Public & Admin APIs with SSE
@@ -10585,7 +10588,11 @@ function generateCatalogRoutes(moduleName, industry, businessData, labelConfig) 
     categoryIdCounter = 5;
   }
 
-  const catalogDataStr = JSON.stringify(catalogData, null, 2).replace(/'/g, "\\'");
+  // Escape for safe embedding in template literal: backticks, ${, and backslashes
+  const catalogDataStr = JSON.stringify(catalogData, null, 2)
+    .replace(/\\/g, '\\\\')
+    .replace(/`/g, '\\`')
+    .replace(/\$\{/g, '\\${');
 
   return `/**
  * ${moduleTitle} Routes - Public & Admin APIs with SSE
@@ -11121,7 +11128,11 @@ function generateListingsRoutes(moduleName, industry, businessData, labelConfig)
     ];
   }
 
-  const listingsDataStr = JSON.stringify(listingsData, null, 2).replace(/'/g, "\\'");
+  // Escape for safe embedding in template literal: backticks, ${, and backslashes
+  const listingsDataStr = JSON.stringify(listingsData, null, 2)
+    .replace(/\\/g, '\\\\')
+    .replace(/`/g, '\\`')
+    .replace(/\$\{/g, '\\${');
 
   return `/**
  * ${moduleTitle} Routes - Public & Admin APIs with SSE

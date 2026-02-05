@@ -155,5 +155,42 @@
       },
       "disclaimer": "The information on this website is for general information purposes only. Nothing on this site should be taken as legal advice for any individual case or situation."
     }
-  }
+  },
+  "designResearch": {
+    "referenceWebsites": [
+      { "name": "Morgan & Morgan", "url": "https://www.forthepeople.com", "notes": "Results-driven with case results prominent" },
+      { "name": "Kirkland & Ellis", "url": "https://www.kirkland.com", "notes": "Corporate professional with expertise focus" },
+      { "name": "Nolo", "url": "https://www.nolo.com", "notes": "Client-centered with educational resources" }
+    ],
+    "layoutVariations": {
+      "A": { "name": "Consultation-Focused", "description": "Consultation form, case results, attorney profiles" },
+      "B": { "name": "Results-Driven", "description": "Results stats, case study cards, awards display" },
+      "C": { "name": "Client-Centered", "description": "Client testimonials video, practice area detail, empathy messaging" }
+    },
+    "winningElements": [
+      "Free consultation CTA",
+      "Case results/track record stats",
+      "Practice area descriptions",
+      "Attorney profiles with credentials",
+      "Client testimonials"
+    ],
+    "industryBenchmarks": {
+      "avgPageCount": 6,
+      "mustHavePages": ["practice-areas", "attorneys", "about", "contact"],
+      "recommendedSections": ["hero", "free-consultation", "practice-areas", "results", "attorneys", "contact"],
+      "conversionGoals": ["consultation-request", "case-inquiry", "attorney-contact"]
+    }
+  },
+  "consultations": [
+    { "id": 1, "customer_name": "Michael Thompson", "customer_email": "mthompson@email.com", "customer_phone": "(555) 111-2222", "date": "2025-02-06", "time": "10:00", "duration": 60, "practice_area": "Personal Injury", "attorney": "Richard Harrison", "status": "confirmed", "notes": "Car accident last month, other driver at fault", "created_at": "2025-02-01T09:00:00Z" },
+    { "id": 2, "customer_name": "Jennifer Garcia", "customer_email": "jgarcia@email.com", "customer_phone": "(555) 222-3333", "date": "2025-02-06", "time": "14:00", "duration": 60, "practice_area": "Family Law", "attorney": "Elena Martinez", "status": "confirmed", "notes": "Divorce consultation - married 12 years, 2 children", "created_at": "2025-02-01T14:30:00Z" },
+    { "id": 3, "customer_name": "David Wilson", "customer_email": "dwilson@email.com", "customer_phone": "(555) 333-4444", "date": "2025-02-06", "time": "16:00", "duration": 60, "practice_area": "Business Law", "attorney": "Thomas Chen", "status": "pending", "notes": "Starting LLC, needs operating agreement review", "created_at": "2025-02-02T11:00:00Z" },
+    { "id": 4, "customer_name": "Sarah Brown", "customer_email": "sbrown@email.com", "customer_phone": "(555) 444-5555", "date": "2025-02-07", "time": "09:00", "duration": 60, "practice_area": "Estate Planning", "attorney": "Sarah Williams", "status": "confirmed", "notes": "Wants to create will and trust for family", "created_at": "2025-02-02T16:00:00Z" },
+    { "id": 5, "customer_name": "Robert Martinez", "customer_email": "rmartinez@email.com", "customer_phone": "(555) 555-6666", "date": "2025-02-05", "time": "11:00", "duration": 60, "practice_area": "Personal Injury", "attorney": "Richard Harrison", "status": "completed", "notes": "Slip and fall at grocery store - signed retainer", "created_at": "2025-01-30T10:00:00Z" },
+    { "id": 6, "customer_name": "Amanda Lee", "customer_email": "alee@email.com", "customer_phone": "(555) 666-7777", "date": "2025-02-06", "time": "11:00", "duration": 60, "practice_area": "Family Law", "attorney": "Elena Martinez", "status": "confirmed", "notes": "Child custody modification - ex moving out of state", "created_at": "2025-02-03T09:00:00Z" },
+    { "id": 7, "customer_name": "Kevin Anderson", "customer_email": "kanderson@email.com", "customer_phone": "(555) 777-8888", "date": "2025-02-04", "time": "14:00", "duration": 60, "practice_area": "Criminal Defense", "attorney": "Richard Harrison", "status": "cancelled", "notes": "DUI charge - case dismissed by prosecution", "created_at": "2025-01-28T13:00:00Z" },
+    { "id": 8, "customer_name": "Lisa Taylor", "customer_email": "ltaylor@email.com", "customer_phone": "(555) 888-9999", "date": "2025-02-07", "time": "15:00", "duration": 60, "practice_area": "Real Estate", "attorney": "Thomas Chen", "status": "pending", "notes": "Commercial property dispute with neighbor", "created_at": "2025-02-03T15:00:00Z" },
+    { "id": 9, "customer_name": "James Moore", "customer_email": "jmoore@email.com", "customer_phone": "(555) 999-0000", "date": "2025-02-03", "time": "10:00", "duration": 60, "practice_area": "Business Law", "attorney": "Thomas Chen", "status": "completed", "notes": "Partnership dissolution - amicable split", "created_at": "2025-01-25T08:00:00Z" },
+    { "id": 10, "customer_name": "Michelle Davis", "customer_email": "mdavis@email.com", "customer_phone": "(555) 000-1111", "date": "2025-02-08", "time": "13:00", "duration": 60, "practice_area": "Personal Injury", "attorney": "Richard Harrison", "status": "confirmed", "notes": "Medical malpractice - misdiagnosis led to complications", "created_at": "2025-02-04T10:00:00Z" }
+  ]
 }

@@ -178,5 +178,99 @@
         "submitText": "Request Appointment"
       }
     }
-  }
+  },
+  "designResearch": {
+    "referenceWebsites": [
+      {
+        "name": "Firestone Complete Auto Care",
+        "url": "https://www.firestonecompleteautocare.com",
+        "notes": "Service menu with online scheduling",
+        "extractedTheme": {
+          "colors": {
+            "primary": "#c8102e",
+            "secondary": "#1a1a1a",
+            "accent": "#ffc72c",
+            "background": "#ffffff",
+            "text": "#1a1a1a"
+          },
+          "fonts": {
+            "heading": "Montserrat",
+            "body": "Open Sans"
+          },
+          "style": "bold",
+          "mood": "energetic"
+        }
+      },
+      {
+        "name": "NAPA AutoCare",
+        "url": "https://www.napaonline.com",
+        "notes": "Trust badges with warranty info",
+        "extractedTheme": {
+          "colors": {
+            "primary": "#003478",
+            "secondary": "#ffc72c",
+            "accent": "#e31937",
+            "background": "#f5f5f5",
+            "text": "#1a1a1a"
+          },
+          "fonts": {
+            "heading": "Oswald",
+            "body": "Roboto"
+          },
+          "style": "modern",
+          "mood": "professional"
+        }
+      },
+      {
+        "name": "Christian Brothers Automotive",
+        "url": "https://www.cbac.com",
+        "notes": "Trust-focused with transparent pricing",
+        "extractedTheme": {
+          "colors": {
+            "primary": "#1e3a5f",
+            "secondary": "#4a90d9",
+            "accent": "#f4a024",
+            "background": "#ffffff",
+            "text": "#2c3e50"
+          },
+          "fonts": {
+            "heading": "Poppins",
+            "body": "Lato"
+          },
+          "style": "modern",
+          "mood": "friendly"
+        }
+      }
+    ],
+    "layoutVariations": {
+      "A": { "name": "Service-First", "description": "Service menu, price transparency, online scheduling", "referenceIndex": 0 },
+      "B": { "name": "Trust-Builder", "description": "ASE certified badge, warranty info, review integration", "referenceIndex": 1 },
+      "C": { "name": "Full-Service", "description": "Shop tour video, brand logos, maintenance reminders", "referenceIndex": 2 }
+    },
+    "winningElements": [
+      "Online appointment scheduling",
+      "Service menu with transparent pricing",
+      "ASE certification display",
+      "Warranty information prominent",
+      "Customer reviews/ratings"
+    ],
+    "industryBenchmarks": {
+      "avgPageCount": 5,
+      "mustHavePages": ["services", "about", "contact"],
+      "recommendedSections": ["hero", "common-services", "full-services", "pricing", "reviews", "schedule"],
+      "conversionGoals": ["appointment-booking", "quote-request", "maintenance-signup"]
+    }
+  },
+  "appointments": [
+    { "id": 1, "customer_name": "Michael Thompson", "customer_email": "mthompson@email.com", "customer_phone": "(555) 111-2222", "date": "2025-02-06", "time": "08:00", "duration": 60, "service": "Oil Change - Synthetic", "vehicle": "2022 Toyota Camry", "status": "confirmed", "notes": "Customer prefers Mobil 1", "created_at": "2025-02-01T09:00:00Z" },
+    { "id": 2, "customer_name": "Jennifer Garcia", "customer_email": "jgarcia@email.com", "customer_phone": "(555) 222-3333", "date": "2025-02-06", "time": "09:30", "duration": 120, "service": "Brake Pad Replacement", "vehicle": "2019 Honda Accord", "status": "confirmed", "notes": "Front brakes squeaking for 2 weeks", "created_at": "2025-02-01T14:00:00Z" },
+    { "id": 3, "customer_name": "David Wilson", "customer_email": "dwilson@email.com", "customer_phone": "(555) 333-4444", "date": "2025-02-06", "time": "13:00", "duration": 60, "service": "Check Engine Diagnostics", "vehicle": "2018 Ford F-150", "status": "pending", "notes": "Check engine light came on yesterday", "created_at": "2025-02-02T10:00:00Z" },
+    { "id": 4, "customer_name": "Sarah Martinez", "customer_email": "smartinez@email.com", "customer_phone": "(555) 444-5555", "date": "2025-02-07", "time": "08:30", "duration": 90, "service": "A/C Recharge", "vehicle": "2020 Chevrolet Equinox", "status": "confirmed", "notes": "A/C blowing warm air", "created_at": "2025-02-02T15:00:00Z" },
+    { "id": 5, "customer_name": "Robert Brown", "customer_email": "rbrown@email.com", "customer_phone": "(555) 555-6666", "date": "2025-02-05", "time": "10:00", "duration": 45, "service": "Tire Rotation", "vehicle": "2021 Nissan Altima", "status": "completed", "notes": "Also checked tire pressure", "created_at": "2025-01-30T11:00:00Z" },
+    { "id": 6, "customer_name": "Amanda Lee", "customer_email": "alee@email.com", "customer_phone": "(555) 666-7777", "date": "2025-02-06", "time": "15:00", "duration": 180, "service": "Timing Belt", "vehicle": "2016 Honda Civic", "status": "confirmed", "notes": "At 90k miles, due for replacement", "created_at": "2025-02-03T08:30:00Z" },
+    { "id": 7, "customer_name": "Kevin Anderson", "customer_email": "kanderson@email.com", "customer_phone": "(555) 777-8888", "date": "2025-02-04", "time": "11:00", "duration": 60, "service": "Oil Change - Conventional", "vehicle": "2015 Chevrolet Silverado", "status": "cancelled", "notes": "Customer changed to DIY", "created_at": "2025-01-28T12:00:00Z" },
+    { "id": 8, "customer_name": "Lisa Taylor", "customer_email": "ltaylor@email.com", "customer_phone": "(555) 888-9999", "date": "2025-02-07", "time": "14:00", "duration": 120, "service": "Transmission Service", "vehicle": "2017 BMW 328i", "status": "pending", "notes": "Transmission slipping at highway speeds", "created_at": "2025-02-03T16:00:00Z" },
+    { "id": 9, "customer_name": "James Moore", "customer_email": "jmoore@email.com", "customer_phone": "(555) 999-0000", "date": "2025-02-03", "time": "09:00", "duration": 60, "service": "Fluid Flush", "vehicle": "2019 Audi A4", "status": "completed", "notes": "Coolant flush completed successfully", "created_at": "2025-01-25T10:00:00Z" },
+    { "id": 10, "customer_name": "Michelle Davis", "customer_email": "mdavis@email.com", "customer_phone": "(555) 000-1111", "date": "2025-02-08", "time": "08:00", "duration": 240, "service": "Engine Repair", "vehicle": "2014 Mercedes C300", "status": "confirmed", "notes": "Knocking sound from engine - needs full inspection", "created_at": "2025-02-04T09:00:00Z" }
+  ]
 }

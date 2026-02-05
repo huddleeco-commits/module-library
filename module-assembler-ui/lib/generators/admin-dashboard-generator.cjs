@@ -432,7 +432,7 @@ export default function Sidebar() {
       </nav>
 
       <div style={styles.footer}>
-        <a href="http://localhost:5000" target="_blank" rel="noopener noreferrer" style={styles.viewSite}>
+        <a href="/" target="_blank" rel="noopener noreferrer" style={styles.viewSite}>
           <ExternalLink size={16} />
           View Public Site
         </a>
@@ -815,9 +815,9 @@ export default function DashboardHome() {
 
         {loading ? (
           <p style={styles.loading}>Loading...</p>
-        ) : recentReservations.length > 0 ? (
+        ) : recentItems.length > 0 ? (
           <div style={styles.reservationsList}>
-            {recentReservations.map(res => (
+            {recentItems.map(res => (
               <div key={res.id} style={styles.reservationItem}>
                 <div style={styles.resTime}>{res.time}</div>
                 <div style={styles.resInfo}>

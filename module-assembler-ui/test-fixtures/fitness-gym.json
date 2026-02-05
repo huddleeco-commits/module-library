@@ -105,6 +105,115 @@
       "address": "789 Fitness Blvd, Austin, TX 78704",
       "phone": "(512) 555-4567",
       "email": "info@testfitzone.com"
+    },
+    "fitnessProgram": {
+      "title": "The FitZone Method",
+      "description": "Our science-backed training methodology combines functional movement patterns with progressive overload principles. Every workout is designed to challenge your limits while respecting your body's need for recovery.",
+      "pillars": [
+        { "icon": "💪", "title": "Strength Foundation", "description": "Build functional strength that powers your everyday life through compound movements" },
+        { "icon": "🔥", "title": "Metabolic Conditioning", "description": "Torch calories and boost your metabolism with our signature HIIT protocols" },
+        { "icon": "🎯", "title": "Progressive Results", "description": "Track your gains with our app and see measurable improvement every week" }
+      ],
+      "image": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800"
+    },
+    "classSchedule": [
+      { "time": "6:00 AM", "duration": "45 min", "name": "HIIT Blast", "trainer": "Coach Mike", "intensity": "High", "spots": 4 },
+      { "time": "7:30 AM", "duration": "50 min", "name": "Spin Cycle", "trainer": "Sarah K.", "intensity": "Medium", "spots": 8 },
+      { "time": "12:00 PM", "duration": "60 min", "name": "Power Yoga", "trainer": "Jen L.", "intensity": "Low", "spots": 12 },
+      { "time": "5:30 PM", "duration": "45 min", "name": "Strength Circuit", "trainer": "Marcus C.", "intensity": "High", "spots": 2 },
+      { "time": "7:00 PM", "duration": "30 min", "name": "Core & Stretch", "trainer": "Amy R.", "intensity": "Low", "spots": 15 }
+    ],
+    "freeTrial": {
+      "badge": "Limited Time Offer",
+      "title": "Try FitZone Free for 7 Days",
+      "description": "Experience the full FitZone difference with zero commitment. Access all classes, equipment, and amenities on us.",
+      "includes": [
+        "Unlimited class access",
+        "Full gym equipment use",
+        "Free InBody fitness assessment",
+        "One-on-one trainer consultation",
+        "Premium locker room amenities"
+      ],
+      "cta": "Start Your Free Trial",
+      "note": "No credit card required. Cancel anytime.",
+      "image": "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=800"
+    },
+    "memberships": [
+      {
+        "name": "Basic",
+        "price": "29",
+        "frequency": "month",
+        "description": "Gym access during staffed hours",
+        "benefits": [
+          "Gym floor access",
+          "Locker room use",
+          "Free WiFi",
+          "FitZone app access"
+        ],
+        "highlighted": false
+      },
+      {
+        "name": "Premium",
+        "price": "49",
+        "frequency": "month",
+        "description": "24/7 access + unlimited classes",
+        "benefits": [
+          "24/7 keycard access",
+          "Unlimited group classes",
+          "Gym floor access",
+          "Locker room use",
+          "InBody assessments (quarterly)",
+          "10% off personal training"
+        ],
+        "highlighted": true
+      },
+      {
+        "name": "VIP",
+        "price": "79",
+        "frequency": "month",
+        "description": "Everything + 2 PT sessions/month",
+        "benefits": [
+          "All Premium benefits",
+          "2 personal training sessions/month",
+          "Priority class booking",
+          "Towel service included",
+          "Guest passes (2/month)",
+          "20% off merchandise"
+        ],
+        "highlighted": false
+      }
+    ],
+    "transformations": [
+      {
+        "name": "Jake T.",
+        "beforeImage": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
+        "afterImage": "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400",
+        "quote": "Lost 40 lbs in 6 months with the FitZone Method. The trainers kept me accountable and the community kept me motivated!",
+        "serviceTag": "Personal Training"
+      },
+      {
+        "name": "Maria S.",
+        "beforeImage": "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400",
+        "afterImage": "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400",
+        "quote": "After having my second baby, I thought I'd never feel strong again. FitZone proved me wrong!",
+        "serviceTag": "Group Classes"
+      },
+      {
+        "name": "David L.",
+        "beforeImage": "https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400",
+        "afterImage": "https://images.unsplash.com/photo-1567013127542-490d757e51fc?w=400",
+        "quote": "Went from barely doing 5 push-ups to competing in my first powerlifting meet. Coach Marcus is incredible.",
+        "serviceTag": "Strength Coaching"
+      }
+    ],
+    "socialProof": {
+      "rating": 4.8,
+      "reviewCount": 523,
+      "awards": [
+        { "icon": "🏆", "text": "Best Gym Austin 2024" },
+        { "icon": "⭐", "text": "Google 4.8 Stars" },
+        { "icon": "💪", "text": "IHRSA Member" }
+      ]
     }
   },
   "companionApp": {
@@ -145,5 +254,40 @@
       { "path": "/api/workouts", "method": "GET", "description": "Workout history" },
       { "path": "/api/classes", "method": "GET", "description": "Booked classes" }
     ]
-  }
+  },
+  "designResearch": {
+    "referenceWebsites": [
+      { "name": "Equinox", "url": "https://www.equinox.com", "notes": "Premium membership tiers with virtual tour" },
+      { "name": "Barry's Bootcamp", "url": "https://www.barrys.com", "notes": "Class-focused with booking integration" },
+      { "name": "Orangetheory", "url": "https://www.orangetheory.com", "notes": "Free trial prominent, results-driven messaging" }
+    ],
+    "layoutVariations": {
+      "A": { "name": "Trial-Focused", "description": "Trial signup form, membership comparison, schedule filter" },
+      "B": { "name": "Results-Driven", "description": "Before-after gallery, program cards, trainer booking" },
+      "C": { "name": "Community Focus", "description": "Class calendar, event signup, member spotlight" }
+    },
+    "winningElements": [
+      "Free trial/first class free CTA",
+      "Class schedule with filtering and booking",
+      "Membership tier comparison",
+      "Trainer/instructor profiles",
+      "Transformation success stories"
+    ],
+    "industryBenchmarks": {
+      "avgPageCount": 6,
+      "mustHavePages": ["classes", "membership", "trainers", "about", "contact"],
+      "recommendedSections": ["hero-video", "free-trial-cta", "membership-tiers", "class-schedule", "trainers", "facility-tour"],
+      "conversionGoals": ["free-trial", "membership-signup", "class-booking"]
+    }
+  },
+  "memberships": [
+    { "id": 1, "customer_name": "Michael Thompson", "customer_email": "mthompson@email.com", "customer_phone": "(512) 111-2222", "type": "Premium Membership", "message": "Interested in 24/7 access. Work odd hours as a nurse. When can I tour?", "status": "new", "priority": "high", "created_at": "2025-02-05T08:00:00Z" },
+    { "id": 2, "customer_name": "Sarah Williams", "customer_email": "swilliams@email.com", "customer_phone": "(512) 222-3333", "type": "Free Trial", "message": "Want to try the gym before committing. Interested in group classes", "status": "contacted", "priority": "normal", "created_at": "2025-02-04T14:00:00Z" },
+    { "id": 3, "customer_name": "David Martinez", "customer_email": "dmartinez@email.com", "customer_phone": "(512) 333-4444", "type": "VIP Membership", "message": "Looking for personal training included. Budget is around $100/month", "status": "qualified", "priority": "high", "created_at": "2025-02-03T10:30:00Z" },
+    { "id": 4, "customer_name": "Jennifer Lee", "customer_email": "jlee@email.com", "customer_phone": "(512) 444-5555", "type": "Basic Membership", "message": "Student looking for affordable gym access. Do you offer student discounts?", "status": "new", "priority": "normal", "created_at": "2025-02-05T11:00:00Z" },
+    { "id": 5, "customer_name": "Robert Brown", "customer_email": "rbrown@email.com", "customer_phone": "(512) 555-6666", "type": "Personal Training", "message": "Want to sign up for the 10-pack PT sessions. Available mornings only", "status": "converted", "priority": "normal", "created_at": "2025-01-30T09:00:00Z" },
+    { "id": 6, "customer_name": "Amanda Garcia", "customer_email": "agarcia@email.com", "customer_phone": "(512) 666-7777", "type": "Corporate Membership", "message": "HR manager at tech company. Interested in corporate rates for 50+ employees", "status": "contacted", "priority": "high", "created_at": "2025-02-02T15:00:00Z" },
+    { "id": 7, "customer_name": "Kevin Anderson", "customer_email": "kanderson@email.com", "customer_phone": "(512) 777-8888", "type": "Free Trial", "message": "Coming back after injury. Need to know about modifications and recovery programs", "status": "archived", "priority": "low", "created_at": "2025-01-25T12:00:00Z" },
+    { "id": 8, "customer_name": "Lisa Taylor", "customer_email": "ltaylor@email.com", "customer_phone": "(512) 888-9999", "type": "Premium Membership", "message": "Family of 4 looking to join. Any family discounts available?", "status": "new", "priority": "normal", "created_at": "2025-02-05T16:30:00Z" }
+  ]
 }

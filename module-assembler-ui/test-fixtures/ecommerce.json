@@ -186,5 +186,40 @@
         "submitText": "Send Message"
       }
     }
-  }
+  },
+  "designResearch": {
+    "referenceWebsites": [
+      { "name": "Everlane", "url": "https://www.everlane.com", "notes": "Sustainability-focused with transparent pricing" },
+      { "name": "Allbirds", "url": "https://www.allbirds.com", "notes": "Brand story with product showcase" },
+      { "name": "Glossier", "url": "https://www.glossier.com", "notes": "Community-driven with user-generated content" }
+    ],
+    "layoutVariations": {
+      "A": { "name": "Conversion-Optimized", "description": "Free shipping bar, quick add-cart, trust signals" },
+      "B": { "name": "Category-Focused", "description": "Category grid, product filters, collection pages" },
+      "C": { "name": "Brand Experience", "description": "Lifestyle video, brand story, community building" }
+    },
+    "winningElements": [
+      "Promotional banner with offers",
+      "Featured products with quick add",
+      "Category navigation grid",
+      "Trust badges (shipping, returns, security)",
+      "Newsletter signup with incentive"
+    ],
+    "industryBenchmarks": {
+      "avgPageCount": 6,
+      "mustHavePages": ["shop", "about", "contact", "faq"],
+      "recommendedSections": ["promo-bar", "hero", "bestsellers", "categories", "trust-badges", "reviews", "newsletter"],
+      "conversionGoals": ["product-purchase", "newsletter-signup", "account-creation"]
+    }
+  },
+  "orders": [
+    { "id": 1001, "customer_name": "Emily Watson", "customer_email": "ewatson@email.com", "customer_phone": "(555) 111-2222", "items": [{"name": "Organic Cotton Tee", "qty": 2, "size": "M", "color": "White"}, {"name": "Hemp Canvas Tote", "qty": 1, "color": "Natural"}], "total": 128.00, "status": "processing", "shipping_address": "123 Oak Street, Los Angeles, CA 90001", "notes": "", "created_at": "2025-02-05T14:30:00Z" },
+    { "id": 1002, "customer_name": "Michael Chen", "customer_email": "mchen@email.com", "customer_phone": "(555) 222-3333", "items": [{"name": "Recycled Denim Jacket", "qty": 1, "size": "L", "color": "Medium Wash"}], "total": 128.00, "status": "shipped", "shipping_address": "456 Pine Ave, San Francisco, CA 94102", "tracking": "1Z999AA10123456784", "created_at": "2025-02-04T10:00:00Z" },
+    { "id": 1003, "customer_name": "Sarah Johnson", "customer_email": "sjohnson@email.com", "customer_phone": "(555) 333-4444", "items": [{"name": "Bamboo Fiber Dress", "qty": 1, "size": "S", "color": "Terracotta"}, {"name": "Organic Linen Pants", "qty": 1, "size": "S", "color": "Natural"}], "total": 184.00, "status": "delivered", "shipping_address": "789 Maple Lane, Seattle, WA 98101", "created_at": "2025-02-02T16:00:00Z" },
+    { "id": 1004, "customer_name": "David Martinez", "customer_email": "dmartinez@email.com", "customer_phone": "(555) 444-5555", "items": [{"name": "Recycled Wool Sweater", "qty": 1, "size": "XL", "color": "Charcoal"}], "total": 135.00, "status": "pending", "shipping_address": "321 Elm Street, Portland, OR 97201", "notes": "Gift wrapping requested", "created_at": "2025-02-05T18:00:00Z" },
+    { "id": 1005, "customer_name": "Jennifer Lee", "customer_email": "jlee@email.com", "customer_phone": "(555) 555-6666", "items": [{"name": "Organic Cotton Tee", "qty": 3, "size": "L", "color": "Black"}, {"name": "Organic Cotton Tee", "qty": 2, "size": "L", "color": "Navy"}], "total": 225.00, "status": "processing", "shipping_address": "555 Cedar Drive, Denver, CO 80201", "notes": "", "created_at": "2025-02-05T11:00:00Z" },
+    { "id": 1006, "customer_name": "Robert Brown", "customer_email": "rbrown@email.com", "customer_phone": "(555) 666-7777", "items": [{"name": "Hemp Canvas Tote", "qty": 2, "color": "Black"}], "total": 76.00, "status": "cancelled", "shipping_address": "777 Birch Ave, Austin, TX 78701", "notes": "Customer requested cancellation - ordered wrong size", "created_at": "2025-02-03T09:00:00Z" },
+    { "id": 1007, "customer_name": "Amanda Garcia", "customer_email": "agarcia@email.com", "customer_phone": "(555) 777-8888", "items": [{"name": "Organic Linen Pants", "qty": 1, "size": "M", "color": "Khaki"}, {"name": "Bamboo Fiber Dress", "qty": 1, "size": "M", "color": "Sage"}], "total": 184.00, "status": "shipped", "shipping_address": "888 Mountain View, San Diego, CA 92101", "tracking": "1Z999AA10123456785", "created_at": "2025-02-03T15:00:00Z" },
+    { "id": 1008, "customer_name": "Kevin Anderson", "customer_email": "kanderson@email.com", "customer_phone": "(555) 888-9999", "items": [{"name": "Recycled Denim Jacket", "qty": 1, "size": "M", "color": "Light Wash"}, {"name": "Organic Cotton Tee", "qty": 2, "size": "M", "color": "Sage"}], "total": 218.00, "status": "processing", "shipping_address": "999 Lake View, Phoenix, AZ 85001", "notes": "", "created_at": "2025-02-05T20:00:00Z" }
+  ]
 }

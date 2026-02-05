@@ -1087,7 +1087,7 @@ class SecureSettingsPanel {
         
         try {
             // Load from backend
-            const response = await fetch('http://localhost:3000/api/user/settings', {
+            const response = await fetch('/api/user/settings', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -1156,7 +1156,7 @@ class SecureSettingsPanel {
         }
         
         try {
-            const response = await fetch('http://localhost:3000/api/user/settings', {
+            const response = await fetch('/api/user/settings', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1208,7 +1208,7 @@ class SecureSettingsPanel {
         if (!token) return;
         
         try {
-            const response = await fetch('http://localhost:3000/api/user/sync-settings', {
+            const response = await fetch('/api/user/sync-settings', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1382,7 +1382,7 @@ class SecureSettingsPanel {
         
         // Test webhook
         try {
-            const response = await fetch('http://localhost:3000/api/webhooks/test', {
+            const response = await fetch('/api/webhooks/test', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1417,7 +1417,7 @@ class SecureSettingsPanel {
         const token = localStorage.getItem('token');
         
         try {
-            const response = await fetch('http://localhost:3000/api/auth/2fa/enable', {
+            const response = await fetch('/api/auth/2fa/enable', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -1468,7 +1468,7 @@ class SecureSettingsPanel {
         const token = localStorage.getItem('token');
         
         try {
-            const response = await fetch('http://localhost:3000/api/auth/2fa/verify', {
+            const response = await fetch('/api/auth/2fa/verify', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1499,7 +1499,7 @@ class SecureSettingsPanel {
         const token = localStorage.getItem('token');
         
         try {
-            const response = await fetch('http://localhost:3000/api/auth/2fa/disable', {
+            const response = await fetch('/api/auth/2fa/disable', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -1545,7 +1545,7 @@ class SecureSettingsPanel {
         const token = localStorage.getItem('token');
         
         try {
-            const response = await fetch('http://localhost:3000/api/billing/cancel', {
+            const response = await fetch('/api/billing/cancel', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,

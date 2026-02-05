@@ -155,5 +155,40 @@
         "submitText": "Send Message"
       }
     }
-  }
+  },
+  "designResearch": {
+    "referenceWebsites": [
+      { "name": "Tartine Bakery", "url": "https://www.tartinebakery.com", "notes": "Artisan aesthetic with beautiful product photography" },
+      { "name": "Dominique Ansel Bakery", "url": "https://www.dominiqueansel.com", "notes": "Gallery showcase with custom order focus" },
+      { "name": "Levain Bakery", "url": "https://levainbakery.com", "notes": "Order-first design with shipping nationwide" }
+    ],
+    "layoutVariations": {
+      "A": { "name": "Gallery Showcase", "description": "Masonry gallery of products, daily menu board, pre-order system" },
+      "B": { "name": "Order-Focused", "description": "Quick add-to-cart, custom order form, pickup scheduler" },
+      "C": { "name": "Artisan Story", "description": "Behind-scenes video, ingredient sourcing, wholesale inquiry" }
+    },
+    "winningElements": [
+      "Custom order/cake inquiry forms",
+      "Gallery showcase with lightbox",
+      "Daily specials board",
+      "Online ordering with pickup times",
+      "Wholesale/catering information"
+    ],
+    "industryBenchmarks": {
+      "avgPageCount": 5,
+      "mustHavePages": ["menu", "custom-orders", "about", "contact"],
+      "recommendedSections": ["hero", "daily-fresh", "gallery", "custom-orders", "about", "location"],
+      "conversionGoals": ["online-order", "custom-order-inquiry", "visit-location"]
+    }
+  },
+  "orders": [
+    { "id": 1, "customer_name": "Emily Watson", "customer_email": "ewatson@email.com", "customer_phone": "(555) 111-2222", "type": "Custom Cake", "message": "Wedding cake for 150 guests. 3-tier, white fondant with gold accents and fresh flowers. Date: March 15th", "status": "contacted", "priority": "high", "created_at": "2025-02-01T10:00:00Z" },
+    { "id": 2, "customer_name": "Michael Chen", "customer_email": "mchen@email.com", "customer_phone": "(555) 222-3333", "type": "Daily Order", "items": [{"name": "Butter Croissant", "qty": 6}, {"name": "Sourdough Loaf", "qty": 2}], "total": 43.00, "pickup_date": "2025-02-06", "status": "confirmed", "notes": "Weekly standing order", "created_at": "2025-02-05T20:00:00Z" },
+    { "id": 3, "customer_name": "Sarah Johnson", "customer_email": "sjohnson@email.com", "customer_phone": "(555) 333-4444", "type": "Custom Cake", "message": "Birthday cake for 10-year-old. Minecraft theme, serves 20, chocolate with vanilla frosting", "status": "new", "priority": "normal", "created_at": "2025-02-04T14:30:00Z" },
+    { "id": 4, "customer_name": "David Martinez", "customer_email": "dmartinez@email.com", "customer_phone": "(555) 444-5555", "type": "Catering", "message": "Office breakfast catering for 30 people. Assorted pastries, croissants, and muffins. Thursday 8am delivery", "status": "qualified", "priority": "high", "created_at": "2025-02-03T09:00:00Z" },
+    { "id": 5, "customer_name": "Jennifer Lee", "customer_email": "jlee@email.com", "customer_phone": "(555) 555-6666", "type": "Daily Order", "items": [{"name": "Cinnamon Roll", "qty": 4}, {"name": "Almond Croissant", "qty": 2}], "total": 33.00, "pickup_date": "2025-02-06", "status": "ready", "notes": "", "created_at": "2025-02-05T19:00:00Z" },
+    { "id": 6, "customer_name": "Robert Thompson", "customer_email": "rthompson@email.com", "customer_phone": "(555) 666-7777", "type": "Wholesale", "message": "Local coffee shop interested in carrying your croissants. Looking for daily delivery of 24 items", "status": "contacted", "priority": "high", "created_at": "2025-02-02T11:00:00Z" },
+    { "id": 7, "customer_name": "Amanda Brown", "customer_email": "abrown@email.com", "customer_phone": "(555) 777-8888", "type": "Custom Cake", "message": "Baby shower cake, gender neutral. Serves 30, lemon flavor with cream cheese frosting", "status": "converted", "priority": "normal", "created_at": "2025-01-28T16:00:00Z" },
+    { "id": 8, "customer_name": "Kevin Wilson", "customer_email": "kwilson@email.com", "customer_phone": "(555) 888-9999", "type": "Daily Order", "items": [{"name": "Baguette", "qty": 3}, {"name": "Focaccia", "qty": 1}, {"name": "Brownie", "qty": 4}], "total": 35.00, "pickup_date": "2025-02-06", "status": "confirmed", "notes": "Please slice the baguettes", "created_at": "2025-02-05T21:00:00Z" }
+  ]
 }

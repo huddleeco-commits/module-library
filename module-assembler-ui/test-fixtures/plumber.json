@@ -167,5 +167,40 @@
         "submitText": "Request Free Estimate"
       }
     }
-  }
+  },
+  "designResearch": {
+    "referenceWebsites": [
+      { "name": "Roto-Rooter", "url": "https://www.rotorooter.com", "notes": "Emergency-first with 24/7 prominent" },
+      { "name": "Mr. Rooter", "url": "https://www.mrrooter.com", "notes": "Trust badges and transparent pricing" },
+      { "name": "Benjamin Franklin Plumbing", "url": "https://www.benjaminfranklinplumbing.com", "notes": "Service guarantee focus" }
+    ],
+    "layoutVariations": {
+      "A": { "name": "Emergency-First", "description": "24/7 badge, click-to-call, instant quote form" },
+      "B": { "name": "Trust-Builder", "description": "License display, review integration, guarantee badge" },
+      "C": { "name": "Service-Focused", "description": "Problem solver, transparent pricing, area map" }
+    },
+    "winningElements": [
+      "Emergency contact prominent (24/7)",
+      "Service area map/coverage",
+      "Transparent upfront pricing",
+      "Licensing and insurance display",
+      "Customer reviews integration"
+    ],
+    "industryBenchmarks": {
+      "avgPageCount": 5,
+      "mustHavePages": ["services", "service-area", "about", "contact"],
+      "recommendedSections": ["emergency-banner", "hero", "services", "pricing", "service-area", "reviews"],
+      "conversionGoals": ["emergency-call", "quote-request", "service-booking"]
+    }
+  },
+  "quotes": [
+    { "id": 1, "customer_name": "Michael Johnson", "customer_email": "mjohnson@email.com", "customer_phone": "(555) 111-2222", "type": "Water Heater Replacement", "message": "50 gallon tank water heater is 15 years old and leaking. Need replacement quote ASAP", "status": "new", "priority": "high", "address": "123 Desert View, Phoenix, AZ 85001", "created_at": "2025-02-05T09:00:00Z" },
+    { "id": 2, "customer_name": "Sarah Williams", "customer_email": "swilliams@email.com", "customer_phone": "(555) 222-3333", "type": "Whole House Repipe", "message": "Older home with galvanized pipes. Getting low water pressure. Want quote for copper repipe", "status": "contacted", "priority": "high", "address": "456 Cactus Lane, Scottsdale, AZ 85251", "created_at": "2025-02-04T14:00:00Z" },
+    { "id": 3, "customer_name": "David Martinez", "customer_email": "dmartinez@email.com", "customer_phone": "(555) 333-4444", "type": "Drain Cleaning", "message": "Kitchen drain backing up. Tried plunger and Drano, no luck. Need professional help", "status": "qualified", "priority": "normal", "address": "789 Mesa Drive, Tempe, AZ 85281", "created_at": "2025-02-03T11:30:00Z" },
+    { "id": 4, "customer_name": "Jennifer Lee", "customer_email": "jlee@email.com", "customer_phone": "(555) 444-5555", "type": "Bathroom Remodel", "message": "Renovating master bathroom. Need quote for moving toilet, adding shower, installing new fixtures", "status": "contacted", "priority": "normal", "address": "321 Palm Street, Mesa, AZ 85201", "created_at": "2025-02-02T10:00:00Z" },
+    { "id": 5, "customer_name": "Robert Brown", "customer_email": "rbrown@email.com", "customer_phone": "(555) 555-6666", "type": "Leak Repair", "message": "Water spot on ceiling below upstairs bathroom. Suspect hidden leak", "status": "converted", "priority": "high", "address": "555 Sunset Blvd, Glendale, AZ 85301", "created_at": "2025-01-30T08:00:00Z" },
+    { "id": 6, "customer_name": "Amanda Garcia", "customer_email": "agarcia@email.com", "customer_phone": "(555) 666-7777", "type": "Sewer Line Camera Inspection", "message": "Buying older home, want sewer line inspected before closing. Need by Friday", "status": "new", "priority": "high", "address": "777 Canyon Road, Chandler, AZ 85224", "created_at": "2025-02-05T15:00:00Z" },
+    { "id": 7, "customer_name": "Kevin Anderson", "customer_email": "kanderson@email.com", "customer_phone": "(555) 777-8888", "type": "Tankless Water Heater", "message": "Interested in switching to tankless. Family of 4, 3 bathrooms. What do you recommend?", "status": "archived", "priority": "low", "address": "888 Mountain View, Gilbert, AZ 85234", "created_at": "2025-01-20T12:00:00Z" },
+    { "id": 8, "customer_name": "Lisa Taylor", "customer_email": "ltaylor@email.com", "customer_phone": "(555) 888-9999", "type": "Commercial Plumbing", "message": "Restaurant owner. Need quote for grease trap installation and maintenance program", "status": "contacted", "priority": "high", "address": "999 Business Park, Phoenix, AZ 85004", "created_at": "2025-02-04T09:00:00Z" }
+  ]
 }

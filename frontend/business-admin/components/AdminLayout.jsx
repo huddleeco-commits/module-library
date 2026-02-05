@@ -18,16 +18,10 @@ import {
   Loader
 } from 'lucide-react';
 
-// Get API URL - auto-detect production vs development
+// Get API URL - use env var or same-origin
 function getApiUrl() {
   if (import.meta.env?.VITE_API_URL) return import.meta.env.VITE_API_URL;
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return 'http://localhost:5000';
-    }
-  }
-  return ''; // Production: same origin
+  return ''; // Same origin for all environments
 }
 
 const API_URL = getApiUrl();

@@ -104,6 +104,129 @@
         { "name": "Marcus Williams", "role": "Master Colorist", "image": "https://images.unsplash.com/photo-1562322140-8baeececf3df?w=400", "bio": "Color specialist and Wella ambassador" },
         { "name": "Dr. Sarah Kim", "role": "Spa Director", "image": "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400", "bio": "Licensed esthetician and wellness expert" }
       ]
+    },
+    "salonProgram": {
+      "title": "The Luxe Philosophy",
+      "description": "We believe true beauty radiates from within. Our holistic approach combines world-class technique with personalized care, creating transformative experiences that nurture both body and soul.",
+      "pillars": [
+        { "icon": "✨", "title": "Personalized Consultations", "description": "Every service begins with understanding your unique goals, lifestyle, and preferences" },
+        { "icon": "🌿", "title": "Clean Luxury Products", "description": "We exclusively use organic, cruelty-free products from the world's finest brands" },
+        { "icon": "💎", "title": "Master Artisans", "description": "Our team holds advanced certifications and trains with industry leaders annually" }
+      ],
+      "image": "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800"
+    },
+    "newClientGuide": {
+      "title": "Your First Visit at Luxe",
+      "introText": "We want every moment of your experience to be relaxing and worry-free. Here's what to expect when you visit us for the first time.",
+      "steps": [
+        { "title": "Book Online", "description": "Select your desired service and preferred stylist or therapist. First-time guests receive 20% off!" },
+        { "title": "Arrive & Unwind", "description": "Please arrive 15 minutes early to enjoy our relaxation lounge and complete a brief consultation form." },
+        { "title": "Personalized Consultation", "description": "Your provider will discuss your goals, preferences, and any concerns before beginning your service." },
+        { "title": "Your Experience", "description": "Relax and enjoy while our experts work their magic. Complimentary refreshments and WiFi included." }
+      ],
+      "tips": [
+        "Wear comfortable, loose-fitting clothing for spa services",
+        "Please inform us of any allergies, sensitivities, or medical conditions",
+        "Photos or Pinterest boards of desired styles are always welcome",
+        "Gratuity is not included but greatly appreciated (industry standard: 18-20%)"
+      ]
+    },
+    "memberships": [
+      {
+        "name": "Essential",
+        "price": 99,
+        "frequency": "month",
+        "description": "Perfect for maintaining your look",
+        "benefits": [
+          "1 signature service monthly (up to $150 value)",
+          "10% off additional services",
+          "15% off retail products",
+          "Priority booking access"
+        ],
+        "highlighted": false
+      },
+      {
+        "name": "Premium",
+        "price": 179,
+        "frequency": "month",
+        "description": "Our most popular membership",
+        "benefits": [
+          "2 signature services monthly (up to $300 value)",
+          "20% off additional services",
+          "25% off retail products",
+          "Priority booking & same-day availability",
+          "Complimentary birthday treatment",
+          "2 guest passes per year"
+        ],
+        "highlighted": true
+      },
+      {
+        "name": "VIP",
+        "price": 299,
+        "frequency": "month",
+        "description": "The ultimate luxury experience",
+        "benefits": [
+          "Unlimited signature services",
+          "30% off premium add-ons",
+          "35% off retail products",
+          "Dedicated personal concierge",
+          "Exclusive member events",
+          "Complimentary upgrades when available"
+        ],
+        "highlighted": false
+      }
+    ],
+    "transformations": [
+      {
+        "name": "Sarah M.",
+        "beforeImage": "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400",
+        "afterImage": "https://images.unsplash.com/photo-1492106087820-71f1a00d2b11?w=400",
+        "quote": "I walked in feeling invisible and left feeling like a movie star. The balayage completely transformed my look!",
+        "serviceTag": "Balayage Color"
+      },
+      {
+        "name": "Jennifer L.",
+        "beforeImage": "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400",
+        "afterImage": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400",
+        "quote": "After the facial series, my skin has never looked better. I finally feel confident without makeup!",
+        "serviceTag": "Luxe Facial Series"
+      },
+      {
+        "name": "Michelle K.",
+        "beforeImage": "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400",
+        "afterImage": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400",
+        "quote": "My wedding day look was absolutely perfect. The team made me feel like a princess!",
+        "serviceTag": "Bridal Package"
+      }
+    ],
+    "seasonalPackages": [
+      {
+        "name": "Summer Glow Package",
+        "description": "Bronzing facial, beach waves styling, and gel mani-pedi",
+        "price": 299,
+        "originalPrice": 385,
+        "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400",
+        "tag": "Summer Special",
+        "endDate": "2024-08-31"
+      },
+      {
+        "name": "Bridal Beauty Prep",
+        "description": "3-session facial series, hair trial, and day-of styling",
+        "price": 599,
+        "originalPrice": 750,
+        "image": "https://images.unsplash.com/photo-1519741497674-611481863552?w=400",
+        "tag": "Wedding Season",
+        "endDate": "2024-10-31"
+      }
+    ],
+    "socialProof": {
+      "rating": 4.9,
+      "reviewCount": 847,
+      "awards": [
+        { "icon": "🏆", "text": "Best Salon Beverly Hills 2024" },
+        { "icon": "⭐", "text": "Yelp Elite Recommended" },
+        { "icon": "🌿", "text": "Green Circle Certified" }
+      ]
     }
   },
   "companionApp": {
@@ -142,5 +265,42 @@
       { "path": "/api/auth/me", "method": "GET", "description": "User profile" },
       { "path": "/api/loyalty", "method": "GET", "description": "Rewards data" }
     ]
-  }
+  },
+  "designResearch": {
+    "referenceWebsites": [
+      { "name": "Drybar", "url": "https://www.thedrybar.com", "notes": "Booking-optimized with service menu and stylist selection" },
+      { "name": "Burke Williams Spa", "url": "https://www.burkewilliamsspa.com", "notes": "Serene luxury with package builder" },
+      { "name": "Glamsquad", "url": "https://www.glamsquad.com", "notes": "Modern booking flow with portfolio showcase" }
+    ],
+    "layoutVariations": {
+      "A": { "name": "Booking-Optimized", "description": "Inline booking widget, service menu pricing, stylist/therapist selection" },
+      "B": { "name": "Portfolio Showcase", "description": "Transformation slider, Instagram feed, video portfolio" },
+      "C": { "name": "Luxury Experience", "description": "Elegant animations, product shop, gift card purchase" }
+    },
+    "winningElements": [
+      "Online booking with service and provider selection",
+      "Service menu with transparent pricing",
+      "Before/after transformation gallery",
+      "Gift card purchase online",
+      "Team/stylist profiles with booking links"
+    ],
+    "industryBenchmarks": {
+      "avgPageCount": 6,
+      "mustHavePages": ["services", "book-now", "team", "about", "contact"],
+      "recommendedSections": ["hero", "book-now-widget", "services-grid", "team-carousel", "gallery", "reviews"],
+      "conversionGoals": ["appointment-booking", "gift-card-purchase", "product-sales"]
+    }
+  },
+  "appointments": [
+    { "id": 1, "customer_name": "Victoria Chen", "customer_email": "victoria.c@email.com", "customer_phone": "(310) 111-2222", "date": "2025-02-06", "time": "10:00", "duration": 90, "service": "Balayage Color", "stylist": "Marcus Williams", "status": "confirmed", "notes": "Wants natural sun-kissed look", "created_at": "2025-02-01T09:00:00Z" },
+    { "id": 2, "customer_name": "Sophia Martinez", "customer_email": "smartinez@email.com", "customer_phone": "(310) 222-3333", "date": "2025-02-06", "time": "11:00", "duration": 60, "service": "Luxe Facial", "stylist": "Dr. Sarah Kim", "status": "confirmed", "notes": "Sensitive skin - use gentle products", "created_at": "2025-02-01T14:00:00Z" },
+    { "id": 3, "customer_name": "Emma Thompson", "customer_email": "ethompson@email.com", "customer_phone": "(310) 333-4444", "date": "2025-02-06", "time": "14:00", "duration": 45, "service": "Women's Haircut", "stylist": "Isabella Chen", "status": "pending", "notes": "Considering a shorter style", "created_at": "2025-02-02T10:30:00Z" },
+    { "id": 4, "customer_name": "Olivia Johnson", "customer_email": "ojohnson@email.com", "customer_phone": "(310) 444-5555", "date": "2025-02-07", "time": "09:00", "duration": 120, "service": "Bridal Beauty Prep", "stylist": "Isabella Chen", "status": "confirmed", "notes": "Hair trial for wedding in March", "created_at": "2025-02-02T16:00:00Z" },
+    { "id": 5, "customer_name": "Ava Williams", "customer_email": "awilliams@email.com", "customer_phone": "(310) 555-6666", "date": "2025-02-05", "time": "15:00", "duration": 60, "service": "Swedish Massage", "stylist": "Dr. Sarah Kim", "status": "completed", "notes": "Focus on shoulders and neck", "created_at": "2025-01-30T11:00:00Z" },
+    { "id": 6, "customer_name": "Isabella Brown", "customer_email": "ibrown@email.com", "customer_phone": "(310) 666-7777", "date": "2025-02-06", "time": "16:00", "duration": 75, "service": "Gel Manicure + Pedicure", "stylist": "Lisa Park", "status": "confirmed", "notes": "French tips preferred", "created_at": "2025-02-03T09:00:00Z" },
+    { "id": 7, "customer_name": "Mia Davis", "customer_email": "mdavis@email.com", "customer_phone": "(310) 777-8888", "date": "2025-02-04", "time": "11:00", "duration": 90, "service": "Keratin Treatment", "stylist": "Marcus Williams", "status": "cancelled", "notes": "Rescheduling for next week", "created_at": "2025-01-28T14:30:00Z" },
+    { "id": 8, "customer_name": "Charlotte Wilson", "customer_email": "cwilson@email.com", "customer_phone": "(310) 888-9999", "date": "2025-02-07", "time": "13:00", "duration": 60, "service": "Deep Tissue Massage", "stylist": "Dr. Sarah Kim", "status": "pending", "notes": "Athletic recovery - ran marathon last week", "created_at": "2025-02-03T17:00:00Z" },
+    { "id": 9, "customer_name": "Amelia Taylor", "customer_email": "ataylor@email.com", "customer_phone": "(310) 999-0000", "date": "2025-02-03", "time": "10:00", "duration": 45, "service": "Single Process Color", "stylist": "Marcus Williams", "status": "completed", "notes": "Covering grays - usual shade", "created_at": "2025-01-25T08:00:00Z" },
+    { "id": 10, "customer_name": "Harper Anderson", "customer_email": "handerson@email.com", "customer_phone": "(310) 000-1111", "date": "2025-02-08", "time": "11:00", "duration": 150, "service": "Summer Glow Package", "stylist": "Isabella Chen", "status": "confirmed", "notes": "Going on vacation - wants beach-ready look", "created_at": "2025-02-04T10:00:00Z" }
+  ]
 }

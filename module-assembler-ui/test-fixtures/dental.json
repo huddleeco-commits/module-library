@@ -153,5 +153,42 @@
         "submitText": "Request Appointment"
       }
     }
-  }
+  },
+  "designResearch": {
+    "referenceWebsites": [
+      { "name": "Aspen Dental", "url": "https://www.aspendental.com", "notes": "Booking-optimized with insurance checker" },
+      { "name": "Smile Direct Club", "url": "https://smiledirectclub.com", "notes": "Transformation gallery with before/after" },
+      { "name": "Pacific Dental", "url": "https://pacificdentalservices.com", "notes": "Family-friendly with patient portal" }
+    ],
+    "layoutVariations": {
+      "A": { "name": "Booking-Optimized", "description": "Online scheduling, smile transformations, insurance checker" },
+      "B": { "name": "Family-Friendly", "description": "Warm imagery, family services, new patient portal" },
+      "C": { "name": "Technology-Forward", "description": "Technology showcase, virtual tour, telehealth option" }
+    },
+    "winningElements": [
+      "Online appointment scheduling",
+      "Insurance information and verification",
+      "New patient forms download",
+      "Smile gallery/before-after photos",
+      "Provider profiles with credentials"
+    ],
+    "industryBenchmarks": {
+      "avgPageCount": 6,
+      "mustHavePages": ["services", "book-appointment", "team", "insurance", "contact"],
+      "recommendedSections": ["hero", "book-appointment", "services", "smile-gallery", "team", "insurance"],
+      "conversionGoals": ["appointment-booking", "new-patient-inquiry", "insurance-verification"]
+    }
+  },
+  "appointments": [
+    { "id": 1, "customer_name": "Jennifer Wilson", "customer_email": "jwilson@email.com", "customer_phone": "(555) 111-2222", "date": "2025-02-06", "time": "09:00", "duration": 60, "service": "Dental Exam & Cleaning", "provider": "Dr. Sarah Chen", "status": "confirmed", "notes": "6-month checkup", "created_at": "2025-02-01T08:00:00Z" },
+    { "id": 2, "customer_name": "Robert Garcia", "customer_email": "rgarcia@email.com", "customer_phone": "(555) 222-3333", "date": "2025-02-06", "time": "10:30", "duration": 45, "service": "Filling", "provider": "Dr. Michael Park", "status": "confirmed", "notes": "Cavity on lower left molar", "created_at": "2025-02-01T14:30:00Z" },
+    { "id": 3, "customer_name": "Amanda Thompson", "customer_email": "athompson@email.com", "customer_phone": "(555) 333-4444", "date": "2025-02-06", "time": "14:00", "duration": 90, "service": "Teeth Whitening", "provider": "Dr. Sarah Chen", "status": "pending", "notes": "Wants brightest option available", "created_at": "2025-02-02T11:00:00Z" },
+    { "id": 4, "customer_name": "David Martinez", "customer_email": "dmartinez@email.com", "customer_phone": "(555) 444-5555", "date": "2025-02-07", "time": "08:00", "duration": 90, "service": "Root Canal", "provider": "Dr. Michael Park", "status": "confirmed", "notes": "Patient anxious - may need sedation", "created_at": "2025-02-02T16:00:00Z" },
+    { "id": 5, "customer_name": "Michelle Brown", "customer_email": "mbrown@email.com", "customer_phone": "(555) 555-6666", "date": "2025-02-05", "time": "11:00", "duration": 60, "service": "Dental Exam & Cleaning", "provider": "Lisa Thompson", "status": "completed", "notes": "No issues found", "created_at": "2025-01-30T09:00:00Z" },
+    { "id": 6, "customer_name": "Kevin Lee", "customer_email": "klee@email.com", "customer_phone": "(555) 666-7777", "date": "2025-02-06", "time": "15:30", "duration": 120, "service": "Crown", "provider": "Dr. Sarah Chen", "status": "confirmed", "notes": "Final fitting - crown ready from lab", "created_at": "2025-02-03T10:00:00Z" },
+    { "id": 7, "customer_name": "Sarah Kim", "customer_email": "skim@email.com", "customer_phone": "(555) 777-8888", "date": "2025-02-04", "time": "09:00", "duration": 30, "service": "Dental X-Rays", "provider": "Lisa Thompson", "status": "cancelled", "notes": "Patient rescheduled due to work conflict", "created_at": "2025-01-28T13:00:00Z" },
+    { "id": 8, "customer_name": "James Anderson", "customer_email": "janderson@email.com", "customer_phone": "(555) 888-9999", "date": "2025-02-07", "time": "13:00", "duration": 60, "service": "Bonding", "provider": "Dr. Michael Park", "status": "pending", "notes": "Chipped front tooth from sports injury", "created_at": "2025-02-03T15:30:00Z" },
+    { "id": 9, "customer_name": "Lisa Taylor", "customer_email": "ltaylor@email.com", "customer_phone": "(555) 999-0000", "date": "2025-02-03", "time": "14:00", "duration": 60, "service": "Dental Exam & Cleaning", "provider": "Dr. Sarah Chen", "status": "completed", "notes": "Recommended flossing more regularly", "created_at": "2025-01-25T08:00:00Z" },
+    { "id": 10, "customer_name": "Christopher Moore", "customer_email": "cmoore@email.com", "customer_phone": "(555) 000-1111", "date": "2025-02-08", "time": "10:00", "duration": 180, "service": "Dental Implant", "provider": "Dr. Michael Park", "status": "confirmed", "notes": "Initial implant placement - lower right", "created_at": "2025-02-04T09:00:00Z" }
+  ]
 }

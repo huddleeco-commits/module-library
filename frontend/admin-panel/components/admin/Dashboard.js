@@ -932,7 +932,7 @@ class AdminDashboard {
     
     async testBackendAPI() {
         try {
-            const response = await fetch('http://localhost:3000/api/health');
+            const response = await fetch('/api/health');
             return response.ok;
         } catch {
             return false;
@@ -941,7 +941,7 @@ class AdminDashboard {
     
     async testDatabase() {
         try {
-            const response = await fetch('http://localhost:3000/api/db-health');
+            const response = await fetch('/api/db-health');
             return response.ok;
         } catch {
             return false;

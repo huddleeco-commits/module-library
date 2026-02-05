@@ -177,5 +177,42 @@
         "submitText": "Request Appointment"
       }
     }
-  }
+  },
+  "designResearch": {
+    "referenceWebsites": [
+      { "name": "One Medical", "url": "https://www.onemedical.com", "notes": "Patient portal focus with telehealth emphasis" },
+      { "name": "Cleveland Clinic", "url": "https://my.clevelandclinic.org", "notes": "Comprehensive services with provider search" },
+      { "name": "Kaiser Permanente", "url": "https://healthy.kaiserpermanente.org", "notes": "Member portal with health resources" }
+    ],
+    "layoutVariations": {
+      "A": { "name": "Patient Portal Focus", "description": "Portal integration, provider search, insurance lookup" },
+      "B": { "name": "Service-Oriented", "description": "Service cards, provider bios, resource library" },
+      "C": { "name": "Community Health", "description": "Care philosophy, community outreach, telehealth" }
+    },
+    "winningElements": [
+      "Patient portal access/registration",
+      "Online appointment scheduling",
+      "Provider directory with specialties",
+      "Insurance accepted information",
+      "Telehealth/virtual visit option"
+    ],
+    "industryBenchmarks": {
+      "avgPageCount": 7,
+      "mustHavePages": ["services", "providers", "patient-portal", "insurance", "contact"],
+      "recommendedSections": ["hero", "patient-portal-cta", "services", "providers", "insurance", "locations"],
+      "conversionGoals": ["appointment-booking", "portal-registration", "telehealth-visit"]
+    }
+  },
+  "appointments": [
+    { "id": 1, "customer_name": "Sarah Thompson", "customer_email": "sthompson@email.com", "customer_phone": "(555) 111-2222", "date": "2025-02-06", "time": "09:00", "duration": 30, "type": "Annual Physical", "provider": "Dr. Priya Patel", "status": "confirmed", "notes": "Due for routine bloodwork", "created_at": "2025-02-01T08:00:00Z" },
+    { "id": 2, "customer_name": "James Wilson", "customer_email": "jwilson@email.com", "customer_phone": "(555) 222-3333", "date": "2025-02-06", "time": "10:00", "duration": 30, "type": "Well-Child Visit", "provider": "Dr. Michael Chen", "status": "confirmed", "notes": "2-year checkup, vaccines due", "created_at": "2025-02-01T14:00:00Z" },
+    { "id": 3, "customer_name": "Emily Garcia", "customer_email": "egarcia@email.com", "customer_phone": "(555) 333-4444", "date": "2025-02-06", "time": "11:30", "duration": 45, "type": "Prenatal Care", "provider": "Dr. Sarah Williams", "status": "pending", "notes": "20-week ultrasound appointment", "created_at": "2025-02-02T10:30:00Z" },
+    { "id": 4, "customer_name": "Robert Martinez", "customer_email": "rmartinez@email.com", "customer_phone": "(555) 444-5555", "date": "2025-02-07", "time": "08:30", "duration": 30, "type": "Chronic Disease Management", "provider": "Dr. Priya Patel", "status": "confirmed", "notes": "Diabetes follow-up, A1C check", "created_at": "2025-02-02T16:30:00Z" },
+    { "id": 5, "customer_name": "Amanda Brown", "customer_email": "abrown@email.com", "customer_phone": "(555) 555-6666", "date": "2025-02-05", "time": "14:00", "duration": 20, "type": "Acute Illness", "provider": "Dr. James Thompson", "status": "completed", "notes": "Flu symptoms - prescribed Tamiflu", "created_at": "2025-02-05T10:00:00Z" },
+    { "id": 6, "customer_name": "David Lee", "customer_email": "dlee@email.com", "customer_phone": "(555) 666-7777", "date": "2025-02-06", "time": "15:00", "duration": 30, "type": "Mental Health", "provider": "Dr. James Thompson", "status": "confirmed", "notes": "Anxiety follow-up, medication check", "created_at": "2025-02-03T09:00:00Z" },
+    { "id": 7, "customer_name": "Lisa Anderson", "customer_email": "landerson@email.com", "customer_phone": "(555) 777-8888", "date": "2025-02-04", "time": "09:00", "duration": 30, "type": "Annual GYN Exam", "provider": "Dr. Sarah Williams", "status": "cancelled", "notes": "Patient rescheduling for next month", "created_at": "2025-01-28T11:00:00Z" },
+    { "id": 8, "customer_name": "Kevin Taylor", "customer_email": "ktaylor@email.com", "customer_phone": "(555) 888-9999", "date": "2025-02-07", "time": "14:00", "duration": 45, "type": "Physical Therapy", "provider": "Dr. James Thompson", "status": "pending", "notes": "Knee rehabilitation after surgery", "created_at": "2025-02-03T14:00:00Z" },
+    { "id": 9, "customer_name": "Jennifer Moore", "customer_email": "jmoore@email.com", "customer_phone": "(555) 999-0000", "date": "2025-02-03", "time": "10:30", "duration": 30, "type": "Immunizations", "provider": "Dr. Michael Chen", "status": "completed", "notes": "School vaccines for 6-year-old", "created_at": "2025-01-25T09:00:00Z" },
+    { "id": 10, "customer_name": "Christopher Davis", "customer_email": "cdavis@email.com", "customer_phone": "(555) 000-1111", "date": "2025-02-08", "time": "09:30", "duration": 30, "type": "Telehealth Visit", "provider": "Dr. Priya Patel", "status": "confirmed", "notes": "Follow-up on blood pressure medication", "created_at": "2025-02-04T08:00:00Z" }
+  ]
 }

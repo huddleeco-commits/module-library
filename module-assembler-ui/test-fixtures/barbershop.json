@@ -153,5 +153,42 @@
         "buttonText": "Book Appointment"
       }
     }
-  }
+  },
+  "designResearch": {
+    "referenceWebsites": [
+      { "name": "Blind Barber", "url": "https://blindbarber.com", "notes": "Masculine aesthetic with walk-in status and product shop" },
+      { "name": "Fellow Barber", "url": "https://fellowbarber.com", "notes": "Modern portfolio with booking per barber" },
+      { "name": "Persons of Interest", "url": "https://personsofinterestbarber.com", "notes": "Community-focused with culture showcase" }
+    ],
+    "layoutVariations": {
+      "A": { "name": "Classic Masculine", "description": "Dark theme, walk-in indicator, barber booking" },
+      "B": { "name": "Modern Portfolio", "description": "Portfolio grid, product shop, style gallery" },
+      "C": { "name": "Community Shop", "description": "Shop culture, social feed, community events" }
+    },
+    "winningElements": [
+      "Online booking with barber selection",
+      "Walk-in availability status",
+      "Portfolio/gallery of work",
+      "Service menu with pricing",
+      "Product shop for grooming products"
+    ],
+    "industryBenchmarks": {
+      "avgPageCount": 5,
+      "mustHavePages": ["services", "book-now", "team", "about", "contact"],
+      "recommendedSections": ["hero", "services-pricing", "barber-profiles", "gallery", "walk-in-status", "contact"],
+      "conversionGoals": ["appointment-booking", "walk-in-visit", "product-purchase"]
+    }
+  },
+  "appointments": [
+    { "id": 1, "customer_name": "Marcus Johnson", "customer_email": "mjohnson@email.com", "customer_phone": "(555) 111-2222", "date": "2025-02-06", "time": "10:00", "duration": 45, "service": "Fade", "barber": "Marcus Williams", "status": "confirmed", "notes": "Mid fade, lineup included", "created_at": "2025-02-01T08:00:00Z" },
+    { "id": 2, "customer_name": "Derek Thompson", "customer_email": "dthompson@email.com", "customer_phone": "(555) 222-3333", "date": "2025-02-06", "time": "11:00", "duration": 30, "service": "Classic Haircut", "barber": "James Thompson", "status": "confirmed", "notes": "Regular customer - knows style", "created_at": "2025-02-01T12:00:00Z" },
+    { "id": 3, "customer_name": "Anthony Davis", "customer_email": "adavis@email.com", "customer_phone": "(555) 333-4444", "date": "2025-02-06", "time": "14:00", "duration": 75, "service": "The Works", "barber": "Carlos Rivera", "status": "pending", "notes": "First time - wants full grooming experience", "created_at": "2025-02-02T09:30:00Z" },
+    { "id": 4, "customer_name": "Jason Williams", "customer_email": "jwilliams@email.com", "customer_phone": "(555) 444-5555", "date": "2025-02-07", "time": "09:00", "duration": 45, "service": "Hot Towel Shave", "barber": "Carlos Rivera", "status": "confirmed", "notes": "Sensitive skin - take it slow", "created_at": "2025-02-02T14:00:00Z" },
+    { "id": 5, "customer_name": "Michael Brown", "customer_email": "mbrown@email.com", "customer_phone": "(555) 555-6666", "date": "2025-02-05", "time": "15:00", "duration": 30, "service": "Beard Trim", "barber": "Damon Lee", "status": "completed", "notes": "Keep it full, just shape up", "created_at": "2025-01-30T10:00:00Z" },
+    { "id": 6, "customer_name": "Chris Taylor", "customer_email": "ctaylor@email.com", "customer_phone": "(555) 666-7777", "date": "2025-02-06", "time": "16:30", "duration": 45, "service": "Fade", "barber": "Damon Lee", "status": "confirmed", "notes": "Skin fade with design on side", "created_at": "2025-02-03T08:00:00Z" },
+    { "id": 7, "customer_name": "Kevin Martinez", "customer_email": "kmartinez@email.com", "customer_phone": "(555) 777-8888", "date": "2025-02-04", "time": "12:00", "duration": 30, "service": "Kids Cut", "barber": "James Thompson", "status": "cancelled", "notes": "Son got sick, will reschedule", "created_at": "2025-01-28T11:00:00Z" },
+    { "id": 8, "customer_name": "Brandon Lee", "customer_email": "blee@email.com", "customer_phone": "(555) 888-9999", "date": "2025-02-07", "time": "11:00", "duration": 50, "service": "Father & Son", "barber": "Marcus Williams", "status": "pending", "notes": "Dad wants classic, son wants fade", "created_at": "2025-02-03T16:00:00Z" },
+    { "id": 9, "customer_name": "Ryan Anderson", "customer_email": "randerson@email.com", "customer_phone": "(555) 999-0000", "date": "2025-02-03", "time": "10:30", "duration": 90, "service": "Groom's Package", "barber": "Carlos Rivera", "status": "completed", "notes": "Wedding in 2 days - looked great!", "created_at": "2025-01-25T09:00:00Z" },
+    { "id": 10, "customer_name": "Tyler Moore", "customer_email": "tmoore@email.com", "customer_phone": "(555) 000-1111", "date": "2025-02-08", "time": "13:00", "duration": 30, "service": "Head Shave", "barber": "Damon Lee", "status": "confirmed", "notes": "First time going bald - nervous but ready", "created_at": "2025-02-04T07:30:00Z" }
+  ]
 }

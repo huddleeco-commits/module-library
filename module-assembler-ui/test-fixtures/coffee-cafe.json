@@ -1,7 +1,7 @@
 {
   "id": "coffee-cafe",
   "name": "Coffee Shop / Cafe",
-  "icon": "☕",
+  "icon": "coffee",
   "business": {
     "name": "Test Bean & Leaf",
     "location": "Portland, OR",
@@ -67,37 +67,889 @@
       ]
     },
     "menu": {
+      "settings": {
+        "showPriceSymbol": false,
+        "showPhotos": true,
+        "enableFilters": true,
+        "enableOrdering": true
+      },
       "categories": [
         {
-          "name": "Coffee",
+          "name": "Breakfast Sandwiches",
+          "description": "Served until 2pm",
           "items": [
-            { "name": "Drip Coffee", "price": 2.75, "description": "House blend" },
-            { "name": "Pour Over", "price": 4.50, "description": "Single origin" },
-            { "name": "Espresso", "price": 3.00, "description": "Double shot" },
-            { "name": "Americano", "price": 3.50, "description": "Espresso + water" },
-            { "name": "Latte", "price": 4.75, "description": "Classic or flavored" },
-            { "name": "Cappuccino", "price": 4.50, "description": "Equal parts espresso, milk, foam" }
+            {
+              "name": "Challah French Toast Sandwich",
+              "description": "Award-winning sandwich with bacon, over medium eggs, aged cheddar on thick-cut challah French toast",
+              "price": 17.99,
+              "image": "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400",
+              "badges": ["popular"],
+              "dietary": [],
+              "allergens": ["eggs", "dairy", "wheat"],
+              "modifiers": [
+                {
+                  "name": "Side Choice",
+                  "required": true,
+                  "options": [
+                    { "name": "House Potatoes", "price": 0 },
+                    { "name": "Fresh Fruit", "price": 0 },
+                    { "name": "Cheesy Grits", "price": 0 }
+                  ]
+                },
+                {
+                  "name": "Add Protein",
+                  "required": false,
+                  "options": [
+                    { "name": "Extra Bacon", "price": 3.99 },
+                    { "name": "Turkey Sausage", "price": 3.99 }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Classic Breakfast Sandwich",
+              "description": "Scrambled eggs, choice of bacon or sausage, American cheese on toasted brioche",
+              "price": 12.99,
+              "badges": [],
+              "dietary": [],
+              "allergens": ["eggs", "dairy", "wheat"]
+            },
+            {
+              "name": "Garden Veggie Sandwich",
+              "description": "Egg whites, spinach, roasted tomatoes, avocado, swiss on multigrain",
+              "price": 13.99,
+              "badges": [],
+              "dietary": ["vegetarian"],
+              "allergens": ["eggs", "dairy", "wheat"]
+            },
+            {
+              "name": "Spicy Chorizo Croissant",
+              "description": "House-made chorizo, scrambled eggs, pepper jack, chipotle aioli on butter croissant",
+              "price": 14.99,
+              "badges": ["new"],
+              "dietary": ["spicy"],
+              "allergens": ["eggs", "dairy", "wheat"]
+            },
+            {
+              "name": "Smoked Salmon Bagel",
+              "description": "House-cured salmon, cream cheese, capers, red onion, everything bagel",
+              "price": 16.99,
+              "badges": [],
+              "dietary": [],
+              "allergens": ["fish", "dairy", "wheat", "sesame"]
+            }
           ]
         },
         {
-          "name": "Tea & Other",
+          "name": "Breakfast Entrees",
+          "description": "All entrees served with choice of side",
           "items": [
-            { "name": "Loose Leaf Tea", "price": 3.50, "description": "Various selections" },
-            { "name": "Chai Latte", "price": 5.00, "description": "House-made chai" },
-            { "name": "Matcha Latte", "price": 5.50, "description": "Ceremonial grade" },
-            { "name": "Hot Chocolate", "price": 4.00, "description": "Dark chocolate" }
+            {
+              "name": "Two Eggs Any Style",
+              "description": "Farm-fresh eggs cooked your way, served with house potatoes and toast",
+              "price": 10.99,
+              "badges": [],
+              "dietary": ["vegetarian", "gluten-free"],
+              "allergens": ["eggs", "dairy"]
+            },
+            {
+              "name": "Steak & Eggs",
+              "description": "6oz flat iron steak, two eggs any style, house potatoes, toast",
+              "price": 22.99,
+              "image": "https://images.unsplash.com/photo-1504973960431-1c467e159aa4?w=400",
+              "badges": ["popular"],
+              "dietary": [],
+              "allergens": ["eggs", "dairy", "wheat"]
+            },
+            {
+              "name": "Chilaquiles Verdes",
+              "description": "Crispy tortilla chips, salsa verde, two fried eggs, queso fresco, crema, cilantro",
+              "price": 14.99,
+              "badges": [],
+              "dietary": ["vegetarian", "gluten-free"],
+              "allergens": ["eggs", "dairy"]
+            },
+            {
+              "name": "Corned Beef Hash",
+              "description": "House-made corned beef, crispy potatoes, two eggs any style, hollandaise",
+              "price": 16.99,
+              "badges": [],
+              "dietary": [],
+              "allergens": ["eggs", "dairy"]
+            }
           ]
         },
         {
-          "name": "Food",
+          "name": "Benedicts",
+          "description": "Served on English muffin with hollandaise and house potatoes",
           "items": [
-            { "name": "Avocado Toast", "price": 9, "description": "Sourdough, everything seasoning" },
-            { "name": "Breakfast Burrito", "price": 10, "description": "Eggs, cheese, veggies" },
-            { "name": "Fresh Pastry", "price": 4, "description": "Baker's selection" },
-            { "name": "Acai Bowl", "price": 12, "description": "Organic acai, granola, fruit" }
+            {
+              "name": "Classic Eggs Benedict",
+              "description": "Canadian bacon, poached eggs, house-made hollandaise",
+              "price": 15.99,
+              "image": "https://images.unsplash.com/photo-1608039829572-9b3a9f5c1e29?w=400",
+              "badges": ["popular"],
+              "dietary": [],
+              "allergens": ["eggs", "dairy", "wheat"]
+            },
+            {
+              "name": "Florentine Benedict",
+              "description": "Sauteed spinach, roasted tomato, poached eggs, hollandaise",
+              "price": 14.99,
+              "badges": [],
+              "dietary": ["vegetarian"],
+              "allergens": ["eggs", "dairy", "wheat"]
+            },
+            {
+              "name": "Crab Cake Benedict",
+              "description": "House-made crab cakes, poached eggs, old bay hollandaise",
+              "price": 19.99,
+              "badges": ["chef-pick"],
+              "dietary": [],
+              "allergens": ["eggs", "dairy", "wheat", "shellfish"]
+            },
+            {
+              "name": "Avocado Benedict",
+              "description": "Fresh avocado, heirloom tomato, poached eggs, cilantro hollandaise",
+              "price": 15.99,
+              "badges": [],
+              "dietary": ["vegetarian"],
+              "allergens": ["eggs", "dairy", "wheat"]
+            }
+          ]
+        },
+        {
+          "name": "3 Egg Omelettes",
+          "description": "Served with house potatoes and toast",
+          "items": [
+            {
+              "name": "Garden Vegetable Omelette",
+              "description": "Zucchini, yellow squash, roasted peppers, spinach, goat cheese",
+              "price": 14.99,
+              "badges": [],
+              "dietary": ["vegetarian", "gluten-free"],
+              "allergens": ["eggs", "dairy"]
+            },
+            {
+              "name": "Denver Omelette",
+              "description": "Smoked ham, bell peppers, onions, cheddar cheese",
+              "price": 14.99,
+              "badges": [],
+              "dietary": ["gluten-free"],
+              "allergens": ["eggs", "dairy"]
+            },
+            {
+              "name": "Meat Lovers Omelette",
+              "description": "Bacon, sausage, ham, cheddar, topped with sausage gravy",
+              "price": 16.99,
+              "badges": [],
+              "dietary": [],
+              "allergens": ["eggs", "dairy", "wheat"]
+            },
+            {
+              "name": "Build Your Own Omelette",
+              "description": "Choose 3 items: veggies, meats, and cheeses",
+              "price": 13.99,
+              "badges": [],
+              "dietary": [],
+              "allergens": ["eggs"],
+              "modifiers": [
+                {
+                  "name": "Fillings (choose 3)",
+                  "required": true,
+                  "maxSelections": 3,
+                  "options": [
+                    { "name": "Bacon", "price": 0 },
+                    { "name": "Ham", "price": 0 },
+                    { "name": "Sausage", "price": 0 },
+                    { "name": "Mushrooms", "price": 0 },
+                    { "name": "Bell Peppers", "price": 0 },
+                    { "name": "Onions", "price": 0 },
+                    { "name": "Spinach", "price": 0 },
+                    { "name": "Tomatoes", "price": 0 },
+                    { "name": "Cheddar", "price": 0 },
+                    { "name": "Swiss", "price": 0 },
+                    { "name": "Goat Cheese", "price": 0 }
+                  ]
+                },
+                {
+                  "name": "Extra Items",
+                  "required": false,
+                  "options": [
+                    { "name": "Add Avocado", "price": 2.49 },
+                    { "name": "Add Extra Cheese", "price": 1.49 }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Griddle",
+          "description": "From the griddle with love",
+          "items": [
+            {
+              "name": "Buttermilk Pancakes",
+              "description": "Three fluffy buttermilk pancakes, maple syrup, whipped butter",
+              "price": 11.99,
+              "badges": [],
+              "dietary": ["vegetarian"],
+              "allergens": ["eggs", "dairy", "wheat"],
+              "modifiers": [
+                {
+                  "name": "Add Toppings",
+                  "required": false,
+                  "options": [
+                    { "name": "Blueberries", "price": 2.49 },
+                    { "name": "Chocolate Chips", "price": 1.99 },
+                    { "name": "Bananas", "price": 1.99 },
+                    { "name": "Nutella", "price": 2.49 }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Lemon Ricotta Pancakes",
+              "description": "Light and airy ricotta pancakes, lemon curd, fresh berries",
+              "price": 14.99,
+              "image": "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400",
+              "badges": ["chef-pick"],
+              "dietary": ["vegetarian"],
+              "allergens": ["eggs", "dairy", "wheat"]
+            },
+            {
+              "name": "Belgian Waffle",
+              "description": "Crispy Belgian waffle, powdered sugar, fresh strawberries, whipped cream",
+              "price": 12.99,
+              "badges": [],
+              "dietary": ["vegetarian"],
+              "allergens": ["eggs", "dairy", "wheat"]
+            },
+            {
+              "name": "Challah French Toast",
+              "description": "Thick-cut challah, vanilla custard, cinnamon sugar, maple syrup",
+              "price": 13.99,
+              "badges": ["popular"],
+              "dietary": ["vegetarian"],
+              "allergens": ["eggs", "dairy", "wheat"]
+            }
+          ]
+        },
+        {
+          "name": "Mexican Breakfast",
+          "description": "South of the border favorites",
+          "items": [
+            {
+              "name": "Breakfast Burrito",
+              "description": "Scrambled eggs, chorizo, black beans, cheese, pico de gallo, sour cream in flour tortilla",
+              "price": 14.99,
+              "badges": ["popular"],
+              "dietary": [],
+              "allergens": ["eggs", "dairy", "wheat"]
+            },
+            {
+              "name": "Huevos Rancheros",
+              "description": "Two fried eggs over crispy corn tortillas, ranchero sauce, black beans, queso fresco",
+              "price": 13.99,
+              "badges": [],
+              "dietary": ["vegetarian", "gluten-free"],
+              "allergens": ["eggs", "dairy"]
+            },
+            {
+              "name": "Breakfast Quesadilla",
+              "description": "Scrambled eggs, cheese, choice of bacon or veggies, salsa, sour cream",
+              "price": 12.99,
+              "badges": [],
+              "dietary": [],
+              "allergens": ["eggs", "dairy", "wheat"]
+            },
+            {
+              "name": "Machaca Con Huevos",
+              "description": "Shredded beef, scrambled eggs, peppers, onions, served with beans and tortillas",
+              "price": 15.99,
+              "badges": [],
+              "dietary": ["gluten-free"],
+              "allergens": ["eggs"]
+            }
+          ]
+        },
+        {
+          "name": "Tacos",
+          "description": "Served on corn tortillas with salsa verde",
+          "items": [
+            {
+              "name": "Breakfast Tacos",
+              "description": "Three tacos with scrambled eggs, choice of protein, cheese, pico",
+              "price": 12.99,
+              "badges": [],
+              "dietary": ["gluten-free"],
+              "allergens": ["eggs", "dairy"],
+              "modifiers": [
+                {
+                  "name": "Protein Choice",
+                  "required": true,
+                  "options": [
+                    { "name": "Bacon", "price": 0 },
+                    { "name": "Chorizo", "price": 0 },
+                    { "name": "Carnitas", "price": 0 },
+                    { "name": "Veggies", "price": 0 }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Fish Tacos",
+              "description": "Beer-battered cod, cabbage slaw, chipotle crema, pickled onions",
+              "price": 14.99,
+              "badges": [],
+              "dietary": [],
+              "allergens": ["fish", "wheat", "dairy"]
+            },
+            {
+              "name": "Carnitas Tacos",
+              "description": "Slow-roasted pork, cilantro, onions, salsa verde",
+              "price": 13.99,
+              "badges": [],
+              "dietary": ["gluten-free"],
+              "allergens": []
+            }
+          ]
+        },
+        {
+          "name": "Sandwiches",
+          "description": "Served with choice of side",
+          "items": [
+            {
+              "name": "Turkey Avocado Club",
+              "description": "Roasted turkey, bacon, avocado, lettuce, tomato, mayo on sourdough",
+              "price": 14.99,
+              "badges": ["popular"],
+              "dietary": [],
+              "allergens": ["wheat", "eggs"]
+            },
+            {
+              "name": "BLT",
+              "description": "Thick-cut bacon, lettuce, tomato, garlic aioli on toasted brioche",
+              "price": 12.99,
+              "badges": [],
+              "dietary": [],
+              "allergens": ["wheat", "eggs"]
+            },
+            {
+              "name": "Grilled Cheese",
+              "description": "Three cheese blend on sourdough, served with tomato soup",
+              "price": 11.99,
+              "badges": [],
+              "dietary": ["vegetarian"],
+              "allergens": ["wheat", "dairy"]
+            },
+            {
+              "name": "Chicken Pesto Panini",
+              "description": "Grilled chicken, house pesto, mozzarella, roasted red peppers on ciabatta",
+              "price": 14.99,
+              "image": "https://images.unsplash.com/photo-1481070555726-e2fe8357571d?w=400",
+              "badges": [],
+              "dietary": [],
+              "allergens": ["wheat", "dairy", "nuts"]
+            },
+            {
+              "name": "Veggie Wrap",
+              "description": "Hummus, cucumber, tomatoes, feta, mixed greens, balsamic in spinach wrap",
+              "price": 12.99,
+              "badges": [],
+              "dietary": ["vegetarian"],
+              "allergens": ["wheat", "dairy"]
+            }
+          ]
+        },
+        {
+          "name": "Burgers",
+          "description": "1/2 lb Angus beef patties, served with fries",
+          "items": [
+            {
+              "name": "Classic Smash Burger",
+              "description": "Two smashed patties, American cheese, lettuce, tomato, special sauce on brioche",
+              "price": 15.99,
+              "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400",
+              "badges": ["popular"],
+              "dietary": [],
+              "allergens": ["wheat", "dairy", "eggs"]
+            },
+            {
+              "name": "Bacon Cheddar Burger",
+              "description": "Angus patty, thick-cut bacon, aged cheddar, BBQ sauce, crispy onions",
+              "price": 16.99,
+              "badges": [],
+              "dietary": [],
+              "allergens": ["wheat", "dairy", "eggs"]
+            },
+            {
+              "name": "Mushroom Swiss Burger",
+              "description": "Angus patty, sauteed mushrooms, swiss cheese, truffle aioli",
+              "price": 16.99,
+              "badges": [],
+              "dietary": [],
+              "allergens": ["wheat", "dairy", "eggs"]
+            },
+            {
+              "name": "Black Bean Burger",
+              "description": "House-made black bean patty, avocado, chipotle aioli, pickled jalapenos",
+              "price": 14.99,
+              "badges": [],
+              "dietary": ["vegetarian"],
+              "allergens": ["wheat", "eggs"]
+            }
+          ]
+        },
+        {
+          "name": "Soups & Salads",
+          "description": "Fresh and healthy options",
+          "items": [
+            {
+              "name": "Soup of the Day",
+              "description": "Ask your server for today's selection",
+              "price": 6.99,
+              "badges": [],
+              "dietary": [],
+              "allergens": []
+            },
+            {
+              "name": "Caesar Salad",
+              "description": "Romaine, parmesan, croutons, house-made caesar dressing",
+              "price": 12.99,
+              "badges": [],
+              "dietary": ["vegetarian"],
+              "allergens": ["wheat", "dairy", "eggs", "fish"],
+              "modifiers": [
+                {
+                  "name": "Add Protein",
+                  "required": false,
+                  "options": [
+                    { "name": "Grilled Chicken", "price": 4.99 },
+                    { "name": "Grilled Salmon", "price": 7.99 },
+                    { "name": "Shrimp", "price": 6.99 }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Cobb Salad",
+              "description": "Mixed greens, grilled chicken, bacon, avocado, egg, blue cheese, tomato",
+              "price": 15.99,
+              "badges": [],
+              "dietary": ["gluten-free"],
+              "allergens": ["eggs", "dairy"]
+            },
+            {
+              "name": "Asian Chicken Salad",
+              "description": "Napa cabbage, grilled chicken, mandarin oranges, crispy wontons, sesame ginger dressing",
+              "price": 14.99,
+              "badges": [],
+              "dietary": [],
+              "allergens": ["wheat", "soy", "sesame"]
+            },
+            {
+              "name": "Quinoa Power Bowl",
+              "description": "Quinoa, roasted vegetables, chickpeas, kale, tahini dressing",
+              "price": 13.99,
+              "badges": ["new"],
+              "dietary": ["vegan", "gluten-free"],
+              "allergens": ["sesame"]
+            }
+          ]
+        },
+        {
+          "name": "Sides",
+          "description": "Perfect additions",
+          "items": [
+            { "name": "House Potatoes", "description": "Crispy seasoned potatoes", "price": 4.99, "dietary": ["vegan", "gluten-free"], "allergens": [] },
+            { "name": "Fresh Fruit", "description": "Seasonal fresh fruit cup", "price": 4.99, "dietary": ["vegan", "gluten-free"], "allergens": [] },
+            { "name": "Cheesy Grits", "description": "Creamy cheddar grits", "price": 4.99, "dietary": ["vegetarian", "gluten-free"], "allergens": ["dairy"] },
+            { "name": "Toast", "description": "Sourdough or wheat with butter", "price": 2.99, "dietary": ["vegetarian"], "allergens": ["wheat", "dairy"] },
+            { "name": "Bacon (3 strips)", "description": "Thick-cut applewood smoked", "price": 4.99, "dietary": ["gluten-free"], "allergens": [] },
+            { "name": "Sausage (2 links)", "description": "Pork or turkey", "price": 4.99, "dietary": ["gluten-free"], "allergens": [] },
+            { "name": "Avocado", "description": "Half fresh avocado", "price": 3.49, "dietary": ["vegan", "gluten-free"], "allergens": [] },
+            { "name": "Side Salad", "description": "Mixed greens, choice of dressing", "price": 5.99, "dietary": ["vegan", "gluten-free"], "allergens": [] }
+          ]
+        },
+        {
+          "name": "Coffee & Espresso",
+          "description": "Locally roasted, made with love",
+          "items": [
+            {
+              "name": "Drip Coffee",
+              "description": "House blend, light or dark roast",
+              "price": 2.99,
+              "badges": [],
+              "dietary": ["vegan", "gluten-free"],
+              "allergens": []
+            },
+            {
+              "name": "Pour Over",
+              "description": "Single origin, made to order",
+              "price": 4.99,
+              "badges": ["popular"],
+              "dietary": ["vegan", "gluten-free"],
+              "allergens": []
+            },
+            {
+              "name": "Espresso",
+              "description": "Double shot",
+              "price": 3.49,
+              "badges": [],
+              "dietary": ["vegan", "gluten-free"],
+              "allergens": []
+            },
+            {
+              "name": "Americano",
+              "description": "Espresso with hot water",
+              "price": 3.99,
+              "badges": [],
+              "dietary": ["vegan", "gluten-free"],
+              "allergens": []
+            },
+            {
+              "name": "Latte",
+              "description": "Espresso with steamed milk",
+              "price": 5.29,
+              "image": "https://images.unsplash.com/photo-1534778101976-62847782c213?w=400",
+              "badges": ["popular"],
+              "dietary": ["vegetarian", "gluten-free"],
+              "allergens": ["dairy"],
+              "modifiers": [
+                {
+                  "name": "Milk Choice",
+                  "required": false,
+                  "options": [
+                    { "name": "Oat Milk", "price": 0.79 },
+                    { "name": "Almond Milk", "price": 0.79 },
+                    { "name": "Coconut Milk", "price": 0.79 },
+                    { "name": "Soy Milk", "price": 0.79 }
+                  ]
+                },
+                {
+                  "name": "Flavor Add-Ins",
+                  "required": false,
+                  "options": [
+                    { "name": "Vanilla", "price": 0.69 },
+                    { "name": "Caramel", "price": 0.69 },
+                    { "name": "Hazelnut", "price": 0.69 },
+                    { "name": "Mocha", "price": 0.79 }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Cappuccino",
+              "description": "Espresso with equal parts steamed milk and foam",
+              "price": 5.29,
+              "badges": [],
+              "dietary": ["vegetarian", "gluten-free"],
+              "allergens": ["dairy"]
+            },
+            {
+              "name": "Mocha",
+              "description": "Espresso with chocolate and steamed milk",
+              "price": 5.79,
+              "badges": [],
+              "dietary": ["vegetarian", "gluten-free"],
+              "allergens": ["dairy"]
+            },
+            {
+              "name": "Macchiato",
+              "description": "Espresso marked with foam",
+              "price": 4.49,
+              "badges": [],
+              "dietary": ["vegetarian", "gluten-free"],
+              "allergens": ["dairy"]
+            }
+          ]
+        },
+        {
+          "name": "Specialty Lattes",
+          "description": "Signature craft drinks",
+          "items": [
+            {
+              "name": "Lavender Honey Latte",
+              "description": "Espresso, lavender syrup, local honey, steamed oat milk",
+              "price": 6.49,
+              "image": "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400",
+              "badges": ["popular", "new"],
+              "dietary": ["vegetarian", "gluten-free"],
+              "allergens": ["dairy"]
+            },
+            {
+              "name": "Brown Sugar Oat Latte",
+              "description": "Espresso, brown sugar syrup, oat milk, cinnamon",
+              "price": 6.29,
+              "badges": [],
+              "dietary": ["vegan", "gluten-free"],
+              "allergens": []
+            },
+            {
+              "name": "Maple Cinnamon Latte",
+              "description": "Espresso, real maple syrup, cinnamon, steamed milk",
+              "price": 5.99,
+              "badges": [],
+              "dietary": ["vegetarian", "gluten-free"],
+              "allergens": ["dairy"]
+            },
+            {
+              "name": "Pumpkin Spice Latte",
+              "description": "Seasonal favorite with real pumpkin, warm spices",
+              "price": 6.49,
+              "badges": ["popular"],
+              "dietary": ["vegetarian", "gluten-free"],
+              "allergens": ["dairy"]
+            },
+            {
+              "name": "Chai Latte",
+              "description": "House-made spiced chai concentrate with steamed milk",
+              "price": 5.49,
+              "badges": [],
+              "dietary": ["vegetarian", "gluten-free"],
+              "allergens": ["dairy"]
+            },
+            {
+              "name": "Matcha Latte",
+              "description": "Ceremonial grade matcha with steamed milk",
+              "price": 5.99,
+              "badges": [],
+              "dietary": ["vegetarian", "gluten-free"],
+              "allergens": ["dairy"]
+            }
+          ]
+        },
+        {
+          "name": "Cold Brews & Iced",
+          "description": "Cool and refreshing",
+          "items": [
+            {
+              "name": "Cold Brew",
+              "description": "24-hour steeped cold brew, smooth and bold",
+              "price": 4.49,
+              "badges": ["popular"],
+              "dietary": ["vegan", "gluten-free"],
+              "allergens": []
+            },
+            {
+              "name": "Nitro Cold Brew",
+              "description": "Cold brew infused with nitrogen, creamy texture",
+              "price": 5.49,
+              "image": "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400",
+              "badges": ["chef-pick"],
+              "dietary": ["vegan", "gluten-free"],
+              "allergens": []
+            },
+            {
+              "name": "Vietnamese Iced Coffee",
+              "description": "Bold espresso with sweetened condensed milk",
+              "price": 5.29,
+              "badges": [],
+              "dietary": ["vegetarian", "gluten-free"],
+              "allergens": ["dairy"]
+            },
+            {
+              "name": "Iced Americano",
+              "description": "Espresso over ice with cold water",
+              "price": 4.29,
+              "badges": [],
+              "dietary": ["vegan", "gluten-free"],
+              "allergens": []
+            },
+            {
+              "name": "Iced Latte",
+              "description": "Espresso with cold milk over ice",
+              "price": 5.49,
+              "badges": [],
+              "dietary": ["vegetarian", "gluten-free"],
+              "allergens": ["dairy"]
+            }
+          ]
+        },
+        {
+          "name": "Teas",
+          "description": "Premium loose leaf selections",
+          "items": [
+            {
+              "name": "Hot Tea",
+              "description": "Earl Grey, English Breakfast, Green, Chamomile, or Peppermint",
+              "price": 3.49,
+              "badges": [],
+              "dietary": ["vegan", "gluten-free"],
+              "allergens": []
+            },
+            {
+              "name": "London Fog",
+              "description": "Earl Grey, vanilla, steamed milk",
+              "price": 5.29,
+              "badges": [],
+              "dietary": ["vegetarian", "gluten-free"],
+              "allergens": ["dairy"]
+            },
+            {
+              "name": "Iced Tea",
+              "description": "House-brewed black tea or green tea",
+              "price": 2.99,
+              "badges": [],
+              "dietary": ["vegan", "gluten-free"],
+              "allergens": []
+            },
+            {
+              "name": "Thai Tea",
+              "description": "Sweet Thai tea with cream",
+              "price": 4.99,
+              "badges": [],
+              "dietary": ["vegetarian", "gluten-free"],
+              "allergens": ["dairy"]
+            }
+          ]
+        },
+        {
+          "name": "Other Drinks",
+          "description": "Non-coffee options",
+          "items": [
+            {
+              "name": "Hot Chocolate",
+              "description": "Belgian chocolate with steamed milk, whipped cream",
+              "price": 4.49,
+              "badges": [],
+              "dietary": ["vegetarian", "gluten-free"],
+              "allergens": ["dairy"]
+            },
+            {
+              "name": "Steamer",
+              "description": "Steamed milk with choice of flavor",
+              "price": 3.99,
+              "badges": [],
+              "dietary": ["vegetarian", "gluten-free"],
+              "allergens": ["dairy"]
+            },
+            {
+              "name": "Fresh Squeezed OJ",
+              "description": "Freshly squeezed orange juice",
+              "price": 4.99,
+              "badges": [],
+              "dietary": ["vegan", "gluten-free"],
+              "allergens": []
+            },
+            {
+              "name": "Smoothie",
+              "description": "Choice of Strawberry Banana, Mango, or Green Power",
+              "price": 6.99,
+              "badges": [],
+              "dietary": ["vegetarian", "gluten-free"],
+              "allergens": ["dairy"],
+              "modifiers": [
+                {
+                  "name": "Add Protein",
+                  "required": false,
+                  "options": [
+                    { "name": "Whey Protein", "price": 1.99 },
+                    { "name": "Peanut Butter", "price": 1.49 }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Lemonade",
+              "description": "House-made fresh lemonade",
+              "price": 3.99,
+              "badges": [],
+              "dietary": ["vegan", "gluten-free"],
+              "allergens": []
+            }
+          ]
+        },
+        {
+          "name": "Desserts",
+          "description": "Sweet treats baked in-house",
+          "items": [
+            {
+              "name": "Cinnamon Roll",
+              "description": "Giant house-made roll with cream cheese frosting",
+              "price": 5.99,
+              "image": "https://images.unsplash.com/photo-1509365465985-25d11c17e812?w=400",
+              "badges": ["popular"],
+              "dietary": ["vegetarian"],
+              "allergens": ["wheat", "dairy", "eggs"]
+            },
+            {
+              "name": "Croissant",
+              "description": "Butter croissant or chocolate croissant",
+              "price": 4.49,
+              "badges": [],
+              "dietary": ["vegetarian"],
+              "allergens": ["wheat", "dairy", "eggs"]
+            },
+            {
+              "name": "Blueberry Muffin",
+              "description": "Jumbo muffin bursting with blueberries",
+              "price": 3.99,
+              "badges": [],
+              "dietary": ["vegetarian"],
+              "allergens": ["wheat", "dairy", "eggs"]
+            },
+            {
+              "name": "Banana Bread",
+              "description": "Moist banana bread with walnuts",
+              "price": 3.99,
+              "badges": [],
+              "dietary": ["vegetarian"],
+              "allergens": ["wheat", "dairy", "eggs", "nuts"]
+            },
+            {
+              "name": "Chocolate Brownie",
+              "description": "Fudgy brownie with chocolate chips",
+              "price": 4.49,
+              "badges": [],
+              "dietary": ["vegetarian"],
+              "allergens": ["wheat", "dairy", "eggs"]
+            },
+            {
+              "name": "Cookie",
+              "description": "Chocolate chip, oatmeal raisin, or snickerdoodle",
+              "price": 2.99,
+              "badges": [],
+              "dietary": ["vegetarian"],
+              "allergens": ["wheat", "dairy", "eggs"]
+            }
+          ]
+        },
+        {
+          "name": "Add-Ons",
+          "description": "Customize your order",
+          "items": [
+            { "name": "Extra Shot", "description": "Add an extra espresso shot", "price": 0.99, "dietary": ["vegan", "gluten-free"], "allergens": [] },
+            { "name": "Flavor Syrup", "description": "Vanilla, caramel, hazelnut, mocha", "price": 0.69, "dietary": ["vegan", "gluten-free"], "allergens": [] },
+            { "name": "Alternative Milk", "description": "Oat, almond, coconut, or soy", "price": 0.79, "dietary": ["vegan", "gluten-free"], "allergens": [] },
+            { "name": "Whipped Cream", "description": "House-made whipped cream", "price": 0.49, "dietary": ["vegetarian", "gluten-free"], "allergens": ["dairy"] },
+            { "name": "Espresso Affogato", "description": "Shot of espresso poured over ice cream", "price": 3.99, "dietary": ["vegetarian", "gluten-free"], "allergens": ["dairy"] }
           ]
         }
-      ]
+      ],
+      "dietaryLegend": {
+        "vegetarian": { "icon": "leaf", "label": "Vegetarian", "color": "#22C55E" },
+        "vegan": { "icon": "seedling", "label": "Vegan", "color": "#16A34A" },
+        "gluten-free": { "icon": "wheat-off", "label": "Gluten-Free", "color": "#EAB308" },
+        "spicy": { "icon": "flame", "label": "Spicy", "color": "#EF4444" }
+      },
+      "badgeLegend": {
+        "popular": { "icon": "star", "label": "Popular", "color": "#F59E0B" },
+        "new": { "icon": "sparkles", "label": "New", "color": "#8B5CF6" },
+        "chef-pick": { "icon": "chef-hat", "label": "Chef's Pick", "color": "#10B981" }
+      },
+      "allergenLegend": {
+        "eggs": "Contains Eggs",
+        "dairy": "Contains Dairy",
+        "wheat": "Contains Wheat/Gluten",
+        "nuts": "Contains Tree Nuts",
+        "peanuts": "Contains Peanuts",
+        "shellfish": "Contains Shellfish",
+        "fish": "Contains Fish",
+        "soy": "Contains Soy",
+        "sesame": "Contains Sesame"
+      }
     },
     "about": {
       "story": "Test Bean & Leaf was born from a love of great coffee and community. Founded in 2017 by two barista friends, we've grown into Portland's favorite neighborhood cafe while staying true to our craft roots.",
@@ -116,7 +968,9 @@
         { "url": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800", "caption": "Fresh pour over" },
         { "url": "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=800", "caption": "Cozy interior" },
         { "url": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800", "caption": "Latte art" },
-        { "url": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=800", "caption": "Pastry selection" }
+        { "url": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=800", "caption": "Pastry selection" },
+        { "url": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800", "caption": "Morning brew" },
+        { "url": "https://images.unsplash.com/photo-1511920170033-f8396924c348?w=800", "caption": "Coffee beans" }
       ]
     }
   },
@@ -162,5 +1016,104 @@
       { "path": "/api/wallet", "method": "GET", "description": "Wallet balance" },
       { "path": "/api/orders", "method": "GET", "description": "Order history" }
     ]
-  }
+  },
+  "designResearch": {
+    "referenceWebsites": [
+      {
+        "name": "Blue Bottle Coffee",
+        "url": "https://bluebottlecoffee.com",
+        "notes": "Clean, minimal design with video hero and strong brand storytelling",
+        "extractedTheme": {
+          "colors": {
+            "primary": "#0f4c81",
+            "secondary": "#f5f5f5",
+            "accent": "#d4a574",
+            "background": "#ffffff",
+            "text": "#1a1a1a"
+          },
+          "fonts": {
+            "heading": "Tiempos Headline",
+            "body": "Founders Grotesk"
+          },
+          "style": "minimal",
+          "mood": "luxurious"
+        }
+      },
+      {
+        "name": "Stumptown Coffee",
+        "url": "https://www.stumptowncoffee.com",
+        "notes": "Photography-heavy with warm color palette and origin stories",
+        "extractedTheme": {
+          "colors": {
+            "primary": "#d35400",
+            "secondary": "#2c3e50",
+            "accent": "#f39c12",
+            "background": "#fdfcfb",
+            "text": "#2c3e50"
+          },
+          "fonts": {
+            "heading": "GT America",
+            "body": "GT America"
+          },
+          "style": "bold",
+          "mood": "energetic"
+        }
+      },
+      {
+        "name": "Intelligentsia Coffee",
+        "url": "https://www.intelligentsia.com",
+        "notes": "Modern ecommerce focus with subscription CTAs",
+        "extractedTheme": {
+          "colors": {
+            "primary": "#c41230",
+            "secondary": "#1a1a1a",
+            "accent": "#e74c3c",
+            "background": "#ffffff",
+            "text": "#1a1a1a"
+          },
+          "fonts": {
+            "heading": "Gotham",
+            "body": "Gotham"
+          },
+          "style": "modern",
+          "mood": "professional"
+        }
+      }
+    ],
+    "layoutVariations": {
+      "A": { "name": "Video-First Hero", "description": "Autoplay hero video showcasing brewing process, floating order button, animated menu cards", "referenceIndex": 0 },
+      "B": { "name": "Photography-Heavy", "description": "Full-bleed lifestyle images, hover-zoom gallery, Instagram feed integration", "referenceIndex": 1 },
+      "C": { "name": "Story-Driven", "description": "Parallax scrolling, origin timeline, team carousel, sourcing transparency", "referenceIndex": 2 }
+    },
+    "winningElements": [
+      "Online ordering integration with pickup scheduling",
+      "Loyalty program with points display and tier preview",
+      "Rotating seasonal drink highlights",
+      "Location finder with hours",
+      "Subscription/bag delivery option"
+    ],
+    "industryBenchmarks": {
+      "avgPageCount": 5,
+      "mustHavePages": ["menu", "locations", "about"],
+      "recommendedSections": ["hero", "featured-drinks", "about-preview", "loyalty-cta", "locations"],
+      "conversionGoals": ["online-order", "loyalty-signup", "visit-location"]
+    }
+  },
+  "reservations": [
+    { "id": 1, "customer_name": "Alex Turner", "customer_email": "alex.t@email.com", "customer_phone": "(503) 111-2222", "date": "2025-02-06", "time": "09:00", "party_size": 8, "event_type": "Meeting", "status": "confirmed", "notes": "Back room for team meeting, need wifi access", "created_at": "2025-02-01T08:00:00Z" },
+    { "id": 2, "customer_name": "Jessica Moore", "customer_email": "jmoore@email.com", "customer_phone": "(503) 222-3333", "date": "2025-02-06", "time": "14:00", "party_size": 12, "event_type": "Book Club", "status": "confirmed", "notes": "Monthly book club meeting", "created_at": "2025-02-01T10:30:00Z" },
+    { "id": 3, "customer_name": "Brian Lee", "customer_email": "blee@email.com", "customer_phone": "(503) 333-4444", "date": "2025-02-07", "time": "10:00", "party_size": 6, "event_type": "Study Group", "status": "pending", "notes": "College students, will be here 3-4 hours", "created_at": "2025-02-02T15:00:00Z" },
+    { "id": 4, "customer_name": "Sarah Kim", "customer_email": "skim@email.com", "customer_phone": "(503) 444-5555", "date": "2025-02-05", "time": "08:00", "party_size": 4, "event_type": "Business", "status": "completed", "notes": "Client breakfast meeting", "created_at": "2025-01-30T09:00:00Z" },
+    { "id": 5, "customer_name": "Michael Chen", "customer_email": "mchen@email.com", "customer_phone": "(503) 555-6666", "date": "2025-02-08", "time": "15:00", "party_size": 20, "event_type": "Private Event", "status": "confirmed", "notes": "Birthday party - will bring own cake", "created_at": "2025-02-03T11:00:00Z" }
+  ],
+  "orders": [
+    { "id": 1, "customer_name": "Emily Watson", "customer_email": "ewatson@email.com", "customer_phone": "(503) 666-7777", "items": [{"name": "Lavender Honey Latte", "qty": 2}, {"name": "Cinnamon Roll", "qty": 2}], "total": 24.96, "pickup_time": "2025-02-06T08:30:00Z", "status": "confirmed", "notes": "Extra hot please", "created_at": "2025-02-05T22:00:00Z" },
+    { "id": 2, "customer_name": "David Park", "customer_email": "dpark@email.com", "customer_phone": "(503) 777-8888", "items": [{"name": "Cold Brew", "qty": 1}, {"name": "Avocado Toast", "qty": 1}], "total": 13.48, "pickup_time": "2025-02-06T07:45:00Z", "status": "ready", "notes": "", "created_at": "2025-02-05T20:30:00Z" },
+    { "id": 3, "customer_name": "Lisa Martinez", "customer_email": "lmartinez@email.com", "customer_phone": "(503) 888-9999", "items": [{"name": "Pour Over", "qty": 4}, {"name": "Blueberry Muffin", "qty": 4}], "total": 35.92, "pickup_time": "2025-02-06T09:00:00Z", "status": "pending", "notes": "Office order - need carrier tray", "created_at": "2025-02-06T06:00:00Z" },
+    { "id": 4, "customer_name": "James Rodriguez", "customer_email": "jrod@email.com", "customer_phone": "(503) 999-0000", "items": [{"name": "Oat Milk Latte", "qty": 1}, {"name": "Croissant", "qty": 1}], "total": 9.98, "pickup_time": "2025-02-05T12:00:00Z", "status": "completed", "notes": "", "created_at": "2025-02-05T11:00:00Z" },
+    { "id": 5, "customer_name": "Amanda Foster", "customer_email": "afoster@email.com", "customer_phone": "(503) 000-1111", "items": [{"name": "Chai Latte", "qty": 2}, {"name": "Chocolate Brownie", "qty": 2}], "total": 19.96, "pickup_time": "2025-02-06T14:00:00Z", "status": "confirmed", "notes": "One latte decaf", "created_at": "2025-02-05T18:00:00Z" },
+    { "id": 6, "customer_name": "Robert Kim", "customer_email": "rkim@email.com", "customer_phone": "(503) 111-0000", "items": [{"name": "Nitro Cold Brew", "qty": 1}], "total": 5.49, "pickup_time": "2025-02-06T07:00:00Z", "status": "cancelled", "notes": "Running late, will order in store", "created_at": "2025-02-05T21:00:00Z" },
+    { "id": 7, "customer_name": "Jennifer Lee", "customer_email": "jlee@email.com", "customer_phone": "(503) 222-1111", "items": [{"name": "Matcha Latte", "qty": 3}, {"name": "Banana Bread", "qty": 2}], "total": 25.95, "pickup_time": "2025-02-06T10:30:00Z", "status": "confirmed", "notes": "Almond milk for all lattes", "created_at": "2025-02-05T23:00:00Z" },
+    { "id": 8, "customer_name": "Thomas Anderson", "customer_email": "tanderson@email.com", "customer_phone": "(503) 333-2222", "items": [{"name": "Espresso", "qty": 2}, {"name": "Cookie", "qty": 1}], "total": 9.97, "pickup_time": "2025-02-04T15:00:00Z", "status": "completed", "notes": "", "created_at": "2025-02-04T14:30:00Z" }
+  ]
 }

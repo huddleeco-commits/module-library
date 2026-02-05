@@ -150,5 +150,42 @@
       { "path": "/api/loyalty", "method": "GET", "description": "Rewards data" },
       { "path": "/api/wallet", "method": "GET", "description": "Wallet balance" }
     ]
-  }
+  },
+  "designResearch": {
+    "referenceWebsites": [
+      { "name": "Peter Luger", "url": "https://peterluger.com", "notes": "Heritage-focused with classic dark aesthetic" },
+      { "name": "STK", "url": "https://stksteakhouse.com", "notes": "Modern luxury with video backgrounds" },
+      { "name": "Morton's", "url": "https://www.mortons.com", "notes": "Reservation-first with private dining emphasis" }
+    ],
+    "layoutVariations": {
+      "A": { "name": "Luxury Experience", "description": "Dark elegant theme, wine list preview, VIP booking" },
+      "B": { "name": "Menu Excellence", "description": "Premium imagery, cut descriptions, sommelier picks" },
+      "C": { "name": "Heritage Story", "description": "History timeline, aging room tour, press accolades" }
+    },
+    "winningElements": [
+      "Reservation system with private dining options",
+      "Wine program showcase",
+      "Prime cut descriptions with aging details",
+      "Chef profile and philosophy",
+      "VIP/membership programs"
+    ],
+    "industryBenchmarks": {
+      "avgPageCount": 6,
+      "mustHavePages": ["menu", "reservations", "wine-list", "private-dining", "about"],
+      "recommendedSections": ["hero-video", "signature-cuts", "wine-program", "private-dining", "chef-profile", "reservations"],
+      "conversionGoals": ["reservation", "private-event", "gift-card"]
+    }
+  },
+  "reservations": [
+    { "id": 1, "customer_name": "William Sterling", "customer_email": "william.s@email.com", "customer_phone": "212-555-0101", "date": "2025-02-06", "time": "19:00", "party_size": 4, "status": "confirmed", "notes": "Anniversary dinner, window table requested", "created_at": "2025-02-01T10:00:00Z" },
+    { "id": 2, "customer_name": "Catherine Hayes", "customer_email": "c.hayes@email.com", "customer_phone": "212-555-0102", "date": "2025-02-06", "time": "19:30", "party_size": 2, "status": "confirmed", "notes": "Birthday celebration", "created_at": "2025-02-01T14:30:00Z" },
+    { "id": 3, "customer_name": "Robert Chen", "customer_email": "rchen@business.com", "customer_phone": "212-555-0103", "date": "2025-02-06", "time": "20:00", "party_size": 6, "status": "pending", "notes": "Business dinner, private area preferred", "created_at": "2025-02-02T09:15:00Z" },
+    { "id": 4, "customer_name": "Elizabeth Moore", "customer_email": "emoore@email.com", "customer_phone": "212-555-0104", "date": "2025-02-07", "time": "18:30", "party_size": 2, "status": "confirmed", "notes": "Regular guest, usual table", "created_at": "2025-02-02T11:00:00Z" },
+    { "id": 5, "customer_name": "James Patterson", "customer_email": "jpatt@email.com", "customer_phone": "212-555-0105", "date": "2025-02-07", "time": "19:00", "party_size": 8, "status": "confirmed", "notes": "Wine pairing requested", "created_at": "2025-02-03T16:45:00Z" },
+    { "id": 6, "customer_name": "Margaret Wilson", "customer_email": "mwilson@email.com", "customer_phone": "212-555-0106", "date": "2025-02-07", "time": "20:30", "party_size": 4, "status": "pending", "notes": "", "created_at": "2025-02-04T08:20:00Z" },
+    { "id": 7, "customer_name": "David Thompson", "customer_email": "dthompson@corp.com", "customer_phone": "212-555-0107", "date": "2025-02-08", "time": "19:00", "party_size": 10, "status": "confirmed", "notes": "Corporate event, pre-selected menu", "created_at": "2025-01-28T10:00:00Z" },
+    { "id": 8, "customer_name": "Sarah Johnson", "customer_email": "sjohnson@email.com", "customer_phone": "212-555-0108", "date": "2025-02-05", "time": "19:30", "party_size": 2, "status": "completed", "notes": "Enjoyed the ribeye", "created_at": "2025-01-30T15:30:00Z" },
+    { "id": 9, "customer_name": "Michael Brown", "customer_email": "mbrown@email.com", "customer_phone": "212-555-0109", "date": "2025-02-04", "time": "20:00", "party_size": 4, "status": "cancelled", "notes": "Cancelled due to travel", "created_at": "2025-01-29T12:00:00Z" },
+    { "id": 10, "customer_name": "Jennifer Davis", "customer_email": "jdavis@email.com", "customer_phone": "212-555-0110", "date": "2025-02-08", "time": "18:00", "party_size": 6, "status": "pending", "notes": "Engagement party", "created_at": "2025-02-04T14:00:00Z" }
+  ]
 }

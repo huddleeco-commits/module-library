@@ -201,5 +201,40 @@
     "Community Service Club",
     "Math Olympiad",
     "Model United Nations"
+  ],
+  "designResearch": {
+    "referenceWebsites": [
+      { "name": "Phillips Exeter Academy", "url": "https://www.exeter.edu", "notes": "Admissions-focused with campus virtual tour" },
+      { "name": "The Harker School", "url": "https://www.harker.org", "notes": "Academic excellence with faculty profiles" },
+      { "name": "Sidwell Friends", "url": "https://www.sidwell.edu", "notes": "Community-centered with values showcase" }
+    ],
+    "layoutVariations": {
+      "A": { "name": "Admissions-Focused", "description": "Admissions CTA, program cards, virtual tour" },
+      "B": { "name": "Academic Excellence", "description": "Program details, faculty profiles, success stats" },
+      "C": { "name": "Community-Centered", "description": "Philosophy showcase, community events, parent resources" }
+    },
+    "winningElements": [
+      "Admissions inquiry/apply CTA",
+      "Program overviews by grade level",
+      "Campus virtual tour",
+      "Faculty/teacher profiles",
+      "Student success statistics"
+    ],
+    "industryBenchmarks": {
+      "avgPageCount": 8,
+      "mustHavePages": ["programs", "admissions", "about", "contact"],
+      "recommendedSections": ["hero-video", "apply-now", "programs", "campus-life", "outcomes", "visit-campus"],
+      "conversionGoals": ["admissions-inquiry", "campus-visit", "application-start"]
+    }
+  },
+  "enrollments": [
+    { "id": 1, "student_name": "Emma Thompson", "parent_name": "Michael Thompson", "parent_email": "mthompson@email.com", "parent_phone": "(555) 111-2222", "grade_applying": "9th Grade", "current_school": "Denver Public Middle School", "message": "Interested in your strong STEM program. My daughter excels in math and science", "status": "new", "priority": "high", "created_at": "2025-02-05T10:00:00Z" },
+    { "id": 2, "student_name": "Liam Chen", "parent_name": "Sarah Chen", "parent_email": "schen@email.com", "parent_phone": "(555) 222-3333", "grade_applying": "Kindergarten", "current_school": "Home/Preschool", "message": "Looking at kindergarten for fall. Would like to schedule a campus tour", "status": "contacted", "priority": "normal", "tour_scheduled": "2025-02-10T10:00:00Z", "created_at": "2025-02-04T14:30:00Z" },
+    { "id": 3, "student_name": "Olivia Martinez", "parent_name": "David Martinez", "parent_email": "dmartinez@email.com", "parent_phone": "(555) 333-4444", "grade_applying": "6th Grade", "current_school": "St. Mary's Elementary", "message": "Relocating to Denver in June. Need to know application deadlines and availability", "status": "qualified", "priority": "high", "created_at": "2025-02-03T09:00:00Z" },
+    { "id": 4, "student_name": "Noah Williams", "parent_name": "Jennifer Williams", "parent_email": "jwilliams@email.com", "parent_phone": "(555) 444-5555", "grade_applying": "3rd Grade", "current_school": "Montessori Academy", "message": "Interested in transferring. How does your curriculum compare to Montessori approach?", "status": "contacted", "priority": "normal", "created_at": "2025-02-02T11:00:00Z" },
+    { "id": 5, "student_name": "Sophia Brown", "parent_name": "Robert Brown", "parent_email": "rbrown@email.com", "parent_phone": "(555) 555-6666", "grade_applying": "11th Grade", "current_school": "Denver High School", "message": "Looking for better college prep. What AP courses do you offer?", "status": "converted", "priority": "normal", "application_status": "Submitted", "created_at": "2025-01-30T08:00:00Z" },
+    { "id": 6, "student_name": "Twins: Ava & Mia Garcia", "parent_name": "Amanda Garcia", "parent_email": "agarcia@email.com", "parent_phone": "(555) 666-7777", "grade_applying": "Pre-K", "current_school": "N/A", "message": "Twin girls starting Pre-K. Do you offer sibling discounts? Need info on financial aid", "status": "new", "priority": "normal", "created_at": "2025-02-05T13:00:00Z" },
+    { "id": 7, "student_name": "Ethan Anderson", "parent_name": "Kevin Anderson", "parent_email": "kanderson@email.com", "parent_phone": "(555) 777-8888", "grade_applying": "7th Grade", "current_school": "Colorado Online Academy", "message": "Transitioning from homeschool. Son is advanced in math but needs social development", "status": "archived", "priority": "low", "notes": "Decided to continue homeschooling", "created_at": "2025-01-20T12:00:00Z" },
+    { "id": 8, "student_name": "Isabella Taylor", "parent_name": "Lisa Taylor", "parent_email": "ltaylor@email.com", "parent_phone": "(555) 888-9999", "grade_applying": "1st Grade", "current_school": "BFA Pre-K", "message": "Current Pre-K student. Confirming enrollment for 1st grade next year", "status": "converted", "priority": "normal", "application_status": "Accepted", "created_at": "2025-02-01T09:00:00Z" }
   ]
 }

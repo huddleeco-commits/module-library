@@ -256,5 +256,40 @@
         { "id": 1235, "date": "2024-01-22", "total": 16.50, "status": "delivered" }
       ]
     }
-  }
+  },
+  "designResearch": {
+    "referenceWebsites": [
+      { "name": "Domino's", "url": "https://www.dominos.com", "notes": "Order-first design with pizza tracker" },
+      { "name": "Pizzeria Bianco", "url": "https://pizzeriabianco.com", "notes": "Artisan story-driven with authenticity focus" },
+      { "name": "Blaze Pizza", "url": "https://www.blazepizza.com", "notes": "Build-your-own configurator, modern UI" }
+    ],
+    "layoutVariations": {
+      "A": { "name": "Order-First", "description": "Prominent order button, delivery tracker, pizza builder" },
+      "B": { "name": "Authentic Story", "description": "Wood-fired oven video, ingredient origins, family history" },
+      "C": { "name": "Menu Showcase", "description": "Visual menu, daily specials banner, group ordering" }
+    },
+    "winningElements": [
+      "Online ordering with delivery tracking",
+      "Build-your-own pizza configurator",
+      "Delivery time estimates",
+      "Loyalty program integration",
+      "Catering/group order options"
+    ],
+    "industryBenchmarks": {
+      "avgPageCount": 5,
+      "mustHavePages": ["menu", "order-online", "locations", "contact"],
+      "recommendedSections": ["hero", "order-now-banner", "menu-grid", "delivery-info", "reviews", "locations"],
+      "conversionGoals": ["online-order", "delivery", "catering-inquiry"]
+    }
+  },
+  "orders": [
+    { "id": 1, "customer_name": "Michael Johnson", "customer_email": "mjohnson@email.com", "customer_phone": "(555) 111-2222", "type": "Delivery", "items": [{"name": "Margherita", "qty": 1}, {"name": "Pepperoni Supreme", "qty": 1}, {"name": "Garlic Knots", "qty": 1}], "total": 40.00, "status": "preparing", "delivery_address": "123 Oak Street, Austin, TX 78701", "notes": "Extra napkins please", "created_at": "2025-02-05T18:30:00Z" },
+    { "id": 2, "customer_name": "Sarah Williams", "customer_email": "swilliams@email.com", "customer_phone": "(555) 222-3333", "type": "Pickup", "items": [{"name": "The Works", "qty": 2}, {"name": "Caesar Salad", "qty": 1}], "total": 53.00, "status": "ready", "notes": "Picking up at 7pm", "created_at": "2025-02-05T17:45:00Z" },
+    { "id": 3, "customer_name": "David Martinez", "customer_email": "dmartinez@email.com", "customer_phone": "(555) 333-4444", "type": "Delivery", "items": [{"name": "BBQ Chicken", "qty": 1}, {"name": "Wings", "qty": 1}, {"name": "Soda", "qty": 2}], "total": 38.00, "status": "out_for_delivery", "delivery_address": "456 Pine Ave, Austin, TX 78702", "notes": "", "created_at": "2025-02-05T18:00:00Z" },
+    { "id": 4, "customer_name": "Emily Thompson", "customer_email": "ethompson@email.com", "customer_phone": "(555) 444-5555", "type": "Catering", "items": [{"name": "Margherita", "qty": 5}, {"name": "Pepperoni", "qty": 5}, {"name": "Veggie Supreme", "qty": 3}], "total": 247.00, "status": "confirmed", "delivery_address": "789 Business Park, Austin, TX 78703", "notes": "Office party - need by 12pm Saturday", "created_at": "2025-02-04T10:00:00Z" },
+    { "id": 5, "customer_name": "Robert Brown", "customer_email": "rbrown@email.com", "customer_phone": "(555) 555-6666", "type": "Delivery", "items": [{"name": "Meat Lovers", "qty": 1}], "total": 22.00, "status": "delivered", "delivery_address": "321 Elm Street, Austin, TX 78701", "notes": "", "created_at": "2025-02-05T17:00:00Z" },
+    { "id": 6, "customer_name": "Jennifer Lee", "customer_email": "jlee@email.com", "customer_phone": "(555) 666-7777", "type": "Pickup", "items": [{"name": "White Pizza", "qty": 1}, {"name": "House Wine", "qty": 2}], "total": 35.00, "status": "preparing", "notes": "Gluten allergy - please use clean prep area", "created_at": "2025-02-05T18:15:00Z" },
+    { "id": 7, "customer_name": "Kevin Anderson", "customer_email": "kanderson@email.com", "customer_phone": "(555) 777-8888", "type": "Delivery", "items": [{"name": "Hawaiian", "qty": 2}, {"name": "Garlic Knots", "qty": 2}], "total": 48.00, "status": "cancelled", "delivery_address": "555 Cedar Lane, Austin, TX 78704", "notes": "Customer cancelled - wrong order placed", "created_at": "2025-02-05T16:30:00Z" },
+    { "id": 8, "customer_name": "Lisa Garcia", "customer_email": "lgarcia@email.com", "customer_phone": "(555) 888-9999", "type": "Pickup", "items": [{"name": "Margherita", "qty": 3}, {"name": "Craft Beer", "qty": 4}], "total": 72.00, "status": "confirmed", "notes": "Birthday party pickup", "created_at": "2025-02-05T14:00:00Z" }
+  ]
 }

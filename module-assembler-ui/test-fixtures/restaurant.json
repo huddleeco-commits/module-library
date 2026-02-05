@@ -154,5 +154,99 @@
         "buttonText": "Reserve on OpenTable"
       }
     }
-  }
+  },
+  "designResearch": {
+    "referenceWebsites": [
+      {
+        "name": "The French Laundry",
+        "url": "https://www.thomaskeller.com/tfl",
+        "notes": "Elegant, minimal with stunning food photography",
+        "extractedTheme": {
+          "colors": {
+            "primary": "#1a1a1a",
+            "secondary": "#c9b896",
+            "accent": "#8b7355",
+            "background": "#f8f6f3",
+            "text": "#1a1a1a"
+          },
+          "fonts": {
+            "heading": "Playfair Display",
+            "body": "Source Sans Pro"
+          },
+          "style": "elegant",
+          "mood": "luxurious"
+        }
+      },
+      {
+        "name": "Eleven Madison Park",
+        "url": "https://www.elevenmadisonpark.com",
+        "notes": "Video hero, seasonal menu focus, chef story prominent",
+        "extractedTheme": {
+          "colors": {
+            "primary": "#0a3622",
+            "secondary": "#f5f0e8",
+            "accent": "#c4a86b",
+            "background": "#ffffff",
+            "text": "#1a1a1a"
+          },
+          "fonts": {
+            "heading": "Freight Display",
+            "body": "Freight Text"
+          },
+          "style": "minimal",
+          "mood": "calm"
+        }
+      },
+      {
+        "name": "Canlis",
+        "url": "https://canlis.com",
+        "notes": "Story-driven with farm partnerships and reservation-first design",
+        "extractedTheme": {
+          "colors": {
+            "primary": "#2c1810",
+            "secondary": "#d4a574",
+            "accent": "#8b4513",
+            "background": "#faf8f5",
+            "text": "#2c1810"
+          },
+          "fonts": {
+            "heading": "Canela",
+            "body": "Neue Haas Grotesk"
+          },
+          "style": "elegant",
+          "mood": "friendly"
+        }
+      }
+    ],
+    "layoutVariations": {
+      "A": { "name": "Reservation-Focused", "description": "Inline reservation form in hero, OpenTable integration, seasonal menu highlights", "referenceIndex": 0 },
+      "B": { "name": "Visual Feast", "description": "Video hero with food photography, dish hover details, wine pairing suggestions", "referenceIndex": 1 },
+      "C": { "name": "Story & Tradition", "description": "Origin timeline, farm partner showcase, press logos and awards", "referenceIndex": 2 }
+    },
+    "winningElements": [
+      "Integrated reservation system (OpenTable/Resy)",
+      "Chef story and culinary philosophy",
+      "Seasonal/rotating menu highlights",
+      "Private events and catering inquiry",
+      "Wine list preview with pairing suggestions"
+    ],
+    "industryBenchmarks": {
+      "avgPageCount": 6,
+      "mustHavePages": ["menu", "reservations", "about", "contact"],
+      "recommendedSections": ["hero", "reservation-widget", "menu-preview", "chef-story", "reviews", "private-events"],
+      "conversionGoals": ["reservation", "private-event-inquiry", "gift-card-purchase"]
+    }
+  },
+  "reservations": [
+    { "id": 1, "customer_name": "Michael Thompson", "customer_email": "michael.t@email.com", "customer_phone": "(555) 123-4567", "date": "2025-02-06", "time": "18:30", "party_size": 4, "occasion": "Anniversary", "status": "confirmed", "notes": "Window table requested", "created_at": "2025-02-01T10:00:00Z" },
+    { "id": 2, "customer_name": "Sarah Chen", "customer_email": "sarah.chen@email.com", "customer_phone": "(555) 234-5678", "date": "2025-02-06", "time": "19:00", "party_size": 2, "occasion": "Date Night", "status": "confirmed", "notes": "Allergic to shellfish", "created_at": "2025-02-01T14:30:00Z" },
+    { "id": 3, "customer_name": "James Rodriguez", "customer_email": "jrodriguez@email.com", "customer_phone": "(555) 345-6789", "date": "2025-02-06", "time": "20:00", "party_size": 6, "occasion": "Birthday", "status": "pending", "notes": "Surprise party - please bring cake at dessert", "created_at": "2025-02-02T09:15:00Z" },
+    { "id": 4, "customer_name": "Emily Watson", "customer_email": "emily.w@email.com", "customer_phone": "(555) 456-7890", "date": "2025-02-07", "time": "18:00", "party_size": 8, "occasion": "Business Dinner", "status": "confirmed", "notes": "Private room if available", "created_at": "2025-02-02T11:00:00Z" },
+    { "id": 5, "customer_name": "David Park", "customer_email": "dpark@email.com", "customer_phone": "(555) 567-8901", "date": "2025-02-05", "time": "19:30", "party_size": 2, "occasion": "", "status": "completed", "notes": "", "created_at": "2025-01-30T16:45:00Z" },
+    { "id": 6, "customer_name": "Lisa Martinez", "customer_email": "lisa.m@email.com", "customer_phone": "(555) 678-9012", "date": "2025-02-07", "time": "20:30", "party_size": 4, "occasion": "Celebration", "status": "confirmed", "notes": "Vegetarian options needed", "created_at": "2025-02-03T08:20:00Z" },
+    { "id": 7, "customer_name": "Robert Kim", "customer_email": "rkim@email.com", "customer_phone": "(555) 789-0123", "date": "2025-02-04", "time": "19:00", "party_size": 3, "occasion": "", "status": "cancelled", "notes": "Had to reschedule", "created_at": "2025-01-28T13:00:00Z" },
+    { "id": 8, "customer_name": "Jennifer Lee", "customer_email": "jlee@email.com", "customer_phone": "(555) 890-1234", "date": "2025-02-08", "time": "18:30", "party_size": 5, "occasion": "Graduation", "status": "pending", "notes": "High chair needed", "created_at": "2025-02-03T15:30:00Z" },
+    { "id": 9, "customer_name": "Thomas Anderson", "customer_email": "tanderson@email.com", "customer_phone": "(555) 901-2345", "date": "2025-02-03", "time": "20:00", "party_size": 2, "occasion": "Anniversary", "status": "completed", "notes": "Loved the experience!", "created_at": "2025-01-25T10:00:00Z" },
+    { "id": 10, "customer_name": "Amanda Foster", "customer_email": "afoster@email.com", "customer_phone": "(555) 012-3456", "date": "2025-02-08", "time": "19:00", "party_size": 10, "occasion": "Retirement Party", "status": "confirmed", "notes": "Large group - may need two tables pushed together", "created_at": "2025-02-04T09:00:00Z" }
+  ]
 }

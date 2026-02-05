@@ -163,5 +163,40 @@
         "buttonText": "Get Instant Quote"
       }
     }
-  }
+  },
+  "designResearch": {
+    "referenceWebsites": [
+      { "name": "The Maids", "url": "https://www.maids.com", "notes": "Quote calculator with booking widget" },
+      { "name": "Handy", "url": "https://www.handy.com", "notes": "Simple booking flow, trust badges" },
+      { "name": "Molly Maid", "url": "https://www.mollymaid.com", "notes": "Service showcase with guarantee" }
+    ],
+    "layoutVariations": {
+      "A": { "name": "Quote-Focused", "description": "Quote calculator, booking widget, satisfaction guarantee" },
+      "B": { "name": "Service Showcase", "description": "Service cards, checklist preview, eco-friendly badge" },
+      "C": { "name": "Trust-Builder", "description": "Team video, background check badge, review carousel" }
+    },
+    "winningElements": [
+      "Instant quote calculator",
+      "Online booking with scheduling",
+      "Service checklist/what's included",
+      "Background-checked staff badge",
+      "Satisfaction guarantee display"
+    ],
+    "industryBenchmarks": {
+      "avgPageCount": 5,
+      "mustHavePages": ["services", "pricing", "about", "contact"],
+      "recommendedSections": ["hero", "instant-quote", "services", "how-it-works", "trust-badges", "reviews"],
+      "conversionGoals": ["quote-request", "booking", "recurring-service-signup"]
+    }
+  },
+  "quotes": [
+    { "id": 1, "customer_name": "Michael Thompson", "customer_email": "mthompson@email.com", "customer_phone": "(555) 111-2222", "type": "Deep Clean", "message": "3 bedroom, 2 bath home needs deep clean before in-laws visit. Available this Saturday?", "status": "new", "priority": "high", "address": "123 Pine Street, Seattle, WA 98101", "sqft": 1800, "created_at": "2025-02-05T10:00:00Z" },
+    { "id": 2, "customer_name": "Sarah Williams", "customer_email": "swilliams@email.com", "customer_phone": "(555) 222-3333", "type": "Recurring Service", "message": "Looking for bi-weekly standard cleaning. 2 bedroom condo. Have two cats", "status": "contacted", "priority": "normal", "address": "456 Oak Avenue, Bellevue, WA 98004", "sqft": 1200, "created_at": "2025-02-04T14:30:00Z" },
+    { "id": 3, "customer_name": "David Martinez", "customer_email": "dmartinez@email.com", "customer_phone": "(555) 333-4444", "type": "Move Out Clean", "message": "Moving out of apartment Feb 28. Need move-out clean to get deposit back. 1 bed, 1 bath", "status": "qualified", "priority": "high", "address": "789 Maple Lane, Kirkland, WA 98033", "sqft": 750, "created_at": "2025-02-03T09:00:00Z" },
+    { "id": 4, "customer_name": "Jennifer Lee", "customer_email": "jlee@email.com", "customer_phone": "(555) 444-5555", "type": "Post-Construction", "message": "Just finished kitchen remodel. Lots of dust and debris. 4 bed, 3 bath house", "status": "contacted", "priority": "high", "address": "321 Cedar Drive, Redmond, WA 98052", "sqft": 2500, "created_at": "2025-02-02T11:00:00Z" },
+    { "id": 5, "customer_name": "Robert Brown", "customer_email": "rbrown@email.com", "customer_phone": "(555) 555-6666", "type": "Standard Clean", "message": "New to area, looking for reliable cleaner. 3 bed townhouse, weekly service", "status": "converted", "priority": "normal", "address": "555 Birch Street, Bothell, WA 98011", "sqft": 1600, "created_at": "2025-01-30T08:00:00Z" },
+    { "id": 6, "customer_name": "Amanda Garcia", "customer_email": "agarcia@email.com", "customer_phone": "(555) 666-7777", "type": "Office Cleaning", "message": "Small office space, 10 employees. Need quote for nightly cleaning M-F", "status": "new", "priority": "normal", "address": "777 Business Park, Seattle, WA 98109", "sqft": 2000, "created_at": "2025-02-05T13:00:00Z" },
+    { "id": 7, "customer_name": "Kevin Anderson", "customer_email": "kanderson@email.com", "customer_phone": "(555) 777-8888", "type": "Deep Clean", "message": "Airbnb owner. Need turnover cleaning service between guests. Usually Sundays", "status": "contacted", "priority": "normal", "address": "888 Lake View, Shoreline, WA 98133", "sqft": 900, "created_at": "2025-02-01T16:00:00Z" },
+    { "id": 8, "customer_name": "Lisa Taylor", "customer_email": "ltaylor@email.com", "customer_phone": "(555) 888-9999", "type": "Move In Clean", "message": "Closing on new home next week. Want it cleaned before moving furniture in. 5 bed, 4 bath", "status": "new", "priority": "high", "address": "999 Evergreen Way, Renton, WA 98055", "sqft": 3200, "created_at": "2025-02-05T17:00:00Z" }
+  ]
 }
