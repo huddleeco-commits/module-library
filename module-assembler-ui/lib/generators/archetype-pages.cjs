@@ -12,6 +12,20 @@ const { getHeroImage, getHeroImages } = require('../config/hero-images.cjs');
 const { getWinningElementsForIndustry, getElementsByPlacement, getHighPriorityElements } = require('../../config/winning-elements.cjs');
 const { getResearchLayout, getResearchLayoutVariants, getResearchSectionOrder, getResearchLayoutFeatures } = require('../../config/industry-layouts.cjs');
 
+// Industry-aware CTA path and label helper
+function getIndustryCta(industry) {
+  const foodIndustries = ['pizza-restaurant', 'steakhouse', 'coffee-cafe', 'restaurant', 'bakery'];
+  if (foodIndustries.includes(industry)) return { path: '/menu', label: 'Menu', shopLabel: 'Shop Menu', viewLabel: 'View Menu', browseLabel: 'Browse Menu' };
+  const serviceIndustries = ['salon-spa', 'barbershop', 'dental', 'healthcare', 'plumber', 'cleaning', 'auto-shop', 'law-firm'];
+  if (serviceIndustries.includes(industry)) return { path: '/services', label: 'Services', shopLabel: 'Our Services', viewLabel: 'View Services', browseLabel: 'Browse Services' };
+  if (industry === 'yoga' || industry === 'fitness-gym') return { path: '/services', label: 'Classes', shopLabel: 'Our Classes', viewLabel: 'View Classes', browseLabel: 'Browse Classes' };
+  if (industry === 'real-estate') return { path: '/services', label: 'Listings', shopLabel: 'View Listings', viewLabel: 'View Listings', browseLabel: 'Browse Listings' };
+  if (industry === 'ecommerce') return { path: '/menu', label: 'Products', shopLabel: 'Shop Now', viewLabel: 'View Products', browseLabel: 'Browse Products' };
+  if (industry === 'saas') return { path: '/services', label: 'Features', shopLabel: 'See Features', viewLabel: 'View Features', browseLabel: 'Browse Features' };
+  if (industry === 'school') return { path: '/services', label: 'Programs', shopLabel: 'Our Programs', viewLabel: 'View Programs', browseLabel: 'Browse Programs' };
+  return { path: '/services', label: 'Services', shopLabel: 'Our Services', viewLabel: 'View Services', browseLabel: 'Browse Services' };
+}
+
 /**
  * Generate HomePage based on archetype
  * @param {object} styleOverrides - Theme/mood settings from UI (isDark, fontHeading, fontBody, borderRadius, etc.)
@@ -92,6 +106,7 @@ function generateHomePage(archetype, businessData, colors, styleOverrides = {}) 
  */
 function generateEcommerceHomePage(businessName, tagline, address, phone, colors, style, businessData = {}) {
   const industry = businessData.industry || 'bakery';
+  const cta = getIndustryCta(industry);
   // Use fixture hero image first, fall back to generic industry image
   const genericHeroImage = getHeroImage(industry, 'primary');
   const heroImageUrl = businessData.heroImage || genericHeroImage;
@@ -153,9 +168,9 @@ export default function HomePage() {
   ];
 
   const categories = [
-    { name: 'Featured', image: '${heroImages[0]}', link: '/menu?cat=featured' },
-    { name: 'Specialties', image: '${heroImages[1] || heroImages[0]}', link: '/menu?cat=specialties' },
-    { name: 'Popular', image: '${heroImages[2] || heroImages[0]}', link: '/menu?cat=popular' }
+    { name: 'Featured', image: '${heroImages[0]}', link: '${cta.path}?cat=featured' },
+    { name: 'Specialties', image: '${heroImages[1] || heroImages[0]}', link: '${cta.path}?cat=specialties' },
+    { name: 'Popular', image: '${heroImages[2] || heroImages[0]}', link: '${cta.path}?cat=popular' }
   ];
 
   return (
@@ -175,10 +190,10 @@ export default function HomePage() {
             <h1 style={styles.heroTitle}>${heroHeadline.replace(/'/g, "\\'")}</h1>
             <p style={styles.heroSubtitle}>${heroSubheadline.replace(/'/g, "\\'")}</p>
             <div style={styles.heroCtas}>
-              <Link to="/menu" style={styles.primaryBtn}>
+              <Link to="${cta.path}" style={styles.primaryBtn}>
                 <ShoppingBag size={18} /> ${heroCta.replace(/'/g, "\\'")}
               </Link>
-              <Link to="/menu" style={styles.secondaryBtn}>
+              <Link to="${cta.path}" style={styles.secondaryBtn}>
                 <Truck size={18} /> ${heroSecondaryCta.replace(/'/g, "\\'")}
               </Link>
             </div>
@@ -199,7 +214,7 @@ export default function HomePage() {
         <div style={styles.container}>
           <div style={styles.sectionHeader}>
             <h2 style={styles.sectionTitle}>Fan Favorites</h2>
-            <Link to="/menu" style={styles.viewAllLink}>Shop All <ArrowRight size={16} /></Link>
+            <Link to="${cta.path}" style={styles.viewAllLink}>Shop All <ArrowRight size={16} /></Link>
           </div>
           <div style={styles.productGrid}>
             {featuredProducts.map(product => (
@@ -279,6 +294,7 @@ const styles = {
  */
 function generateLuxuryHomePage(businessName, tagline, address, phone, colors, style, businessData = {}) {
   const industry = businessData.industry || 'bakery';
+  const cta = getIndustryCta(industry);
   const genericHeroImages = getHeroImages(industry, 'primary');
   // Use fixture hero image if available
   const heroImages = businessData.heroImage
@@ -362,7 +378,7 @@ export default function HomePage() {
               <span style={styles.slideLabel}>ARTISAN ${industry.toUpperCase()}</span>
               <h1 style={styles.slideTitle}>{slides[currentSlide].title}</h1>
               <p style={styles.slideSubtitle}>{slides[currentSlide].subtitle}</p>
-              <Link to="/menu" style={styles.slideBtn}>${heroCta.replace(/'/g, "\\'")} <ArrowRight size={16} /></Link>
+              <Link to="${cta.path}" style={styles.slideBtn}>${heroCta.replace(/'/g, "\\'")} <ArrowRight size={16} /></Link>
             </div>
           </div>
         </div>
@@ -388,7 +404,7 @@ export default function HomePage() {
           <h2 style={styles.sectionLabel}>SIGNATURE COLLECTION</h2>
           <div style={styles.productGrid}>
             {signatureProducts.map((product, i) => (
-              <Link key={i} to="/menu" style={styles.productCard}>
+              <Link key={i} to="${cta.path}" style={styles.productCard}>
                 <div style={styles.productImageWrap}>
                   <img src={product.image} alt={product.name} style={styles.productImage} />
                 </div>
@@ -405,7 +421,7 @@ export default function HomePage() {
         <h2 style={styles.ctaTitle}>${ctaHeadline.replace(/'/g, "\\'")}</h2>
         <p style={styles.ctaText}>${ctaSubtext.replace(/'/g, "\\'")}</p>
         <div style={styles.ctaBtns}>
-          <Link to="/menu" style={styles.ctaBtn}>View Menu</Link>
+          <Link to="${cta.path}" style={styles.ctaBtn}>${cta.viewLabel}</Link>
           <Link to="/contact" style={styles.ctaBtnOutline}>Book a Visit</Link>
         </div>
       </section>
@@ -453,6 +469,7 @@ const styles = {
  */
 function generateLocalHomePage(businessName, tagline, address, phone, year, colors, style, businessData = {}) {
   const industry = businessData.industry || 'bakery';
+  const cta = getIndustryCta(industry);
   // Use fixture hero image first, fall back to generic industry image
   const genericHeroImage = getHeroImage(industry, 'primary');
   const heroImageUrl = businessData.heroImage || genericHeroImage;
@@ -525,7 +542,7 @@ export default function HomePage() {
           <h1 style={styles.heroTitle}>${heroHeadline.replace(/'/g, "\\'")}</h1>
           <p style={styles.heroSubtitle}>${heroSubtitle.replace(/'/g, "\\'")}</p>
           <div style={styles.heroCtas}>
-            <Link to="/menu" style={styles.primaryBtn}>${heroCta.replace(/'/g, "\\'")}</Link>
+            <Link to="${cta.path}" style={styles.primaryBtn}>${heroCta.replace(/'/g, "\\'")}</Link>
             <a href="tel:${phone}" style={styles.secondaryBtn}><Phone size={18} /> Call Us</a>
           </div>
           <div style={styles.heroInfo}>
@@ -555,7 +572,7 @@ export default function HomePage() {
             ))}
           </div>
           <div style={styles.centerCta}>
-            <Link to="/menu" style={styles.outlineBtn}>See Full Menu <ArrowRight size={16} /></Link>
+            <Link to="${cta.path}" style={styles.outlineBtn}>${cta.browseLabel} <ArrowRight size={16} /></Link>
           </div>
         </div>
       </section>
@@ -1092,6 +1109,7 @@ const styles = {
 
 function generateEcommerceAboutPage(businessName, tagline, year, colors, style, businessData = {}) {
   const industry = businessData.industry || 'bakery';
+  const cta = getIndustryCta(industry);
   const heroImageUrl = getHeroImage(industry, 'primary');
 
   return `import React from 'react';
@@ -1150,7 +1168,7 @@ export default function AboutPage() {
                 packaged to arrive fresh at your door. We believe everyone deserves access
                 to exceptional quality, no matter where they live.
               </p>
-              <Link to="/menu" style={styles.cta}>Shop Now <ArrowRight size={16} /></Link>
+              <Link to="${cta.path}" style={styles.cta}>${cta.shopLabel} <ArrowRight size={16} /></Link>
             </div>
           </div>
         </div>
@@ -1748,6 +1766,7 @@ const styles = {
 }
 
 function generateEcommerceGalleryPage(businessName, industry, colors, style) {
+  const cta = getIndustryCta(industry);
   const heroImages = getHeroImages(industry, 'primary') || [];
 
   return `import React, { useState } from 'react';
@@ -1759,12 +1778,12 @@ export default function GalleryPage() {
   const [filter, setFilter] = useState('all');
 
   const galleryItems = [
-    { src: '${heroImages[0] || "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600"}', title: 'Signature Collection', category: 'featured', price: '$42', link: '/menu' },
-    { src: '${heroImages[1] || "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600"}', title: 'Fresh Pastries', category: 'pastries', price: '$24', link: '/menu' },
-    { src: '${heroImages[2] || "https://images.unsplash.com/photo-1517433670267-08bbd4be890f?w=600"}', title: 'Artisan Breads', category: 'breads', price: '$9', link: '/menu' },
-    { src: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600', title: 'Custom Cakes', category: 'cakes', price: 'From $55', link: '/menu' },
-    { src: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600', title: 'Cookie Boxes', category: 'cookies', price: '$18', link: '/menu' },
-    { src: 'https://images.unsplash.com/photo-1519869325930-281384f3a0d8?w=600', title: 'Cupcake Dozen', category: 'cakes', price: '$36', link: '/menu' }
+    { src: '${heroImages[0] || "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600"}', title: 'Signature Collection', category: 'featured', price: '$42', link: '${cta.path}' },
+    { src: '${heroImages[1] || "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600"}', title: 'Fresh Pastries', category: 'pastries', price: '$24', link: '${cta.path}' },
+    { src: '${heroImages[2] || "https://images.unsplash.com/photo-1517433670267-08bbd4be890f?w=600"}', title: 'Artisan Breads', category: 'breads', price: '$9', link: '${cta.path}' },
+    { src: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600', title: 'Custom Cakes', category: 'cakes', price: 'From $55', link: '${cta.path}' },
+    { src: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600', title: 'Cookie Boxes', category: 'cookies', price: '$18', link: '${cta.path}' },
+    { src: 'https://images.unsplash.com/photo-1519869325930-281384f3a0d8?w=600', title: 'Cupcake Dozen', category: 'cakes', price: '$36', link: '${cta.path}' }
   ];
 
   const categories = ['all', 'featured', 'pastries', 'breads', 'cakes', 'cookies'];
@@ -1969,6 +1988,7 @@ function generateOrderPage(archetype, businessData, colors, styleOverrides = {})
 }
 
 function generateLocalOrderPage(businessName, phone, colors, style, businessData = {}) {
+  const cta = getIndustryCta(businessData.industry || 'bakery');
   return `import React, { useState } from 'react';
 import { Phone, Clock, MapPin, ShoppingBag, Plus, Minus, Trash2 } from 'lucide-react';
 
@@ -2120,6 +2140,7 @@ const styles = {
 }
 
 function generateEcommerceOrderPage(businessName, phone, colors, style, businessData = {}) {
+  const cta = getIndustryCta(businessData.industry || 'bakery');
   return `import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, CreditCard, Truck, Shield, ArrowRight, Package } from 'lucide-react';
@@ -2165,7 +2186,7 @@ export default function OrderPage() {
           <ShoppingCart size={48} color="${colors.primary}" />
           <h2 style={styles.ctaTitle}>Ready to Order?</h2>
           <p style={styles.ctaText}>Browse our menu and add your favorites to cart</p>
-          <Link to="/menu" style={styles.ctaBtn}>Shop Menu <ArrowRight size={18} /></Link>
+          <Link to="${cta.path}" style={styles.ctaBtn}>${cta.shopLabel} <ArrowRight size={18} /></Link>
         </div>
       </section>
 
@@ -2292,7 +2313,7 @@ export default function OrderPage() {
             <>
               <h2 style={styles.actionTitle}>Delivered to You</h2>
               <p style={styles.actionText}>Browse our collection online and have your selection delivered with care.</p>
-              <Link to="/menu" style={styles.actionBtn}>View Collection <ArrowRight size={16} /></Link>
+              <Link to="${cta.path}" style={styles.actionBtn}>${cta.viewLabel} <ArrowRight size={16} /></Link>
             </>
           )}
           {orderType === 'custom' && (
