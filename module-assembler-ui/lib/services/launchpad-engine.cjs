@@ -519,6 +519,10 @@ async function generateSite(input, variant = 'A', mode = 'test', options = {}) {
   // Derive isDark/isMedium from theme if not explicitly set
   if (moodSliders.isDark === undefined && sliderStyles.isDark) moodSliders.isDark = true;
   if (moodSliders.isMedium === undefined && sliderStyles.isMedium) moodSliders.isMedium = true;
+  // Luxury with light theme should auto-upgrade to medium for cream backgrounds
+  if (sliderStyles.isLuxury && !moodSliders.isDark && !moodSliders.isMedium) {
+    moodSliders.isMedium = true;
+  }
   // Apply luxury/premium color if no explicit primary color set
   if (!moodSliders.primaryColor && (sliderStyles.isLuxury || sliderStyles.isPremium)) {
     moodSliders.primaryColor = sliderStyles.colors.primary;

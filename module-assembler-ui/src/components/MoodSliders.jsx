@@ -79,37 +79,50 @@ const PRESETS = [
     id: 'luxury',
     name: 'Luxury',
     icon: '💎',
-    values: { vibe: 30, energy: 35, era: 40, density: 30, price: 90 }
+    values: { vibe: 30, energy: 35, era: 40, density: 30, price: 90 },
+    theme: 'medium'
   },
   {
     id: 'friendly',
     name: 'Friendly Local',
     icon: '🏠',
-    values: { vibe: 80, energy: 60, era: 50, density: 60, price: 40 }
+    values: { vibe: 80, energy: 60, era: 50, density: 60, price: 40 },
+    theme: 'light'
   },
   {
     id: 'modern-minimal',
     name: 'Modern Minimal',
     icon: '◼️',
-    values: { vibe: 50, energy: 40, era: 85, density: 20, price: 70 }
+    values: { vibe: 50, energy: 40, era: 85, density: 20, price: 70 },
+    theme: 'light'
   },
   {
     id: 'sharp-corporate',
     name: 'Sharp & Clean',
     icon: '📐',
-    values: { vibe: 35, energy: 45, era: 95, density: 40, price: 65 }
+    values: { vibe: 35, energy: 45, era: 95, density: 40, price: 65 },
+    theme: 'light'
   },
   {
     id: 'bold-energetic',
     name: 'Bold & Fun',
     icon: '🎉',
-    values: { vibe: 75, energy: 90, era: 70, density: 70, price: 50 }
+    values: { vibe: 75, energy: 90, era: 70, density: 70, price: 50 },
+    theme: 'light'
   },
   {
     id: 'classic-elegant',
     name: 'Classic Elegant',
     icon: '🏛️',
-    values: { vibe: 25, energy: 30, era: 20, density: 45, price: 80 }
+    values: { vibe: 25, energy: 30, era: 20, density: 45, price: 80 },
+    theme: 'medium'
+  },
+  {
+    id: 'dark-sleek',
+    name: 'Dark & Sleek',
+    icon: '🌙',
+    values: { vibe: 40, energy: 55, era: 80, density: 35, price: 60 },
+    theme: 'dark'
   }
 ];
 
@@ -321,6 +334,7 @@ export function MoodSliders({ values, onChange, compact = false }) {
 
   const applyPreset = (preset) => {
     setSliderValues(preset.values);
+    if (preset.theme) setThemeMode(preset.theme);
     setActivePreset(preset.id);
   };
 
