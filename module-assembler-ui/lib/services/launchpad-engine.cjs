@@ -50,6 +50,9 @@ const { generateOrderPage: generateArchetypeOrderPage } = require('../generators
 // Layout archetype detection
 const { detectArchetype } = require('../config/layout-archetypes.cjs');
 
+// Slider style computation (maps vibe/energy/era/density/price to CSS values)
+const { getSliderStyles } = require('../prompt-builders/index.cjs');
+
 // Metrics generator for index pages and comparison views
 const MetricsGenerator = require('./metrics-generator.cjs');
 
@@ -496,6 +499,28 @@ async function generateSite(input, variant = 'A', mode = 'test', options = {}) {
   const generatedPages = {};
   const moodSliders = options.moodSliders || {};
   const enablePortal = options.enablePortal !== false; // Default to true
+
+  // Enrich moodSliders with computed design tokens from slider values
+  // This makes all 5 sliders (vibe, energy, era, density, price) affect visual output
+  const sliderStyles = getSliderStyles(moodSliders, getColors(moodSliders, businessData));
+  if (!moodSliders.fontHeading) moodSliders.fontHeading = sliderStyles.fontHeading;
+  if (!moodSliders.fontBody) moodSliders.fontBody = sliderStyles.fontBody;
+  if (!moodSliders.borderRadius) moodSliders.borderRadius = sliderStyles.borderRadius;
+  if (!moodSliders.sectionPadding) moodSliders.sectionPadding = sliderStyles.sectionPadding;
+  if (!moodSliders.cardPadding) moodSliders.cardPadding = sliderStyles.cardPadding;
+  if (!moodSliders.gap) moodSliders.gap = sliderStyles.gap;
+  if (!moodSliders.fontWeight) moodSliders.fontWeight = sliderStyles.fontWeight;
+  if (!moodSliders.headlineStyle) moodSliders.headlineStyle = sliderStyles.headlineStyle;
+  if (!moodSliders.buttonStyle) moodSliders.buttonStyle = sliderStyles.buttonStyle;
+  moodSliders.isLuxury = sliderStyles.isLuxury;
+  moodSliders.isPremium = sliderStyles.isPremium;
+  // Derive isDark/isMedium from theme if not explicitly set
+  if (moodSliders.isDark === undefined && sliderStyles.isDark) moodSliders.isDark = true;
+  if (moodSliders.isMedium === undefined && sliderStyles.isMedium) moodSliders.isMedium = true;
+  // Apply luxury/premium color if no explicit primary color set
+  if (!moodSliders.primaryColor && (sliderStyles.isLuxury || sliderStyles.isPremium)) {
+    moodSliders.primaryColor = sliderStyles.colors.primary;
+  }
   const portalPages = ['login', 'register', 'dashboard', 'profile', 'rewards', 'my-reservations', 'order-history'];
 
   // Generate HomePage using structural generator
@@ -4773,6 +4798,7 @@ const styles = {
  */
 function generateServicesPage(industryId, variant, moodSliders, businessData, pageType) {
   const colors = getColors(moodSliders, businessData);
+  const dt = getDesignTokens(moodSliders, businessData);
   const fixture = loadFixture(industryId);
 
   // Try to get services from fixture
@@ -4836,22 +4862,22 @@ export default function ServicesPage() {
 }
 
 const styles = {
-  page: { background: '#ffffff' },
+  page: { background: '${dt.background}', fontFamily: "${dt.fontBody}" },
   main: { },
-  hero: { textAlign: 'center', padding: '60px 20px', background: '#f9fafb' },
-  title: { fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: '700', color: '#1f2937', marginBottom: '12px' },
-  subtitle: { fontSize: '1.1rem', color: '#6b7280' },
-  servicesSection: { maxWidth: '1200px', margin: '0 auto', padding: '60px 20px' },
-  servicesGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' },
-  serviceCard: { background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '16px', padding: '32px', textAlign: 'center', transition: 'all 0.2s' },
+  hero: { textAlign: 'center', padding: '${dt.sectionPadding}', background: '${dt.surface}' },
+  title: { fontSize: 'clamp(2rem, 5vw, 3rem)', fontFamily: "${dt.fontHeading}", fontWeight: '700', color: '${dt.text}', marginBottom: '12px', textTransform: '${dt.headlineStyle}' },
+  subtitle: { fontSize: '1.1rem', color: '${dt.textMuted}' },
+  servicesSection: { maxWidth: '1200px', margin: '0 auto', padding: '${dt.sectionPadding}' },
+  servicesGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '${dt.gap}' },
+  serviceCard: { background: '${dt.cardBg}', border: '1px solid ${dt.border}', borderRadius: '${dt.borderRadius}', padding: '${dt.cardPadding}', textAlign: 'center', transition: 'all 0.2s', boxShadow: '${dt.shadow}' },
   serviceIcon: { fontSize: '3rem', marginBottom: '16px' },
-  serviceName: { fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '12px' },
-  serviceDesc: { color: '#6b7280', marginBottom: '20px', lineHeight: 1.6 },
-  serviceBtn: { color: '${colors.primary}', fontWeight: '600', textDecoration: 'none' },
-  ctaSection: { textAlign: 'center', padding: '80px 20px', background: '${colors.primary}' },
-  ctaTitle: { fontSize: '2rem', fontWeight: '700', color: '#fff', marginBottom: '12px' },
+  serviceName: { fontSize: '1.25rem', fontFamily: "${dt.fontHeading}", fontWeight: '${dt.fontWeight}', color: '${dt.text}', marginBottom: '12px' },
+  serviceDesc: { color: '${dt.textMuted}', marginBottom: '20px', lineHeight: 1.6 },
+  serviceBtn: { color: '${dt.primary}', fontWeight: '${dt.buttonWeight}', textDecoration: 'none', textTransform: '${dt.buttonTransform}' },
+  ctaSection: { textAlign: 'center', padding: '${dt.sectionPadding}', background: '${dt.primary}' },
+  ctaTitle: { fontSize: '2rem', fontFamily: "${dt.fontHeading}", fontWeight: '700', color: '#fff', marginBottom: '12px' },
   ctaText: { fontSize: '1.1rem', color: 'rgba(255,255,255,0.9)', marginBottom: '24px' },
-  ctaBtn: { display: 'inline-block', background: '#fff', color: '${colors.primary}', padding: '14px 32px', borderRadius: '8px', fontWeight: '600', textDecoration: 'none' }
+  ctaBtn: { display: 'inline-block', background: '#fff', color: '${dt.primary}', padding: '${dt.buttonPadding}', borderRadius: '${dt.borderRadius}', fontWeight: '${dt.buttonWeight}', textDecoration: 'none', textTransform: '${dt.buttonTransform}' }
 };
 `;
 }
@@ -4957,6 +4983,7 @@ function buildAboutData(businessData) {
  */
 function generateAboutPageStoryFirst(industryId, variant, moodSliders, businessData, pageType) {
   const colors = getColors(moodSliders, businessData);
+  const dt = getDesignTokens(moodSliders, businessData);
   const data = buildAboutData(businessData);
 
   const founderData = `{ name: '${escapeQuotes(data.founder.name)}', title: '${escapeQuotes(data.founder.title)}', quote: '${escapeQuotes(data.founder.quote)}', image: '${data.founder.image}' }`;
@@ -5190,7 +5217,8 @@ export default function AboutPage() {
 
 const styles = {
   page: {
-    background: '#ffffff'
+    background: '${dt.background}',
+    fontFamily: "${dt.fontBody}"
   },
   container: {
     maxWidth: '1200px',
@@ -5208,8 +5236,9 @@ const styles = {
   },
   sectionTitle: {
     fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
+    fontFamily: "${dt.fontHeading}",
     fontWeight: '700',
-    color: '#1f2937',
+    color: '${dt.text}',
     marginBottom: '40px'
   },
 
@@ -5564,6 +5593,7 @@ const styles = {
  */
 function generateAboutPageValuesForward(industryId, variant, moodSliders, businessData, pageType) {
   const colors = getColors(moodSliders, businessData);
+  const dt = getDesignTokens(moodSliders, businessData);
   const data = buildAboutData(businessData);
 
   const teamData = data.team.map(m =>
@@ -5733,7 +5763,8 @@ export default function AboutPage() {
 
 const styles = {
   page: {
-    background: '#ffffff'
+    background: '${dt.background}',
+    fontFamily: "${dt.fontBody}"
   },
   container: {
     maxWidth: '1200px',
@@ -5751,8 +5782,9 @@ const styles = {
   },
   sectionTitle: {
     fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
+    fontFamily: "${dt.fontHeading}",
     fontWeight: '700',
-    color: '#1f2937',
+    color: '${dt.text}',
     marginBottom: '48px',
     textAlign: 'center'
   },
@@ -6017,6 +6049,7 @@ const styles = {
  */
 function generateAboutPageVisualJourney(industryId, variant, moodSliders, businessData, pageType) {
   const colors = getColors(moodSliders, businessData);
+  const dt = getDesignTokens(moodSliders, businessData);
   const data = buildAboutData(businessData);
 
   const teamData = data.team.slice(0, 3).map(m =>
@@ -6236,7 +6269,8 @@ export default function AboutPage() {
 
 const styles = {
   page: {
-    background: '#ffffff'
+    background: '${dt.background}',
+    fontFamily: "${dt.fontBody}"
   },
   container: {
     maxWidth: '1200px',
@@ -6245,8 +6279,9 @@ const styles = {
   },
   sectionTitle: {
     fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
+    fontFamily: "${dt.fontHeading}",
     fontWeight: '700',
-    color: '#1f2937',
+    color: '${dt.text}',
     marginBottom: '48px',
     textAlign: 'center'
   },
@@ -6556,6 +6591,7 @@ const styles = {
  */
 function generateContactPage(industryId, variant, moodSliders, businessData, pageType) {
   const colors = getColors(moodSliders, businessData);
+  const dt = getDesignTokens(moodSliders, businessData);
 
   return `/**
  * Contact Page - ${businessData.name}
@@ -6681,23 +6717,23 @@ export default function ContactPage() {
 }
 
 const styles = {
-  page: { background: '#ffffff' },
+  page: { background: '${dt.background}', fontFamily: "${dt.fontBody}" },
   main: { },
-  hero: { textAlign: 'center', padding: '60px 20px', background: '#f9fafb' },
-  title: { fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: '700', color: '#1f2937', marginBottom: '12px' },
-  subtitle: { fontSize: '1.1rem', color: '#6b7280' },
-  contactSection: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px', maxWidth: '1100px', margin: '0 auto', padding: '60px 20px' },
+  hero: { textAlign: 'center', padding: '${dt.sectionPadding}', background: '${dt.surface}' },
+  title: { fontSize: 'clamp(2rem, 5vw, 3rem)', fontFamily: "${dt.fontHeading}", fontWeight: '700', color: '${dt.text}', marginBottom: '12px', textTransform: '${dt.headlineStyle}' },
+  subtitle: { fontSize: '1.1rem', color: '${dt.textMuted}' },
+  contactSection: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '${dt.gap}', maxWidth: '1100px', margin: '0 auto', padding: '${dt.sectionPadding}' },
   contactInfo: {},
-  infoTitle: { fontSize: '1.5rem', fontWeight: '700', color: '#1f2937', marginBottom: '24px' },
+  infoTitle: { fontSize: '1.5rem', fontFamily: "${dt.fontHeading}", fontWeight: '700', color: '${dt.text}', marginBottom: '24px' },
   infoItem: { display: 'flex', gap: '16px', marginBottom: '24px' },
   infoIcon: { fontSize: '1.5rem' },
-  infoLabel: { fontSize: '0.9rem', fontWeight: '600', color: '#1f2937', marginBottom: '4px' },
-  infoText: { color: '#6b7280', fontSize: '0.95rem' },
-  contactForm: { background: '#f9fafb', borderRadius: '16px', padding: '32px' },
-  formTitle: { fontSize: '1.5rem', fontWeight: '700', color: '#1f2937', marginBottom: '24px' },
-  input: { width: '100%', padding: '14px 16px', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '1rem', marginBottom: '16px', outline: 'none' },
-  textarea: { width: '100%', padding: '14px 16px', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '1rem', marginBottom: '16px', outline: 'none', resize: 'vertical' },
-  submitBtn: { width: '100%', padding: '16px', background: '${colors.primary}', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' },
+  infoLabel: { fontSize: '0.9rem', fontWeight: '600', color: '${dt.text}', marginBottom: '4px' },
+  infoText: { color: '${dt.textMuted}', fontSize: '0.95rem' },
+  contactForm: { background: '${dt.surface}', borderRadius: '${dt.borderRadius}', padding: '${dt.cardPadding}', boxShadow: '${dt.shadow}' },
+  formTitle: { fontSize: '1.5rem', fontFamily: "${dt.fontHeading}", fontWeight: '700', color: '${dt.text}', marginBottom: '24px' },
+  input: { width: '100%', padding: '14px 16px', border: '1px solid ${dt.border}', borderRadius: '${dt.borderRadius}', fontSize: '1rem', marginBottom: '16px', outline: 'none', background: '${dt.inputBg}', color: '${dt.text}' },
+  textarea: { width: '100%', padding: '14px 16px', border: '1px solid ${dt.border}', borderRadius: '${dt.borderRadius}', fontSize: '1rem', marginBottom: '16px', outline: 'none', resize: 'vertical', background: '${dt.inputBg}', color: '${dt.text}' },
+  submitBtn: { width: '100%', padding: '${dt.buttonPadding}', background: '${dt.primary}', color: '#fff', border: 'none', borderRadius: '${dt.borderRadius}', fontSize: '1rem', fontWeight: '${dt.buttonWeight}', cursor: 'pointer', textTransform: '${dt.buttonTransform}' },
   successMessage: { textAlign: 'center', padding: '40px' },
   successIcon: { display: 'inline-block', width: '60px', height: '60px', background: '#10b981', color: '#fff', borderRadius: '50%', fontSize: '2rem', lineHeight: '60px', marginBottom: '16px' }
 };
@@ -6709,6 +6745,7 @@ const styles = {
  */
 function generateGalleryPage(industryId, variant, moodSliders, businessData, pageType) {
   const colors = getColors(moodSliders, businessData);
+  const dt = getDesignTokens(moodSliders, businessData);
   const images = businessData.images || {};
   const gallery = businessData.gallery;
 
@@ -6776,19 +6813,19 @@ export default function GalleryPage() {
 }
 
 const styles = {
-  page: { background: '#ffffff' },
+  page: { background: '${dt.background}', fontFamily: "${dt.fontBody}" },
   main: { },
-  hero: { textAlign: 'center', padding: '60px 20px', background: '#f9fafb' },
-  title: { fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: '700', color: '#1f2937', marginBottom: '12px' },
-  subtitle: { fontSize: '1.1rem', color: '#6b7280' },
-  gallerySection: { maxWidth: '1200px', margin: '0 auto', padding: '60px 20px' },
-  galleryGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' },
-  galleryItem: { position: 'relative', borderRadius: '12px', overflow: 'hidden', cursor: 'pointer', aspectRatio: '1' },
+  hero: { textAlign: 'center', padding: '${dt.sectionPadding}', background: '${dt.surface}' },
+  title: { fontSize: 'clamp(2rem, 5vw, 3rem)', fontFamily: "${dt.fontHeading}", fontWeight: '700', color: '${dt.text}', marginBottom: '12px', textTransform: '${dt.headlineStyle}' },
+  subtitle: { fontSize: '1.1rem', color: '${dt.textMuted}' },
+  gallerySection: { maxWidth: '1200px', margin: '0 auto', padding: '${dt.sectionPadding}' },
+  galleryGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '${dt.gap}' },
+  galleryItem: { position: 'relative', borderRadius: '${dt.borderRadius}', overflow: 'hidden', cursor: 'pointer', aspectRatio: '1', boxShadow: '${dt.shadow}' },
   galleryImage: { width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s' },
   imageOverlay: { position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.7), transparent)', display: 'flex', alignItems: 'flex-end', padding: '16px', opacity: 0, transition: 'opacity 0.3s' },
   imageCaption: { color: '#fff', fontWeight: '500' },
   lightbox: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.95)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' },
-  lightboxImage: { maxWidth: '90%', maxHeight: '80vh', objectFit: 'contain', borderRadius: '8px' },
+  lightboxImage: { maxWidth: '90%', maxHeight: '80vh', objectFit: 'contain', borderRadius: '${dt.borderRadius}' },
   lightboxCaption: { color: '#fff', marginTop: '16px', fontSize: '1.1rem' },
   closeBtn: { position: 'absolute', top: '20px', right: '20px', background: 'transparent', border: 'none', color: '#fff', fontSize: '2rem', cursor: 'pointer' }
 };
@@ -6799,7 +6836,7 @@ const styles = {
  * Generate generic page as fallback
  */
 function generateGenericPage(industryId, variant, moodSliders, businessData, pageType) {
-  const colors = getColors(moodSliders, businessData);
+  const dt = getDesignTokens(moodSliders, businessData);
   const pageName = capitalize(pageType);
 
   return `/**
@@ -6831,15 +6868,15 @@ export default function ${pageName}Page() {
 }
 
 const styles = {
-  page: { background: '#ffffff' },
+  page: { background: '${dt.background}', fontFamily: "${dt.fontBody}" },
   main: { },
-  hero: { textAlign: 'center', padding: '60px 20px', background: '#f9fafb' },
-  title: { fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: '700', color: '#1f2937', marginBottom: '12px' },
-  subtitle: { fontSize: '1.1rem', color: '#6b7280' },
-  content: { padding: '80px 20px', textAlign: 'center' },
+  hero: { textAlign: 'center', padding: '${dt.sectionPadding}', background: '${dt.surface}' },
+  title: { fontSize: 'clamp(2rem, 5vw, 3rem)', fontFamily: "${dt.fontHeading}", fontWeight: '${dt.fontWeight === '400' ? '700' : '800'}', color: '${dt.text}', marginBottom: '12px', textTransform: '${dt.headlineStyle}' },
+  subtitle: { fontSize: '1.1rem', color: '${dt.textMuted}' },
+  content: { padding: '${dt.sectionPadding}', textAlign: 'center' },
   container: { maxWidth: '600px', margin: '0 auto' },
-  text: { fontSize: '1.1rem', color: '#6b7280', marginBottom: '24px' },
-  btn: { display: 'inline-block', background: '${colors.primary}', color: '#fff', padding: '14px 32px', borderRadius: '8px', fontWeight: '600', textDecoration: 'none' }
+  text: { fontSize: '1.1rem', color: '${dt.textMuted}', marginBottom: '24px' },
+  btn: { display: 'inline-block', background: '${dt.primary}', color: '#fff', padding: '${dt.buttonPadding}', borderRadius: '${dt.borderRadius}', fontWeight: '${dt.buttonWeight}', textDecoration: 'none', textTransform: '${dt.buttonTransform}' }
 };
 `;
 }
@@ -6854,7 +6891,15 @@ function generateOrderPage(industryId, variant, moodSliders, businessData, pageT
   const styleOverrides = {
     isDark: moodSliders.isDark || false,
     isMedium: moodSliders.isMedium || false,
-    primaryColor: colors.primary
+    primaryColor: colors.primary,
+    fontHeading: moodSliders.fontHeading,
+    fontBody: moodSliders.fontBody,
+    borderRadius: moodSliders.borderRadius,
+    sectionPadding: moodSliders.sectionPadding,
+    cardPadding: moodSliders.cardPadding,
+    gap: moodSliders.gap,
+    headlineStyle: moodSliders.headlineStyle,
+    buttonStyle: moodSliders.buttonStyle
   };
   return generateArchetypeOrderPage(archetype, { ...businessData, industry: industryId }, colors, styleOverrides);
 }
@@ -11716,13 +11761,70 @@ function getColors(moodSliders, businessData) {
     primary = theme.primary || '#78350F'; // Safe warm brown fallback
   }
 
+  // Handle dark/medium theme backgrounds
+  let text, textMuted, background;
+  if (moodSliders.isDark) {
+    text = '#f8fafc';
+    textMuted = '#94a3b8';
+    background = moodSliders.isLuxury ? '#0d0d0f' : '#0f172a';
+  } else if (moodSliders.isMedium) {
+    text = moodSliders.isLuxury ? '#2d2a26' : '#1f2937';
+    textMuted = moodSliders.isLuxury ? '#5c5955' : '#4b5563';
+    background = moodSliders.isLuxury ? '#faf6ef' : '#f0f0f0';
+  } else {
+    text = theme.text || '#1f2937';
+    textMuted = '#6b7280';
+    background = '#ffffff';
+  }
+
   return {
     primary,
     secondary: trendColors.secondary || theme.secondary || '#6366F1',
     accent: trendColors.accent || theme.accent || '#10B981',
-    text: moodSliders.isDark ? '#f8fafc' : (theme.text || '#1f2937'),
-    textMuted: '#6b7280',
-    background: moodSliders.isDark ? '#0f172a' : '#ffffff'
+    text,
+    textMuted,
+    background
+  };
+}
+
+/**
+ * Get design tokens from enriched moodSliders + colors
+ * Used by page generators to apply slider-driven styles
+ */
+function getDesignTokens(moodSliders, businessData) {
+  const colors = getColors(moodSliders, businessData);
+  const energy = moodSliders.energy || 50;
+
+  return {
+    ...colors,
+    // Typography
+    fontHeading: moodSliders.fontHeading || "'Inter', system-ui, sans-serif",
+    fontBody: moodSliders.fontBody || "system-ui, sans-serif",
+    fontWeight: moodSliders.fontWeight || '600',
+    headlineStyle: moodSliders.headlineStyle || 'none',
+    // Spacing
+    sectionPadding: moodSliders.sectionPadding || '80px 20px',
+    cardPadding: moodSliders.cardPadding || '28px',
+    gap: moodSliders.gap || '32px',
+    // Shapes
+    borderRadius: moodSliders.borderRadius || '12px',
+    // Shadows - energy based (calm=soft, bold=strong)
+    shadow: energy < 35 ? '0 1px 3px rgba(0,0,0,0.05)' : energy > 65 ? '0 8px 30px rgba(0,0,0,0.12)' : '0 4px 20px rgba(0,0,0,0.08)',
+    shadowHover: energy < 35 ? '0 2px 8px rgba(0,0,0,0.08)' : energy > 65 ? '0 12px 40px rgba(0,0,0,0.18)' : '0 8px 30px rgba(0,0,0,0.12)',
+    // Buttons
+    buttonPadding: moodSliders.buttonStyle?.padding || '16px 32px',
+    buttonWeight: moodSliders.buttonStyle?.fontWeight || '600',
+    buttonTransform: moodSliders.buttonStyle?.textTransform || 'none',
+    // Theme flags
+    isDark: moodSliders.isDark || false,
+    isMedium: moodSliders.isMedium || false,
+    isLuxury: moodSliders.isLuxury || false,
+    isPremium: moodSliders.isPremium || false,
+    // Pre-computed surface colors for card backgrounds, hero sections, inputs
+    surface: moodSliders.isDark ? '#1e293b' : moodSliders.isMedium ? (moodSliders.isLuxury ? '#f5f0e6' : '#e5e5e5') : '#f9fafb',
+    cardBg: moodSliders.isDark ? '#1e293b' : moodSliders.isMedium ? '#ffffff' : '#ffffff',
+    border: moodSliders.isDark ? '#334155' : moodSliders.isMedium ? '#d1d5db' : '#e5e7eb',
+    inputBg: moodSliders.isDark ? '#0f172a' : moodSliders.isMedium ? '#ffffff' : '#ffffff'
   };
 }
 
