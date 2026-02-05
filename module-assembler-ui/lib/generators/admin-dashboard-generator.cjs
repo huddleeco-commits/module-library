@@ -697,12 +697,42 @@ function generateDashboardHome(businessName, primaryColor, industryModules = {})
   ]`;
   }
 
+  // Get icons for modules
+  const primaryIcon = MODULE_LABELS[primaryModule]?.icon || 'FileText';
+  const secondaryIcon = secondaryModule ? (MODULE_LABELS[secondaryModule]?.icon || 'Calendar') : 'Calendar';
+
   return `import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Calendar, Bell, TrendingUp, Users, DollarSign, FileText, Layers,
-  Clock, CheckCircle, AlertCircle, ArrowRight, Mail, Home
+  Clock, CheckCircle, AlertCircle, ArrowRight, Mail, Home,
+  UtensilsCrossed, Wrench, Package, Briefcase, GraduationCap, Sparkles,
+  MessageSquare, ClipboardList, Building, Car
 } from 'lucide-react';
+
+// Module icons mapping
+const MODULE_ICONS = {
+  menu: UtensilsCrossed,
+  services: Wrench,
+  products: Package,
+  features: Sparkles,
+  classes: Users,
+  programs: GraduationCap,
+  listings: Building,
+  reservations: Calendar,
+  appointments: Calendar,
+  consultations: MessageSquare,
+  bookings: Calendar,
+  demos: Calendar,
+  orders: ClipboardList,
+  quotes: ClipboardList,
+  memberships: Users,
+  enrollments: GraduationCap,
+  inquiries: Mail
+};
+
+const PrimaryIcon = MODULE_ICONS['${primaryModule}'] || FileText;
+const SecondaryIcon = MODULE_ICONS['${secondaryModule || 'calendar'}'] || Calendar;
 
 const API_BASE = '/api';
 
@@ -788,16 +818,16 @@ export default function DashboardHome() {
       <div style={styles.section}>
         <h2 style={styles.sectionTitle}>Quick Actions</h2>
         <div style={styles.actionsGrid}>
-          <Link to="/menu" style={styles.actionCard}>
-            <UtensilsCrossed size={24} />
-            <span>Edit Menu</span>
+          <Link to="/${primaryModule}" style={styles.actionCard}>
+            <PrimaryIcon size={24} />
+            <span>Manage ${primaryLabel}</span>
             <ArrowRight size={16} style={{ marginLeft: 'auto' }} />
           </Link>
-          <Link to="/reservations" style={styles.actionCard}>
-            <Calendar size={24} />
-            <span>View Reservations</span>
+          ${secondaryModule ? `<Link to="/${secondaryModule}" style={styles.actionCard}>
+            <SecondaryIcon size={24} />
+            <span>View ${secondaryLabel}</span>
             <ArrowRight size={16} style={{ marginLeft: 'auto' }} />
-          </Link>
+          </Link>` : ''}
           <Link to="/ai" style={styles.actionCard}>
             <Bell size={24} />
             <span>Chat with AI Agent</span>
@@ -806,11 +836,11 @@ export default function DashboardHome() {
         </div>
       </div>
 
-      {/* Today's Reservations */}
+      {/* Today's ${secondaryLabel || 'Activity'} */}
       <div style={styles.section}>
         <div style={styles.sectionHeader}>
-          <h2 style={styles.sectionTitle}>Today's Reservations</h2>
-          <Link to="/reservations" style={styles.viewAll}>View all</Link>
+          <h2 style={styles.sectionTitle}>Today's ${secondaryLabel || 'Activity'}</h2>
+          <Link to="/${secondaryModule || primaryModule}" style={styles.viewAll}>View all</Link>
         </div>
 
         {loading ? (
@@ -822,7 +852,7 @@ export default function DashboardHome() {
                 <div style={styles.resTime}>{res.time}</div>
                 <div style={styles.resInfo}>
                   <p style={styles.resName}>{res.customer_name}</p>
-                  <p style={styles.resDetails}>{res.party_size} guests</p>
+                  <p style={styles.resDetails}>{res.service || res.party_size ? (res.party_size + ' guests') : ''}</p>
                 </div>
                 <span style={{
                   ...styles.resStatus,
@@ -835,7 +865,7 @@ export default function DashboardHome() {
             ))}
           </div>
         ) : (
-          <p style={styles.empty}>No reservations today</p>
+          <p style={styles.empty}>No ${secondaryLabel?.toLowerCase() || 'items'} today</p>
         )}
       </div>
     </div>
