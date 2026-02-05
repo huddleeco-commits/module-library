@@ -18,6 +18,13 @@ const path = require('path');
 const os = require('os');
 const { execSync } = require('child_process');
 
+// Spec loader for shared specification files
+const SPEC_LOADER_PATH = path.resolve(__dirname, '..', 'module-assembler-ui', 'lib', 'services', 'spec-loader.cjs');
+let SpecLoader = null;
+if (fs.existsSync(SPEC_LOADER_PATH)) {
+  SpecLoader = require(SPEC_LOADER_PATH).SpecLoader;
+}
+
 // ============================================
 // PATHS - Environment-based with sensible defaults
 // ============================================
@@ -220,11 +227,11 @@ try {
 
 // Default bundle mappings for industries (used when JSON doesn't specify)
 const DEFAULT_BUNDLES = {
-  'restaurant': { bundles: ['core', 'commerce'], additionalBackend: ['booking', 'inventory', 'notifications'], additionalFrontend: ['image-gallery', 'search-filter'] },
-  'pizza': { bundles: ['core', 'commerce'], additionalBackend: ['booking', 'inventory', 'notifications'], additionalFrontend: ['image-gallery', 'search-filter'] },
-  'pizzeria': { bundles: ['core', 'commerce'], additionalBackend: ['booking', 'inventory', 'notifications'], additionalFrontend: ['image-gallery', 'search-filter'] },
+  'restaurant': { bundles: ['core', 'commerce', 'dashboard'], additionalBackend: ['booking', 'inventory', 'notifications'], additionalFrontend: ['image-gallery', 'search-filter'] },
+  'pizza': { bundles: ['core', 'commerce', 'dashboard'], additionalBackend: ['booking', 'inventory', 'notifications'], additionalFrontend: ['image-gallery', 'search-filter'] },
+  'pizzeria': { bundles: ['core', 'commerce', 'dashboard'], additionalBackend: ['booking', 'inventory', 'notifications'], additionalFrontend: ['image-gallery', 'search-filter'] },
   'steakhouse': {
-    bundles: ['core', 'commerce'],
+    bundles: ['core', 'commerce', 'dashboard'],
     additionalBackend: ['booking', 'payments', 'inventory', 'notifications'],
     additionalFrontend: ['image-gallery', 'modal-system'],
     // Luxury steakhouse defaults
@@ -264,12 +271,12 @@ const DEFAULT_BUNDLES = {
   'real-estate': { bundles: ['core', 'commerce', 'dashboard'], additionalBackend: ['booking', 'notifications'], additionalFrontend: ['image-gallery', 'search-filter'] },
   'fitness': { bundles: ['core', 'commerce', 'dashboard'], additionalBackend: ['booking', 'notifications'], additionalFrontend: [] },
   'photography': { bundles: ['core'], additionalBackend: ['booking', 'notifications', 'payments'], additionalFrontend: ['image-gallery', 'pricing-table'] },
-  'coffee-shop': { bundles: ['core', 'commerce'], additionalBackend: ['inventory', 'notifications'], additionalFrontend: ['image-gallery'] },
+  'coffee-shop': { bundles: ['core', 'commerce', 'dashboard'], additionalBackend: ['inventory', 'notifications'], additionalFrontend: ['image-gallery'] },
   'agency': { bundles: ['core', 'dashboard'], additionalBackend: ['notifications'], additionalFrontend: [] },
   'consulting': { bundles: ['core', 'dashboard'], additionalBackend: ['booking', 'documents', 'notifications'], additionalFrontend: [] },
   'hotel': { bundles: ['core', 'commerce', 'dashboard'], additionalBackend: ['booking', 'notifications'], additionalFrontend: ['image-gallery'] },
-  'barbershop': { bundles: ['core'], additionalBackend: ['booking', 'notifications', 'payments'], additionalFrontend: ['image-gallery', 'pricing-table'] },
-  'spa-salon': { bundles: ['core'], additionalBackend: ['booking', 'notifications', 'payments'], additionalFrontend: ['image-gallery', 'pricing-table'] },
+  'barbershop': { bundles: ['core', 'dashboard'], additionalBackend: ['booking', 'notifications', 'payments'], additionalFrontend: ['image-gallery', 'pricing-table'] },
+  'spa-salon': { bundles: ['core', 'dashboard'], additionalBackend: ['booking', 'notifications', 'payments'], additionalFrontend: ['image-gallery', 'pricing-table'] },
   'construction': { bundles: ['core', 'dashboard'], additionalBackend: ['documents', 'notifications'], additionalFrontend: ['image-gallery'] },
   'plumber': { bundles: ['core'], additionalBackend: ['booking', 'notifications'], additionalFrontend: [] },
   'electrician': { bundles: ['core'], additionalBackend: ['booking', 'notifications'], additionalFrontend: [] },
@@ -289,7 +296,7 @@ const DEFAULT_BUNDLES = {
   'nonprofit': { bundles: ['core', 'social'], additionalBackend: ['notifications'], additionalFrontend: [] },
   'event-venue': { bundles: ['core'], additionalBackend: ['booking', 'notifications', 'payments'], additionalFrontend: ['image-gallery', 'pricing-table'] },
   'florist': { bundles: ['core', 'commerce'], additionalBackend: ['inventory', 'notifications'], additionalFrontend: ['image-gallery'] },
-  'bakery': { bundles: ['core', 'commerce'], additionalBackend: ['inventory', 'notifications'], additionalFrontend: ['image-gallery'] },
+  'bakery': { bundles: ['core', 'commerce', 'dashboard'], additionalBackend: ['inventory', 'notifications'], additionalFrontend: ['image-gallery'] },
   'brewery': { bundles: ['core', 'commerce'], additionalBackend: ['inventory', 'notifications'], additionalFrontend: ['image-gallery'] },
   'winery': { bundles: ['core', 'commerce'], additionalBackend: ['booking', 'inventory', 'notifications'], additionalFrontend: ['image-gallery'] },
   'insurance': { bundles: ['core', 'dashboard'], additionalBackend: ['documents', 'notifications'], additionalFrontend: [] },
@@ -446,22 +453,28 @@ function getModulesForBundles(bundleKeys) {
 }
 
 // Find actual route file in module directory
+// IMPORTANT: Always prefer index.js as it properly mounts ALL routes
 function findRouteFile(modulePath, moduleName) {
-  const routesDir = path.join(modulePath, 'routes');
+  // FIRST: Check for index.js in module root - this is the CORRECT entry point
+  // The index.js properly mounts all routes from the routes/ directory
+  const indexFile = path.join(modulePath, 'index.js');
+  if (fs.existsSync(indexFile)) {
+    return 'INDEX'; // Special marker to indicate we should require the module folder directly
+  }
 
+  // FALLBACK: If no index.js, check for routes directory
+  const routesDir = path.join(modulePath, 'routes');
   if (!fs.existsSync(routesDir)) {
-    // Check for index.js in module root
-    const indexFile = path.join(modulePath, 'index.js');
-    if (fs.existsSync(indexFile)) return 'index.js';
-    console.warn(`   ⚠️ Module "${moduleName}" has no routes/ directory or index.js - skipping`);
+    console.warn(`   ⚠️ Module "${moduleName}" has no index.js or routes/ directory - skipping`);
     return null;
   }
 
-  // Get first .js file in routes directory
+  // Get .js files in routes directory
   const files = fs.readdirSync(routesDir).filter(f => f.endsWith('.js'));
   if (files.length > 0) {
     if (files.length > 1) {
-      console.warn(`   ⚠️ Module "${moduleName}" has multiple route files, using: ${files[0]}`);
+      console.warn(`   ⚠️ Module "${moduleName}" has ${files.length} route files but NO index.js - only loading: ${files[0]}`);
+      console.warn(`      Consider adding index.js to mount all routes properly`);
     }
     return `routes/${files[0]}`;
   }
@@ -1397,19 +1410,26 @@ if (process.env.DATABASE_URL) {
     )
   \`);
 
-  // Seed default users if not exists
-  const adminCheck = db.prepare('SELECT id FROM users WHERE email = ?').get('admin@test.com');
-  if (!adminCheck) {
-    const adminHash = bcrypt.hashSync('admin123', 12);
-    db.prepare('INSERT INTO users (email, password_hash, full_name, is_admin) VALUES (?, ?, ?, ?)').run('admin@test.com', adminHash, 'Test Admin', 1);
-    console.log('   Created admin user: admin@test.com / admin123');
+  // Seed default users if not exists (passwords from env vars only)
+  const testAdminPassword = process.env.TEST_ADMIN_PASSWORD;
+  const testDemoPassword = process.env.TEST_DEMO_PASSWORD;
+
+  if (testAdminPassword) {
+    const adminCheck = db.prepare('SELECT id FROM users WHERE email = ?').get('admin@test.com');
+    if (!adminCheck) {
+      const adminHash = bcrypt.hashSync(testAdminPassword, 12);
+      db.prepare('INSERT INTO users (email, password_hash, full_name, is_admin) VALUES (?, ?, ?, ?)').run('admin@test.com', adminHash, 'Test Admin', 1);
+      console.log('   Created admin user: admin@test.com');
+    }
   }
 
-  const demoCheck = db.prepare('SELECT id FROM users WHERE email = ?').get('demo@test.com');
-  if (!demoCheck) {
-    const demoHash = bcrypt.hashSync('demo123', 12);
-    db.prepare('INSERT INTO users (email, password_hash, full_name, is_admin) VALUES (?, ?, ?, ?)').run('demo@test.com', demoHash, 'Demo User', 0);
-    console.log('   Created demo user: demo@test.com / demo123');
+  if (testDemoPassword) {
+    const demoCheck = db.prepare('SELECT id FROM users WHERE email = ?').get('demo@test.com');
+    if (!demoCheck) {
+      const demoHash = bcrypt.hashSync(testDemoPassword, 12);
+      db.prepare('INSERT INTO users (email, password_hash, full_name, is_admin) VALUES (?, ?, ?, ?)').run('demo@test.com', demoHash, 'Demo User', 0);
+      console.log('   Created demo user: demo@test.com');
+    }
   }
 
   console.log('✅ SQLite database ready:', dbPath);
@@ -1620,8 +1640,15 @@ function generateServerJs(projectName, backendModules) {
     if (routeFile) {
       const varName = moduleName.replace(/-/g, '_') + 'Routes';
       const mapping = ROUTE_MAPPINGS[moduleName] || { route: `/api/${moduleName}` };
-      
-      imports.push(`const ${varName} = require('./modules/${moduleName}/${routeFile}');`);
+
+      // If routeFile is 'INDEX', require the module folder directly (loads index.js)
+      // This is the CORRECT way - index.js mounts all routes from routes/ directory
+      if (routeFile === 'INDEX') {
+        imports.push(`const ${varName} = require('./modules/${moduleName}');`);
+      } else {
+        // Fallback for modules without index.js (legacy/simple modules)
+        imports.push(`const ${varName} = require('./modules/${moduleName}/${routeFile}');`);
+      }
       routes.push(`app.use('${mapping.route}', ${varName});`);
       loadedModules.push(moduleName);
     }
@@ -2271,12 +2298,101 @@ ${backendModules.map(m => {
 }
 
 // ============================================
+// GENERATE AGENTS.JSON - AI Agent Configuration
+// ============================================
+
+function generateAgentsJson(projectName, industry, businessData = {}, specAgents = null) {
+  // If spec has agent definitions, use those
+  if (specAgents && specAgents.definitions && specAgents.definitions.length > 0) {
+    return JSON.stringify({
+      business: {
+        name: projectName,
+        type: industry || 'business',
+        generatedAt: new Date().toISOString()
+      },
+      agents: specAgents.definitions.map(agent => ({
+        id: agent.id,
+        name: agent.name || agent.id,
+        role: agent.type || 'Assistant',
+        icon: agent.icon || 'Bot',
+        color: agent.color || '#10B981',
+        category: agent.category || 'operations',
+        systemPrompt: agent.systemPrompt || `You are the ${agent.name || agent.id} agent for ${projectName}.`,
+        capabilities: agent.capabilities || []
+      })),
+      categories: [
+        { id: 'operations', name: 'Operations', agents: specAgents.definitions.filter(a => a.category === 'operations' || !a.category).map(a => a.id) },
+        { id: 'revenue', name: 'Revenue', agents: specAgents.definitions.filter(a => a.category === 'revenue').map(a => a.id) }
+      ],
+      config: {
+        model: 'claude-sonnet-4-20250514',
+        maxTokens: 2048,
+        costTracking: true
+      }
+    }, null, 2);
+  }
+
+  // Default agents template
+  const address = businessData.address || '';
+  const phone = businessData.phone || '';
+
+  return JSON.stringify({
+    business: {
+      name: projectName,
+      type: industry || 'business',
+      generatedAt: new Date().toISOString()
+    },
+    agents: [
+      {
+        id: 'support',
+        name: 'Support',
+        role: 'Customer Support',
+        icon: 'Headphones',
+        color: '#10B981',
+        category: 'operations',
+        systemPrompt: `You are the customer support agent for ${projectName}.\n\nBUSINESS INFO:\n- Name: ${projectName}\n- Type: ${industry || 'business'}\n- Address: ${address}\n- Phone: ${phone}\n\nYOUR ROLE:\n- Answer customer questions about services, hours, and location\n- Help with order issues and complaints\n- Handle inquiries with empathy and solutions\n- Escalate complex issues appropriately\n\nTONE: Professional, friendly, helpful.`,
+        capabilities: ['answer-questions', 'handle-complaints', 'provide-info']
+      },
+      {
+        id: 'marketing',
+        name: 'Marketing',
+        role: 'Content Creation',
+        icon: 'PenTool',
+        color: '#8B5CF6',
+        category: 'revenue',
+        systemPrompt: `You are the marketing agent for ${projectName}.\n\nBUSINESS INFO:\n- Name: ${projectName}\n- Type: ${industry || 'business'}\n\nYOUR ROLE:\n- Create social media posts (Facebook, Instagram, Twitter)\n- Write promotional content and email campaigns\n- Suggest marketing strategies\n- Generate engaging copy\n\nOUTPUT FORMAT:\n[CONTENT type="social|email|promotion"]\nplatform: ...\nheadline: ...\nbody: ...\ncta: ...\n[/CONTENT]`,
+        capabilities: ['social-media', 'email-campaigns', 'promotions']
+      },
+      {
+        id: 'analytics',
+        name: 'Analytics',
+        role: 'Business Intelligence',
+        icon: 'BarChart3',
+        color: '#EF4444',
+        category: 'operations',
+        systemPrompt: `You are the analytics agent for ${projectName}.\n\nBUSINESS INFO:\n- Name: ${projectName}\n- Type: ${industry || 'business'}\n\nYOUR ROLE:\n- Track key performance indicators\n- Generate daily/weekly reports\n- Alert on significant changes\n- Provide data-driven recommendations\n\nOUTPUT FORMAT:\n[REPORT type="daily|weekly"]\nperiod: ...\nhighlights: ...\nconcerns: ...\nrecommendations: ...\n[/REPORT]`,
+        capabilities: ['reports', 'kpi-tracking', 'recommendations']
+      }
+    ],
+    categories: [
+      { id: 'operations', name: 'Operations', agents: ['support', 'analytics'] },
+      { id: 'revenue', name: 'Revenue', agents: ['marketing'] }
+    ],
+    config: {
+      model: 'claude-sonnet-4-20250514',
+      maxTokens: 2048,
+      costTracking: true
+    }
+  }, null, 2);
+}
+
+// ============================================
 // GENERATE BRAIN.JSON - Single source of truth
 // ============================================
 
-function generateBrainJson(projectName, industry, industryConfig) {
+function generateBrainJson(projectName, industry, industryConfig, specLoader = null) {
   const cfg = industryConfig || {};
-  
+
   // Industry-specific terminology
   const terminologyMap = {
     'restaurant': { product: 'Menu Item', products: 'Menu Items', customer: 'Guest', customers: 'Guests' },
@@ -2299,7 +2415,8 @@ function generateBrainJson(projectName, industry, industryConfig) {
   const terminology = terminologyMap[industry] || terminologyMap['default'];
   const colors = cfg.colors || { primary: '#3b82f6', accent: '#8b5cf6' };
 
-  return JSON.stringify({
+  // Build base brain.json
+  const brain = {
     version: '1.0.0',
     generatedAt: new Date().toISOString(),
     industry: {
@@ -2370,7 +2487,63 @@ function generateBrainJson(projectName, industry, industryConfig) {
       primaryColor: colors.primary || '#3b82f6',
       accentColor: colors.accent || '#8b5cf6'
     }
-  }, null, 2);
+  };
+
+  // If spec loader is provided and loaded, merge spec overlay
+  if (specLoader && specLoader.isLoaded()) {
+    const overlay = specLoader.toBrainOverlay();
+
+    // Merge business data from spec
+    if (overlay.business) {
+      brain.business = {
+        ...brain.business,
+        name: overlay.business.name || brain.business.name,
+        tagline: overlay.business.tagline || brain.business.tagline,
+        description: overlay.business.description || brain.business.description,
+        contact: {
+          ...brain.business.contact,
+          ...(overlay.business.contact || {})
+        },
+        address: {
+          ...brain.business.address,
+          ...(overlay.business.address || {})
+        },
+        hours: overlay.business.hours || brain.business.hours,
+        branding: overlay.business.branding || brain.business.branding
+      };
+    }
+
+    // Merge industry from spec
+    if (overlay.industry) {
+      brain.industry = {
+        ...brain.industry,
+        type: overlay.industry.type || brain.industry.type
+      };
+    }
+
+    // Merge theme from spec
+    if (overlay.theme) {
+      if (overlay.theme.colors) {
+        brain.theme.primaryColor = overlay.theme.colors.primary || brain.theme.primaryColor;
+        brain.theme.accentColor = overlay.theme.colors.accent || brain.theme.accentColor;
+      }
+      if (overlay.theme.moodSliders) {
+        brain.theme.moodSliders = overlay.theme.moodSliders;
+      }
+    }
+
+    // Merge enabled features from spec
+    if (overlay.features && Array.isArray(overlay.features)) {
+      brain.enabledFeatures = overlay.features;
+    }
+
+    // Include full shared spec reference for downstream systems
+    if (overlay.sharedSpec) {
+      brain.sharedSpec = overlay.sharedSpec;
+    }
+  }
+
+  return JSON.stringify(brain, null, 2);
 }
 
 function generateManifest(projectName, backendModules, frontendModules, industry, bundles) {
@@ -2418,7 +2591,7 @@ function generateManifest(projectName, backendModules, frontendModules, industry
 // ============================================
 
 function assembleProject(config) {
-  const { name, backendModules, frontendModules, industry, industryKey, bundles } = config;
+  const { name, backendModules, frontendModules, industry, industryKey, bundles, specLoader, specData } = config;
   
   const projectDir = path.join(OUTPUT_BASE, name);
   const backendDir = path.join(projectDir, 'backend');
@@ -2579,8 +2752,18 @@ if (fs.existsSync(effectsSrc)) {
   if (industryKey && INDUSTRIES_FROM_JSON[industryKey]) {
     industryConfig = INDUSTRIES_FROM_JSON[industryKey];
   }
-  fs.writeFileSync(path.join(projectDir, 'brain.json'), generateBrainJson(name, industry, industryConfig));
+  fs.writeFileSync(path.join(projectDir, 'brain.json'), generateBrainJson(name, industry, industryConfig, specLoader));
   console.log('  ✅ brain.json (single source of truth)');
+  if (specLoader && specLoader.isLoaded()) {
+    console.log('     📄 Includes spec overlay from: ' + specLoader.specPath);
+  }
+
+  // Generate agents.json for AI agent chat
+  const specAgents = specLoader && specLoader.isLoaded() ? specLoader.getAgentDefinitions() : null;
+  const businessData = specLoader && specLoader.isLoaded() ? specLoader.getBusinessData() : {};
+  const agentsJson = generateAgentsJson(name, industry, businessData, specAgents ? { definitions: specAgents } : null);
+  fs.writeFileSync(path.join(projectDir, 'agents.json'), agentsJson);
+  console.log('  ✅ agents.json (AI agent configuration)');
 
   // Generate admin routes
   const routesDir = path.join(backendDir, 'routes');
@@ -2712,6 +2895,9 @@ function parseArgs() {
     } else if (arg === '--modules' && next) {
       config.modules = next.split(',').map(m => m.trim());
       i++;
+    } else if (arg === '--spec-file' && next) {
+      config.specFile = next;
+      i++;
     } else if (arg === '--list-industries') {
       console.log('\n📋 Available Industries:\n');
       for (const [key, val] of Object.entries(INDUSTRY_PRESETS)) {
@@ -2732,12 +2918,14 @@ Usage:
   node assemble-project.cjs --name "MyApp" --industry collectibles
   node assemble-project.cjs --name "MyApp" --bundles core,commerce
   node assemble-project.cjs --name "MyApp" --modules auth,login-form
+  node assemble-project.cjs --name "MyApp" --spec-file ./spec.json
 
 Options:
   --name             Project name (required)
   --industry         Use industry preset
   --bundles          Comma-separated bundle names
   --modules          Comma-separated module names
+  --spec-file        Path to shared specification JSON file
   --list-industries  List available industries
   --list-bundles     List available bundles
   --help             Show this help
@@ -2755,6 +2943,37 @@ const config = parseArgs();
 if (!config.name) {
   console.error('❌ Error: Project name required. Use --name "ProjectName"');
   process.exit(1);
+}
+
+// Load spec file if provided
+let specLoader = null;
+let specData = null;
+if (config.specFile) {
+  if (!SpecLoader) {
+    console.error('❌ Error: SpecLoader not available. Ensure spec-loader.cjs exists.');
+    process.exit(1);
+  }
+
+  specLoader = new SpecLoader({ verbose: true });
+  specData = specLoader.load(config.specFile);
+
+  if (!specData) {
+    console.error('❌ Error: Failed to load spec file');
+    for (const err of specLoader.getErrors()) {
+      console.error(`   ${err}`);
+    }
+    process.exit(1);
+  }
+
+  console.log(`📄 Loaded spec file: ${config.specFile}`);
+  console.log(`   Business: ${specData.business?.name || 'Unknown'}`);
+  console.log(`   Industry: ${specData.business?.industry || 'Not specified'}`);
+
+  // Override industry from spec if provided and not explicitly set via CLI
+  if (specData.business?.industry && !config.industry) {
+    config.industry = specData.business.industry;
+    console.log(`   🔧 Using industry from spec: ${config.industry}`);
+  }
 }
 
 let backendModules = [];
@@ -2802,5 +3021,7 @@ assembleProject({
   frontendModules,
   industry: industryName,
   industryKey: industryKey,
-  bundles: bundlesList
+  bundles: bundlesList,
+  specLoader: specLoader,
+  specData: specData
 });

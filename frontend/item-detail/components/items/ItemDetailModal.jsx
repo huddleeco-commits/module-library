@@ -2073,12 +2073,8 @@ setTimeout(async () => {
                         <button
                           onClick={(e) => {
                             if (e.shiftKey) {
-                              const password = prompt('Enter admin password:');
-                              if (password === 'abc123') {
-                                navigate(`/grading-assistant/${card.id}`);
-                              } else if (password !== null) {
-                                alert('❌ Invalid password');
-                              }
+                              // Feature disabled - requires proper authentication
+                              alert('⚠️ This feature requires admin authentication. Please use the admin dashboard.');
                             }
                           }}
                           className='w-full py-3 bg-gradient-to-r from-slate-600 to-slate-700 rounded-lg text-sm font-bold text-slate-400 transition-all shadow-lg mb-2 cursor-default'

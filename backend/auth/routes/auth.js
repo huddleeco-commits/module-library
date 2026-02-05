@@ -24,7 +24,11 @@ const fs = require('fs');
 // ===========================================
 const JWT_EXPIRES = '24h';
 const PASSWORD_MIN_LENGTH = 8;
-const JWT_SECRET = process.env.JWT_SECRET || 'blink-test-secret-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  console.error('FATAL: JWT_SECRET environment variable is required');
+  process.exit(1);
+}
 
 // Try to load database module
 let db = null;
@@ -44,7 +48,7 @@ const DEMO_ACCOUNTS = {
   'demo@demo.com': {
     id: 1,
     email: 'demo@demo.com',
-    password_hash: '$2b$12$2DvySykdVXjd2bqVsRzByuzrd9GgCMsSXT2mdNJIsWreGfgPQoUgS', // demo1234
+    password_hash: process.env.DEMO_PASSWORD_HASH || '$2a$12$eBQLfuGeiFOT8x/n.z1G2e4L5LDXz8tNMP9CvufFVJUtUxHnPg42m',
     full_name: 'Demo User',
     subscription_tier: 'free',
     is_admin: false,
@@ -54,7 +58,7 @@ const DEMO_ACCOUNTS = {
   'admin@demo.com': {
     id: 2,
     email: 'admin@demo.com',
-    password_hash: '$2b$12$aFbQI3CcYTrf4Zz/2hVWtOKwf4H8FatjiL.8Tpqwi9lh96V9Jr8Qi', // admin1234
+    password_hash: process.env.DEMO_PASSWORD_HASH || '$2a$12$eBQLfuGeiFOT8x/n.z1G2e4L5LDXz8tNMP9CvufFVJUtUxHnPg42m',
     full_name: 'Admin Demo',
     subscription_tier: 'premium',
     is_admin: true,

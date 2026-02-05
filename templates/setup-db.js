@@ -502,19 +502,28 @@ async function seedAdminUser() {
 }
 
 /**
- * Seed demo users - ALWAYS creates demo accounts for testing
- * Customer: demo@demo.com / demo1234
- * Admin: admin@demo.com / admin1234
+ * Seed demo users - Creates demo accounts for testing
+ * Passwords must be set via environment variables:
+ * - DEMO_USER_PASSWORD (for demo@demo.com)
+ * - DEMO_ADMIN_PASSWORD (for admin@demo.com)
  */
 async function seedDemoUser() {
   const bcrypt = require('bcryptjs');
+
+  const demoPassword = process.env.DEMO_USER_PASSWORD;
+  const adminPassword = process.env.DEMO_ADMIN_PASSWORD;
+
+  if (!demoPassword || !adminPassword) {
+    console.log('\n⚠️  Skipping demo account seeding - set DEMO_USER_PASSWORD and DEMO_ADMIN_PASSWORD env vars');
+    return;
+  }
 
   console.log('\n👤 Seeding demo accounts...');
 
   // Demo customer account
   const demoUsers = [
-    { email: 'demo@demo.com', password: 'demo1234', name: 'Demo Customer', isAdmin: false },
-    { email: 'admin@demo.com', password: 'admin1234', name: 'Admin User', isAdmin: true }
+    { email: 'demo@demo.com', password: demoPassword, name: 'Demo Customer', isAdmin: false },
+    { email: 'admin@demo.com', password: adminPassword, name: 'Admin User', isAdmin: true }
   ];
 
   for (const user of demoUsers) {
@@ -548,8 +557,9 @@ async function seedDemoUser() {
   }
 
   console.log('\n   Demo Accounts:');
-  console.log('   👤 Customer: demo@demo.com / demo1234');
-  console.log('   👑 Admin: admin@demo.com / admin1234');
+  console.log('   👤 Customer: demo@demo.com');
+  console.log('   👑 Admin: admin@demo.com');
+  console.log('   (Passwords set via environment variables)');
 }
 
 // Run setup
