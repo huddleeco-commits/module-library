@@ -11133,6 +11133,24 @@ function generateBookingRoutes(moduleName, industry, businessData, labelConfig) 
   const partyField = ['reservations'].includes(moduleName) ? 'party_size' : 'duration';
   const defaultParty = ['reservations'].includes(moduleName) ? '4' : '60';
 
+  // Industry-aware time slots
+  const foodIndustries = ['pizza-restaurant', 'steakhouse', 'restaurant'];
+  const eveningIndustries = ['salon-spa', 'barbershop'];
+  let timeSlots;
+  if (foodIndustries.includes(industry)) {
+    // Dinner service: 5pm - 9:30pm
+    timeSlots = "['17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30']";
+  } else if (eveningIndustries.includes(industry)) {
+    // Salon hours: 9am - 7pm
+    timeSlots = "['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00']";
+  } else if (['coffee-cafe', 'bakery'].includes(industry)) {
+    // Cafe hours: 7am - 3pm
+    timeSlots = "['07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00']";
+  } else {
+    // Business hours: 9am - 5pm
+    timeSlots = "['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00']";
+  }
+
   return `/**
  * ${moduleTitle} Routes - Public & Admin APIs with SSE
  * Module: ${moduleName} (booking type)
@@ -11238,7 +11256,7 @@ router.get('/availability', (req, res) => {
   const { date } = req.query;
   if (!date) return res.status(400).json({ success: false, error: 'Date is required' });
 
-  const allSlots = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'];
+  const allSlots = ${timeSlots};
   const bookedSlots = bookings
     .filter(b => b.date === date && b.status !== 'cancelled')
     .map(b => b.time);
@@ -11326,6 +11344,22 @@ router.put('/admin/:id/cancel', (req, res) => {
   broadcastUpdate('booking_cancelled', booking);
 
   res.json({ success: true, booking });
+});
+
+// POST /api/${moduleName}/admin/:id/reminder - Send reminder
+router.post('/admin/:id/reminder', (req, res) => {
+  const booking = bookings.find(b => b.id === parseInt(req.params.id));
+  if (!booking) return res.status(404).json({ success: false, error: '${singular} not found' });
+
+  booking.reminder_sent_at = new Date().toISOString();
+  booking.reminders_count = (booking.reminders_count || 0) + 1;
+  broadcastUpdate('booking_reminder_sent', { id: booking.id, reminder_sent_at: booking.reminder_sent_at });
+
+  res.json({
+    success: true,
+    booking,
+    message: \`Reminder sent to \${booking.customer_email}\`
+  });
 });
 
 // PUT /api/${moduleName}/admin/:id - Update ${singular.toLowerCase()} details
@@ -11650,7 +11684,7 @@ const router = express.Router();
 // IN-MEMORY DATA STORE
 // ============================================
 
-let inquiries = [
+let ${moduleName} = [
   {
     id: 1,
     reference_code: '${refPrefix}-A1B2',
@@ -11679,7 +11713,7 @@ let inquiries = [
   }
 ];
 
-let nextInquiryId = 3;
+let next${singular}Id = 3;
 
 // SSE clients
 const sseClients = new Set();
@@ -11713,8 +11747,8 @@ router.post('/', (req, res) => {
     return res.status(400).json({ success: false, error: 'Name and email are required' });
   }
 
-  const newInquiry = {
-    id: nextInquiryId++,
+  const newItem = {
+    id: next${singular}Id++,
     reference_code: generateReferenceCode(),
     customer_name,
     customer_email,
@@ -11729,13 +11763,13 @@ router.post('/', (req, res) => {
     created_at: new Date().toISOString()
   };
 
-  inquiries.push(newInquiry);
-  broadcastUpdate('new_inquiry', newInquiry);
+  ${moduleName}.push(newItem);
+  broadcastUpdate('new_${singular.toLowerCase()}', newItem);
 
   res.status(201).json({
     success: true,
-    inquiry: newInquiry,
-    message: \`Thank you! Your reference code is \${newInquiry.reference_code}\`
+    ${singular.toLowerCase()}: newItem,
+    message: \`Thank you! Your reference code is \${newItem.reference_code}\`
   });
 });
 
@@ -11745,7 +11779,7 @@ router.post('/', (req, res) => {
 
 // GET /api/${moduleName}/admin/all - All ${plural.toLowerCase()} with filters
 router.get('/admin/all', (req, res) => {
-  let filtered = [...inquiries];
+  let filtered = [...${moduleName}];
 
   const { status, priority, from, to } = req.query;
   if (status) filtered = filtered.filter(i => i.status === status);
@@ -11762,7 +11796,7 @@ router.get('/admin/all', (req, res) => {
 router.get('/admin/pipeline', (req, res) => {
   const pipeline = {};
   STATUS_PIPELINE.forEach(status => {
-    pipeline[status] = inquiries.filter(i => i.status === status);
+    pipeline[status] = ${moduleName}.filter(i => i.status === status);
   });
   res.json({ success: true, pipeline, statuses: STATUS_PIPELINE });
 });
@@ -11770,83 +11804,83 @@ router.get('/admin/pipeline', (req, res) => {
 // GET /api/${moduleName}/admin/stats - Statistics
 router.get('/admin/stats', (req, res) => {
   const today = new Date().toISOString().split('T')[0];
-  const todayInq = inquiries.filter(i => i.created_at.startsWith(today));
-  const newInq = inquiries.filter(i => i.status === 'new');
-  const highPriority = inquiries.filter(i => i.priority === 'high' && i.status !== 'converted' && i.status !== 'archived');
+  const todayItems = ${moduleName}.filter(i => i.created_at.startsWith(today));
+  const newItems = ${moduleName}.filter(i => i.status === 'new');
+  const highPriority = ${moduleName}.filter(i => i.priority === 'high' && i.status !== 'converted' && i.status !== 'archived');
 
   res.json({
     success: true,
     stats: {
-      total: inquiries.length,
-      today: todayInq.length,
-      new: newInq.length,
+      total: ${moduleName}.length,
+      today: todayItems.length,
+      new: newItems.length,
       highPriority: highPriority.length,
-      converted: inquiries.filter(i => i.status === 'converted').length
+      converted: ${moduleName}.filter(i => i.status === 'converted').length
     }
   });
 });
 
 // PUT /api/${moduleName}/admin/:id - Update ${singular.toLowerCase()}
 router.put('/admin/:id', (req, res) => {
-  const idx = inquiries.findIndex(i => i.id === parseInt(req.params.id));
+  const idx = ${moduleName}.findIndex(i => i.id === parseInt(req.params.id));
   if (idx === -1) return res.status(404).json({ success: false, error: '${singular} not found' });
 
-  inquiries[idx] = {
-    ...inquiries[idx],
+  ${moduleName}[idx] = {
+    ...${moduleName}[idx],
     ...req.body,
-    id: inquiries[idx].id,
-    reference_code: inquiries[idx].reference_code,
+    id: ${moduleName}[idx].id,
+    reference_code: ${moduleName}[idx].reference_code,
     updated_at: new Date().toISOString()
   };
-  broadcastUpdate('inquiry_updated', inquiries[idx]);
+  broadcastUpdate('${singular.toLowerCase()}_updated', ${moduleName}[idx]);
 
-  res.json({ success: true, inquiry: inquiries[idx] });
+  res.json({ success: true, ${singular.toLowerCase()}: ${moduleName}[idx] });
 });
 
 // PATCH /api/${moduleName}/admin/:id/status - Update status
 router.patch('/admin/:id/status', (req, res) => {
-  const inquiry = inquiries.find(i => i.id === parseInt(req.params.id));
-  if (!inquiry) return res.status(404).json({ success: false, error: '${singular} not found' });
+  const item = ${moduleName}.find(i => i.id === parseInt(req.params.id));
+  if (!item) return res.status(404).json({ success: false, error: '${singular} not found' });
 
   const { status } = req.body;
   if (!STATUS_PIPELINE.includes(status)) {
     return res.status(400).json({ success: false, error: 'Invalid status' });
   }
 
-  inquiry.status = status;
-  inquiry.updated_at = new Date().toISOString();
-  if (status === 'contacted') inquiry.contacted_at = new Date().toISOString();
-  if (status === 'converted') inquiry.converted_at = new Date().toISOString();
+  item.status = status;
+  item.updated_at = new Date().toISOString();
+  if (status === 'contacted') item.contacted_at = new Date().toISOString();
+  if (status === 'converted') item.converted_at = new Date().toISOString();
 
-  broadcastUpdate('inquiry_status_changed', { id: inquiry.id, status });
-  res.json({ success: true, inquiry });
+  broadcastUpdate('${singular.toLowerCase()}_status_changed', { id: item.id, status });
+  res.json({ success: true, ${singular.toLowerCase()}: item });
 });
 
 // POST /api/${moduleName}/admin/:id/respond - Quick respond
 router.post('/admin/:id/respond', (req, res) => {
-  const inquiry = inquiries.find(i => i.id === parseInt(req.params.id));
-  if (!inquiry) return res.status(404).json({ success: false, error: '${singular} not found' });
+  const item = ${moduleName}.find(i => i.id === parseInt(req.params.id));
+  if (!item) return res.status(404).json({ success: false, error: '${singular} not found' });
 
   const { response } = req.body;
-  inquiry.responses = inquiry.responses || [];
-  inquiry.responses.push({
+  item.responses = item.responses || [];
+  item.responses.push({
     message: response,
     sent_at: new Date().toISOString()
   });
-  inquiry.status = inquiry.status === 'new' ? 'contacted' : inquiry.status;
-  inquiry.updated_at = new Date().toISOString();
+  item.status = item.status === 'new' ? 'contacted' : item.status;
+  item.updated_at = new Date().toISOString();
 
-  broadcastUpdate('inquiry_responded', inquiry);
-  res.json({ success: true, inquiry });
+  broadcastUpdate('${singular.toLowerCase()}_responded', item);
+  res.json({ success: true, ${singular.toLowerCase()}: item });
 });
 
 // DELETE /api/${moduleName}/admin/:id - Delete ${singular.toLowerCase()}
 router.delete('/admin/:id', (req, res) => {
-  const idx = inquiries.findIndex(i => i.id === parseInt(req.params.id));
+  const idx = ${moduleName}.findIndex(i => i.id === parseInt(req.params.id));
   if (idx === -1) return res.status(404).json({ success: false, error: '${singular} not found' });
 
-  const deleted = inquiries.splice(idx, 1)[0];
-  broadcastUpdate('inquiry_deleted', { id: deleted.id });
+  const deleted = ${moduleName}.splice(idx, 1)[0];
+  broadcastUpdate('${singular.toLowerCase()}_deleted', { id: deleted.id });
   res.json({ success: true, deleted });
 });
 
@@ -11881,11 +11915,11 @@ router.get('/events', (req, res) => {
 // ============================================
 
 router.get('/:code', (req, res) => {
-  const inquiry = inquiries.find(i =>
+  const item = ${moduleName}.find(i =>
     i.reference_code === req.params.code || i.id === parseInt(req.params.code)
   );
-  if (!inquiry) return res.status(404).json({ success: false, error: '${singular} not found' });
-  res.json({ success: true, inquiry });
+  if (!item) return res.status(404).json({ success: false, error: '${singular} not found' });
+  res.json({ success: true, ${singular.toLowerCase()}: item });
 });
 
 module.exports = router;
@@ -11951,7 +11985,168 @@ module.exports = router;
  * Generate sample catalog data based on industry
  */
 function generateSampleCatalogData(moduleName, industry) {
-  const templates = {
+  // Industry-specific templates (keyed by industry-moduleName)
+  const industryTemplates = {
+    // ===== LAW FIRM =====
+    'law-firm-services': [
+      { id: 1, name: 'Practice Areas', description: 'Legal services we offer', display_order: 1, active: true, items: [
+        { id: 1, name: 'Family Law', price: 300, description: 'Divorce, custody, and family matters', duration: 60, available: true, popular: true, display_order: 1 },
+        { id: 2, name: 'Estate Planning', price: 250, description: 'Wills, trusts, and asset protection', duration: 60, available: true, popular: true, display_order: 2 },
+        { id: 3, name: 'Criminal Defense', price: 350, description: 'Misdemeanor and felony defense', duration: 60, available: true, popular: false, display_order: 3 },
+        { id: 4, name: 'Business Law', price: 275, description: 'Contracts, formation, and compliance', duration: 60, available: true, popular: false, display_order: 4 }
+      ]},
+      { id: 2, name: 'Consultations', description: 'Initial meeting options', display_order: 2, active: true, items: [
+        { id: 5, name: 'Free Initial Consultation', price: 0, description: '15-minute phone consultation', duration: 15, available: true, popular: true, display_order: 1 },
+        { id: 6, name: 'Case Review', price: 150, description: 'In-depth review of your case', duration: 45, available: true, popular: false, display_order: 2 }
+      ]}
+    ],
+    // ===== SALON / SPA =====
+    'salon-spa-services': [
+      { id: 1, name: 'Hair Services', description: 'Cuts, color, and styling', display_order: 1, active: true, items: [
+        { id: 1, name: 'Haircut & Blowout', price: 65, description: 'Precision cut with professional styling', duration: 45, available: true, popular: true, display_order: 1 },
+        { id: 2, name: 'Color Treatment', price: 120, description: 'Full color or highlights', duration: 90, available: true, popular: true, display_order: 2 },
+        { id: 3, name: 'Keratin Treatment', price: 250, description: 'Smooth and frizz-free for weeks', duration: 120, available: true, popular: false, display_order: 3 }
+      ]},
+      { id: 2, name: 'Skin & Body', description: 'Facials and body treatments', display_order: 2, active: true, items: [
+        { id: 4, name: 'Classic Facial', price: 85, description: 'Deep cleansing and hydration', duration: 60, available: true, popular: true, display_order: 1 },
+        { id: 5, name: 'Deep Tissue Massage', price: 110, description: 'Targeted muscle relief', duration: 60, available: true, popular: true, display_order: 2 },
+        { id: 6, name: 'Manicure & Pedicure', price: 75, description: 'Full nail care package', duration: 60, available: true, popular: false, display_order: 3 }
+      ]}
+    ],
+    // ===== BARBERSHOP =====
+    'barbershop-services': [
+      { id: 1, name: 'Haircuts', description: 'Classic and modern cuts', display_order: 1, active: true, items: [
+        { id: 1, name: 'Classic Cut', price: 30, description: 'Traditional barbershop cut', duration: 30, available: true, popular: true, display_order: 1 },
+        { id: 2, name: 'Fade & Style', price: 40, description: 'Modern fade with styling', duration: 40, available: true, popular: true, display_order: 2 },
+        { id: 3, name: 'Kids Cut', price: 20, description: 'For children 12 and under', duration: 20, available: true, popular: false, display_order: 3 }
+      ]},
+      { id: 2, name: 'Grooming', description: 'Beard and shave services', display_order: 2, active: true, items: [
+        { id: 4, name: 'Hot Towel Shave', price: 35, description: 'Luxurious straight razor shave', duration: 30, available: true, popular: true, display_order: 1 },
+        { id: 5, name: 'Beard Trim & Shape', price: 20, description: 'Precision beard grooming', duration: 20, available: true, popular: false, display_order: 2 }
+      ]}
+    ],
+    // ===== DENTAL =====
+    'dental-services': [
+      { id: 1, name: 'General Dentistry', description: 'Preventive and restorative care', display_order: 1, active: true, items: [
+        { id: 1, name: 'Dental Exam & Cleaning', price: 150, description: 'Comprehensive exam with professional cleaning', duration: 60, available: true, popular: true, display_order: 1 },
+        { id: 2, name: 'Dental Filling', price: 200, description: 'Composite filling for cavities', duration: 45, available: true, popular: false, display_order: 2 },
+        { id: 3, name: 'Root Canal', price: 800, description: 'Endodontic treatment', duration: 90, available: true, popular: false, display_order: 3 }
+      ]},
+      { id: 2, name: 'Cosmetic Dentistry', description: 'Smile enhancement', display_order: 2, active: true, items: [
+        { id: 4, name: 'Teeth Whitening', price: 350, description: 'Professional whitening treatment', duration: 60, available: true, popular: true, display_order: 1 },
+        { id: 5, name: 'Porcelain Veneers', price: 1200, description: 'Per tooth, custom veneers', duration: 90, available: true, popular: false, display_order: 2 }
+      ]}
+    ],
+    // ===== HEALTHCARE =====
+    'healthcare-services': [
+      { id: 1, name: 'Primary Care', description: 'General health services', display_order: 1, active: true, items: [
+        { id: 1, name: 'Annual Physical', price: 200, description: 'Comprehensive health assessment', duration: 45, available: true, popular: true, display_order: 1 },
+        { id: 2, name: 'Sick Visit', price: 125, description: 'Acute illness evaluation', duration: 20, available: true, popular: true, display_order: 2 },
+        { id: 3, name: 'Lab Work', price: 75, description: 'Blood tests and diagnostics', duration: 15, available: true, popular: false, display_order: 3 }
+      ]},
+      { id: 2, name: 'Specialty Care', description: 'Focused treatments', display_order: 2, active: true, items: [
+        { id: 4, name: 'Physical Therapy Session', price: 150, description: 'Rehabilitation and recovery', duration: 45, available: true, popular: false, display_order: 1 },
+        { id: 5, name: 'Vaccination', price: 50, description: 'Immunization services', duration: 15, available: true, popular: true, display_order: 2 }
+      ]}
+    ],
+    // ===== PLUMBER =====
+    'plumber-services': [
+      { id: 1, name: 'Repairs', description: 'Fix and maintenance services', display_order: 1, active: true, items: [
+        { id: 1, name: 'Leak Repair', price: 150, description: 'Pipe and faucet leak fixes', duration: 60, available: true, popular: true, display_order: 1 },
+        { id: 2, name: 'Drain Cleaning', price: 125, description: 'Clear clogged drains and pipes', duration: 45, available: true, popular: true, display_order: 2 },
+        { id: 3, name: 'Toilet Repair', price: 100, description: 'Flush valve, flapper, and fill valve fixes', duration: 30, available: true, popular: false, display_order: 3 }
+      ]},
+      { id: 2, name: 'Installations', description: 'New fixture installation', display_order: 2, active: true, items: [
+        { id: 4, name: 'Water Heater Install', price: 500, description: 'Tank or tankless water heater', duration: 180, available: true, popular: true, display_order: 1 },
+        { id: 5, name: 'Faucet Installation', price: 175, description: 'Kitchen or bathroom faucet', duration: 60, available: true, popular: false, display_order: 2 }
+      ]}
+    ],
+    // ===== CLEANING =====
+    'cleaning-services': [
+      { id: 1, name: 'Residential Cleaning', description: 'Home cleaning services', display_order: 1, active: true, items: [
+        { id: 1, name: 'Standard Clean', price: 150, description: 'Kitchen, bathrooms, dusting, and vacuuming', duration: 120, available: true, popular: true, display_order: 1 },
+        { id: 2, name: 'Deep Clean', price: 275, description: 'Thorough top-to-bottom cleaning', duration: 240, available: true, popular: true, display_order: 2 },
+        { id: 3, name: 'Move-In/Move-Out', price: 350, description: 'Complete property cleaning', duration: 300, available: true, popular: false, display_order: 3 }
+      ]},
+      { id: 2, name: 'Add-On Services', description: 'Extra services', display_order: 2, active: true, items: [
+        { id: 4, name: 'Window Cleaning', price: 75, description: 'Interior window cleaning', duration: 60, available: true, popular: false, display_order: 1 },
+        { id: 5, name: 'Carpet Cleaning', price: 100, description: 'Steam carpet cleaning per room', duration: 45, available: true, popular: false, display_order: 2 }
+      ]}
+    ],
+    // ===== AUTO SHOP =====
+    'auto-shop-services': [
+      { id: 1, name: 'Maintenance', description: 'Regular vehicle maintenance', display_order: 1, active: true, items: [
+        { id: 1, name: 'Oil Change', price: 45, description: 'Full synthetic oil change with filter', duration: 30, available: true, popular: true, display_order: 1 },
+        { id: 2, name: 'Tire Rotation', price: 30, description: 'Rotate and balance all four tires', duration: 30, available: true, popular: true, display_order: 2 },
+        { id: 3, name: 'Brake Inspection', price: 0, description: 'Free visual brake inspection', duration: 15, available: true, popular: false, display_order: 3 }
+      ]},
+      { id: 2, name: 'Repairs', description: 'Vehicle repair services', display_order: 2, active: true, items: [
+        { id: 4, name: 'Brake Pad Replacement', price: 250, description: 'Front or rear brake pads', duration: 90, available: true, popular: true, display_order: 1 },
+        { id: 5, name: 'Engine Diagnostic', price: 100, description: 'Full computer diagnostic scan', duration: 60, available: true, popular: false, display_order: 2 }
+      ]}
+    ],
+    // ===== YOGA =====
+    'yoga-classes': [
+      { id: 1, name: 'Yoga Classes', description: 'Mind and body practice', display_order: 1, active: true, items: [
+        { id: 1, name: 'Vinyasa Flow', price: 25, description: 'Dynamic flowing sequence', duration: 60, available: true, popular: true, display_order: 1 },
+        { id: 2, name: 'Gentle Yoga', price: 20, description: 'Slow-paced restorative practice', duration: 60, available: true, popular: true, display_order: 2 },
+        { id: 3, name: 'Hot Yoga', price: 30, description: 'Heated room for deeper stretch', duration: 75, available: true, popular: false, display_order: 3 }
+      ]},
+      { id: 2, name: 'Workshops', description: 'Special sessions', display_order: 2, active: true, items: [
+        { id: 4, name: 'Meditation Workshop', price: 35, description: 'Guided meditation practice', duration: 90, available: true, popular: false, display_order: 1 },
+        { id: 5, name: 'Yoga for Beginners', price: 15, description: 'Introduction to yoga fundamentals', duration: 60, available: true, popular: true, display_order: 2 }
+      ]}
+    ],
+    // ===== FITNESS GYM =====
+    'fitness-gym-classes': [
+      { id: 1, name: 'Group Classes', description: 'High-energy group workouts', display_order: 1, active: true, items: [
+        { id: 1, name: 'HIIT Training', price: 20, description: 'High intensity interval training', duration: 45, available: true, popular: true, display_order: 1 },
+        { id: 2, name: 'Spin Class', price: 20, description: 'Indoor cycling workout', duration: 45, available: true, popular: true, display_order: 2 },
+        { id: 3, name: 'CrossFit', price: 25, description: 'Functional fitness training', duration: 60, available: true, popular: false, display_order: 3 }
+      ]},
+      { id: 2, name: 'Personal Training', description: 'One-on-one sessions', display_order: 2, active: true, items: [
+        { id: 4, name: 'Single PT Session', price: 75, description: 'One-on-one with certified trainer', duration: 60, available: true, popular: true, display_order: 1 },
+        { id: 5, name: '5-Session Package', price: 300, description: 'Save with a package deal', duration: 60, available: true, popular: false, display_order: 2 }
+      ]}
+    ],
+    // ===== SAAS =====
+    'saas-features': [
+      { id: 1, name: 'Core Platform', description: 'Essential features included in all plans', display_order: 1, active: true, items: [
+        { id: 1, name: 'Real-time Dashboard', price: null, description: 'Live metrics and KPI tracking', available: true, popular: true, display_order: 1 },
+        { id: 2, name: 'Team Collaboration', price: null, description: 'Shared workspaces and commenting', available: true, popular: true, display_order: 2 },
+        { id: 3, name: 'API Access', price: null, description: 'REST API with webhooks', available: true, popular: false, display_order: 3 }
+      ]},
+      { id: 2, name: 'Enterprise Add-ons', description: 'Advanced capabilities', display_order: 2, active: true, items: [
+        { id: 4, name: 'SSO & SAML', price: null, description: 'Enterprise single sign-on', available: true, popular: false, display_order: 1 },
+        { id: 5, name: 'Advanced Analytics', price: null, description: 'Custom reports and data exports', available: true, popular: true, display_order: 2 }
+      ]}
+    ],
+    // ===== ECOMMERCE =====
+    'ecommerce-products': [
+      { id: 1, name: 'Best Sellers', description: 'Most popular products', display_order: 1, active: true, items: [
+        { id: 1, name: 'Premium Wireless Earbuds', price: 79.99, description: 'Active noise cancellation', available: true, popular: true, display_order: 1 },
+        { id: 2, name: 'Organic Cotton T-Shirt', price: 34.99, description: 'Sustainably sourced cotton', available: true, popular: true, display_order: 2 }
+      ]},
+      { id: 2, name: 'New Arrivals', description: 'Just added to the store', display_order: 2, active: true, items: [
+        { id: 3, name: 'Smart Water Bottle', price: 44.99, description: 'Temperature tracking display', available: true, popular: false, display_order: 1 },
+        { id: 4, name: 'Bamboo Desk Organizer', price: 29.99, description: 'Eco-friendly workspace accessory', available: true, popular: false, display_order: 2 }
+      ]}
+    ],
+    // ===== SCHOOL =====
+    'school-programs': [
+      { id: 1, name: 'Certificate Programs', description: 'Professional certifications', display_order: 1, active: true, items: [
+        { id: 1, name: 'Web Development Bootcamp', price: 4500, description: '12-week immersive coding program', duration: null, available: true, popular: true, display_order: 1 },
+        { id: 2, name: 'Data Science Fundamentals', price: 3500, description: '10-week data analysis program', duration: null, available: true, popular: true, display_order: 2 }
+      ]},
+      { id: 2, name: 'Short Courses', description: 'Skill-building workshops', display_order: 2, active: true, items: [
+        { id: 3, name: 'UX Design Workshop', price: 800, description: '4-week design thinking course', duration: null, available: true, popular: false, display_order: 1 },
+        { id: 4, name: 'Digital Marketing', price: 600, description: '3-week marketing essentials', duration: null, available: true, popular: false, display_order: 2 }
+      ]}
+    ]
+  };
+
+  // Generic fallbacks by module name
+  const genericTemplates = {
     menu: [
       { id: 1, name: 'Popular Items', description: 'Customer favorites', display_order: 1, active: true, items: [
         { id: 1, name: 'House Special', price: 14.99, description: 'Our signature dish', available: true, popular: true, display_order: 1 },
@@ -11960,14 +12155,14 @@ function generateSampleCatalogData(moduleName, industry) {
     ],
     services: [
       { id: 1, name: 'Core Services', description: 'Our main offerings', display_order: 1, active: true, items: [
-        { id: 1, name: 'Standard Service', price: 50, description: 'Our basic service', duration: 30, available: true, popular: false, display_order: 1 },
-        { id: 2, name: 'Premium Service', price: 100, description: 'Enhanced experience', duration: 60, available: true, popular: true, display_order: 2 }
+        { id: 1, name: 'Standard Service', price: 50, description: 'Our basic service offering', duration: 30, available: true, popular: false, display_order: 1 },
+        { id: 2, name: 'Premium Service', price: 100, description: 'Enhanced experience with extras', duration: 60, available: true, popular: true, display_order: 2 }
       ]}
     ],
     classes: [
-      { id: 1, name: 'Fitness Classes', description: 'Group workouts', display_order: 1, active: true, items: [
+      { id: 1, name: 'Group Classes', description: 'Group sessions', display_order: 1, active: true, items: [
         { id: 1, name: 'Beginner Class', price: 25, description: 'Perfect for newcomers', duration: 45, available: true, popular: false, display_order: 1 },
-        { id: 2, name: 'Advanced Class', price: 35, description: 'Challenging workout', duration: 60, available: true, popular: true, display_order: 2 }
+        { id: 2, name: 'Advanced Class', price: 35, description: 'Challenging session', duration: 60, available: true, popular: true, display_order: 2 }
       ]}
     ],
     features: [
@@ -11990,7 +12185,8 @@ function generateSampleCatalogData(moduleName, industry) {
     ]
   };
 
-  return templates[moduleName] || templates.services;
+  // Try industry-specific first, then generic by module name
+  return industryTemplates[`${industry}-${moduleName}`] || genericTemplates[moduleName] || genericTemplates.services;
 }
 
 /**

@@ -345,6 +345,16 @@ function generateSidebar(businessName, primaryColor, industryModules = {}) {
   // Build nav items from industry modules
   const moduleNames = Object.keys(industryModules);
 
+  // Industry-aware logo emoji
+  const logoEmojiMap = {
+    menu: '🍽️', services: '🔧', classes: '💪', features: '💻',
+    products: '🛒', programs: '🎓', listings: '🏠', appointments: '✂️',
+    consultations: '⚖️', demos: '💻', quotes: '🔧', memberships: '💪',
+    enrollments: '🎓', orders: '📦', bookings: '🧘', inquiries: '📬'
+  };
+  const primaryModule = moduleNames[0] || 'services';
+  const logoEmoji = logoEmojiMap[primaryModule] || '🏢';
+
   // Map module names to their icons
   const iconMap = {
     menu: 'UtensilsCrossed',
@@ -401,7 +411,7 @@ export default function Sidebar() {
   return (
     <aside style={styles.sidebar}>
       <div style={styles.logo}>
-        <span style={styles.logoIcon}>🏪</span>
+        <span style={styles.logoIcon}>${logoEmoji}</span>
         <div>
           <h1 style={styles.logoText}>${businessName}</h1>
           <span style={styles.logoSub}>Admin Dashboard</span>
@@ -852,7 +862,7 @@ export default function DashboardHome() {
                 <div style={styles.resTime}>{res.time}</div>
                 <div style={styles.resInfo}>
                   <p style={styles.resName}>{res.customer_name}</p>
-                  <p style={styles.resDetails}>{res.service || res.party_size ? (res.party_size + ' guests') : ''}</p>
+                  <p style={styles.resDetails}>{res.service || res.party_size ? (res.party_size + ' guests') : res.duration ? (res.duration + ' min') : res.type || ''}</p>
                 </div>
                 <span style={{
                   ...styles.resStatus,
