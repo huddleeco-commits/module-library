@@ -120,6 +120,7 @@ const navItems = [
     children: [
       { label: 'Overview', path: '/ai' },
       { label: 'Chat', path: '/ai/chat' },
+      { label: 'Agents', path: '/ai/agents' },
       { label: 'Insights', path: '/ai/insights' },
       { label: 'Tasks', path: '/ai/tasks' }
     ]

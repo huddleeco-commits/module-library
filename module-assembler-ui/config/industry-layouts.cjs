@@ -354,7 +354,7 @@ const INDUSTRY_LAYOUTS = {
 
   'fitness-wellness': {
     name: 'Fitness & Wellness',
-    keywords: ['gym', 'fitness', 'yoga', 'pilates', 'personal trainer', 'wellness', 'spa', 'meditation'],
+    keywords: ['gym', 'fitness', 'yoga', 'pilates', 'personal trainer', 'wellness', 'meditation'],
     style: {
       typography: 'modern',
       colorMood: 'energetic',
@@ -382,6 +382,68 @@ const INDUSTRY_LAYOUTS = {
         description: 'Peaceful, calming design',
         sectionOrder: ['hero-minimal', 'about-values', 'services-list', 'gallery-masonry', 'testimonials-quotes', 'cta-simple'],
         emphasis: ['calm', 'mindfulness', 'experience'],
+      }
+    }
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // BEAUTY & GROOMING - Dedicated category for salons, spas, barbershops
+  // Based on comprehensive industry research - 3 distinct layouts
+  // ═══════════════════════════════════════════════════════════════════════════
+  'beauty-grooming': {
+    name: 'Beauty & Grooming',
+    keywords: ['salon', 'spa', 'barbershop', 'hair', 'nails', 'beauty', 'barber', 'skincare', 'esthetics', 'med spa', 'waxing', 'lashes', 'brows'],
+    style: {
+      typography: 'elegant',
+      colorMood: 'sophisticated',
+      imageStyle: 'treatment photos, before/after transformations, stylists at work, elegant interiors, product shots',
+      spacing: 'generous',
+      corners: 'subtle',
+    },
+    palettes: [
+      { name: 'Spa Serene', primary: '#E6D5F5', secondary: '#D4E5D4', accent: '#E6B8A2', text: '#2D2D2D' },
+      { name: 'Modern Salon', primary: '#1A1A1A', secondary: '#FFFFFF', accent: '#4ECDC4', text: '#1A1A1A' },
+      { name: 'Classic Barber', primary: '#2C1810', secondary: '#FDF8F3', accent: '#D4A574', text: '#1A1A1A' },
+      { name: 'Rose Gold Luxe', primary: '#FAF5F3', secondary: '#2D2D2D', accent: '#B76E79', text: '#2D2D2D' },
+    ],
+    ctaTypes: ['Book Now', 'Reserve Your Spot', 'Book Your Escape', 'Schedule Appointment', 'Get Groomed'],
+    trustSignals: ['licensed-stylists', 'years-experience', 'before-after-gallery', 'client-reviews', 'certifications', 'premium-products'],
+    layouts: {
+      'serene-luxury-spa': {
+        name: 'Serene Luxury Spa',
+        description: 'Elegant, calming design for high-end spas, med spas, and luxury salons. Soft pastels, generous white space, video hero.',
+        sectionOrder: ['hero-fullscreen-video', 'services-elegant-grid', 'gallery-before-after', 'testimonials-slider', 'membership-teaser', 'team-showcase', 'booking-widget-sticky'],
+        emphasis: ['luxury', 'relaxation', 'transformation', 'exclusivity'],
+        designNotes: {
+          colors: 'Soft pastels (lavender, sage, spa blue) + white + rose gold/gold accents',
+          typography: 'Elegant serif headers (Playfair Display), clean sans-serif body (Lato)',
+          whiteSpace: '60-70% for luxury feel',
+          effects: 'Parallax scrolling, subtle fade-ins, soft shadows',
+        }
+      },
+      'modern-minimal-salon': {
+        name: 'Modern Minimal Salon',
+        description: 'Bold, contemporary design for hair salons, nail salons, and modern beauty studios. Split-screen hero, Instagram-style gallery.',
+        sectionOrder: ['hero-split-animated', 'services-card-grid', 'portfolio-instagram', 'team-spotlight', 'shop-integration', 'reviews-social', 'contact-multi-location'],
+        emphasis: ['style', 'portfolio', 'social-proof', 'booking'],
+        designNotes: {
+          colors: 'Black + white base with bold accent (teal, coral, gold)',
+          typography: 'Modern bold sans-serif (Montserrat, Poppins)',
+          layout: 'Asymmetric, dynamic, grid-based',
+          effects: 'Hover animations, smooth transitions, split-screen',
+        }
+      },
+      'masculine-classic-barber': {
+        name: 'Masculine Classic Barber',
+        description: 'Traditional masculine aesthetic for barbershops and men\'s grooming. Dark backgrounds, gold accents, vintage or industrial feel.',
+        sectionOrder: ['hero-dark-textured', 'services-bar-pricing', 'portfolio-grid-filtered', 'team-barber-profiles', 'shop-grooming-products', 'community-culture', 'booking-per-barber'],
+        emphasis: ['tradition', 'craftsmanship', 'community', 'masculinity'],
+        designNotes: {
+          colors: 'Black + deep brown + gold/copper/red accents',
+          typography: 'Bold vintage or industrial (Oswald, Bebas Neue)',
+          textures: 'Leather, wood grain, metal finishes',
+          effects: 'Parallax, split-screen, retro animations',
+        }
       }
     }
   },
@@ -2079,17 +2141,28 @@ const INDUSTRY_TO_LAYOUT_MAP = {
   'wellness': 'fitness-wellness',
   'nutrition': 'fitness-wellness',
 
-  // Beauty
-  'salon': 'fitness-wellness',
-  'hair': 'fitness-wellness',
-  'barbershop': 'fitness-wellness',
-  'barber': 'fitness-wellness',
-  'nail': 'fitness-wellness',
-  'beauty': 'fitness-wellness',
-  'tattoo': 'fitness-wellness',
-  'piercing': 'fitness-wellness',
-  'esthetics': 'fitness-wellness',
-  'skincare': 'fitness-wellness',
+  // Beauty & Grooming - dedicated category with 3 specialized layouts
+  'salon': 'beauty-grooming',
+  'hair': 'beauty-grooming',
+  'hair-salon': 'beauty-grooming',
+  'barbershop': 'beauty-grooming',
+  'barber': 'beauty-grooming',
+  'nail': 'beauty-grooming',
+  'nail-salon': 'beauty-grooming',
+  'beauty': 'beauty-grooming',
+  'beauty-salon': 'beauty-grooming',
+  'spa': 'beauty-grooming',
+  'med-spa': 'beauty-grooming',
+  'day-spa': 'beauty-grooming',
+  'tattoo': 'beauty-grooming',
+  'piercing': 'beauty-grooming',
+  'esthetics': 'beauty-grooming',
+  'skincare': 'beauty-grooming',
+  'waxing': 'beauty-grooming',
+  'lashes': 'beauty-grooming',
+  'brows': 'beauty-grooming',
+  'makeup': 'beauty-grooming',
+  'cosmetology': 'beauty-grooming',
 
   // Real Estate
   // Real Estate - General
@@ -2166,13 +2239,17 @@ const INDUSTRY_TO_LAYOUT_MAP = {
   'car': 'automotive',
   'mechanic': 'automotive',
   'auto-repair': 'automotive',
+  'auto-shop': 'automotive',        // Fixture ID mapping
   'body-shop': 'automotive',
   'dealership': 'automotive',
   'detailing': 'automotive',
   'car-wash': 'automotive',
   'towing': 'automotive',
   'tire': 'automotive',
-  'transmission': 'automotive'
+  'tire-shop': 'automotive',
+  'transmission': 'automotive',
+  'car-repair': 'automotive',
+  'oil-change': 'automotive'
 };
 
 /**
@@ -2349,7 +2426,17 @@ const PAGE_LAYOUTS = {
     team: ['team-hero', 'about-team', 'provider-profiles', 'credentials-list', 'cta-simple'],
     testimonials: ['testimonials-hero', 'testimonials-grid', 'stats-animated', 'trust-logos', 'cta-simple'],
     faq: ['faq-hero', 'faq-accordion', 'contact-split', 'cta-simple'],
-    pricing: ['pricing-hero', 'pricing-cards', 'comparison-table', 'faq-accordion', 'cta-with-form']
+    pricing: ['pricing-hero', 'pricing-cards', 'comparison-table', 'faq-accordion', 'cta-with-form'],
+    // Client Portal Pages
+    login: ['auth-hero', 'login-form', 'social-login', 'forgot-password'],
+    register: ['auth-hero', 'register-form', 'company-info', 'terms-checkbox'],
+    dashboard: ['dashboard-header', 'active-matters', 'upcoming-deadlines', 'recent-documents', 'billing-summary', 'quick-actions', 'advisor-contact'],
+    matters: ['matters-header', 'matters-list', 'matter-filters', 'matter-timeline', 'related-documents', 'team-assigned'],
+    documents: ['documents-header', 'documents-grid', 'folder-tree', 'upload-zone', 'document-versions', 'sharing-permissions'],
+    messages: ['messages-header', 'conversation-list', 'message-thread', 'compose-message', 'attachments', 'message-search'],
+    appointments: ['appointments-header', 'upcoming-meetings', 'past-meetings', 'schedule-consultation', 'meeting-details', 'calendar-sync'],
+    invoices: ['invoices-header', 'invoice-list', 'invoice-detail', 'payment-history', 'outstanding-balance', 'download-statements'],
+    payments: ['payments-header', 'payment-methods', 'make-payment', 'auto-pay-setup', 'billing-address', 'payment-history']
   },
 
   // Restaurants & Food
@@ -2361,7 +2448,16 @@ const PAGE_LAYOUTS = {
     contact: ['contact-hero', 'contact-with-map', 'reservation-form', 'hours-section', 'social-links'],
     gallery: ['gallery-hero', 'gallery-masonry', 'chef-profile', 'testimonials-carousel', 'ordering-cta'],
     booking: ['booking-hero', 'reservation-form', 'private-events', 'faq-accordion', 'contact-split'],
-    testimonials: ['testimonials-hero', 'testimonials-grid', 'press-mentions', 'gallery-featured', 'ordering-cta']
+    testimonials: ['testimonials-hero', 'testimonials-grid', 'press-mentions', 'gallery-featured', 'ordering-cta'],
+    // Customer Portal Pages (Online Ordering & Loyalty)
+    login: ['auth-hero', 'login-form', 'social-login', 'forgot-password', 'guest-checkout-option'],
+    register: ['auth-hero', 'register-form', 'social-login', 'loyalty-signup', 'terms-checkbox'],
+    dashboard: ['dashboard-header', 'quick-reorder', 'loyalty-status', 'upcoming-reservations', 'recent-orders', 'favorites-preview', 'special-offers'],
+    'order-history': ['orders-header', 'orders-list', 'order-details', 'reorder-button', 'order-filters', 'receipt-download'],
+    reservations: ['reservations-header', 'upcoming-reservations', 'past-reservations', 'make-reservation', 'reservation-policies', 'special-requests'],
+    loyalty: ['loyalty-header', 'points-balance', 'tier-status', 'rewards-catalog', 'points-history', 'earn-more-points', 'birthday-reward'],
+    favorites: ['favorites-header', 'favorite-items', 'favorite-orders', 'dietary-preferences', 'allergy-info', 'quick-reorder'],
+    'payment-methods': ['payments-header', 'saved-cards', 'gift-cards', 'rewards-balance', 'billing-history', 'auto-reload']
   },
 
   // Healthcare & Medical
@@ -2373,7 +2469,18 @@ const PAGE_LAYOUTS = {
     team: ['team-hero', 'provider-cards', 'credentials-list', 'about-values', 'cta-simple'],
     testimonials: ['testimonials-hero', 'testimonials-grid', 'medical-stats', 'trust-badges', 'cta-simple'],
     faq: ['faq-hero', 'faq-accordion', 'quick-actions', 'insurance-info', 'contact-split'],
-    booking: ['booking-hero', 'appointment-booking', 'quick-actions', 'insurance-info', 'faq-accordion']
+    booking: ['booking-hero', 'appointment-booking', 'quick-actions', 'insurance-info', 'faq-accordion'],
+    // Patient Portal Pages (HIPAA-Compliant Design)
+    login: ['auth-hero-secure', 'login-form-medical', 'mfa-verification', 'forgot-password', 'hipaa-notice'],
+    register: ['auth-hero-secure', 'patient-registration', 'insurance-info-form', 'hipaa-consent', 'terms-checkbox'],
+    dashboard: ['patient-dashboard-header', 'health-summary', 'upcoming-appointments', 'recent-messages', 'prescription-refills', 'test-results-alert', 'quick-actions-medical', 'care-team'],
+    appointments: ['appointments-header', 'upcoming-appointments', 'past-visits', 'schedule-appointment', 'provider-availability', 'visit-prep', 'appointment-reminders'],
+    records: ['records-header', 'health-summary', 'medical-history', 'allergies-medications', 'immunizations', 'vitals-chart', 'visit-summaries', 'download-records'],
+    messaging: ['messaging-header', 'inbox-medical', 'compose-message', 'message-thread', 'provider-directory', 'urgent-notice', 'attachment-upload'],
+    prescriptions: ['prescriptions-header', 'active-medications', 'refill-request', 'pharmacy-info', 'medication-history', 'drug-interactions', 'medication-reminders'],
+    'test-results': ['results-header', 'recent-results', 'result-detail', 'historical-trends', 'normal-ranges', 'provider-notes', 'download-results'],
+    billing: ['billing-header', 'account-balance', 'statements-list', 'payment-history', 'insurance-claims', 'make-payment', 'payment-plans', 'financial-assistance'],
+    telehealth: ['telehealth-header', 'upcoming-video-visits', 'start-visit', 'tech-check', 'visit-preparation', 'past-telehealth', 'telehealth-faq']
   },
 
   // Dental Practice
@@ -2386,7 +2493,16 @@ const PAGE_LAYOUTS = {
     gallery: ['gallery-hero', 'smile-gallery', 'technology-showcase', 'testimonials-carousel', 'cta-simple'],
     testimonials: ['testimonials-hero', 'testimonials-grid', 'smile-gallery', 'dental-stats', 'cta-simple'],
     faq: ['faq-hero', 'faq-accordion', 'insurance-info', 'contact-split'],
-    booking: ['booking-hero', 'appointment-booking', 'dental-services', 'insurance-info', 'faq-accordion']
+    booking: ['booking-hero', 'appointment-booking', 'dental-services', 'insurance-info', 'faq-accordion'],
+    // Patient Portal Pages (Dental-Specific)
+    login: ['auth-hero-dental', 'login-form', 'forgot-password', 'new-patient-link'],
+    register: ['auth-hero-dental', 'patient-registration', 'dental-history-form', 'insurance-info-form', 'terms-checkbox'],
+    dashboard: ['patient-dashboard-dental', 'smile-health-score', 'next-cleaning', 'treatment-plan', 'recent-visits', 'quick-actions-dental', 'dental-tips'],
+    appointments: ['appointments-header', 'upcoming-appointments', 'past-visits', 'schedule-cleaning', 'recall-reminders', 'appointment-prep', 'family-scheduling'],
+    records: ['dental-records-header', 'dental-chart', 'treatment-history', 'x-rays-images', 'periodontal-chart', 'treatment-plan', 'download-records'],
+    'treatment-plan': ['treatment-header', 'recommended-treatments', 'treatment-timeline', 'cost-estimates', 'insurance-coverage', 'payment-options', 'treatment-acceptance'],
+    billing: ['billing-header', 'account-balance', 'insurance-benefits', 'treatment-costs', 'payment-history', 'make-payment', 'financing-options'],
+    family: ['family-header', 'family-members', 'add-family-member', 'family-appointments', 'family-billing', 'family-reminders']
   },
 
   // Mental Health / Therapy
@@ -2397,7 +2513,58 @@ const PAGE_LAYOUTS = {
     contact: ['contact-hero', 'contact-minimal', 'telehealth-features', 'insurance-info', 'faq-accordion'],
     testimonials: ['testimonials-hero', 'testimonials-quotes', 'approach-values', 'cta-simple'],
     faq: ['faq-hero', 'faq-accordion', 'insurance-info', 'contact-minimal'],
-    booking: ['booking-hero', 'appointment-booking', 'telehealth-features', 'insurance-info', 'faq-accordion']
+    booking: ['booking-hero', 'appointment-booking', 'telehealth-features', 'insurance-info', 'faq-accordion'],
+    // Client Portal Pages (Privacy-First Design)
+    login: ['auth-hero-calm', 'login-form-secure', 'mfa-verification', 'forgot-password', 'privacy-assurance'],
+    register: ['auth-hero-calm', 'client-intake', 'emergency-contact', 'consent-forms', 'privacy-notice', 'terms-checkbox'],
+    dashboard: ['client-dashboard-calm', 'wellness-check-in', 'next-session', 'journal-preview', 'resources-recommended', 'crisis-resources', 'quick-actions-therapy'],
+    sessions: ['sessions-header', 'upcoming-sessions', 'past-sessions', 'schedule-session', 'session-notes', 'session-goals', 'session-frequency'],
+    journal: ['journal-header', 'journal-entries', 'new-entry', 'mood-tracker', 'journal-prompts', 'journal-insights', 'private-notes'],
+    resources: ['resources-header', 'recommended-resources', 'worksheets', 'coping-tools', 'reading-list', 'crisis-resources', 'external-links'],
+    messaging: ['messaging-header-secure', 'therapist-messages', 'compose-message', 'response-expectations', 'emergency-notice', 'session-requests'],
+    billing: ['billing-header', 'superbill-download', 'session-receipts', 'payment-history', 'make-payment', 'sliding-scale-info'],
+    forms: ['forms-header', 'intake-forms', 'consent-forms', 'assessments', 'progress-forms', 'form-history', 'submit-form']
+  },
+
+  // Chiropractic & Wellness
+  'chiropractic': {
+    home: ['hero-split', 'conditions-treated', 'services-grid', 'stats-animated', 'about-team', 'testimonials-carousel', 'cta-with-form'],
+    about: ['about-hero', 'about-split', 'credentials-list', 'about-values', 'technology-showcase', 'testimonials-quotes'],
+    services: ['services-hero', 'conditions-treated', 'services-list', 'treatment-approach', 'faq-accordion', 'cta-with-form'],
+    contact: ['contact-hero', 'contact-with-map', 'insurance-info', 'faq-accordion'],
+    testimonials: ['testimonials-hero', 'testimonials-carousel', 'stats-animated', 'cta-simple'],
+    faq: ['faq-hero', 'faq-accordion', 'conditions-treated', 'contact-split'],
+    booking: ['booking-hero', 'appointment-booking', 'new-patient-offer', 'insurance-info', 'faq-accordion'],
+    // Patient Portal Pages
+    login: ['auth-hero', 'login-form', 'forgot-password', 'new-patient-link'],
+    register: ['auth-hero', 'patient-registration', 'health-history-form', 'insurance-info-form', 'terms-checkbox'],
+    dashboard: ['patient-dashboard-chiro', 'treatment-progress', 'next-appointment', 'exercise-plan', 'recent-visits', 'wellness-tips', 'quick-actions'],
+    appointments: ['appointments-header', 'upcoming-appointments', 'past-visits', 'schedule-adjustment', 'recurring-care', 'appointment-reminders'],
+    'treatment-plan': ['treatment-header', 'care-plan-overview', 'progress-tracker', 'recommended-visits', 'home-exercises', 'goals-milestones'],
+    exercises: ['exercises-header', 'prescribed-exercises', 'video-instructions', 'exercise-log', 'progress-photos', 'pain-diary'],
+    records: ['records-header', 'visit-summaries', 'x-rays-images', 'treatment-notes', 'progress-reports', 'download-records'],
+    billing: ['billing-header', 'account-balance', 'insurance-claims', 'payment-history', 'make-payment', 'package-purchases']
+  },
+
+  // Veterinary & Pet Care
+  'veterinary': {
+    home: ['hero-image-first', 'services-grid', 'about-team', 'gallery-pets', 'testimonials-carousel', 'emergency-cta', 'contact-with-map'],
+    about: ['about-hero', 'about-split', 'about-team', 'credentials-list', 'gallery-grid', 'testimonials-quotes'],
+    services: ['services-hero', 'services-list', 'species-treated', 'emergency-services', 'faq-accordion', 'cta-with-form'],
+    contact: ['contact-hero', 'contact-with-map', 'emergency-cta', 'hours-section', 'faq-accordion'],
+    testimonials: ['testimonials-hero', 'testimonials-grid', 'gallery-pets', 'stats-animated', 'cta-simple'],
+    faq: ['faq-hero', 'faq-accordion', 'species-treated', 'contact-split'],
+    emergency: ['emergency-hero', 'emergency-services', 'when-to-come', 'emergency-contact', 'after-hours-info'],
+    // Pet Owner Portal Pages
+    login: ['auth-hero-pet', 'login-form', 'forgot-password', 'new-client-link'],
+    register: ['auth-hero-pet', 'owner-registration', 'pet-info-form', 'vet-history', 'terms-checkbox'],
+    dashboard: ['pet-owner-dashboard', 'pets-overview', 'upcoming-appointments', 'vaccine-reminders', 'prescription-refills', 'recent-visits', 'quick-actions-vet'],
+    pets: ['pets-header', 'my-pets', 'add-pet', 'pet-profile', 'medical-history', 'vaccination-records', 'weight-tracker'],
+    appointments: ['appointments-header', 'upcoming-appointments', 'past-visits', 'schedule-appointment', 'appointment-type', 'drop-off-pickup'],
+    records: ['records-header', 'visit-summaries', 'lab-results', 'vaccination-history', 'prescriptions', 'dietary-notes', 'download-records'],
+    prescriptions: ['prescriptions-header', 'active-medications', 'request-refill', 'prescription-history', 'pharmacy-info', 'medication-instructions'],
+    billing: ['billing-header', 'account-balance', 'invoices', 'payment-history', 'make-payment', 'wellness-plans', 'pet-insurance'],
+    reminders: ['reminders-header', 'vaccine-schedule', 'checkup-reminders', 'medication-reminders', 'notification-preferences']
   },
 
   // Real Estate
@@ -2408,7 +2575,18 @@ const PAGE_LAYOUTS = {
     contact: ['contact-hero', 'agent-profiles', 'contact-with-map', 'office-hours', 'cta-simple'],
     listings: ['listings-hero', 'property-search', 'featured-properties', 'market-stats', 'cta-simple'],
     team: ['team-hero', 'agent-profiles', 'agent-stats', 'testimonials-grid', 'cta-simple'],
-    testimonials: ['testimonials-hero', 'testimonials-grid', 'agent-stats', 'trust-logos', 'cta-simple']
+    testimonials: ['testimonials-hero', 'testimonials-grid', 'agent-stats', 'trust-logos', 'cta-simple'],
+    // Client Portal Pages (Buyer/Seller Journey)
+    login: ['auth-hero', 'login-form', 'social-login', 'forgot-password'],
+    register: ['auth-hero', 'register-form', 'buyer-seller-select', 'preferences-initial', 'terms-checkbox'],
+    dashboard: ['client-dashboard-re', 'search-activity', 'saved-properties', 'upcoming-showings', 'transaction-status', 'agent-contact', 'market-updates'],
+    'saved-properties': ['saved-header', 'saved-properties-grid', 'saved-searches', 'property-comparisons', 'price-change-alerts', 'notes-per-property'],
+    'search-alerts': ['alerts-header', 'active-alerts', 'create-alert', 'alert-criteria', 'notification-frequency', 'recent-matches'],
+    showings: ['showings-header', 'upcoming-showings', 'past-showings', 'request-showing', 'showing-feedback', 'favorite-after-tour'],
+    offers: ['offers-header', 'active-offers', 'offer-history', 'create-offer', 'offer-status', 'counteroffer-review', 'offer-documents'],
+    documents: ['documents-header', 'transaction-documents', 'disclosures', 'contract-drafts', 'upload-documents', 'e-signatures', 'document-status'],
+    'mortgage-calculator': ['calculator-header', 'mortgage-calculator', 'affordability-estimate', 'pre-approval-status', 'lender-connections', 'payment-scenarios'],
+    'transaction-timeline': ['timeline-header', 'transaction-steps', 'current-status', 'upcoming-milestones', 'task-checklist', 'closing-countdown', 'team-contacts']
   },
 
   // Home Services (plumber, electrician, HVAC, etc.)
@@ -2419,7 +2597,18 @@ const PAGE_LAYOUTS = {
     contact: ['contact-hero', 'contact-with-map', 'service-areas', 'emergency-cta', 'faq-accordion'],
     testimonials: ['testimonials-hero', 'testimonials-grid', 'stats-animated', 'trust-badges', 'cta-simple'],
     faq: ['faq-hero', 'faq-accordion', 'service-areas', 'contact-split'],
-    pricing: ['pricing-hero', 'pricing-cards', 'services-list', 'faq-accordion', 'cta-with-form']
+    pricing: ['pricing-hero', 'pricing-cards', 'services-list', 'faq-accordion', 'cta-with-form'],
+    // Customer Portal Pages (Service Management)
+    login: ['auth-hero', 'login-form', 'forgot-password', 'create-account-link'],
+    register: ['auth-hero', 'register-form', 'property-info', 'service-preferences', 'terms-checkbox'],
+    dashboard: ['customer-dashboard-hs', 'upcoming-appointments', 'active-quotes', 'service-history', 'maintenance-reminders', 'quick-actions-service', 'emergency-contact'],
+    appointments: ['appointments-header', 'upcoming-appointments', 'past-appointments', 'schedule-service', 'appointment-details', 'reschedule-cancel', 'technician-info'],
+    quotes: ['quotes-header', 'pending-quotes', 'quote-details', 'quote-comparison', 'approve-quote', 'quote-history', 'request-quote'],
+    'service-history': ['history-header', 'service-timeline', 'service-details', 'equipment-serviced', 'warranty-info', 'service-reports', 'photos-documentation'],
+    properties: ['properties-header', 'my-properties', 'add-property', 'property-details', 'equipment-inventory', 'service-history-per-property', 'maintenance-schedule'],
+    'maintenance-plans': ['plans-header', 'current-plan', 'plan-benefits', 'upcoming-maintenance', 'plan-history', 'upgrade-plan', 'plan-pricing'],
+    payments: ['payments-header', 'payment-methods', 'invoices', 'make-payment', 'payment-history', 'auto-pay-setup', 'financing-options'],
+    referrals: ['referrals-header', 'referral-code', 'referral-rewards', 'share-options', 'referral-history', 'terms-conditions']
   },
 
   // Fitness & Wellness
@@ -2431,7 +2620,84 @@ const PAGE_LAYOUTS = {
     gallery: ['gallery-hero', 'gallery-masonry', 'testimonials-carousel', 'cta-simple'],
     testimonials: ['testimonials-hero', 'testimonials-grid', 'stats-animated', 'cta-simple'],
     pricing: ['pricing-hero', 'pricing-cards', 'comparison-table', 'faq-accordion', 'cta-with-form'],
-    booking: ['booking-hero', 'class-schedule', 'appointment-booking', 'pricing-cards', 'faq-accordion']
+    booking: ['booking-hero', 'class-schedule', 'appointment-booking', 'pricing-cards', 'faq-accordion'],
+    // Member Portal Pages (Fitness Tracking & Class Booking)
+    login: ['auth-hero-fitness', 'login-form', 'social-login', 'forgot-password', 'trial-signup'],
+    register: ['auth-hero-fitness', 'register-form', 'fitness-goals', 'membership-select', 'waiver-sign', 'terms-checkbox'],
+    dashboard: ['member-dashboard-fitness', 'workout-streak', 'upcoming-classes', 'progress-summary', 'goals-tracker', 'trainer-messages', 'class-recommendations'],
+    classes: ['classes-header', 'class-schedule-full', 'book-class', 'my-reservations', 'class-history', 'favorite-classes', 'waitlist-status'],
+    'personal-training': ['pt-header', 'my-trainer', 'upcoming-sessions', 'book-session', 'workout-plans', 'session-history', 'pt-packages'],
+    progress: ['progress-header', 'fitness-metrics', 'body-measurements', 'workout-history', 'goal-progress', 'achievements', 'progress-photos'],
+    membership: ['membership-header', 'current-plan', 'membership-benefits', 'usage-stats', 'freeze-membership', 'upgrade-options', 'billing-info'],
+    profile: ['profile-header', 'personal-info', 'fitness-profile', 'health-info', 'emergency-contact', 'notification-settings', 'connected-apps'],
+    shop: ['shop-header', 'supplements-products', 'member-discounts', 'order-history', 'cart', 'gift-cards'],
+    challenges: ['challenges-header', 'active-challenges', 'challenge-leaderboard', 'my-challenge-progress', 'past-challenges', 'join-challenge']
+  },
+
+  // Beauty & Grooming (salons, spas, barbershops)
+  // Based on comprehensive industry research - optimized for booking conversions
+  'beauty-grooming': {
+    home: ['hero-fullscreen-video', 'services-elegant-grid', 'gallery-before-after', 'team-showcase', 'testimonials-slider', 'membership-teaser', 'booking-widget-sticky', 'instagram-feed'],
+    about: ['about-hero', 'about-story', 'about-team', 'credentials-certifications', 'gallery-workspace', 'testimonials-quotes', 'cta-book-consultation'],
+    services: ['services-hero', 'services-categories', 'pricing-transparent', 'add-ons-upsell', 'faq-accordion', 'booking-cta-sticky'],
+    team: ['team-hero', 'stylist-profiles', 'specialties-showcase', 'booking-per-stylist', 'testimonials-by-stylist'],
+    gallery: ['gallery-hero', 'gallery-before-after', 'gallery-portfolio', 'instagram-integration', 'testimonials-carousel', 'cta-simple'],
+    contact: ['contact-hero', 'contact-with-map', 'hours-detailed', 'parking-directions', 'social-links'],
+    testimonials: ['testimonials-hero', 'testimonials-grid', 'before-after-slider', 'stats-animated', 'cta-simple'],
+    pricing: ['pricing-hero', 'pricing-by-service', 'packages-bundles', 'membership-plans', 'faq-accordion', 'booking-cta'],
+    booking: ['booking-hero', 'service-selector', 'stylist-selector', 'calendar-availability', 'booking-form', 'policies-cancellation'],
+    // Customer Portal Pages (L3+)
+    login: ['auth-hero', 'login-form', 'social-login', 'forgot-password'],
+    register: ['auth-hero', 'register-form', 'social-login', 'terms-checkbox'],
+    dashboard: ['dashboard-header', 'quick-actions', 'next-appointment', 'loyalty-widget', 'membership-status', 'recent-activity', 'recommendations'],
+    profile: ['profile-header', 'personal-info', 'beauty-preferences', 'notification-settings', 'security-settings', 'connected-accounts'],
+    rewards: ['rewards-header', 'points-balance', 'tier-progress', 'available-rewards', 'earn-more', 'points-history', 'tier-benefits'],
+    membership: ['membership-header', 'current-plan', 'benefits-list', 'credits-tracker', 'usage-history', 'upgrade-options', 'member-perks'],
+    appointments: ['appointments-header', 'upcoming-appointments', 'past-appointments', 'recurring-appointments', 'cancellation-policy'],
+    referrals: ['referrals-header', 'referral-stats', 'share-link', 'referral-rewards', 'referral-history', 'how-it-works'],
+    payments: ['payments-header', 'saved-cards', 'digital-wallets', 'gift-cards', 'billing-history', 'auto-pay-settings']
+  },
+
+  // Retail & E-commerce
+  'retail-ecommerce': {
+    home: ['hero-image-first', 'featured-products', 'category-grid', 'trust-guarantees', 'testimonials-carousel', 'newsletter-cta'],
+    about: ['about-hero', 'about-story', 'about-values', 'team-showcase', 'sustainability', 'testimonials-quotes'],
+    shop: ['shop-hero', 'product-grid', 'category-filters', 'sort-options', 'pagination', 'newsletter-cta'],
+    product: ['product-images', 'product-details', 'add-to-cart', 'product-reviews', 'related-products', 'recently-viewed'],
+    contact: ['contact-hero', 'contact-split', 'store-locations', 'faq-accordion'],
+    faq: ['faq-hero', 'faq-accordion', 'shipping-info', 'returns-policy', 'contact-split'],
+    // Customer Account Portal Pages
+    login: ['auth-hero', 'login-form', 'social-login', 'forgot-password', 'guest-checkout'],
+    register: ['auth-hero', 'register-form', 'social-login', 'newsletter-optin', 'terms-checkbox'],
+    dashboard: ['customer-dashboard-ecom', 'recent-orders', 'wishlist-preview', 'rewards-summary', 'recommended-products', 'account-alerts'],
+    orders: ['orders-header', 'orders-list', 'order-details', 'track-shipment', 'order-status', 'reorder-button', 'invoice-download'],
+    wishlist: ['wishlist-header', 'wishlist-grid', 'move-to-cart', 'share-wishlist', 'price-alerts', 'wishlist-collections'],
+    returns: ['returns-header', 'return-requests', 'start-return', 'return-status', 'return-label', 'refund-status', 'return-policy'],
+    reviews: ['reviews-header', 'my-reviews', 'pending-reviews', 'write-review', 'photo-upload', 'review-rewards'],
+    payments: ['payments-header', 'saved-cards', 'digital-wallets', 'gift-cards', 'store-credit', 'billing-address'],
+    subscriptions: ['subscriptions-header', 'active-subscriptions', 'subscription-details', 'modify-subscription', 'pause-cancel', 'subscription-history'],
+    addresses: ['addresses-header', 'saved-addresses', 'add-address', 'default-addresses', 'address-book'],
+    rewards: ['rewards-header', 'points-balance', 'tier-status', 'earn-points', 'redeem-rewards', 'points-history', 'referral-program']
+  },
+
+  // Automotive (auto repair, dealerships, detailing)
+  'automotive': {
+    home: ['hero-split', 'services-grid', 'trust-badges', 'stats-animated', 'testimonials-carousel', 'gallery-grid', 'cta-with-form'],
+    about: ['about-hero', 'about-split', 'stats-animated', 'about-team', 'certifications', 'testimonials-quotes'],
+    services: ['services-hero', 'services-list', 'pricing-cards', 'brands-serviced', 'faq-accordion', 'cta-with-form'],
+    contact: ['contact-hero', 'contact-with-map', 'service-hours', 'emergency-service', 'faq-accordion'],
+    gallery: ['gallery-hero', 'gallery-before-after', 'gallery-grid', 'testimonials-carousel', 'cta-simple'],
+    testimonials: ['testimonials-hero', 'testimonials-grid', 'stats-animated', 'trust-badges', 'cta-simple'],
+    // Customer Portal Pages (Vehicle Service Management)
+    login: ['auth-hero', 'login-form', 'forgot-password', 'create-account-link'],
+    register: ['auth-hero', 'register-form', 'vehicle-info-form', 'service-preferences', 'terms-checkbox'],
+    dashboard: ['customer-dashboard-auto', 'vehicle-summary', 'upcoming-services', 'service-reminders', 'active-repairs', 'recent-services', 'quick-actions-auto'],
+    vehicles: ['vehicles-header', 'my-vehicles', 'add-vehicle', 'vehicle-details', 'service-history-per-vehicle', 'maintenance-schedule', 'recall-alerts'],
+    appointments: ['appointments-header', 'upcoming-appointments', 'past-appointments', 'schedule-service', 'service-advisor', 'shuttle-loaner'],
+    'service-history': ['history-header', 'service-timeline', 'service-details', 'parts-used', 'warranty-info', 'service-documents', 'maintenance-records'],
+    estimates: ['estimates-header', 'pending-estimates', 'estimate-details', 'approve-repairs', 'estimate-history', 'request-estimate'],
+    payments: ['payments-header', 'invoices', 'payment-methods', 'make-payment', 'payment-history', 'financing-options'],
+    rewards: ['rewards-header', 'loyalty-points', 'service-discounts', 'referral-rewards', 'member-benefits', 'points-history']
   },
 
   // Creative & Agency
@@ -2442,7 +2708,17 @@ const PAGE_LAYOUTS = {
     portfolio: ['portfolio-hero', 'portfolio-grid', 'case-studies', 'testimonials-carousel', 'cta-simple'],
     contact: ['contact-hero', 'contact-split', 'office-hours', 'faq-accordion'],
     team: ['team-hero', 'about-team', 'about-values', 'cta-simple'],
-    testimonials: ['testimonials-hero', 'testimonials-grid', 'trust-logos', 'case-studies', 'cta-simple']
+    testimonials: ['testimonials-hero', 'testimonials-grid', 'trust-logos', 'case-studies', 'cta-simple'],
+    // Client Portal Pages (Project Management)
+    login: ['auth-hero', 'login-form', 'forgot-password'],
+    register: ['auth-hero', 'client-onboarding', 'company-info', 'terms-checkbox'],
+    dashboard: ['client-dashboard-agency', 'active-projects', 'project-timeline', 'pending-approvals', 'recent-deliverables', 'team-contacts', 'upcoming-meetings'],
+    projects: ['projects-header', 'projects-list', 'project-details', 'project-timeline', 'deliverables', 'project-team', 'project-files'],
+    deliverables: ['deliverables-header', 'deliverables-grid', 'review-deliverable', 'approve-reject', 'revision-requests', 'version-history', 'download-assets'],
+    feedback: ['feedback-header', 'pending-reviews', 'leave-feedback', 'annotation-tool', 'feedback-history', 'revision-tracker'],
+    invoices: ['invoices-header', 'invoice-list', 'invoice-detail', 'make-payment', 'payment-history', 'retainer-status'],
+    files: ['files-header', 'file-library', 'upload-files', 'brand-assets', 'project-files', 'shared-folders', 'download-all'],
+    messages: ['messages-header', 'conversations', 'project-discussions', 'compose-message', 'file-attachments', 'team-directory']
   },
 
   // Education & Coaching
@@ -2452,7 +2728,72 @@ const PAGE_LAYOUTS = {
     services: ['services-hero', 'services-list', 'curriculum-overview', 'pricing-cards', 'faq-accordion', 'cta-with-form'],
     contact: ['contact-hero', 'contact-split', 'faq-accordion'],
     testimonials: ['testimonials-hero', 'testimonials-grid', 'stats-animated', 'cta-simple'],
-    pricing: ['pricing-hero', 'pricing-cards', 'comparison-table', 'faq-accordion', 'cta-with-form']
+    pricing: ['pricing-hero', 'pricing-cards', 'comparison-table', 'faq-accordion', 'cta-with-form'],
+    // Student/Client Portal Pages (Learning Management)
+    login: ['auth-hero', 'login-form', 'social-login', 'forgot-password'],
+    register: ['auth-hero', 'register-form', 'learning-goals', 'experience-level', 'terms-checkbox'],
+    dashboard: ['student-dashboard', 'current-courses', 'learning-progress', 'upcoming-sessions', 'assignments-due', 'achievements', 'recommended-courses'],
+    courses: ['courses-header', 'enrolled-courses', 'course-progress', 'course-materials', 'course-schedule', 'certificates'],
+    lessons: ['lesson-header', 'video-player', 'lesson-materials', 'lesson-notes', 'quiz-section', 'next-lesson', 'discussion'],
+    assignments: ['assignments-header', 'pending-assignments', 'submit-assignment', 'graded-assignments', 'feedback-received', 'assignment-history'],
+    sessions: ['sessions-header', 'upcoming-sessions', 'past-sessions', 'book-session', 'session-recordings', 'session-notes'],
+    progress: ['progress-header', 'learning-path', 'skill-progress', 'achievements', 'certificates-earned', 'time-spent', 'goals-tracker'],
+    payments: ['payments-header', 'subscription-status', 'payment-history', 'update-payment', 'invoices', 'payment-plans'],
+    community: ['community-header', 'discussion-forums', 'study-groups', 'peer-connections', 'mentor-access', 'community-events']
+  },
+
+  // Luxury Real Estate (specialized variant)
+  'luxury-real-estate': {
+    home: ['luxury-hero', 'luxury-properties', 'exclusive-services', 'agent-profiles', 'testimonials-quotes', 'concierge-cta'],
+    about: ['about-hero', 'about-split', 'agent-profiles', 'luxury-credentials', 'testimonials-quotes'],
+    services: ['services-hero', 'exclusive-services', 'concierge-offerings', 'testimonials-featured', 'cta-with-form'],
+    listings: ['listings-hero', 'luxury-properties', 'property-filters', 'market-insights', 'cta-simple'],
+    contact: ['contact-hero', 'private-consultation', 'agent-profiles', 'contact-minimal'],
+    // VIP Client Portal Pages
+    login: ['auth-hero-luxury', 'login-form', 'forgot-password', 'vip-access'],
+    register: ['auth-hero-luxury', 'vip-registration', 'preferences-luxury', 'nda-agreement', 'terms-checkbox'],
+    dashboard: ['vip-dashboard', 'exclusive-listings', 'saved-estates', 'private-showings', 'concierge-requests', 'agent-direct'],
+    'saved-properties': ['saved-header-luxury', 'saved-estates', 'property-comparisons', 'off-market-alerts', 'notes-per-property'],
+    showings: ['showings-header', 'private-showings', 'showing-requests', 'showing-history', 'property-feedback'],
+    concierge: ['concierge-header', 'concierge-requests', 'lifestyle-services', 'relocation-assistance', 'request-history']
+  },
+
+  // Commercial Real Estate
+  'commercial-real-estate': {
+    home: ['commercial-hero', 'investment-properties', 'market-analytics', 'services-grid', 'testimonials-grid', 'cta-with-form'],
+    about: ['about-hero', 'about-split', 'agent-profiles', 'transaction-history', 'testimonials-quotes'],
+    services: ['services-hero', 'services-list', 'investment-advisory', 'tenant-rep', 'cta-with-form'],
+    listings: ['listings-hero', 'property-search-commercial', 'investment-properties', 'market-analytics', 'cta-simple'],
+    contact: ['contact-hero', 'agent-profiles', 'contact-with-map', 'office-hours'],
+    // Investor/Client Portal Pages
+    login: ['auth-hero', 'login-form', 'forgot-password'],
+    register: ['auth-hero', 'investor-registration', 'investment-criteria', 'terms-checkbox'],
+    dashboard: ['investor-dashboard', 'portfolio-overview', 'deal-pipeline', 'market-reports', 'saved-properties', 'advisor-contact'],
+    portfolio: ['portfolio-header', 'owned-properties', 'property-performance', 'income-reports', 'expense-tracking', 'cap-rate-analysis'],
+    'deal-flow': ['deals-header', 'active-deals', 'deal-details', 'investment-analysis', 'due-diligence', 'offer-submission'],
+    documents: ['documents-header', 'transaction-documents', 'financial-reports', 'legal-documents', 'upload-files'],
+    reports: ['reports-header', 'market-reports', 'property-reports', 'financial-analysis', 'custom-reports']
+  },
+
+  // Property Management
+  'property-management': {
+    home: ['hero-split', 'services-grid', 'stats-animated', 'owner-benefits', 'testimonials-carousel', 'pricing-cards', 'cta-with-form'],
+    about: ['about-hero', 'about-split', 'about-team', 'trust-badges', 'testimonials-quotes'],
+    services: ['services-hero', 'services-list', 'owner-services', 'tenant-services', 'faq-accordion', 'cta-with-form'],
+    rentals: ['rentals-hero', 'available-rentals', 'rental-search', 'application-cta'],
+    contact: ['contact-hero', 'contact-split', 'office-hours', 'emergency-contact'],
+    // Owner Portal Pages
+    'owner-login': ['auth-hero', 'login-form', 'forgot-password', 'owner-registration'],
+    'owner-dashboard': ['owner-dashboard', 'property-overview', 'income-summary', 'maintenance-requests', 'tenant-status', 'documents', 'quick-actions-owner'],
+    'owner-properties': ['properties-header', 'my-properties', 'property-details', 'tenant-info', 'lease-status', 'property-performance'],
+    'owner-financials': ['financials-header', 'income-statements', 'expense-reports', 'tax-documents', 'payment-history', 'distribution-schedule'],
+    'owner-maintenance': ['maintenance-header', 'maintenance-requests', 'work-orders', 'vendor-info', 'maintenance-history', 'approve-repairs'],
+    // Tenant Portal Pages
+    'tenant-login': ['auth-hero', 'login-form', 'forgot-password', 'apply-now'],
+    'tenant-dashboard': ['tenant-dashboard', 'rent-status', 'maintenance-requests', 'lease-info', 'documents', 'announcements', 'quick-actions-tenant'],
+    'tenant-payments': ['payments-header', 'pay-rent', 'payment-history', 'auto-pay-setup', 'payment-methods', 'ledger-balance'],
+    'tenant-maintenance': ['maintenance-header', 'submit-request', 'request-status', 'maintenance-history', 'emergency-maintenance'],
+    'tenant-documents': ['documents-header', 'lease-documents', 'move-in-checklist', 'community-rules', 'upload-documents']
   },
 
   // Default fallback for unknown industries
@@ -2467,9 +2808,728 @@ const PAGE_LAYOUTS = {
     gallery: ['gallery-hero', 'gallery-masonry', 'cta-simple'],
     pricing: ['pricing-hero', 'pricing-cards', 'faq-accordion', 'cta-with-form'],
     blog: ['blog-hero', 'blog-grid', 'newsletter-cta', 'cta-simple'],
-    booking: ['booking-hero', 'appointment-booking', 'faq-accordion']
+    booking: ['booking-hero', 'appointment-booking', 'faq-accordion'],
+    // Basic Customer Portal Pages (fallback)
+    login: ['auth-hero', 'login-form', 'social-login', 'forgot-password'],
+    register: ['auth-hero', 'register-form', 'terms-checkbox'],
+    dashboard: ['dashboard-header', 'quick-actions', 'recent-activity', 'upcoming-items', 'notifications'],
+    profile: ['profile-header', 'personal-info', 'notification-settings', 'security-settings'],
+    appointments: ['appointments-header', 'upcoming-appointments', 'past-appointments', 'schedule-appointment'],
+    payments: ['payments-header', 'payment-methods', 'billing-history', 'make-payment']
   }
 };
+
+// ============================================
+// RESEARCH-BASED LAYOUT VARIATIONS
+// Layout A/B/C patterns based on industry design research
+// ============================================
+
+const RESEARCH_LAYOUTS = {
+  // ==========================================
+  // FOOD & BEVERAGE
+  // ==========================================
+  'coffee-shop': {
+    layoutA: {
+      name: 'Video-First Hero',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'featured-drinks', 'about-preview', 'locations', 'loyalty-cta'],
+      features: ['autoplay-hero-video', 'floating-order-button', 'animated-menu-cards']
+    },
+    layoutB: {
+      name: 'Photography-Heavy',
+      heroType: 'image-carousel',
+      sectionOrder: ['hero-carousel', 'menu-preview', 'atmosphere-gallery', 'about', 'contact'],
+      features: ['full-bleed-images', 'hover-zoom-gallery', 'instagram-feed']
+    },
+    layoutC: {
+      name: 'Story-Driven',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'our-story', 'sourcing', 'menu', 'community', 'visit-us'],
+      features: ['parallax-scrolling', 'timeline-history', 'team-carousel']
+    }
+  },
+
+  'cafe': {
+    layoutA: {
+      name: 'Cozy Atmosphere',
+      heroType: 'image',
+      sectionOrder: ['hero-image', 'daily-specials', 'menu-preview', 'atmosphere-gallery', 'about', 'contact'],
+      features: ['warm-color-overlays', 'handwritten-fonts', 'instagram-feed']
+    },
+    layoutB: {
+      name: 'Menu-Forward',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'menu-categories', 'featured-items', 'about-preview', 'testimonials', 'location'],
+      features: ['tabbed-menu', 'dietary-filters', 'order-online-integration']
+    },
+    layoutC: {
+      name: 'Community Hub',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'events-calendar', 'menu-preview', 'community', 'about', 'contact'],
+      features: ['event-booking', 'newsletter-signup', 'local-partnerships']
+    }
+  },
+
+  'restaurant': {
+    layoutA: {
+      name: 'Reservation-Focused',
+      heroType: 'fullscreen-image',
+      sectionOrder: ['hero-fullscreen', 'reservation-widget', 'menu-preview', 'chef-story', 'reviews', 'private-events'],
+      features: ['inline-reservation-form', 'opentable-integration', 'seasonal-menu-highlight']
+    },
+    layoutB: {
+      name: 'Visual Feast',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'signature-dishes', 'atmosphere-gallery', 'menu-tabs', 'about', 'contact'],
+      features: ['food-photography-hero', 'dish-hover-details', 'wine-pairing-suggestions']
+    },
+    layoutC: {
+      name: 'Story & Tradition',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'our-story', 'farm-partners', 'seasonal-menu', 'press-awards', 'reservations'],
+      features: ['origin-timeline', 'sourcing-map', 'press-logos']
+    }
+  },
+
+  'bakery': {
+    layoutA: {
+      name: 'Gallery Showcase',
+      heroType: 'image-grid',
+      sectionOrder: ['hero-image', 'daily-fresh', 'gallery-masonry', 'custom-orders', 'about', 'contact'],
+      features: ['product-lightbox', 'daily-menu-board', 'pre-order-system']
+    },
+    layoutB: {
+      name: 'Order-Focused',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'order-online-cta', 'menu-categories', 'custom-cakes', 'testimonials', 'location'],
+      features: ['quick-add-to-cart', 'custom-order-form', 'pickup-scheduler']
+    },
+    layoutC: {
+      name: 'Artisan Story',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'our-process', 'signature-items', 'baker-profiles', 'wholesale', 'visit-us'],
+      features: ['behind-scenes-video', 'ingredient-sourcing', 'wholesale-inquiry']
+    }
+  },
+
+  'pizza': {
+    layoutA: {
+      name: 'Order-First',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'order-now-banner', 'menu-grid', 'build-your-own', 'delivery-info', 'locations'],
+      features: ['prominent-order-button', 'delivery-tracker', 'pizza-builder']
+    },
+    layoutB: {
+      name: 'Authentic Story',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'our-tradition', 'signature-pizzas', 'ingredients', 'reviews', 'order-cta'],
+      features: ['wood-fired-oven-video', 'ingredient-origins', 'family-history']
+    },
+    layoutC: {
+      name: 'Menu Showcase',
+      heroType: 'fullscreen-image',
+      sectionOrder: ['hero-fullscreen', 'menu-categories', 'specials', 'catering', 'about', 'contact'],
+      features: ['visual-menu', 'daily-specials-banner', 'group-ordering']
+    }
+  },
+
+  'steakhouse': {
+    layoutA: {
+      name: 'Luxury Experience',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'signature-cuts', 'wine-program', 'private-dining', 'chef-profile', 'reservations'],
+      features: ['dark-elegant-theme', 'wine-list-preview', 'vip-booking']
+    },
+    layoutB: {
+      name: 'Menu Excellence',
+      heroType: 'fullscreen-image',
+      sectionOrder: ['hero-fullscreen', 'prime-cuts', 'sides-seafood', 'wine-pairings', 'about', 'book-table'],
+      features: ['premium-imagery', 'cut-descriptions', 'sommelier-picks']
+    },
+    layoutC: {
+      name: 'Heritage Story',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'our-heritage', 'aging-process', 'menu-preview', 'awards', 'reservations'],
+      features: ['history-timeline', 'aging-room-tour', 'press-accolades']
+    }
+  },
+
+  'food-truck': {
+    layoutA: {
+      name: 'Location Finder',
+      heroType: 'map',
+      sectionOrder: ['hero-with-map', 'todays-location', 'menu-grid', 'schedule-calendar', 'catering', 'social-feed'],
+      features: ['live-location-map', 'schedule-notifications', 'social-integration']
+    },
+    layoutB: {
+      name: 'Menu-First',
+      heroType: 'image',
+      sectionOrder: ['hero-image', 'menu-showcase', 'find-us', 'about-truck', 'events', 'contact'],
+      features: ['visual-menu', 'event-booking', 'private-events']
+    },
+    layoutC: {
+      name: 'Story & Schedule',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'our-story', 'weekly-schedule', 'menu-preview', 'catering', 'follow-us'],
+      features: ['behind-scenes', 'calendar-widget', 'email-signup']
+    }
+  },
+
+  'bar-brewery': {
+    layoutA: {
+      name: 'Tap List Focus',
+      heroType: 'image',
+      sectionOrder: ['hero-image', 'on-tap-now', 'events-calendar', 'food-menu', 'brewery-tour', 'visit-us'],
+      features: ['live-tap-list', 'untappd-integration', 'event-rsvp']
+    },
+    layoutB: {
+      name: 'Brewery Experience',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'our-beers', 'brewing-process', 'taproom-info', 'merchandise', 'contact'],
+      features: ['brewery-tour-video', 'beer-finder', 'merchandise-shop']
+    },
+    layoutC: {
+      name: 'Events & Community',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'upcoming-events', 'tap-list', 'private-events', 'about', 'visit'],
+      features: ['event-calendar', 'private-booking', 'mailing-list']
+    }
+  },
+
+  // ==========================================
+  // BEAUTY & GROOMING
+  // ==========================================
+  'salon': {
+    layoutA: {
+      name: 'Booking-Optimized',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'book-now-widget', 'services-grid', 'team-carousel', 'gallery', 'reviews'],
+      features: ['inline-booking', 'service-menu-pricing', 'stylist-selection']
+    },
+    layoutB: {
+      name: 'Portfolio Showcase',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'before-after-gallery', 'services', 'stylists', 'testimonials', 'contact'],
+      features: ['transformation-slider', 'instagram-feed', 'video-portfolio']
+    },
+    layoutC: {
+      name: 'Luxury Experience',
+      heroType: 'fullscreen-image',
+      sectionOrder: ['hero-fullscreen', 'experience-overview', 'signature-services', 'products', 'gift-cards', 'book'],
+      features: ['elegant-animations', 'product-shop', 'gift-card-purchase']
+    }
+  },
+
+  'spa': {
+    layoutA: {
+      name: 'Serene Escape',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'spa-menu', 'packages', 'virtual-tour', 'gift-cards', 'book-escape'],
+      features: ['calming-animations', 'package-builder', 'gift-certificates']
+    },
+    layoutB: {
+      name: 'Service Menu',
+      heroType: 'fullscreen-image',
+      sectionOrder: ['hero-fullscreen', 'treatment-categories', 'signature-treatments', 'membership', 'about', 'contact'],
+      features: ['categorized-services', 'membership-tiers', 'online-booking']
+    },
+    layoutC: {
+      name: 'Wellness Journey',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'wellness-philosophy', 'treatments', 'practitioners', 'testimonials', 'book-journey'],
+      features: ['wellness-quiz', 'practitioner-bios', 'consultation-booking']
+    }
+  },
+
+  'barbershop': {
+    layoutA: {
+      name: 'Classic Masculine',
+      heroType: 'image',
+      sectionOrder: ['hero-image', 'services-pricing', 'barber-profiles', 'gallery', 'walk-in-status', 'contact'],
+      features: ['dark-theme', 'walk-in-indicator', 'barber-booking']
+    },
+    layoutB: {
+      name: 'Modern Portfolio',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'work-gallery', 'services', 'team', 'products', 'book-now'],
+      features: ['portfolio-grid', 'product-shop', 'style-gallery']
+    },
+    layoutC: {
+      name: 'Community Shop',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'our-story', 'services', 'the-crew', 'community', 'visit-us'],
+      features: ['shop-culture', 'social-feed', 'community-events']
+    }
+  },
+
+  // ==========================================
+  // FITNESS & WELLNESS
+  // ==========================================
+  'fitness': {
+    layoutA: {
+      name: 'Trial-Focused',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'free-trial-cta', 'membership-tiers', 'class-schedule', 'trainers', 'facility-tour'],
+      features: ['trial-signup-form', 'membership-comparison', 'schedule-filter']
+    },
+    layoutB: {
+      name: 'Results-Driven',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'transformation-stories', 'programs', 'pricing', 'trainers', 'start-today'],
+      features: ['before-after-gallery', 'program-cards', 'trainer-booking']
+    },
+    layoutC: {
+      name: 'Community Focus',
+      heroType: 'image',
+      sectionOrder: ['hero-image', 'class-schedule', 'community-events', 'membership', 'about', 'join-us'],
+      features: ['class-calendar', 'event-signup', 'member-spotlight']
+    }
+  },
+
+  'gym': {
+    layoutA: {
+      name: 'Membership-First',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'membership-tiers', 'amenities', 'class-schedule', 'trainers', 'free-pass'],
+      features: ['membership-comparison', 'virtual-tour', 'class-booking']
+    },
+    layoutB: {
+      name: 'Facility Showcase',
+      heroType: 'image-carousel',
+      sectionOrder: ['hero-carousel', 'equipment-tour', 'classes', 'personal-training', 'pricing', 'contact'],
+      features: ['facility-gallery', 'equipment-list', 'trainer-profiles']
+    },
+    layoutC: {
+      name: 'Results & Community',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'success-stories', 'programs', 'schedule', 'community', 'join-now'],
+      features: ['transformation-carousel', 'program-finder', 'community-board']
+    }
+  },
+
+  'yoga': {
+    layoutA: {
+      name: 'Class Schedule Focus',
+      heroType: 'image',
+      sectionOrder: ['hero-image', 'todays-classes', 'class-types', 'instructors', 'pricing', 'new-student-offer'],
+      features: ['live-schedule', 'class-descriptions', 'instructor-bios']
+    },
+    layoutB: {
+      name: 'Wellness Journey',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'your-practice', 'class-offerings', 'teachers', 'workshops', 'begin-journey'],
+      features: ['calming-video', 'workshop-calendar', 'retreat-info']
+    },
+    layoutC: {
+      name: 'Community Studio',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'philosophy', 'schedule', 'teachers', 'community', 'visit-us'],
+      features: ['studio-philosophy', 'teacher-spotlight', 'community-events']
+    }
+  },
+
+  // ==========================================
+  // HEALTHCARE
+  // ==========================================
+  'dental': {
+    layoutA: {
+      name: 'Booking-Optimized',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'book-appointment', 'services', 'smile-gallery', 'team', 'insurance'],
+      features: ['online-scheduling', 'smile-transformations', 'insurance-checker']
+    },
+    layoutB: {
+      name: 'Family-Friendly',
+      heroType: 'image',
+      sectionOrder: ['hero-image', 'welcome-families', 'services', 'meet-team', 'patient-forms', 'contact'],
+      features: ['warm-imagery', 'family-services', 'new-patient-portal']
+    },
+    layoutC: {
+      name: 'Technology-Forward',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'advanced-technology', 'services', 'providers', 'patient-portal', 'schedule'],
+      features: ['technology-showcase', 'virtual-tour', 'telehealth-option']
+    }
+  },
+
+  'medical': {
+    layoutA: {
+      name: 'Patient Portal Focus',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'patient-portal-cta', 'services', 'providers', 'insurance', 'locations'],
+      features: ['portal-integration', 'provider-search', 'insurance-lookup']
+    },
+    layoutB: {
+      name: 'Service-Oriented',
+      heroType: 'image',
+      sectionOrder: ['hero-image', 'quick-actions', 'specialties', 'providers', 'patient-resources', 'contact'],
+      features: ['service-cards', 'provider-bios', 'resource-library']
+    },
+    layoutC: {
+      name: 'Community Health',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'care-approach', 'services', 'team', 'community-programs', 'get-care'],
+      features: ['care-philosophy', 'community-outreach', 'telehealth']
+    }
+  },
+
+  'healthcare': {
+    layoutA: {
+      name: 'Appointment-First',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'schedule-appointment', 'services', 'providers', 'patient-portal', 'insurance'],
+      features: ['online-scheduling', 'provider-directory', 'portal-access']
+    },
+    layoutB: {
+      name: 'Comprehensive Care',
+      heroType: 'image',
+      sectionOrder: ['hero-image', 'our-services', 'care-team', 'patient-resources', 'insurance-billing', 'contact'],
+      features: ['service-overview', 'team-profiles', 'forms-download']
+    },
+    layoutC: {
+      name: 'Wellness-Centered',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'whole-person-care', 'services', 'providers', 'wellness-programs', 'begin'],
+      features: ['wellness-approach', 'preventive-care', 'health-education']
+    }
+  },
+
+  'vet': {
+    layoutA: {
+      name: 'Pet-First',
+      heroType: 'image',
+      sectionOrder: ['hero-image', 'book-visit', 'services', 'our-team', 'pet-portal', 'emergency-info'],
+      features: ['pet-friendly-design', 'species-services', 'emergency-banner']
+    },
+    layoutB: {
+      name: 'Full-Service',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'services-overview', 'care-team', 'patient-resources', 'pharmacy', 'contact'],
+      features: ['service-categories', 'pharmacy-refills', 'pet-records']
+    },
+    layoutC: {
+      name: 'Emergency-Ready',
+      heroType: 'image',
+      sectionOrder: ['emergency-banner', 'hero-image', 'urgent-care', 'services', 'team', 'contact'],
+      features: ['emergency-prominent', '24-7-info', 'quick-contact']
+    }
+  },
+
+  // ==========================================
+  // HOME SERVICES
+  // ==========================================
+  'plumber': {
+    layoutA: {
+      name: 'Emergency-First',
+      heroType: 'split',
+      sectionOrder: ['emergency-banner', 'hero-split', 'services', 'pricing', 'service-area', 'reviews'],
+      features: ['24-7-badge', 'click-to-call', 'instant-quote']
+    },
+    layoutB: {
+      name: 'Trust-Builder',
+      heroType: 'image',
+      sectionOrder: ['hero-image', 'why-choose-us', 'services', 'credentials', 'testimonials', 'get-quote'],
+      features: ['license-display', 'review-integration', 'guarantee-badge']
+    },
+    layoutC: {
+      name: 'Service-Focused',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'common-issues', 'services-pricing', 'about', 'service-area', 'contact'],
+      features: ['problem-solver', 'transparent-pricing', 'area-map']
+    }
+  },
+
+  'hvac': {
+    layoutA: {
+      name: 'Emergency & Maintenance',
+      heroType: 'split',
+      sectionOrder: ['emergency-banner', 'hero-split', 'services', 'maintenance-plans', 'financing', 'contact'],
+      features: ['emergency-cta', 'plan-comparison', 'financing-calculator']
+    },
+    layoutB: {
+      name: 'Seasonal Focus',
+      heroType: 'image',
+      sectionOrder: ['hero-image', 'seasonal-services', 'maintenance', 'new-systems', 'reviews', 'schedule'],
+      features: ['seasonal-promotions', 'system-finder', 'rebate-info']
+    },
+    layoutC: {
+      name: 'Full-Service',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'services', 'brands-we-service', 'maintenance-club', 'about', 'contact'],
+      features: ['brand-logos', 'membership-benefits', 'video-testimonials']
+    }
+  },
+
+  'electrician': {
+    layoutA: {
+      name: 'Safety-First',
+      heroType: 'split',
+      sectionOrder: ['emergency-banner', 'hero-split', 'services', 'safety-tips', 'credentials', 'contact'],
+      features: ['emergency-contact', 'safety-resources', 'license-verification']
+    },
+    layoutB: {
+      name: 'Residential Focus',
+      heroType: 'image',
+      sectionOrder: ['hero-image', 'home-services', 'smart-home', 'pricing', 'reviews', 'schedule'],
+      features: ['service-categories', 'smart-home-showcase', 'upfront-pricing']
+    },
+    layoutC: {
+      name: 'Commercial & Residential',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'residential', 'commercial', 'about', 'service-area', 'get-quote'],
+      features: ['segment-tabs', 'project-gallery', 'area-coverage']
+    }
+  },
+
+  'cleaning': {
+    layoutA: {
+      name: 'Quote-Focused',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'instant-quote', 'services', 'how-it-works', 'trust-badges', 'reviews'],
+      features: ['quote-calculator', 'booking-widget', 'satisfaction-guarantee']
+    },
+    layoutB: {
+      name: 'Service Showcase',
+      heroType: 'image',
+      sectionOrder: ['hero-image', 'cleaning-types', 'add-ons', 'pricing', 'about', 'book-now'],
+      features: ['service-cards', 'checklist-preview', 'eco-friendly-badge']
+    },
+    layoutC: {
+      name: 'Trust-Builder',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'why-us', 'services', 'our-cleaners', 'reviews', 'get-started'],
+      features: ['team-video', 'background-check-badge', 'review-carousel']
+    }
+  },
+
+  'auto-shop': {
+    layoutA: {
+      name: 'Service-First',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'common-services', 'full-services', 'pricing', 'reviews', 'schedule'],
+      features: ['service-menu', 'price-transparency', 'online-scheduling']
+    },
+    layoutB: {
+      name: 'Trust-Builder',
+      heroType: 'image',
+      sectionOrder: ['hero-image', 'why-choose-us', 'services', 'certifications', 'reviews', 'contact'],
+      features: ['ase-certified-badge', 'warranty-info', 'review-integration']
+    },
+    layoutC: {
+      name: 'Full-Service',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'services', 'brands-serviced', 'about', 'customer-portal', 'contact'],
+      features: ['shop-tour-video', 'brand-logos', 'maintenance-reminders']
+    }
+  },
+
+  // ==========================================
+  // PROFESSIONAL SERVICES
+  // ==========================================
+  'law-firm': {
+    layoutA: {
+      name: 'Consultation-Focused',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'free-consultation', 'practice-areas', 'results', 'attorneys', 'contact'],
+      features: ['consultation-form', 'case-results', 'attorney-profiles']
+    },
+    layoutB: {
+      name: 'Results-Driven',
+      heroType: 'image',
+      sectionOrder: ['hero-image', 'track-record', 'practice-areas', 'case-studies', 'team', 'get-help'],
+      features: ['results-stats', 'case-study-cards', 'awards-display']
+    },
+    layoutC: {
+      name: 'Client-Centered',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'how-we-help', 'practice-areas', 'testimonials', 'about', 'contact'],
+      features: ['client-testimonials-video', 'practice-area-detail', 'empathy-messaging']
+    }
+  },
+
+  'professional': {
+    layoutA: {
+      name: 'Lead-Generator',
+      heroType: 'split',
+      sectionOrder: ['hero-with-form', 'services', 'case-studies', 'team', 'testimonials', 'contact'],
+      features: ['lead-capture-form', 'case-study-grid', 'team-expertise']
+    },
+    layoutB: {
+      name: 'Expertise-Focused',
+      heroType: 'image',
+      sectionOrder: ['hero-image', 'our-expertise', 'services', 'insights', 'team', 'schedule-call'],
+      features: ['expertise-showcase', 'blog-preview', 'calendar-booking']
+    },
+    layoutC: {
+      name: 'Results-Oriented',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'impact-stats', 'services', 'success-stories', 'about', 'contact'],
+      features: ['animated-stats', 'video-testimonials', 'roi-calculator']
+    }
+  },
+
+  // ==========================================
+  // REAL ESTATE
+  // ==========================================
+  'real-estate': {
+    layoutA: {
+      name: 'Search-First',
+      heroType: 'fullscreen-image',
+      sectionOrder: ['hero-with-search', 'featured-listings', 'market-stats', 'agents', 'testimonials', 'contact'],
+      features: ['property-search', 'listing-cards', 'market-data']
+    },
+    layoutB: {
+      name: 'Agent-Focused',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'agent-stats', 'featured-properties', 'about-agent', 'reviews', 'contact'],
+      features: ['agent-branding', 'success-metrics', 'personal-approach']
+    },
+    layoutC: {
+      name: 'Market Expert',
+      heroType: 'image',
+      sectionOrder: ['hero-image', 'home-valuation', 'market-insights', 'listings', 'services', 'contact'],
+      features: ['valuation-tool', 'market-reports', 'buyer-seller-resources']
+    }
+  },
+
+  // ==========================================
+  // RETAIL & ECOMMERCE
+  // ==========================================
+  'retail': {
+    layoutA: {
+      name: 'Product-First',
+      heroType: 'image-carousel',
+      sectionOrder: ['hero-carousel', 'featured-products', 'categories', 'new-arrivals', 'reviews', 'newsletter'],
+      features: ['product-slider', 'quick-add', 'category-nav']
+    },
+    layoutB: {
+      name: 'Brand Story',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'our-story', 'collections', 'bestsellers', 'sustainability', 'shop-now'],
+      features: ['brand-video', 'collection-showcase', 'values-display']
+    },
+    layoutC: {
+      name: 'Sale-Focused',
+      heroType: 'split',
+      sectionOrder: ['promo-banner', 'hero-split', 'sale-items', 'categories', 'loyalty', 'contact'],
+      features: ['countdown-timer', 'sale-badges', 'loyalty-program']
+    }
+  },
+
+  'ecommerce': {
+    layoutA: {
+      name: 'Conversion-Optimized',
+      heroType: 'split',
+      sectionOrder: ['promo-bar', 'hero-split', 'bestsellers', 'categories', 'trust-badges', 'reviews'],
+      features: ['free-shipping-bar', 'quick-add-cart', 'trust-signals']
+    },
+    layoutB: {
+      name: 'Category-Focused',
+      heroType: 'image',
+      sectionOrder: ['hero-image', 'shop-categories', 'featured-products', 'new-arrivals', 'about', 'newsletter'],
+      features: ['category-grid', 'product-filters', 'collection-pages']
+    },
+    layoutC: {
+      name: 'Brand Experience',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'brand-values', 'collections', 'sustainability', 'reviews', 'join-community'],
+      features: ['lifestyle-video', 'brand-story', 'community-building']
+    }
+  },
+
+  // ==========================================
+  // SAAS & TECHNOLOGY
+  // ==========================================
+  'saas': {
+    layoutA: {
+      name: 'Trial-Focused',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'social-proof', 'features', 'how-it-works', 'pricing', 'testimonials'],
+      features: ['trial-cta', 'logo-carousel', 'feature-grid']
+    },
+    layoutB: {
+      name: 'Demo-Driven',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'demo-cta', 'features', 'integrations', 'pricing', 'case-studies'],
+      features: ['product-video', 'demo-booking', 'integration-logos']
+    },
+    layoutC: {
+      name: 'Enterprise-Ready',
+      heroType: 'image',
+      sectionOrder: ['hero-image', 'enterprise-features', 'security', 'pricing', 'case-studies', 'contact-sales'],
+      features: ['enterprise-badges', 'security-certifications', 'sales-contact']
+    }
+  },
+
+  // ==========================================
+  // EDUCATION
+  // ==========================================
+  'school': {
+    layoutA: {
+      name: 'Admissions-Focused',
+      heroType: 'video',
+      sectionOrder: ['hero-video', 'apply-now', 'programs', 'campus-life', 'outcomes', 'visit-campus'],
+      features: ['admissions-cta', 'program-cards', 'virtual-tour']
+    },
+    layoutB: {
+      name: 'Academic Excellence',
+      heroType: 'image',
+      sectionOrder: ['hero-image', 'academics', 'faculty', 'student-success', 'facilities', 'inquire'],
+      features: ['program-details', 'faculty-profiles', 'success-stats']
+    },
+    layoutC: {
+      name: 'Community-Centered',
+      heroType: 'split',
+      sectionOrder: ['hero-split', 'our-approach', 'programs', 'community', 'events', 'join-us'],
+      features: ['philosophy-showcase', 'community-events', 'parent-resources']
+    }
+  }
+};
+
+/**
+ * Get research-based layout for an industry
+ * @param {string} industryKey - Industry key
+ * @param {string} layoutVariant - 'A', 'B', or 'C'
+ * @returns {object|null} Layout configuration or null
+ */
+function getResearchLayout(industryKey, layoutVariant = 'A') {
+  const industryLayouts = RESEARCH_LAYOUTS[industryKey];
+  if (!industryLayouts) return null;
+
+  const variantKey = `layout${layoutVariant}`;
+  return industryLayouts[variantKey] || null;
+}
+
+/**
+ * Get all available layout variants for an industry
+ * @param {string} industryKey - Industry key
+ * @returns {object} Object with layoutA, layoutB, layoutC
+ */
+function getResearchLayoutVariants(industryKey) {
+  return RESEARCH_LAYOUTS[industryKey] || null;
+}
+
+/**
+ * Get section order from research layout
+ * @param {string} industryKey - Industry key
+ * @param {string} layoutVariant - 'A', 'B', or 'C'
+ * @returns {string[]} Array of section keys
+ */
+function getResearchSectionOrder(industryKey, layoutVariant = 'A') {
+  const layout = getResearchLayout(industryKey, layoutVariant);
+  return layout?.sectionOrder || [];
+}
+
+/**
+ * Get layout features from research layout
+ * @param {string} industryKey - Industry key
+ * @param {string} layoutVariant - 'A', 'B', or 'C'
+ * @returns {string[]} Array of feature keys
+ */
+function getResearchLayoutFeatures(industryKey, layoutVariant = 'A') {
+  const layout = getResearchLayout(industryKey, layoutVariant);
+  return layout?.features || [];
+}
 
 /**
  * Get the section order for a specific page type and industry
@@ -2500,6 +3560,7 @@ module.exports = {
   SECTION_DETAILS,
   INDUSTRY_TO_LAYOUT_MAP,
   PAGE_LAYOUTS,
+  RESEARCH_LAYOUTS,
   buildLayoutContext,
   getLayoutConfig,
   getLayoutCategory,
@@ -2507,5 +3568,9 @@ module.exports = {
   buildDetailedLayoutContext,
   getAvailableLayouts,
   getLayoutConfigFull,
-  getPageLayout
+  getPageLayout,
+  getResearchLayout,
+  getResearchLayoutVariants,
+  getResearchSectionOrder,
+  getResearchLayoutFeatures
 };

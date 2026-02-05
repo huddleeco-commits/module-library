@@ -1,0 +1,50 @@
+{
+  "name": "atlas-ai",
+  "displayName": "ATLAS AI Agents",
+  "description": "AI-powered business agents for customer support, marketing, and analytics",
+  "version": "1.0.0",
+  "type": "backend+frontend",
+
+  "backend": {
+    "routes": ["routes/ai.js"],
+    "routePrefix": "/api/ai",
+    "dependencies": {
+      "@anthropic-ai/sdk": "^0.10.0"
+    },
+    "env": {
+      "ANTHROPIC_API_KEY": {
+        "required": true,
+        "description": "Anthropic API key for Claude"
+      }
+    }
+  },
+
+  "frontend": {
+    "components": ["components/AgentChat.jsx"],
+    "dependencies": {}
+  },
+
+  "files": {
+    "admin/agents.json": {
+      "template": "agents.json.template",
+      "description": "AI agent configuration - customize with your business info"
+    }
+  },
+
+  "integration": {
+    "serverJs": {
+      "import": "const aiRoutes = require('./routes/ai');",
+      "use": "app.use('/api/ai', aiRoutes);"
+    },
+    "adminApp": {
+      "import": "import AgentChat from '../components/AgentChat';",
+      "component": "<AgentChat apiBase=\"\" />"
+    }
+  },
+
+  "postInstall": [
+    "Copy agents.json.template to admin/agents.json",
+    "Replace {{BUSINESS_NAME}}, {{BUSINESS_TYPE}}, etc with actual values",
+    "Add ANTHROPIC_API_KEY to your .env file"
+  ]
+}

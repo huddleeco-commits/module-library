@@ -511,10 +511,13 @@ const styles = {
 
     // Add route if not present
     if (!content.includes('path="/_index"') && !content.includes("path='/_index'")) {
-      // Find the Routes closing tag and add before it
-      const routesMatch = content.match(/<Route[^>]*path=["'][/"'].*?\/>/);
+      // Find the home route - must match the complete Route element including element={<Component />}
+      // The pattern matches: <Route path="/" element={<ComponentName />} />
+      // We use a specific pattern to avoid matching the /> inside the element prop
+      const homeRouteRegex = /<Route\s+path=["']\/["']\s+element=\{<\w+\s*\/>\}\s*\/>/;
+      const routesMatch = content.match(homeRouteRegex);
       if (routesMatch) {
-        // Add after the first route (usually home)
+        // Add IndexPage route after the home route
         content = content.replace(
           routesMatch[0],
           `${routesMatch[0]}\n          <Route path="/_index" element={<IndexPage />} />`

@@ -8,9 +8,12 @@
  * - Analytics/metrics
  * - Inventory management
  * - Staging/Content editing
+ * - Menu management (with real-time sync)
+ * - Reservations management
+ * - AI Agents with action execution
  *
  * All routes are prefixed with /api/admin
- * All routes require authentication (except health check)
+ * All routes require authentication (except health check and SSE events)
  * CORS restricted to allowed origins
  */
 
@@ -58,6 +61,13 @@ const ordersRoutes = require('./routes/orders');
 const analyticsRoutes = require('./routes/analytics');
 const inventoryRoutes = require('./routes/inventory');
 const stagingRoutes = require('./routes/staging');
+const aiRoutes = require('./routes/ai');
+const menuRoutes = require('./routes/menu');
+const reservationsRoutes = require('./routes/reservations');
+const eventsRoutes = require('./routes/events');
+
+// Import services
+const { createNotificationService } = require('./services/notification-service');
 
 // Health check for admin API (no auth required)
 router.get('/health', (req, res) => {
@@ -67,6 +77,31 @@ router.get('/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+// Initialize services and store references
+function initializeServices(app) {
+  // Initialize SSE clients
+  eventsRoutes.initSSEClients(app);
+
+  // Store route references for cross-module access
+  app.locals.menuRoutes = menuRoutes;
+  app.locals.reservationRoutes = reservationsRoutes;
+
+  // Initialize notification service
+  const brain = app.locals.brain || {};
+  app.locals.notificationService = createNotificationService({
+    businessName: brain.business?.name || 'Our Business'
+  });
+
+  console.log('[Admin API] Services initialized');
+}
+
+// Export initialization function
+router.initializeServices = initializeServices;
+
+// SSE Events routes - no auth required for real-time updates
+// Mount at /api/events (outside /api/admin)
+router.eventsRoutes = eventsRoutes;
 
 // Apply authentication middleware to all admin routes
 router.use(authenticateToken);
@@ -79,5 +114,8 @@ router.use('/orders', ordersRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/inventory', inventoryRoutes);
 router.use('/staging', stagingRoutes);
+router.use('/ai', aiRoutes);
+router.use('/menu', menuRoutes);
+router.use('/reservations', reservationsRoutes);
 
 module.exports = router;

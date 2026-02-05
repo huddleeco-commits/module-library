@@ -99,8 +99,14 @@ function generateHomePage(archetype, businessData, colors, styleOverrides = {}) 
   const phone = businessData.phone || '(555) 123-4567';
   const industry = (businessData.industry || 'fitness').toLowerCase();
 
-  const images = industry.includes('yoga') || industry.includes('pilates') || industry.includes('meditation') ? IMAGES.yoga :
+  const defaultImages = industry.includes('yoga') || industry.includes('pilates') || industry.includes('meditation') ? IMAGES.yoga :
                  industry.includes('wellness') || industry.includes('spa') ? IMAGES.wellness : IMAGES.gym;
+
+  // Use fixture hero image if available
+  const images = {
+    ...defaultImages,
+    hero: businessData.heroImage || defaultImages.hero
+  };
 
   let c = { ...style.colors, ...colors };
   if (styleOverrides.isDark) {
@@ -119,16 +125,20 @@ function generateHomePage(archetype, businessData, colors, styleOverrides = {}) 
   };
 
   if (arch.id === 'zen-peaceful') {
-    return generateZenHomePage(businessName, phone, images, c, themeStyle);
+    return generateZenHomePage(businessName, phone, images, c, themeStyle, businessData);
   } else if (arch.id === 'energetic-bold') {
-    return generateEnergeticHomePage(businessName, phone, images, c, themeStyle);
+    return generateEnergeticHomePage(businessName, phone, images, c, themeStyle, businessData);
   } else {
-    return generateCommunityHomePage(businessName, phone, images, c, themeStyle);
+    return generateCommunityHomePage(businessName, phone, images, c, themeStyle, businessData);
   }
 }
 
-function generateEnergeticHomePage(businessName, phone, images, colors, style) {
+function generateEnergeticHomePage(businessName, phone, images, colors, style, businessData = {}) {
   const c = colors;
+  // Use fixture hero text if available
+  const heroHeadline = businessData.heroHeadline || businessName;
+  const heroSubheadline = businessData.heroSubheadline || 'Transform your body. Transform your life. Join the most intense fitness community.';
+
   return `import React from 'react';
 import { Link } from 'react-router-dom';
 import { Flame, Dumbbell, Users, Clock, Trophy, Zap, ChevronRight } from 'lucide-react';
@@ -177,8 +187,8 @@ export default function HomePage() {
     <div>
       <section style={styles.hero}>
         <div style={styles.heroContent}>
-          <h1 style={styles.heroTitle}>PUSH YOUR <span style={styles.heroAccent}>LIMITS</span></h1>
-          <p style={styles.heroSubtitle}>Transform your body. Transform your life. Join the most intense fitness community.</p>
+          <h1 style={styles.heroTitle}>${heroHeadline.replace(/'/g, "\\'")}</h1>
+          <p style={styles.heroSubtitle}>${heroSubheadline.replace(/'/g, "\\'")}</p>
           <div style={styles.heroButtons}>
             <Link to="/contact" style={styles.btnPrimary}>Start Free Trial <ChevronRight size={20} /></Link>
             <Link to="/services" style={styles.btnSecondary}>View Classes</Link>
@@ -221,8 +231,12 @@ export default function HomePage() {
 `;
 }
 
-function generateZenHomePage(businessName, phone, images, colors, style) {
+function generateZenHomePage(businessName, phone, images, colors, style, businessData = {}) {
   const c = colors;
+  // Use fixture hero text if available
+  const heroHeadline = businessData.heroHeadline || 'Find Your Balance';
+  const heroSubheadline = businessData.heroSubheadline || 'A sanctuary for mind, body, and spirit. Join our community and discover the transformative power of yoga.';
+
   return `import React from 'react';
 import { Link } from 'react-router-dom';
 import { Sun, Moon, Heart, Feather, Calendar, Users, Clock, Leaf } from 'lucide-react';
@@ -266,8 +280,8 @@ export default function HomePage() {
     <div>
       <section style={styles.hero}>
         <div style={styles.heroContent}>
-          <h1 style={styles.heroTitle}>Find Your Balance</h1>
-          <p style={styles.heroSubtitle}>A sanctuary for mind, body, and spirit. Join our community and discover the transformative power of yoga.</p>
+          <h1 style={styles.heroTitle}>${heroHeadline.replace(/'/g, "\\'")}</h1>
+          <p style={styles.heroSubtitle}>${heroSubheadline.replace(/'/g, "\\'")}</p>
           <div style={styles.heroButtons}>
             <Link to="/contact" style={styles.btnPrimary}><Calendar size={18} /> Book a Class</Link>
             <Link to="/services" style={styles.btnSecondary}>View Schedule</Link>
@@ -321,8 +335,12 @@ export default function HomePage() {
 `;
 }
 
-function generateCommunityHomePage(businessName, phone, images, colors, style) {
+function generateCommunityHomePage(businessName, phone, images, colors, style, businessData = {}) {
   const c = colors;
+  // Use fixture hero text if available
+  const heroHeadline = businessData.heroHeadline || 'Fitness is Better Together';
+  const heroSubheadline = businessData.heroSubheadline || 'Join our welcoming community and discover the motivation that comes from working out with friends. Every body is welcome here.';
+
   return `import React from 'react';
 import { Link } from 'react-router-dom';
 import { Users, Heart, Zap, Calendar, Star, Trophy, Clock, ArrowRight } from 'lucide-react';
@@ -365,8 +383,8 @@ export default function HomePage() {
       <section style={styles.hero}>
         <div style={styles.heroInner}>
           <div style={styles.heroContent}>
-            <h1 style={styles.heroTitle}>Fitness is Better Together</h1>
-            <p style={styles.heroSubtitle}>Join our welcoming community and discover the motivation that comes from working out with friends. Every body is welcome here.</p>
+            <h1 style={styles.heroTitle}>${heroHeadline.replace(/'/g, "\\'")}</h1>
+            <p style={styles.heroSubtitle}>${heroSubheadline.replace(/'/g, "\\'")}</p>
             <div style={styles.heroButtons}>
               <Link to="/contact" style={styles.btnPrimary}><Calendar size={18} /> Try Free Class</Link>
               <Link to="/services" style={styles.btnSecondary}>View Schedule</Link>

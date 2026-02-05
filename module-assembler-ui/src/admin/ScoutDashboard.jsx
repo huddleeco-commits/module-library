@@ -44,7 +44,7 @@ const CRM_STATUS_COLORS = {
 };
 
 export default function ScoutDashboard() {
-  const [activeTab, setActiveTab] = useState('scout'); // 'scout', 'pipeline', or 'leaderboard'
+  const [activeTab, setActiveTab] = useState('scout'); // 'scout', 'pipeline', 'leaderboard', 'industry-tests', or 'design-research'
   const [apiKeyConfigured, setApiKeyConfigured] = useState(false);
   const [apiKeyInput, setApiKeyInput] = useState('');
   const [industries, setIndustries] = useState([]);
@@ -104,6 +104,21 @@ export default function ScoutDashboard() {
     generateLogo: true,
     enablePortal: true
   });
+
+  // Industry Test Suite state
+  const [industryTestRunning, setIndustryTestRunning] = useState(false);
+  const [industryTestProgress, setIndustryTestProgress] = useState(null);
+  const [industryTestResults, setIndustryTestResults] = useState(null);
+  const [industryTestStatus, setIndustryTestStatus] = useState([]); // Status of all industries
+
+  // Design Research state
+  const [designResearchData, setDesignResearchData] = useState([]);
+  const [selectedResearchIndustry, setSelectedResearchIndustry] = useState(null);
+  const [selectedLayoutVariant, setSelectedLayoutVariant] = useState('A');
+  const [generatingFromResearch, setGeneratingFromResearch] = useState(false);
+  const [batchGenerating, setBatchGenerating] = useState(false);
+  const [batchProgress, setBatchProgress] = useState({ current: 0, total: 0, status: '', results: [] });
+  const [selectedIndustriesForBatch, setSelectedIndustriesForBatch] = useState(new Set());
 
   // Industry-specific layouts for unified generation
   const INDUSTRY_LAYOUTS = {
@@ -873,6 +888,18 @@ export default function ScoutDashboard() {
         style={{ ...styles.tab, ...(activeTab === 'leaderboard' ? styles.tabActive : {}) }}
       >
         🏆 Leaderboard
+      </button>
+      <button
+        onClick={() => setActiveTab('industry-tests')}
+        style={{ ...styles.tab, ...(activeTab === 'industry-tests' ? styles.tabActive : {}) }}
+      >
+        🧪 Industry Tests
+      </button>
+      <button
+        onClick={() => setActiveTab('design-research')}
+        style={{ ...styles.tab, ...(activeTab === 'design-research' ? styles.tabActive : {}) }}
+      >
+        🎨 Design Research
       </button>
       {followUps.length > 0 && (
         <span style={styles.followUpBadge}>
@@ -1821,6 +1848,1035 @@ export default function ScoutDashboard() {
     );
   }
 
+  // Industry Test Suite Tab
+  if (activeTab === 'industry-tests') {
+    // Function to run industry test suite
+    const runIndustryTestSuite = async () => {
+      setIndustryTestRunning(true);
+      setIndustryTestProgress({ step: 'init', status: 'Starting...', progress: 0 });
+      setIndustryTestResults(null);
+
+      try {
+        const response = await fetch('/api/scout/industry-test-suite', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            skipBuild: false,
+            preset: null, // Use smart pairing
+            layoutIndex: 0
+          })
+        });
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+
+          const text = decoder.decode(value);
+          const lines = text.split('\n').filter(line => line.startsWith('data: '));
+
+          for (const line of lines) {
+            const data = JSON.parse(line.replace('data: ', ''));
+
+            if (data.step === 'complete') {
+              setIndustryTestResults(data);
+              setIndustryTestRunning(false);
+            } else if (data.step === 'error') {
+              setError(data.error);
+              setIndustryTestRunning(false);
+            } else {
+              setIndustryTestProgress(data);
+            }
+          }
+        }
+      } catch (err) {
+        setError(err.message);
+        setIndustryTestRunning(false);
+      }
+    };
+
+    // Function to fetch test status
+    const fetchTestStatus = async () => {
+      try {
+        const res = await fetch('/api/scout/industry-test-suite/status');
+        const data = await res.json();
+        setIndustryTestStatus(data.status || []);
+      } catch (err) {
+        console.error('Error fetching test status:', err);
+      }
+    };
+
+    // Fetch status on tab load
+    if (industryTestStatus.length === 0 && !industryTestRunning) {
+      fetchTestStatus();
+    }
+
+    return (
+      <div style={styles.container}>
+        <div style={styles.header}>
+          <div>
+            <h1 style={styles.title}>🧪 Industry Test Suite</h1>
+            <p style={styles.subtitle}>Generate one variant for each industry to compare quality</p>
+          </div>
+          {renderTabs()}
+        </div>
+
+        {/* Action Bar */}
+        <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', alignItems: 'center' }}>
+          <button
+            onClick={runIndustryTestSuite}
+            disabled={industryTestRunning}
+            style={{
+              ...styles.primaryBtn,
+              opacity: industryTestRunning ? 0.6 : 1,
+              cursor: industryTestRunning ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {industryTestRunning ? '🔄 Running...' : '🚀 Run Full Test Suite'}
+          </button>
+          <button onClick={fetchTestStatus} style={styles.secondaryBtn}>
+            🔄 Refresh Status
+          </button>
+          <button
+            onClick={() => window.open('/api/scout/industry-test-suite/viewer', '_blank')}
+            style={{ ...styles.primaryBtn, background: '#8B5CF6' }}
+          >
+            🖼️ Open Viewer
+          </button>
+          <button
+            onClick={async () => {
+              if (!confirm('Rebuild all existing industry tests? This will fix preview support.')) return;
+              setIndustryTestRunning(true);
+              setIndustryTestProgress({ step: 'init', status: 'Starting rebuild...', progress: 0 });
+              try {
+                const response = await fetch('/api/scout/industry-test-suite/rebuild', { method: 'POST' });
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                while (true) {
+                  const { value, done } = await reader.read();
+                  if (done) break;
+                  const text = decoder.decode(value);
+                  const lines = text.split('\n').filter(line => line.startsWith('data: '));
+                  for (const line of lines) {
+                    const data = JSON.parse(line.replace('data: ', ''));
+                    if (data.step === 'complete') {
+                      setIndustryTestRunning(false);
+                      alert(`Rebuild complete! ${data.rebuilt} rebuilt, ${data.failed} failed.`);
+                      window.open(data.viewerUrl, '_blank');
+                    } else if (data.step === 'error') {
+                      setIndustryTestRunning(false);
+                      alert('Error: ' + data.error);
+                    } else {
+                      setIndustryTestProgress(data);
+                    }
+                  }
+                }
+              } catch (err) {
+                setIndustryTestRunning(false);
+                alert('Error: ' + err.message);
+              }
+            }}
+            disabled={industryTestRunning}
+            style={{ ...styles.secondaryBtn, opacity: industryTestRunning ? 0.6 : 1 }}
+          >
+            🔧 Rebuild All
+          </button>
+          {industryTestResults && (
+            <span style={{ color: '#22C55E' }}>
+              ✅ {industryTestResults.summary?.successCount || 0} / {industryTestResults.summary?.totalIndustries || 0} industries generated
+            </span>
+          )}
+        </div>
+
+        {/* Progress */}
+        {industryTestRunning && industryTestProgress && (
+          <div style={{ background: '#1E293B', padding: '20px', borderRadius: '12px', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <span style={{ fontWeight: '600' }}>{industryTestProgress.status}</span>
+              <span>{industryTestProgress.current || 0} / {industryTestProgress.total || 0}</span>
+            </div>
+            <div style={{ height: '8px', background: '#334155', borderRadius: '4px', overflow: 'hidden' }}>
+              <div
+                style={{
+                  width: `${industryTestProgress.progress || 0}%`,
+                  height: '100%',
+                  background: 'linear-gradient(90deg, #3B82F6, #8B5CF6)',
+                  transition: 'width 0.3s ease'
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Results Summary */}
+        {industryTestResults && (
+          <div style={{ background: '#1E293B', padding: '20px', borderRadius: '12px', marginBottom: '24px' }}>
+            <h3 style={{ marginBottom: '16px' }}>📊 Test Results</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '16px' }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '2rem', fontWeight: '700', color: '#22C55E' }}>
+                  {industryTestResults.summary?.successCount || 0}
+                </div>
+                <div style={{ color: '#94A3B8', fontSize: '0.875rem' }}>Successful</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '2rem', fontWeight: '700', color: '#EF4444' }}>
+                  {industryTestResults.summary?.failedCount || 0}
+                </div>
+                <div style={{ color: '#94A3B8', fontSize: '0.875rem' }}>Failed</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '2rem', fontWeight: '700', color: '#3B82F6' }}>
+                  {industryTestResults.metrics?.totalPages || 0}
+                </div>
+                <div style={{ color: '#94A3B8', fontSize: '0.875rem' }}>Total Pages</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '2rem', fontWeight: '700', color: '#8B5CF6' }}>
+                  {(industryTestResults.metrics?.totalLinesOfCode || 0).toLocaleString()}
+                </div>
+                <div style={{ color: '#94A3B8', fontSize: '0.875rem' }}>Lines of Code</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '2rem', fontWeight: '700', color: '#F59E0B' }}>
+                  {((industryTestResults.metrics?.totalTime || 0) / 1000).toFixed(1)}s
+                </div>
+                <div style={{ color: '#94A3B8', fontSize: '0.875rem' }}>Total Time</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Industry Status Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+          {(industryTestResults?.results?.success || industryTestStatus || []).map((item, i) => (
+            <div
+              key={item.industry || i}
+              style={{
+                background: '#1E293B',
+                padding: '16px',
+                borderRadius: '12px',
+                border: item.generated !== false ? '1px solid #22C55E' : '1px solid #334155'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                <span style={{ fontSize: '1.5rem' }}>{item.icon}</span>
+                <div>
+                  <div style={{ fontWeight: '600' }}>{item.name}</div>
+                  <div style={{ fontSize: '0.75rem', color: '#64748B' }}>{item.industry}</div>
+                </div>
+                {item.generated !== false && (
+                  <span style={{ marginLeft: 'auto', color: '#22C55E' }}>✓</span>
+                )}
+              </div>
+              {item.metrics && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.875rem' }}>
+                  <div>
+                    <span style={{ color: '#64748B' }}>Pages: </span>
+                    <span>{item.metrics.pageCount}</span>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B' }}>LOC: </span>
+                    <span>{item.metrics.linesOfCode?.toLocaleString()}</span>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B' }}>Time: </span>
+                    <span>{(item.metrics.generationTimeMs / 1000).toFixed(1)}s</span>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B' }}>Preset: </span>
+                    <span>{item.preset}</span>
+                  </div>
+                </div>
+              )}
+              {item.preset && !item.metrics && (
+                <div style={{ fontSize: '0.875rem', color: '#64748B' }}>
+                  Preset: {item.preset} | Layout: {item.layout}
+                </div>
+              )}
+              {item.path && (
+                <div style={{ marginTop: '8px' }}>
+                  <a
+                    href={`/output/prospects/${item.folder || `industry-test-${item.industry}`}/${item.variant || 'full-test-' + item.preset + '-' + item.layout}/frontend/dist/index.html`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: '#3B82F6', fontSize: '0.875rem' }}
+                  >
+                    📂 Open Preview
+                  </a>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Failed Industries */}
+        {industryTestResults?.results?.failed?.length > 0 && (
+          <div style={{ marginTop: '24px' }}>
+            <h3 style={{ marginBottom: '16px', color: '#EF4444' }}>❌ Failed Industries</h3>
+            {industryTestResults.results.failed.map((item, i) => (
+              <div key={i} style={{ background: '#1E293B', padding: '12px', borderRadius: '8px', marginBottom: '8px', borderLeft: '3px solid #EF4444' }}>
+                <div style={{ fontWeight: '600' }}>{item.icon} {item.name}</div>
+                <div style={{ fontSize: '0.875rem', color: '#EF4444', marginTop: '4px' }}>
+                  {item.errors?.join(', ')}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Design Research Tab
+  if (activeTab === 'design-research') {
+    // Function to fetch design research data from fixtures
+    const fetchDesignResearch = async () => {
+      try {
+        const res = await fetch('/api/scout/design-research');
+        const data = await res.json();
+        setDesignResearchData(data.industries || []);
+      } catch (err) {
+        console.error('Error fetching design research:', err);
+        // Fallback: show the industries we know about with placeholder data
+        setDesignResearchData([
+          { id: 'coffee-cafe', name: 'Coffee Shop / Cafe', icon: '☕' },
+          { id: 'restaurant', name: 'Restaurant', icon: '🍽️' },
+          { id: 'bakery', name: 'Bakery', icon: '🥐' },
+          { id: 'pizza-restaurant', name: 'Pizza Restaurant', icon: '🍕' },
+          { id: 'salon-spa', name: 'Salon / Spa', icon: '💇' },
+          { id: 'barbershop', name: 'Barbershop', icon: '💈' },
+          { id: 'fitness-gym', name: 'Fitness / Gym', icon: '🏋️' },
+          { id: 'yoga', name: 'Yoga Studio', icon: '🧘' },
+          { id: 'dental', name: 'Dental Practice', icon: '🦷' },
+          { id: 'healthcare', name: 'Healthcare / Medical', icon: '🏥' },
+          { id: 'plumber', name: 'Plumber', icon: '🔧' },
+          { id: 'cleaning', name: 'Cleaning Service', icon: '🧹' },
+          { id: 'auto-shop', name: 'Auto Shop', icon: '🚗' },
+          { id: 'real-estate', name: 'Real Estate', icon: '🏠' },
+          { id: 'law-firm', name: 'Law Firm', icon: '⚖️' },
+          { id: 'ecommerce', name: 'E-commerce / Retail', icon: '🛍️' },
+          { id: 'saas', name: 'SaaS / Software', icon: '💻' },
+          { id: 'school', name: 'School / Academy', icon: '🏫' },
+          { id: 'steakhouse', name: 'Steakhouse', icon: '🥩' }
+        ]);
+      }
+    };
+
+    // Fetch design research on tab load
+    if (designResearchData.length === 0) {
+      fetchDesignResearch();
+    }
+
+    // Function to generate site with selected layout variant using industry test suite
+    const generateWithResearch = async (industry, layoutVariant) => {
+      setGeneratingFromResearch(true);
+      setBatchProgress({ current: 0, total: 1, status: `Generating ${industry.name} Layout ${layoutVariant}...`, results: [] });
+
+      try {
+        const response = await fetch('/api/scout/industry-test-suite', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            industries: [industry.id],
+            layoutVariant: layoutVariant,
+            namePrefix: 'research-'
+          })
+        });
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let result = null;
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+
+          const text = decoder.decode(value);
+          const lines = text.split('\n').filter(line => line.startsWith('data: '));
+
+          for (const line of lines) {
+            const data = JSON.parse(line.replace('data: ', ''));
+            if (data.step === 'complete') {
+              result = data;
+            } else if (data.step === 'generating') {
+              setBatchProgress(prev => ({ ...prev, status: data.status }));
+            }
+          }
+        }
+
+        if (result?.success?.length > 0) {
+          const generated = result.success[0];
+          const previewUrl = `/output/prospects/${generated.folder}/${generated.variant}/frontend/dist/index.html`;
+          setBatchProgress({ current: 1, total: 1, status: 'Complete!', results: [{ ...generated, previewUrl, success: true }] });
+          window.open(previewUrl, '_blank');
+        } else {
+          alert('Generation failed');
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      } finally {
+        setGeneratingFromResearch(false);
+      }
+    };
+
+    // Generate all layouts (A, B, C) for a single industry
+    const generateAllLayoutsForIndustry = async (industry) => {
+      setBatchGenerating(true);
+      const layouts = ['A', 'B', 'C'];
+      const allResults = [];
+      setBatchProgress({ current: 0, total: layouts.length, status: `Generating ${industry.name}...`, results: [] });
+
+      for (let i = 0; i < layouts.length; i++) {
+        const layout = layouts[i];
+        setBatchProgress(prev => ({ ...prev, current: i + 1, status: `Generating ${industry.name} - Layout ${layout}...` }));
+
+        try {
+          const response = await fetch('/api/scout/industry-test-suite', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              industries: [industry.id],
+              layoutVariant: layout,
+              namePrefix: 'research-'
+            })
+          });
+
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let result = null;
+
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            const text = decoder.decode(value);
+            const lines = text.split('\n').filter(line => line.startsWith('data: '));
+            for (const line of lines) {
+              const data = JSON.parse(line.replace('data: ', ''));
+              if (data.step === 'complete') result = data;
+            }
+          }
+
+          if (result?.success?.length > 0) {
+            const generated = result.success[0];
+            allResults.push({
+              industry: industry.id,
+              name: industry.name,
+              layout,
+              success: true,
+              previewUrl: `/output/prospects/${generated.folder}/${generated.variant}/frontend/dist/index.html`
+            });
+          } else {
+            allResults.push({ industry: industry.id, layout, success: false });
+          }
+        } catch (err) {
+          allResults.push({ industry: industry.id, layout, success: false, error: err.message });
+        }
+      }
+
+      setBatchProgress(prev => ({ ...prev, status: 'Complete!', results: allResults }));
+      setBatchGenerating(false);
+    };
+
+    // Helper to run industry test suite with streaming
+    const runLayoutBatch = async (industryIds, layoutVariant, onProgress) => {
+      const response = await fetch('/api/scout/industry-test-suite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          industries: industryIds,
+          layoutVariant: layoutVariant
+        })
+      });
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let result = null;
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        const text = decoder.decode(value);
+        const lines = text.split('\n').filter(line => line.startsWith('data: '));
+        for (const line of lines) {
+          const data = JSON.parse(line.replace('data: ', ''));
+          if (data.step === 'complete') result = data;
+          else if (onProgress) onProgress(data);
+        }
+      }
+      return result;
+    };
+
+    // Generate for selected industries (all layouts)
+    const generateForSelectedIndustries = async () => {
+      if (selectedIndustriesForBatch.size === 0) {
+        alert('Please select at least one industry');
+        return;
+      }
+      setBatchGenerating(true);
+      const industryIds = Array.from(selectedIndustriesForBatch);
+      const layouts = ['A', 'B', 'C'];
+      const total = industryIds.length * layouts.length;
+      const allResults = [];
+      setBatchProgress({ current: 0, total, status: 'Starting batch...', results: [] });
+
+      for (const layout of layouts) {
+        setBatchProgress(prev => ({ ...prev, status: `Layout ${layout}...` }));
+        const result = await runLayoutBatch(industryIds, layout, (d) => {
+          setBatchProgress(prev => ({ ...prev, status: d.status || `Layout ${layout}...` }));
+        });
+        if (result?.success) {
+          for (const item of result.success) {
+            allResults.push({
+              industry: item.industry, name: item.name, layout, success: true,
+              previewUrl: `/output/prospects/${item.folder}/${item.variant}/frontend/dist/index.html`
+            });
+          }
+        }
+        setBatchProgress(prev => ({ ...prev, current: allResults.length, results: allResults }));
+      }
+      setBatchProgress(prev => ({ ...prev, status: 'Complete!', results: allResults }));
+      setBatchGenerating(false);
+    };
+
+    // Generate ALL industries with ALL layouts
+    const generateAllIndustries = async () => {
+      if (!confirm(`Generate ${designResearchData.length * 3} sites?`)) return;
+      setBatchGenerating(true);
+      const industryIds = designResearchData.map(i => i.id);
+      const layouts = ['A', 'B', 'C'];
+      const total = industryIds.length * layouts.length;
+      const allResults = [];
+      setBatchProgress({ current: 0, total, status: 'Starting...', results: [] });
+
+      for (const layout of layouts) {
+        setBatchProgress(prev => ({ ...prev, status: `Layout ${layout}...` }));
+        const result = await runLayoutBatch(industryIds, layout, (d) => {
+          setBatchProgress(prev => ({ ...prev, status: d.status || `Layout ${layout}...` }));
+        });
+        if (result?.success) {
+          for (const item of result.success) {
+            allResults.push({
+              industry: item.industry, name: item.name, layout, success: true,
+              previewUrl: `/output/prospects/${item.folder}/${item.variant}/frontend/dist/index.html`
+            });
+          }
+        }
+        setBatchProgress(prev => ({ ...prev, current: allResults.length, results: allResults }));
+      }
+      setBatchProgress(prev => ({ ...prev, status: 'Complete!', results: allResults }));
+      setBatchGenerating(false);
+    };
+
+    // Toggle industry selection for batch
+    const toggleIndustrySelection = (industryId) => {
+      setSelectedIndustriesForBatch(prev => {
+        const newSet = new Set(prev);
+        if (newSet.has(industryId)) {
+          newSet.delete(industryId);
+        } else {
+          newSet.add(industryId);
+        }
+        return newSet;
+      });
+    };
+
+    // Select/deselect all industries
+    const toggleSelectAll = () => {
+      if (selectedIndustriesForBatch.size === designResearchData.length) {
+        setSelectedIndustriesForBatch(new Set());
+      } else {
+        setSelectedIndustriesForBatch(new Set(designResearchData.map(i => i.id)));
+      }
+    };
+
+    return (
+      <div style={styles.container}>
+        <div style={styles.header}>
+          <div>
+            <h1 style={styles.title}>🎨 Design Research</h1>
+            <p style={styles.subtitle}>Industry-specific design patterns, winning elements, and layout variations</p>
+          </div>
+          {renderTabs()}
+        </div>
+
+        {/* Batch Generation Controls */}
+        <div style={{ background: '#fff', padding: '20px', borderRadius: '12px', marginBottom: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+            <h3 style={{ margin: 0 }}>Batch Generation</h3>
+            <button
+              onClick={toggleSelectAll}
+              style={{ ...styles.secondaryBtn, padding: '8px 16px' }}
+              disabled={batchGenerating}
+            >
+              {selectedIndustriesForBatch.size === designResearchData.length ? '☐ Deselect All' : '☑ Select All'}
+            </button>
+            <button
+              onClick={generateForSelectedIndustries}
+              disabled={batchGenerating || selectedIndustriesForBatch.size === 0}
+              style={{
+                ...styles.primaryBtn,
+                padding: '8px 16px',
+                opacity: (batchGenerating || selectedIndustriesForBatch.size === 0) ? 0.6 : 1
+              }}
+            >
+              🚀 Generate Selected ({selectedIndustriesForBatch.size} × 3 layouts)
+            </button>
+            <button
+              onClick={generateAllIndustries}
+              disabled={batchGenerating}
+              style={{
+                ...styles.primaryBtn,
+                padding: '8px 16px',
+                background: '#8B5CF6',
+                opacity: batchGenerating ? 0.6 : 1
+              }}
+            >
+              🌐 Generate ALL ({designResearchData.length} × 3 = {designResearchData.length * 3} sites)
+            </button>
+            {selectedResearchIndustry && (
+              <button
+                onClick={() => generateAllLayoutsForIndustry(selectedResearchIndustry)}
+                disabled={batchGenerating}
+                style={{
+                  ...styles.primaryBtn,
+                  padding: '8px 16px',
+                  background: '#10B981',
+                  opacity: batchGenerating ? 0.6 : 1
+                }}
+              >
+                📦 All Layouts for {selectedResearchIndustry.name}
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Batch Progress */}
+        {batchGenerating && (
+          <div style={{ background: '#1E293B', padding: '20px', borderRadius: '12px', marginBottom: '24px', color: '#fff' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <span style={{ fontWeight: '600' }}>{batchProgress.status}</span>
+              <span>{batchProgress.current} / {batchProgress.total}</span>
+            </div>
+            <div style={{ height: '8px', background: '#334155', borderRadius: '4px', overflow: 'hidden' }}>
+              <div
+                style={{
+                  width: `${(batchProgress.current / batchProgress.total) * 100}%`,
+                  height: '100%',
+                  background: 'linear-gradient(90deg, #3B82F6, #8B5CF6)',
+                  transition: 'width 0.3s ease'
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Batch Results */}
+        {!batchGenerating && batchProgress.results.length > 0 && (
+          <div style={{ background: '#fff', padding: '20px', borderRadius: '12px', marginBottom: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h3 style={{ margin: 0 }}>Batch Results</h3>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <span style={{ color: '#22C55E' }}>
+                  ✅ {batchProgress.results.filter(r => r.success).length} successful
+                </span>
+                <span style={{ color: '#EF4444' }}>
+                  ❌ {batchProgress.results.filter(r => !r.success).length} failed
+                </span>
+                <button
+                  onClick={() => window.open('/api/scout/industry-test-suite/viewer', '_blank')}
+                  style={{ ...styles.primaryBtn, padding: '8px 16px' }}
+                >
+                  🖼️ Open Viewer
+                </button>
+              </div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '8px', maxHeight: '300px', overflowY: 'auto' }}>
+              {batchProgress.results.map((result, i) => (
+                <div
+                  key={i}
+                  style={{
+                    padding: '8px 12px',
+                    background: result.success ? '#D1FAE5' : '#FEE2E2',
+                    borderRadius: '6px',
+                    fontSize: '0.875rem'
+                  }}
+                >
+                  <div style={{ fontWeight: '500' }}>{result.name || result.industry}</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>Layout {result.layout}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => setBatchProgress({ current: 0, total: 0, status: '', results: [] })}
+              style={{ ...styles.secondaryBtn, marginTop: '12px' }}
+            >
+              Clear Results
+            </button>
+          </div>
+        )}
+
+        {/* Info Banner */}
+        <div style={{ background: 'linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)', padding: '20px', borderRadius: '12px', marginBottom: '24px', color: '#fff' }}>
+          <h3 style={{ margin: '0 0 8px 0' }}>Research-Driven Site Generation</h3>
+          <p style={{ margin: 0, opacity: 0.9 }}>
+            Each industry has 3 layout variants (A, B, C) based on competitor research. Select an industry to view reference websites, winning elements, and generate with specific layouts.
+          </p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: selectedResearchIndustry ? '1fr 2fr' : '1fr', gap: '24px' }}>
+          {/* Industry List */}
+          <div>
+            <h3 style={{ marginBottom: '16px' }}>Select Industry ({selectedIndustriesForBatch.size} selected for batch)</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {designResearchData.map((industry) => (
+                <div
+                  key={industry.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedIndustriesForBatch.has(industry.id)}
+                    onChange={() => toggleIndustrySelection(industry.id)}
+                    style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                  />
+                  <button
+                    onClick={() => setSelectedResearchIndustry(industry)}
+                    style={{
+                      flex: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      padding: '12px 16px',
+                    background: selectedResearchIndustry?.id === industry.id ? '#3B82F6' : '#fff',
+                    color: selectedResearchIndustry?.id === industry.id ? '#fff' : '#374151',
+                    border: '1px solid #E5E7EB',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <span style={{ fontSize: '1.5rem' }}>{industry.icon}</span>
+                  <span style={{ fontWeight: '500' }}>{industry.name}</span>
+                  {industry.designResearch && (
+                    <span style={{ marginLeft: 'auto', fontSize: '0.75rem', opacity: 0.7 }}>
+                      {Object.keys(industry.designResearch.layoutVariations || {}).length} layouts
+                    </span>
+                  )}
+                </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Selected Industry Details */}
+          {selectedResearchIndustry && (
+            <div>
+              {/* Industry Header */}
+              <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', marginBottom: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
+                  <span style={{ fontSize: '3rem' }}>{selectedResearchIndustry.icon}</span>
+                  <div>
+                    <h2 style={{ margin: 0 }}>{selectedResearchIndustry.name}</h2>
+                    <p style={{ margin: '4px 0 0', color: '#6B7280' }}>Industry ID: {selectedResearchIndustry.id}</p>
+                  </div>
+                </div>
+
+                {/* Layout Variant Selector */}
+                <div style={{ marginTop: '16px' }}>
+                  <h4 style={{ marginBottom: '12px' }}>Layout Variations</h4>
+                  <div style={{ display: 'flex', gap: '12px' }}>
+                    {['A', 'B', 'C'].map((variant) => {
+                      const layoutInfo = selectedResearchIndustry.designResearch?.layoutVariations?.[variant];
+                      return (
+                        <button
+                          key={variant}
+                          onClick={() => setSelectedLayoutVariant(variant)}
+                          style={{
+                            flex: 1,
+                            padding: '16px',
+                            background: selectedLayoutVariant === variant ? '#EEF2FF' : '#F9FAFB',
+                            border: selectedLayoutVariant === variant ? '2px solid #3B82F6' : '1px solid #E5E7EB',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            textAlign: 'left'
+                          }}
+                        >
+                          <div style={{ fontWeight: '600', marginBottom: '4px' }}>Layout {variant}</div>
+                          <div style={{ fontSize: '0.875rem', color: '#374151' }}>
+                            {layoutInfo?.name || `Variant ${variant}`}
+                          </div>
+                          <div style={{ fontSize: '0.75rem', color: '#6B7280', marginTop: '4px' }}>
+                            {layoutInfo?.description || 'Standard layout pattern'}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Menu Style Preview */}
+                <div style={{ marginTop: '16px' }}>
+                  <h4 style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    🍽️ Menu Page Style
+                    <span style={{ fontSize: '0.75rem', fontWeight: '400', color: '#6B7280' }}>
+                      (auto-selected based on industry + layout)
+                    </span>
+                  </h4>
+                  {(() => {
+                    // Map industry to menu style based on selected layout variant
+                    const INDUSTRY_MENU_STYLES = {
+                      'pizza-restaurant': { A: 'photo-grid', B: 'storytelling-cards', C: 'photo-grid' },
+                      'coffee-cafe': { A: 'photo-grid', B: 'storytelling-cards', C: 'photo-grid' },
+                      'restaurant': { A: 'elegant-list', B: 'storytelling-cards', C: 'elegant-list' },
+                      'steakhouse': { A: 'elegant-list', B: 'elegant-list', C: 'compact-table' },
+                      'bakery': { A: 'photo-grid', B: 'storytelling-cards', C: 'photo-grid' },
+                      'salon-spa': { A: 'photo-grid', B: 'compact-table', C: 'elegant-list' },
+                      'fitness-gym': { A: 'photo-grid', B: 'compact-table', C: 'photo-grid' },
+                      'dental': { A: 'compact-table', B: 'photo-grid', C: 'compact-table' },
+                      'healthcare': { A: 'compact-table', B: 'photo-grid', C: 'compact-table' },
+                      'yoga': { A: 'storytelling-cards', B: 'photo-grid', C: 'compact-table' },
+                      'barbershop': { A: 'photo-grid', B: 'elegant-list', C: 'compact-table' },
+                      'law-firm': { A: 'elegant-list', B: 'compact-table', C: 'elegant-list' },
+                      'real-estate': { A: 'photo-grid', B: 'storytelling-cards', C: 'compact-table' },
+                      'plumber': { A: 'compact-table', B: 'photo-grid', C: 'compact-table' },
+                      'cleaning': { A: 'compact-table', B: 'photo-grid', C: 'compact-table' },
+                      'auto-shop': { A: 'compact-table', B: 'photo-grid', C: 'compact-table' },
+                      'saas': { A: 'photo-grid', B: 'compact-table', C: 'storytelling-cards' },
+                      'ecommerce': { A: 'photo-grid', B: 'storytelling-cards', C: 'photo-grid' },
+                      'school': { A: 'compact-table', B: 'photo-grid', C: 'storytelling-cards' }
+                    };
+
+                    const MENU_STYLE_INFO = {
+                      'photo-grid': {
+                        name: 'Photo Grid',
+                        icon: '📸',
+                        description: '3-column grid with large photos, floating cart',
+                        bestFor: 'Pizza, bakery, coffee, QSR',
+                        preview: [
+                          ['🍕', '🥐', '☕'],
+                          ['[img]', '[img]', '[img]'],
+                          ['Name 9.99', 'Name 12.99', 'Name 8.99']
+                        ]
+                      },
+                      'elegant-list': {
+                        name: 'Elegant List',
+                        icon: '✨',
+                        description: 'Single-column with dotted leader lines',
+                        bestFor: 'Steakhouse, fine dining, upscale',
+                        preview: [
+                          ['───── APPETIZERS ─────'],
+                          ['Filet Mignon .......... 59'],
+                          ['Lobster Thermidor ..... 72']
+                        ]
+                      },
+                      'compact-table': {
+                        name: 'Compact Table',
+                        icon: '📋',
+                        description: 'Dense table with accordion categories',
+                        bestFor: 'Delis, diners, large menus 50+',
+                        preview: [
+                          ['| Item | Desc | Diet | Price |'],
+                          ['| Caesar | Roma... | V GF | 12.99 |'],
+                          ['| Cobb | Mixed... | GF | 15.99 |']
+                        ]
+                      },
+                      'storytelling-cards': {
+                        name: 'Storytelling Cards',
+                        icon: '📖',
+                        description: 'Large feature cards with origin stories',
+                        bestFor: 'Farm-to-table, craft, artisan',
+                        preview: [
+                          ['┌────────────────────┐'],
+                          ['│   [HERO IMAGE]     │'],
+                          ['│ ★ Chef\'s Pick      │'],
+                          ['│ Story + 17.99      │'],
+                          ['└────────────────────┘']
+                        ]
+                      }
+                    };
+
+                    const industryId = selectedResearchIndustry.id;
+                    const industryStyles = INDUSTRY_MENU_STYLES[industryId] || { A: 'photo-grid', B: 'photo-grid', C: 'photo-grid' };
+                    const currentStyleId = industryStyles[selectedLayoutVariant] || 'photo-grid';
+                    const currentStyle = MENU_STYLE_INFO[currentStyleId];
+
+                    return (
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+                        {Object.entries(MENU_STYLE_INFO).map(([styleId, style]) => {
+                          const isActive = styleId === currentStyleId;
+                          const usedInVariants = Object.entries(industryStyles)
+                            .filter(([_, v]) => v === styleId)
+                            .map(([k]) => k)
+                            .join(', ');
+
+                          return (
+                            <div
+                              key={styleId}
+                              style={{
+                                padding: '16px',
+                                background: isActive ? '#EEF2FF' : '#F9FAFB',
+                                border: isActive ? '2px solid #3B82F6' : '1px solid #E5E7EB',
+                                borderRadius: '12px',
+                                opacity: isActive ? 1 : 0.6
+                              }}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                <span style={{ fontSize: '1.5rem' }}>{style.icon}</span>
+                                <span style={{ fontWeight: '600', fontSize: '0.875rem' }}>{style.name}</span>
+                                {isActive && (
+                                  <span style={{
+                                    marginLeft: 'auto',
+                                    padding: '2px 8px',
+                                    background: '#3B82F6',
+                                    color: '#fff',
+                                    borderRadius: '10px',
+                                    fontSize: '10px',
+                                    fontWeight: '600'
+                                  }}>
+                                    Active
+                                  </span>
+                                )}
+                              </div>
+                              <p style={{ fontSize: '0.75rem', color: '#6B7280', margin: '0 0 8px 0', lineHeight: 1.4 }}>
+                                {style.description}
+                              </p>
+                              <div style={{
+                                fontFamily: 'monospace',
+                                fontSize: '9px',
+                                background: '#fff',
+                                padding: '8px',
+                                borderRadius: '6px',
+                                lineHeight: 1.3,
+                                color: '#4B5563',
+                                whiteSpace: 'pre',
+                                overflow: 'hidden'
+                              }}>
+                                {style.preview.map((line, i) => (
+                                  <div key={i}>{Array.isArray(line) ? line.join(' ') : line}</div>
+                                ))}
+                              </div>
+                              {usedInVariants && (
+                                <div style={{ marginTop: '8px', fontSize: '10px', color: '#9CA3AF' }}>
+                                  Layout {usedInVariants}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                {/* Generate Button */}
+                <button
+                  onClick={() => generateWithResearch(selectedResearchIndustry, selectedLayoutVariant)}
+                  disabled={generatingFromResearch}
+                  style={{
+                    ...styles.primaryBtn,
+                    width: '100%',
+                    marginTop: '16px',
+                    padding: '16px',
+                    fontSize: '1rem',
+                    opacity: generatingFromResearch ? 0.6 : 1
+                  }}
+                >
+                  {generatingFromResearch ? '🔄 Generating...' : `🚀 Generate with Layout ${selectedLayoutVariant}`}
+                </button>
+              </div>
+
+              {/* Reference Websites */}
+              {selectedResearchIndustry.designResearch?.referenceWebsites?.length > 0 && (
+                <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', marginBottom: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+                  <h4 style={{ marginTop: 0, marginBottom: '16px' }}>🔗 Reference Websites</h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {selectedResearchIndustry.designResearch.referenceWebsites.map((ref, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', background: '#F9FAFB', borderRadius: '8px' }}>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: '600' }}>{ref.name}</div>
+                          <div style={{ fontSize: '0.875rem', color: '#6B7280' }}>{ref.notes}</div>
+                        </div>
+                        <a
+                          href={ref.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: '#3B82F6', textDecoration: 'none', fontSize: '0.875rem' }}
+                        >
+                          Visit →
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Winning Elements */}
+              {selectedResearchIndustry.designResearch?.winningElements?.length > 0 && (
+                <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', marginBottom: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+                  <h4 style={{ marginTop: 0, marginBottom: '16px' }}>✨ Winning Elements</h4>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    {selectedResearchIndustry.designResearch.winningElements.map((element, i) => (
+                      <span key={i} style={{ padding: '6px 12px', background: '#EEF2FF', color: '#3B82F6', borderRadius: '6px', fontSize: '0.875rem' }}>
+                        {element}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Industry Benchmarks */}
+              {selectedResearchIndustry.designResearch?.industryBenchmarks && (
+                <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+                  <h4 style={{ marginTop: 0, marginBottom: '16px' }}>📊 Industry Benchmarks</h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
+                    <div>
+                      <div style={{ fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase' }}>Avg Page Count</div>
+                      <div style={{ fontSize: '1.5rem', fontWeight: '600' }}>{selectedResearchIndustry.designResearch.industryBenchmarks.avgPageCount}</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase' }}>Must-Have Pages</div>
+                      <div style={{ fontSize: '0.875rem' }}>{selectedResearchIndustry.designResearch.industryBenchmarks.mustHavePages?.join(', ')}</div>
+                    </div>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <div style={{ fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase', marginBottom: '8px' }}>Recommended Sections</div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {selectedResearchIndustry.designResearch.industryBenchmarks.recommendedSections?.map((section, i) => (
+                          <span key={i} style={{ padding: '4px 8px', background: '#F3F4F6', borderRadius: '4px', fontSize: '0.75rem' }}>
+                            {section}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <div style={{ fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase', marginBottom: '8px' }}>Conversion Goals</div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {selectedResearchIndustry.designResearch.industryBenchmarks.conversionGoals?.map((goal, i) => (
+                          <span key={i} style={{ padding: '4px 8px', background: '#D1FAE5', color: '#047857', borderRadius: '4px', fontSize: '0.75rem' }}>
+                            {goal}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   if (activeTab === 'pipeline') {
     return (
       <div style={styles.container}>
@@ -2286,7 +3342,7 @@ const styles = {
   },
   tabActive: {
     background: '#3B82F6',
-    borderColor: '#3B82F6',
+    border: '1px solid #3B82F6',
     color: '#fff'
   },
   title: {

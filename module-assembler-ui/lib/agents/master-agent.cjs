@@ -582,15 +582,23 @@ class MasterAgent {
     const industry = fixture.type || fixture.business?.industry || fixture.industry || 'general';
 
     // Extract full color palette including secondary and accent
+    // Priority: styleOverrides.colors > fixture.theme.colors > defaults
     const defaultColors = { primary: '#2563eb', secondary: '#1e40af', accent: '#f59e0b', background: '#ffffff', text: '#1f2937' };
+    const styleOverrides = options.styleOverrides || {};
     const colors = {
       ...defaultColors,
-      ...(fixture.theme?.colors || {})
+      ...(fixture.theme?.colors || {}),
+      ...(styleOverrides.colors || {})  // Design research theme colors take precedence
     };
+
+    // Log if using design research colors
+    if (styleOverrides.colors) {
+      console.log(`   🎨 Using design research colors: primary=${styleOverrides.colors.primary || 'inherited'}`);
+    }
 
     // Get mood slider styles from the prompt-builders system
     // This provides: fonts, spacing, borderRadius, colors (with theme mode), buttonStyle, etc.
-    const moodSliders = options.moodSliders || { vibe: 50, energy: 50, era: 50, density: 50, price: 50, theme: 'light' };
+    const moodSliders = options.moodSliders || styleOverrides.moodSliders || { vibe: 50, energy: 50, era: 50, density: 50, price: 50, theme: 'light' };
     const sliderStyles = getSliderStyles(moodSliders, colors);
 
     // Get layout intelligence from prompt-builders
@@ -606,24 +614,30 @@ class MasterAgent {
     }
 
     // Merge slider styles with any layout-specific overrides
+    // Priority: styleOverrides (from design research) > sliderStyles > defaults
     const layoutOverrides = {
-      // From getSliderStyles
-      fontHeading: sliderStyles.fontHeading,
-      fontBody: sliderStyles.fontBody,
+      // From getSliderStyles, but styleOverrides can override fonts
+      fontHeading: styleOverrides.fontHeading || sliderStyles.fontHeading,
+      fontBody: styleOverrides.fontBody || sliderStyles.fontBody,
       borderRadius: sliderStyles.borderRadius,
       sectionPadding: sliderStyles.sectionPadding,
       cardPadding: sliderStyles.cardPadding,
       gap: sliderStyles.gap,
       buttonStyle: sliderStyles.buttonStyle,
       headlineStyle: sliderStyles.headlineStyle,
-      isDark: sliderStyles.isDark,
+      isDark: styleOverrides.isDark ?? sliderStyles.isDark,
       isMedium: sliderStyles.isMedium,
-      // Merged colors (slider styles may override for dark theme)
-      colors: sliderStyles.colors,
+      // Merged colors (slider styles may override for dark theme, but styleOverrides takes precedence)
+      colors: { ...sliderStyles.colors, ...(styleOverrides.colors || {}) },
       // Layout intelligence section order (if available)
       sectionOrder: layoutConfig?.layout?.sectionOrder || null,
       emphasis: layoutConfig?.layout?.emphasis || null
     };
+
+    // Log if using custom fonts from design research
+    if (styleOverrides.fontHeading) {
+      console.log(`   🔤 Using design research fonts: ${styleOverrides.fontHeading.split(',')[0]}`);
+    }
 
     // package.json
     const packageJson = {
@@ -649,11 +663,13 @@ class MasterAgent {
     fs.writeFileSync(path.join(frontendPath, 'package.json'), JSON.stringify(packageJson, null, 2));
 
     // vite.config.js - configured for production deployment
+    // base: './' ensures assets load correctly when served from any subdirectory (e.g., industry test viewer)
     fs.writeFileSync(path.join(frontendPath, 'vite.config.js'), `import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+  base: './',
   server: {
     host: true,
     allowedHosts: 'all'
@@ -1331,6 +1347,11 @@ export default function IndexPage() {
     const hasAIContent = !!(aiContent || aiMenu || aiComposition);
 
     // Detect the best archetype based on business data
+    // IMPORTANT: Include fixture page data (hero images, sections, menu items) for generators to use
+    const fixtureHero = fixture.pages?.home?.hero || {};
+    const fixtureSections = fixture.pages?.home?.sections || [];
+    const fixtureMenu = fixture.pages?.menu || {};
+
     const businessData = {
       name: businessName,
       address: address,
@@ -1340,6 +1361,14 @@ export default function IndexPage() {
       tagline: fixture.business?.tagline || fixture.tagline || '',
       yearFounded: fixture.business?.yearFounded || fixture.yearFounded || '2020',
       features: fixture.business?.features || fixture.features || {},
+      // FIXTURE PAGE DATA - Hero images, sections, menu from fixture
+      heroImage: fixtureHero.backgroundImage || null,
+      heroHeadline: fixtureHero.headline || null,
+      heroSubheadline: fixtureHero.subheadline || null,
+      heroCta: fixtureHero.cta || null,
+      heroSecondaryCta: fixtureHero.secondaryCta || null,
+      sections: fixtureSections,
+      menuCategories: fixtureMenu.categories || [],
       // AI-generated content (takes priority when available)
       aiContent: aiContent || null,
       aiMenu: aiMenu || null,
@@ -1396,6 +1425,11 @@ export default function IndexPage() {
    */
   generateHomeServicesArchetypePage(pageName, businessName, address, phone, industry, colors, fixture = {}, archetypeOverride = null, styleOverrides = {}) {
     // Build business data for archetype detection
+    // IMPORTANT: Include fixture page data (hero images, sections, services) for generators to use
+    const fixtureHero = fixture.pages?.home?.hero || {};
+    const fixtureSections = fixture.pages?.home?.sections || [];
+    const fixtureServices = fixture.pages?.services || fixture.services || {};
+
     const businessData = {
       name: businessName,
       address: address,
@@ -1405,7 +1439,14 @@ export default function IndexPage() {
       tagline: fixture.business?.tagline || fixture.tagline || '',
       yearFounded: fixture.business?.yearFounded || fixture.yearFounded || '2020',
       features: fixture.business?.features || fixture.features || {},
-      services: fixture.services || fixture.business?.services || []
+      services: fixtureServices.categories || fixture.services || fixture.business?.services || [],
+      // FIXTURE PAGE DATA - Hero images, sections from fixture
+      heroImage: fixtureHero.backgroundImage || null,
+      heroHeadline: fixtureHero.headline || null,
+      heroSubheadline: fixtureHero.subheadline || null,
+      heroCta: fixtureHero.cta || null,
+      heroSecondaryCta: fixtureHero.secondaryCta || null,
+      sections: fixtureSections
     };
 
     // Use override archetype if provided, otherwise auto-detect
@@ -1452,6 +1493,12 @@ export default function IndexPage() {
     // Build business data object for archetype generators
     // Includes research data from Scout/Yelp enrichment
     const research = fixture.business?.research || {};
+
+    // Extract fixture page data for hero/sections/menu
+    const fixtureHero = fixture.pages?.home?.hero || {};
+    const fixtureSections = fixture.pages?.home?.sections || [];
+    const fixtureMenu = fixture.pages?.menu || {};
+
     const businessData = {
       name: businessName,
       address: address,
@@ -1471,10 +1518,18 @@ export default function IndexPage() {
       categories: fixture.business?.categories || research.categories || [],
       hours: fixture.business?.hours || research.hours || null,
       photos: fixture.business?.photos || research.photos || [],
-      heroImage: fixture.business?.heroImage || null,
+      heroImage: fixtureHero.backgroundImage || fixture.business?.heroImage || null,
       yelpUrl: fixture.business?.yelpUrl || research.yelpUrl || null,
       googleMapsUrl: fixture.business?.googleMapsUrl || null,
       opportunityScore: research.opportunityScore || null,
+
+      // Fixture page content (hero, sections, menu)
+      heroHeadline: fixtureHero.headline || null,
+      heroSubheadline: fixtureHero.subheadline || null,
+      heroCta: fixtureHero.cta || null,
+      heroSecondaryCta: fixtureHero.secondaryCta || null,
+      sections: fixtureSections,
+      menuCategories: fixtureMenu.categories || [],
 
       // AI-generated content (takes priority when available)
       aiContent: aiContent || null,

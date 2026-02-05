@@ -159,6 +159,10 @@ function generateHomePage(archetype, businessData, colors, styleOverrides = {}) 
 
 function generateVintageHomePage(businessName, address, phone, industry, images, colors, style, businessData = {}) {
   const c = colors;
+  // Use fixture hero text if available
+  const heroHeadline = businessData.heroHeadline || businessName;
+  const heroSubheadline = businessData.heroSubheadline || 'Where Style Meets Tradition. Premium cuts and classic shaves since day one.';
+
   // Extract research data for personalization
   const rating = businessData.rating || null;
   const reviewCount = businessData.reviewCount || 0;
@@ -253,8 +257,8 @@ ${testimonialsDataCode}
     <div>
       <section style={styles.hero}>
         <div style={styles.heroContent}>
-          <h1 style={styles.heroTitle}>${businessName}</h1>
-          <p style={styles.heroSubtitle}>Where Style Meets Tradition. Premium cuts and classic shaves since day one.</p>${ratingBadgeCode}
+          <h1 style={styles.heroTitle}>${heroHeadline.replace(/'/g, "\\'")}</h1>
+          <p style={styles.heroSubtitle}>${heroSubheadline.replace(/'/g, "\\'")}</p>${ratingBadgeCode}
           <div style={styles.heroButtons}>
             <Link to="/contact" style={styles.btnPrimary}>Book Now</Link>
             <Link to="/services" style={styles.btnSecondary}>View Services</Link>
@@ -309,6 +313,9 @@ ${testimonialsSectionCode}
 
 function generateModernHomePage(businessName, address, phone, industry, images, colors, style, businessData = {}) {
   const c = colors;
+  // Use fixture hero text if available
+  const heroHeadline = businessData.heroHeadline || businessName;
+  const heroSubheadline = businessData.heroSubheadline || 'Elevate your look with our expert stylists. Modern techniques, premium products, stunning results.';
   // Research data available: businessData.rating, businessData.reviewCount, businessData.reviewHighlights, etc.
   return `import React from 'react';
 import { Link } from 'react-router-dom';
@@ -351,8 +358,8 @@ export default function HomePage() {
       <section style={styles.hero}>
         <div style={styles.heroInner}>
           <div style={styles.heroContent}>
-            <h1 style={styles.heroTitle}>${businessName}</h1>
-            <p style={styles.heroSubtitle}>Elevate your look with our expert stylists. Modern techniques, premium products, stunning results.</p>
+            <h1 style={styles.heroTitle}>${heroHeadline.replace(/'/g, "\\'")}</h1>
+            <p style={styles.heroSubtitle}>${heroSubheadline.replace(/'/g, "\\'")}</p>
             <div style={styles.heroButtons}>
               <Link to="/contact" style={styles.btnPrimary}><Calendar size={20} /> Book Now</Link>
               <Link to="/services" style={styles.btnSecondary}>View Services</Link>
@@ -391,6 +398,9 @@ export default function HomePage() {
 
 function generateNeighborhoodHomePage(businessName, address, phone, industry, images, colors, style, businessData = {}) {
   const c = colors;
+  // Use fixture hero text if available
+  const heroHeadline = businessData.heroHeadline || businessName;
+  const heroSubheadline = businessData.heroSubheadline || 'Your neighborhood spot for great haircuts. Friendly service, fair prices, walk-ins always welcome!';
   // Research data available: businessData.rating, businessData.reviewCount, businessData.reviewHighlights, etc.
   return `import React from 'react';
 import { Link } from 'react-router-dom';
@@ -435,8 +445,8 @@ export default function HomePage() {
     <div>
       <section style={styles.hero}>
         <div style={styles.heroContent}>
-          <h1 style={styles.heroTitle}>${businessName}</h1>
-          <p style={styles.heroSubtitle}>Your neighborhood spot for great haircuts. Friendly service, fair prices, walk-ins always welcome!</p>
+          <h1 style={styles.heroTitle}>${heroHeadline.replace(/'/g, "\\'")}</h1>
+          <p style={styles.heroSubtitle}>${heroSubheadline.replace(/'/g, "\\'")}</p>
           <div style={styles.heroButtons}>
             <Link to="/contact" style={styles.btnPrimary}><Phone size={18} /> ${phone}</Link>
             <Link to="/services" style={styles.btnSecondary}>View Services</Link>

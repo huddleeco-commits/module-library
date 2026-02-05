@@ -81,18 +81,23 @@ function generateHomePage(archetype, businessData, colors, styleOverrides = {}) 
 
   // Select generator based on archetype
   if (arch.id === 'emergency') {
-    return generateEmergencyHomePage(businessName, address, phone, industry, c, themeStyle);
+    return generateEmergencyHomePage(businessName, address, phone, industry, c, themeStyle, businessData);
   } else if (arch.id === 'professional') {
-    return generateProfessionalHomePage(businessName, address, phone, industry, c, themeStyle);
+    return generateProfessionalHomePage(businessName, address, phone, industry, c, themeStyle, businessData);
   } else {
-    return generateNeighborhoodHomePage(businessName, address, phone, industry, c, themeStyle);
+    return generateNeighborhoodHomePage(businessName, address, phone, industry, c, themeStyle, businessData);
   }
 }
 
 /**
  * Emergency/Urgent HomePage - Big phone number, 24/7, urgent CTAs
  */
-function generateEmergencyHomePage(businessName, address, phone, industry, colors, style) {
+function generateEmergencyHomePage(businessName, address, phone, industry, colors, style, businessData = {}) {
+  // Use fixture hero image if available, fall back to IMAGES
+  const heroImage = businessData.heroImage || IMAGES.plumbing.hero;
+  const heroHeadline = businessData.heroHeadline || `Fast, Reliable ${industry} Service`;
+  const heroSubheadline = businessData.heroSubheadline || "When emergencies strike, we're there. Professional service you can trust, 24 hours a day, 7 days a week.";
+
   return `import React from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Clock, Shield, Award, CheckCircle, MapPin, Star, ArrowRight, AlertCircle } from 'lucide-react';
@@ -134,8 +139,8 @@ export default function HomePage() {
             <div style={styles.heroBadge}>
               <Shield size={16} /> Licensed & Insured
             </div>
-            <h1 style={styles.heroTitle}>Fast, Reliable ${industry} Service</h1>
-            <p style={styles.heroSubtitle}>When emergencies strike, we're there. Professional service you can trust, 24 hours a day, 7 days a week.</p>
+            <h1 style={styles.heroTitle}>${heroHeadline.replace(/'/g, "\\'")}</h1>
+            <p style={styles.heroSubtitle}>${heroSubheadline.replace(/'/g, "\\'")}</p>
             <div style={styles.heroPhone}>
               <Phone size={28} />
               <div>
@@ -276,7 +281,7 @@ export default function HomePage() {
 const styles = {
   emergencyBanner: { background: '${colors.primary}', color: '#fff', padding: '12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', fontSize: '14px', fontWeight: '600' },
   bannerPhone: { color: '#fff', textDecoration: 'none', fontWeight: '700', marginLeft: '8px' },
-  hero: { minHeight: '80vh', backgroundImage: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.7)), url(${IMAGES.plumbing.hero})', backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'center' },
+  hero: { minHeight: '80vh', backgroundImage: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.7)), url(${heroImage})', backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'center' },
   heroOverlay: { width: '100%', padding: '${style.sectionPadding}' },
   heroContent: { maxWidth: '700px', margin: '0 auto', textAlign: 'center', color: '#fff' },
   heroBadge: { display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.15)', padding: '8px 16px', borderRadius: '30px', fontSize: '14px', marginBottom: '24px', backdropFilter: 'blur(4px)' },
@@ -332,7 +337,12 @@ const styles = {
 /**
  * Professional/Corporate HomePage - Clean, credentials-focused
  */
-function generateProfessionalHomePage(businessName, address, phone, industry, colors, style) {
+function generateProfessionalHomePage(businessName, address, phone, industry, colors, style, businessData = {}) {
+  // Use fixture data if available
+  const heroImage = businessData.heroImage || IMAGES.general.team;
+  const heroHeadline = businessData.heroHeadline || `Professional ${industry} Services You Can Trust`;
+  const heroSubheadline = businessData.heroSubheadline || `Delivering excellence in residential and commercial ${industry} solutions. Licensed, insured, and committed to your satisfaction.`;
+
   return `import React from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Shield, Award, CheckCircle, MapPin, Star, ArrowRight, Users, Building, Clock, Wrench } from 'lucide-react';
@@ -359,8 +369,8 @@ export default function HomePage() {
         <div style={styles.heroGrid}>
           <div style={styles.heroContent}>
             <div style={styles.heroBadge}>Trusted Since 2009</div>
-            <h1 style={styles.heroTitle}>Professional ${industry} Services You Can Trust</h1>
-            <p style={styles.heroSubtitle}>Delivering excellence in residential and commercial ${industry} solutions. Licensed, insured, and committed to your satisfaction.</p>
+            <h1 style={styles.heroTitle}>${heroHeadline.replace(/'/g, "\\'")}</h1>
+            <p style={styles.heroSubtitle}>${heroSubheadline.replace(/'/g, "\\'")}</p>
             <div style={styles.heroCtas}>
               <Link to="/contact" style={styles.primaryBtn}>Get Free Quote</Link>
               <a href="tel:${phone.replace(/[^0-9]/g, '')}" style={styles.secondaryBtn}>
@@ -369,7 +379,7 @@ export default function HomePage() {
             </div>
           </div>
           <div style={styles.heroImage}>
-            <img src="${IMAGES.general.team}" alt="${businessName} Team" style={styles.heroImg} />
+            <img src="${heroImage}" alt="${businessName} Team" style={styles.heroImg} />
           </div>
         </div>
       </section>
@@ -507,7 +517,12 @@ const styles = {
 /**
  * Neighborhood/Local HomePage - Warm, family-owned feel
  */
-function generateNeighborhoodHomePage(businessName, address, phone, industry, colors, style) {
+function generateNeighborhoodHomePage(businessName, address, phone, industry, colors, style, businessData = {}) {
+  // Use fixture data if available
+  const heroImage = businessData.heroImage || IMAGES.general.house;
+  const heroHeadline = businessData.heroHeadline || `Your Neighborhood ${industry} Experts`;
+  const heroSubheadline = businessData.heroSubheadline || 'Serving our community with honest, reliable service for over 20 years. We treat every home like our own.';
+
   return `import React from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Heart, Award, CheckCircle, MapPin, Star, ArrowRight, Users, Clock, Leaf, Home } from 'lucide-react';
@@ -541,8 +556,8 @@ export default function HomePage() {
             <div style={styles.heroBadge}>
               <Heart size={16} /> Family Owned & Operated
             </div>
-            <h1 style={styles.heroTitle}>Your Neighborhood ${industry} Experts</h1>
-            <p style={styles.heroSubtitle}>Serving our community with honest, reliable service for over 20 years. We treat every home like our own.</p>
+            <h1 style={styles.heroTitle}>${heroHeadline.replace(/'/g, "\\'")}</h1>
+            <p style={styles.heroSubtitle}>${heroSubheadline.replace(/'/g, "\\'")}</p>
             <div style={styles.heroCtas}>
               <Link to="/contact" style={styles.primaryBtn}>
                 Get Free Estimate
@@ -653,7 +668,7 @@ export default function HomePage() {
 }
 
 const styles = {
-  hero: { minHeight: '75vh', backgroundImage: 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.5)), url(${IMAGES.general.house})', backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'center' },
+  hero: { minHeight: '75vh', backgroundImage: 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.5)), url(${heroImage})', backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'center' },
   heroOverlay: { width: '100%', padding: '${style.sectionPadding}' },
   heroContent: { maxWidth: '700px', color: '#fff' },
   heroBadge: { display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.2)', padding: '10px 20px', borderRadius: '30px', fontSize: '14px', marginBottom: '24px', backdropFilter: 'blur(4px)' },

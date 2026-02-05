@@ -9,6 +9,8 @@
 
 const { getArchetype, detectArchetype, getArchetypeStyles } = require('../config/layout-archetypes.cjs');
 const { getHeroImage, getHeroImages } = require('../config/hero-images.cjs');
+const { getWinningElementsForIndustry, getElementsByPlacement, getHighPriorityElements } = require('../../config/winning-elements.cjs');
+const { getResearchLayout, getResearchLayoutVariants, getResearchSectionOrder, getResearchLayoutFeatures } = require('../../config/industry-layouts.cjs');
 
 /**
  * Generate HomePage based on archetype
@@ -51,7 +53,10 @@ function generateHomePage(archetype, businessData, colors, styleOverrides = {}) 
       cardBg: '#ffffff',
       borderColor: '#d1d5db'
     };
-  } else if (styleOverrides.colors) {
+  }
+
+  // ALWAYS apply styleOverrides.colors (design research themes) - they take precedence
+  if (styleOverrides.colors) {
     c = { ...c, ...styleOverrides.colors };
   }
 
@@ -87,7 +92,9 @@ function generateHomePage(archetype, businessData, colors, styleOverrides = {}) 
  */
 function generateEcommerceHomePage(businessName, tagline, address, phone, colors, style, businessData = {}) {
   const industry = businessData.industry || 'bakery';
-  const heroImageUrl = getHeroImage(industry, 'primary');
+  // Use fixture hero image first, fall back to generic industry image
+  const genericHeroImage = getHeroImage(industry, 'primary');
+  const heroImageUrl = businessData.heroImage || genericHeroImage;
   const heroImages = getHeroImages(industry, 'primary');
   const productImages = getHeroImages(industry, 'products') || heroImages;
 
@@ -120,11 +127,11 @@ function generateEcommerceHomePage(businessName, tagline, address, phone, colors
     console.log(`      🖼️ AI imagery (ecommerce): ${aiImagery.style} → filter: ${imageFilter}`);
   }
 
-  // AI-enhanced headlines (fall back to defaults)
-  const heroHeadline = aiContent?.hero?.headline || tagline;
-  const heroSubheadline = aiContent?.hero?.subheadline || 'Fresh-baked happiness delivered to your door. Order online for pickup or nationwide shipping.';
-  const heroCta = aiContent?.hero?.cta || 'Order Pickup';
-  const heroSecondaryCta = aiContent?.hero?.secondaryCta || 'Ship Nationwide';
+  // Priority: fixture data > AI content > defaults
+  const heroHeadline = businessData.heroHeadline || aiContent?.hero?.headline || tagline;
+  const heroSubheadline = businessData.heroSubheadline || aiContent?.hero?.subheadline || 'Fresh-baked happiness delivered to your door. Order online for pickup or nationwide shipping.';
+  const heroCta = businessData.heroCta || aiContent?.hero?.cta || 'Order Pickup';
+  const heroSecondaryCta = businessData.heroSecondaryCta || aiContent?.hero?.secondaryCta || 'Ship Nationwide';
 
   // AI-enhanced menu items (fall back to defaults)
   const menuItems = aiMenu?.categories?.[0]?.items || [];
@@ -272,7 +279,11 @@ const styles = {
  */
 function generateLuxuryHomePage(businessName, tagline, address, phone, colors, style, businessData = {}) {
   const industry = businessData.industry || 'bakery';
-  const heroImages = getHeroImages(industry, 'primary');
+  const genericHeroImages = getHeroImages(industry, 'primary');
+  // Use fixture hero image if available
+  const heroImages = businessData.heroImage
+    ? [businessData.heroImage, ...genericHeroImages.slice(1)]
+    : genericHeroImages;
   const productImages = getHeroImages(industry, 'products') || heroImages;
 
   // Extract AI-generated content if available
@@ -298,10 +309,10 @@ function generateLuxuryHomePage(businessName, tagline, address, phone, colors, s
     imageFilter = 'contrast(1.1) saturate(1.2)';
   }
 
-  // AI-enhanced headlines (fall back to defaults)
-  const heroHeadline = aiContent?.hero?.headline || 'The Art of Pastry';
-  const heroSubheadline = aiContent?.hero?.subheadline || 'Handcrafted with passion';
-  const heroCta = aiContent?.hero?.cta || 'Explore Collection';
+  // Priority: fixture data > AI content > defaults
+  const heroHeadline = businessData.heroHeadline || aiContent?.hero?.headline || 'The Art of Pastry';
+  const heroSubheadline = businessData.heroSubheadline || aiContent?.hero?.subheadline || 'Handcrafted with passion';
+  const heroCta = businessData.heroCta || aiContent?.hero?.cta || 'Explore Collection';
   const brandStatement = aiContent?.about?.paragraphs?.[0] || 'Where tradition meets artistry. Each creation is a testament to our unwavering commitment to excellence.';
   const ctaHeadline = aiContent?.ctaSection?.headline || 'Experience Excellence';
   const ctaSubtext = aiContent?.ctaSection?.subtext || 'Visit our atelier or order for delivery';
@@ -442,7 +453,9 @@ const styles = {
  */
 function generateLocalHomePage(businessName, tagline, address, phone, year, colors, style, businessData = {}) {
   const industry = businessData.industry || 'bakery';
-  const heroImageUrl = getHeroImage(industry, 'primary');
+  // Use fixture hero image first, fall back to generic industry image
+  const genericHeroImage = getHeroImage(industry, 'primary');
+  const heroImageUrl = businessData.heroImage || genericHeroImage;
 
   // Extract AI-generated content if available
   const aiContent = businessData.aiContent || null;
@@ -472,10 +485,10 @@ function generateLocalHomePage(businessName, tagline, address, phone, year, colo
     console.log(`      🖼️ AI imagery (local): ${aiImagery.style} → filter: ${imageFilter}`);
   }
 
-  // AI-enhanced content (fall back to defaults)
-  const heroHeadline = aiContent?.hero?.headline || businessName;
-  const heroSubtitle = aiContent?.hero?.subheadline || tagline || `Your trusted local ${industry}`;
-  const heroCta = aiContent?.hero?.cta || 'View Our Menu';
+  // Priority: fixture data > AI content > defaults
+  const heroHeadline = businessData.heroHeadline || aiContent?.hero?.headline || businessName;
+  const heroSubtitle = businessData.heroSubheadline || aiContent?.hero?.subheadline || tagline || `Your trusted local ${industry}`;
+  const heroCta = businessData.heroCta || aiContent?.hero?.cta || 'View Our Menu';
   const aboutTitle = aiContent?.about?.headline || "Today's Fresh Picks";
   const aboutSubtitle = aiContent?.services?.intro || 'Baked fresh this morning, just for you';
 
@@ -2327,6 +2340,352 @@ const styles = {
 `;
 }
 
+// ============================================
+// RESEARCH-AWARE SECTION GENERATION
+// Functions that leverage design research for intelligent section ordering
+// ============================================
+
+/**
+ * Section template mapping - maps section keys to template/component names
+ */
+const SECTION_TEMPLATES = {
+  // Hero variations
+  'hero-video': 'HeroVideo',
+  'hero-image': 'HeroImage',
+  'hero-split': 'HeroSplit',
+  'hero-fullscreen': 'HeroFullscreen',
+  'hero-carousel': 'HeroCarousel',
+  'hero-with-search': 'HeroWithSearch',
+  'hero-with-form': 'HeroWithForm',
+
+  // Food & Beverage
+  'featured-drinks': 'FeaturedDrinks',
+  'menu-preview': 'MenuPreview',
+  'menu-grid': 'MenuGrid',
+  'menu-categories': 'MenuCategories',
+  'daily-specials': 'DailySpecials',
+  'signature-dishes': 'SignatureDishes',
+  'signature-pizzas': 'SignaturePizzas',
+  'signature-cuts': 'SignatureCuts',
+  'order-now-banner': 'OrderNowBanner',
+  'order-online-cta': 'OrderOnlineCTA',
+  'reservation-widget': 'ReservationWidget',
+  'tap-list': 'TapList',
+  'delivery-info': 'DeliveryInfo',
+
+  // About & Story
+  'about-preview': 'AboutPreview',
+  'about': 'About',
+  'our-story': 'OurStory',
+  'chef-story': 'ChefStory',
+  'our-tradition': 'OurTradition',
+  'our-heritage': 'OurHeritage',
+  'our-process': 'OurProcess',
+  'sourcing': 'Sourcing',
+  'farm-partners': 'FarmPartners',
+  'aging-process': 'AgingProcess',
+  'philosophy': 'Philosophy',
+
+  // Team & Profiles
+  'team-carousel': 'TeamCarousel',
+  'team': 'Team',
+  'barber-profiles': 'BarberProfiles',
+  'stylists': 'Stylists',
+  'trainers': 'Trainers',
+  'instructors': 'Instructors',
+  'providers': 'Providers',
+  'agents': 'Agents',
+  'attorneys': 'Attorneys',
+
+  // Galleries
+  'gallery': 'Gallery',
+  'gallery-masonry': 'GalleryMasonry',
+  'atmosphere-gallery': 'AtmosphereGallery',
+  'before-after-gallery': 'BeforeAfterGallery',
+  'work-gallery': 'WorkGallery',
+  'smile-gallery': 'SmileGallery',
+
+  // Testimonials & Reviews
+  'reviews': 'Reviews',
+  'testimonials': 'Testimonials',
+  'transformation-stories': 'TransformationStories',
+  'success-stories': 'SuccessStories',
+
+  // Booking & CTAs
+  'book-now-widget': 'BookNowWidget',
+  'book-appointment': 'BookAppointment',
+  'book-escape': 'BookEscape',
+  'schedule-appointment': 'ScheduleAppointment',
+  'free-trial-cta': 'FreeTrialCTA',
+  'free-consultation': 'FreeConsultation',
+  'consultation-form': 'ConsultationForm',
+  'instant-quote': 'InstantQuote',
+  'get-quote': 'GetQuote',
+
+  // Locations & Contact
+  'locations': 'Locations',
+  'location': 'Location',
+  'visit-us': 'VisitUs',
+  'contact': 'Contact',
+  'service-area': 'ServiceArea',
+  'emergency-banner': 'EmergencyBanner',
+
+  // Services
+  'services': 'Services',
+  'services-grid': 'ServicesGrid',
+  'services-pricing': 'ServicesPricing',
+  'treatment-categories': 'TreatmentCategories',
+  'signature-treatments': 'SignatureTreatments',
+  'spa-menu': 'SpaMenu',
+  'practice-areas': 'PracticeAreas',
+  'common-services': 'CommonServices',
+  'full-services': 'FullServices',
+
+  // Pricing & Membership
+  'pricing': 'Pricing',
+  'membership': 'Membership',
+  'membership-tiers': 'MembershipTiers',
+  'packages': 'Packages',
+  'maintenance-plans': 'MaintenancePlans',
+  'financing': 'Financing',
+
+  // Schedule & Classes
+  'class-schedule': 'ClassSchedule',
+  'todays-classes': 'TodaysClasses',
+  'class-types': 'ClassTypes',
+  'schedule': 'Schedule',
+  'events-calendar': 'EventsCalendar',
+
+  // Trust & Social Proof
+  'trust-badges': 'TrustBadges',
+  'credentials': 'Credentials',
+  'insurance': 'Insurance',
+  'certifications': 'Certifications',
+  'social-proof': 'SocialProof',
+  'results': 'Results',
+  'track-record': 'TrackRecord',
+  'case-studies': 'CaseStudies',
+  'awards': 'Awards',
+  'press-awards': 'PressAwards',
+
+  // Loyalty & Programs
+  'loyalty-cta': 'LoyaltyCTA',
+  'rewards': 'Rewards',
+  'new-student-offer': 'NewStudentOffer',
+
+  // Healthcare Specific
+  'patient-portal-cta': 'PatientPortalCTA',
+  'patient-forms': 'PatientForms',
+  'telehealth': 'Telehealth',
+  'pet-portal': 'PetPortal',
+  'urgent-care': 'UrgentCare',
+
+  // Real Estate
+  'featured-listings': 'FeaturedListings',
+  'property-search': 'PropertySearch',
+  'market-stats': 'MarketStats',
+  'home-valuation': 'HomeValuation',
+
+  // Ecommerce
+  'featured-products': 'FeaturedProducts',
+  'bestsellers': 'Bestsellers',
+  'categories': 'Categories',
+  'collections': 'Collections',
+  'promo-bar': 'PromoBanner',
+  'newsletter': 'Newsletter',
+
+  // SaaS
+  'features': 'Features',
+  'how-it-works': 'HowItWorks',
+  'integrations': 'Integrations',
+  'demo-cta': 'DemoCTA',
+
+  // Private Events & Special
+  'private-events': 'PrivateEvents',
+  'private-dining': 'PrivateDining',
+  'catering': 'Catering',
+  'custom-orders': 'CustomOrders',
+  'gift-cards': 'GiftCards',
+  'products': 'Products',
+  'merchandise': 'Merchandise',
+  'wine-program': 'WineProgram',
+  'virtual-tour': 'VirtualTour',
+  'facility-tour': 'FacilityTour',
+  'community': 'Community',
+  'community-events': 'CommunityEvents',
+
+  // Education
+  'programs': 'Programs',
+  'campus-life': 'CampusLife',
+  'outcomes': 'Outcomes',
+  'apply-now': 'ApplyNow',
+  'visit-campus': 'VisitCampus'
+};
+
+/**
+ * Get section template name from section key
+ * @param {string} sectionKey - Section key from layout
+ * @returns {string} Template/component name
+ */
+function getSectionTemplate(sectionKey) {
+  return SECTION_TEMPLATES[sectionKey] || sectionKey;
+}
+
+/**
+ * Get research-informed sections for a page
+ * @param {string} industry - Industry key (e.g., 'coffee-shop', 'dental')
+ * @param {string} layoutVariant - Layout variant ('A', 'B', or 'C')
+ * @returns {Array} Array of section objects with key, template, and features
+ */
+function getResearchSections(industry, layoutVariant = 'A') {
+  const layout = getResearchLayout(industry, layoutVariant);
+  if (!layout) {
+    console.warn(`No research layout found for industry: ${industry}, variant: ${layoutVariant}`);
+    return [];
+  }
+
+  return layout.sectionOrder.map(sectionKey => ({
+    key: sectionKey,
+    template: getSectionTemplate(sectionKey),
+    features: layout.features || []
+  }));
+}
+
+/**
+ * Get winning elements applicable to an industry with their templates
+ * @param {string} industry - Industry key
+ * @returns {Array} Array of winning element objects
+ */
+function getIndustryWinningElements(industry) {
+  return getWinningElementsForIndustry(industry);
+}
+
+/**
+ * Get high-priority winning elements for an industry
+ * @param {string} industry - Industry key
+ * @returns {Array} Array of high-priority winning elements
+ */
+function getIndustryHighPriorityElements(industry) {
+  return getHighPriorityElements(industry);
+}
+
+/**
+ * Build a complete page structure using research layouts
+ * @param {string} industry - Industry key
+ * @param {string} layoutVariant - Layout variant ('A', 'B', or 'C')
+ * @param {object} businessData - Business data from fixture
+ * @returns {object} Complete page structure with sections and metadata
+ */
+function buildResearchInformedPage(industry, layoutVariant = 'A', businessData = {}) {
+  const layout = getResearchLayout(industry, layoutVariant);
+  const winningElements = getWinningElementsForIndustry(industry);
+  const highPriorityElements = getHighPriorityElements(industry);
+
+  if (!layout) {
+    return {
+      success: false,
+      error: `No research layout found for ${industry}`,
+      fallback: {
+        sections: ['hero-image', 'services', 'about', 'testimonials', 'contact'],
+        features: []
+      }
+    };
+  }
+
+  return {
+    success: true,
+    industry,
+    layoutVariant,
+    layoutName: layout.name,
+    heroType: layout.heroType,
+    sections: layout.sectionOrder.map(sectionKey => ({
+      key: sectionKey,
+      template: getSectionTemplate(sectionKey),
+      order: layout.sectionOrder.indexOf(sectionKey)
+    })),
+    features: layout.features,
+    winningElements: winningElements.map(el => ({
+      key: el.elementKey,
+      template: el.template,
+      placement: el.placement,
+      priority: el.priority
+    })),
+    highPriorityElements: highPriorityElements.map(el => el.elementKey),
+    metadata: {
+      businessName: businessData.name || 'Business',
+      industry: businessData.industry || industry,
+      totalSections: layout.sectionOrder.length,
+      totalWinningElements: winningElements.length
+    }
+  };
+}
+
+/**
+ * Get all available layout variants for an industry
+ * @param {string} industry - Industry key
+ * @returns {object} Object with layout variants or null
+ */
+function getAvailableLayoutVariants(industry) {
+  return getResearchLayoutVariants(industry);
+}
+
+/**
+ * Compare layout variants for an industry
+ * @param {string} industry - Industry key
+ * @returns {Array} Array of layout summaries for comparison
+ */
+function compareLayoutVariants(industry) {
+  const variants = getResearchLayoutVariants(industry);
+  if (!variants) return [];
+
+  return ['A', 'B', 'C'].map(variant => {
+    const layout = variants[`layout${variant}`];
+    if (!layout) return null;
+
+    return {
+      variant,
+      name: layout.name,
+      heroType: layout.heroType,
+      sectionCount: layout.sectionOrder.length,
+      sections: layout.sectionOrder,
+      features: layout.features,
+      primaryFocus: layout.sectionOrder[1] || layout.sectionOrder[0] // First non-hero section
+    };
+  }).filter(Boolean);
+}
+
+/**
+ * Recommend best layout variant based on business goals
+ * @param {string} industry - Industry key
+ * @param {string} primaryGoal - Primary business goal (e.g., 'conversion', 'branding', 'trust')
+ * @returns {object} Recommended layout with reasoning
+ */
+function recommendLayoutVariant(industry, primaryGoal = 'conversion') {
+  const variants = compareLayoutVariants(industry);
+  if (!variants.length) return null;
+
+  // Goal-based layout recommendations
+  const goalMapping = {
+    'conversion': 'A', // Layout A typically focuses on primary actions
+    'branding': 'C',   // Layout C typically focuses on story/brand
+    'trust': 'B',      // Layout B often includes trust elements
+    'booking': 'A',    // Layout A for service businesses
+    'portfolio': 'B',  // Layout B for visual-heavy businesses
+    'story': 'C',      // Layout C for story-driven businesses
+    'order': 'A',      // Layout A for order-focused businesses
+    'experience': 'C'  // Layout C for experience-focused businesses
+  };
+
+  const recommendedVariant = goalMapping[primaryGoal] || 'A';
+  const recommended = variants.find(v => v.variant === recommendedVariant) || variants[0];
+
+  return {
+    recommended,
+    reasoning: `Layout ${recommended.variant} (${recommended.name}) is recommended for "${primaryGoal}" goal`,
+    allVariants: variants
+  };
+}
+
 module.exports = {
   generateHomePage,
   generateMenuPage,
@@ -2351,5 +2710,15 @@ module.exports = {
   generateLuxuryGalleryPage,
   generateLocalOrderPage,
   generateEcommerceOrderPage,
-  generateLuxuryOrderPage
+  generateLuxuryOrderPage,
+  // Research-aware exports
+  getResearchSections,
+  getSectionTemplate,
+  getIndustryWinningElements,
+  getIndustryHighPriorityElements,
+  buildResearchInformedPage,
+  getAvailableLayoutVariants,
+  compareLayoutVariants,
+  recommendLayoutVariant,
+  SECTION_TEMPLATES
 };

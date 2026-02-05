@@ -81,6 +81,17 @@ const INDUSTRY_MAP = {
   'mechanic': 'auto-shop',
   'auto repair': 'auto-shop',
   'car repair': 'auto-shop',
+  'car_repair': 'auto-shop',           // Google Places API format
+  'auto_repair': 'auto-shop',          // Google Places API format
+  'automotive': 'auto-shop',
+  'auto shop': 'auto-shop',
+  'auto_shop': 'auto-shop',            // Google Places API format
+  'car_dealer': 'auto-shop',           // Google Places API format
+  'car_wash': 'auto-shop',             // Google Places API format
+  'tire_shop': 'auto-shop',            // Google Places API format
+  'tire shop': 'auto-shop',
+  'oil change': 'auto-shop',
+  'body shop': 'auto-shop',
 
   // Other
   'school': 'school',

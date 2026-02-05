@@ -12,6 +12,14 @@ export default defineConfig({
         target: 'http://localhost:3001',
         changeOrigin: true
       },
+      '/preview': {
+        target: 'http://localhost:3001',
+        changeOrigin: true
+      },
+      '/output': {
+        target: 'http://localhost:3001',
+        changeOrigin: true
+      },
       '/prospect-preview': {
         target: 'http://localhost:3001',
         changeOrigin: true

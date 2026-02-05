@@ -110,32 +110,41 @@ function fixNestedFontQuotes(frontendPath) {
   let totalFixed = 0;
   const fixedFiles = [];
 
-  // Patterns to fix (same as in validateGeneratedCode)
-  const patterns = [
-    // fontFamily: "'Font'" -> fontFamily: "Font"
-    { regex: /fontFamily:\s*["']'([^']+)'["']/g, replacement: 'fontFamily: "$1"' },
-    // fontFamily: "'Font', fallback" -> fontFamily: "Font, fallback"
-    { regex: /fontFamily:\s*["']'([^']+)'([^"']*)["']/g, replacement: 'fontFamily: "$1$2"' },
-    // heading: "'Font', fallback" -> heading: "Font, fallback" (THEME objects)
-    { regex: /(heading|body|primary|secondary|display|text):\s*["']'([^']+)'([^"']*)["']/g, replacement: '$1: "$2$3"' },
-    // Generic: any property with nested font quotes
-    { regex: /:\s*["']'([A-Z][a-zA-Z\s]+)'(,\s*[^"']+)?["']/g, replacement: ': "$1$2"' }
-  ];
+  // SAFE font fix: Remove nested single quotes from font family values
+  // The issue is fonts like: fontFamily: "'DM Sans', 'Inter', system-ui"
+  // Should become:          fontFamily: "DM Sans, Inter, system-ui"
+  //
+  // Strategy: Find fontFamily values and strip internal single quotes from font names
+  // This regex captures the full fontFamily value and processes it
 
   for (const file of files) {
     try {
       let content = fs.readFileSync(file, 'utf-8');
       let modified = false;
 
-      for (const { regex, replacement } of patterns) {
-        // Reset regex lastIndex
-        regex.lastIndex = 0;
-        if (regex.test(content)) {
-          regex.lastIndex = 0;
-          content = content.replace(regex, replacement);
+      // Pattern 1: fontFamily: "..." - process the entire value
+      const fontFamilyRegex = /fontFamily:\s*"([^"]+)"/g;
+      content = content.replace(fontFamilyRegex, (match, fontValue) => {
+        // Remove single quotes around font names, but keep the structure
+        // "'DM Sans', 'Inter', system-ui" -> "DM Sans, Inter, system-ui"
+        const fixed = fontValue.replace(/'([^']+)'/g, '$1');
+        if (fixed !== fontValue) {
           modified = true;
+          return `fontFamily: "${fixed}"`;
         }
-      }
+        return match;
+      });
+
+      // Pattern 2: THEME properties like heading: "...", body: "..."
+      const themePropsRegex = /(heading|body|primary|secondary|display|text):\s*"([^"]+)"/g;
+      content = content.replace(themePropsRegex, (match, prop, fontValue) => {
+        const fixed = fontValue.replace(/'([^']+)'/g, '$1');
+        if (fixed !== fontValue) {
+          modified = true;
+          return `${prop}: "${fixed}"`;
+        }
+        return match;
+      });
 
       if (modified) {
         fs.writeFileSync(file, content);
@@ -549,6 +558,32 @@ async function audit1PostGeneration(projectPath, options = {}) {
     auditResult.warnings = warnings;
 
     console.log(`   ❌ Build failed with ${errors.length} error(s)`);
+
+    // IMPORTANT: Print the actual errors so users can debug
+    if (errors.length > 0) {
+      console.log('\n   ┌─────────────────────────────────────────────────────');
+      console.log('   │ BUILD ERRORS:');
+      console.log('   ├─────────────────────────────────────────────────────');
+      errors.forEach((err, i) => {
+        console.log(`   │ ${i + 1}. [${err.type}] ${err.message}`);
+        if (err.file) console.log(`   │    File: ${err.file}${err.line ? `:${err.line}` : ''}`);
+        if (err.suggestion) console.log(`   │    Suggestion: ${err.suggestion}`);
+      });
+      console.log('   └─────────────────────────────────────────────────────\n');
+    }
+
+    // Also print raw stderr if errors array is empty (parsing might have missed something)
+    if (errors.length === 0 && buildResult.stderr) {
+      console.log('\n   ┌─────────────────────────────────────────────────────');
+      console.log('   │ RAW BUILD OUTPUT (errors not parsed):');
+      console.log('   ├─────────────────────────────────────────────────────');
+      const stderrLines = buildResult.stderr.split('\n').filter(l => l.trim()).slice(0, 30);
+      stderrLines.forEach(line => console.log(`   │ ${line}`));
+      if (buildResult.stderr.split('\n').length > 30) {
+        console.log('   │ ... (truncated)');
+      }
+      console.log('   └─────────────────────────────────────────────────────\n');
+    }
 
     // Attempt auto-fixes if not last attempt
     if (attempt < maxRetries) {

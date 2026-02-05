@@ -12,10 +12,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   Play, RefreshCw, AlertCircle, CheckCircle, Clock, ExternalLink,
   ChevronRight, Flag, FileText, Download, Eye, EyeOff, X,
-  Monitor, Settings, Server, Loader, AlertTriangle, Check
+  Monitor, Settings, Server, Loader, AlertTriangle, Check, Square,
+  Maximize2, Minimize2, LayoutGrid
 } from 'lucide-react';
 
 const API_BASE = '/api/qa-suite';
+const PREVIEW_API = '/api/qa-preview';
 
 // Industry categories for sidebar grouping
 const CATEGORIES = {
@@ -42,8 +44,15 @@ export default function QADashboard() {
   const [issues, setIssues] = useState([]);
   const [showIssueModal, setShowIssueModal] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [previewUrl, setPreviewUrl] = useState(null);
   const [generating, setGenerating] = useState(null);
+
+  // Preview server state
+  const [runningServers, setRunningServers] = useState({});
+  const [startingPreview, setStartingPreview] = useState(null);
+  const [previewExpanded, setPreviewExpanded] = useState(false);
+  const [showAllServers, setShowAllServers] = useState(false);
+  const [startingAll, setStartingAll] = useState(false);
+  const [gridViewMode, setGridViewMode] = useState(false); // Grid view for all previews
 
   // Fetch industries on mount
   const fetchIndustries = useCallback(async () => {
@@ -87,19 +96,109 @@ export default function QADashboard() {
     }
   }, []);
 
+  // Fetch running preview servers
+  const fetchPreviewServers = useCallback(async () => {
+    try {
+      const res = await fetch(`${PREVIEW_API}/status`);
+      const data = await res.json();
+      if (data.success) setRunningServers(data.servers);
+    } catch (err) {
+      console.error('Failed to fetch preview servers:', err);
+    }
+  }, []);
+
+  // Start a preview server
+  const startPreview = async (industry, view) => {
+    setStartingPreview(`${industry}-${view}`);
+    try {
+      const res = await fetch(`${PREVIEW_API}/start/${industry}/${view}`, { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        await fetchPreviewServers();
+        // If static site, handle differently
+        if (data.staticUrl) {
+          alert(`Static site available at: ${data.staticUrl}`);
+        }
+      } else {
+        alert(data.error || 'Failed to start preview');
+      }
+    } catch (err) {
+      alert('Failed to start preview: ' + err.message);
+    } finally {
+      setStartingPreview(null);
+    }
+  };
+
+  // Stop a preview server
+  const stopPreview = async (industry, view) => {
+    try {
+      const res = await fetch(`${PREVIEW_API}/stop/${industry}/${view}`, { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        await fetchPreviewServers();
+      }
+    } catch (err) {
+      console.error('Failed to stop preview:', err);
+    }
+  };
+
+  // Stop all preview servers
+  const stopAllPreviews = async () => {
+    try {
+      const res = await fetch(`${PREVIEW_API}/stop-all`, { method: 'POST' });
+      await res.json();
+      await fetchPreviewServers();
+    } catch (err) {
+      console.error('Failed to stop all previews:', err);
+    }
+  };
+
+  // Start ALL preview servers for all generated industries
+  const startAllPreviews = async (views = ['customer', 'admin']) => {
+    setStartingAll(true);
+    try {
+      const res = await fetch(`${PREVIEW_API}/start-all`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ views })
+      });
+      const data = await res.json();
+      if (data.success) {
+        await fetchPreviewServers();
+        // Auto-switch to grid view when starting all
+        if (data.started.length > 1) {
+          setGridViewMode(true);
+        }
+        alert(`Started ${data.started.length} previews. ${data.skipped.length} skipped, ${data.failed.length} failed.`);
+      }
+    } catch (err) {
+      alert('Failed to start all previews: ' + err.message);
+    } finally {
+      setStartingAll(false);
+    }
+  };
+
+  // Get current preview URL if running
+  const getCurrentPreviewUrl = () => {
+    const key = `${selectedIndustry}-${selectedView}`;
+    return runningServers[key]?.url || null;
+  };
+
   useEffect(() => {
     fetchIndustries();
     fetchIssues();
     fetchStatus();
+    fetchPreviewServers();
 
     // Poll status while batch is running
     const interval = setInterval(() => {
       fetchStatus();
+      fetchPreviewServers();
       if (batchStatus?.running) fetchIndustries();
     }, 2000);
 
     return () => clearInterval(interval);
-  }, [fetchIndustries, fetchIssues, fetchStatus, batchStatus?.running]);
+  }, [fetchIndustries, fetchIssues, fetchStatus, fetchPreviewServers, batchStatus?.running]);
 
   // Generate all industries
   const handleGenerateAll = async (force = false) => {
@@ -227,6 +326,39 @@ export default function QADashboard() {
               </>
             )}
           </button>
+          <button
+            onClick={() => startAllPreviews(['customer', 'admin'])}
+            disabled={startingAll || industries.generated === 0}
+            style={{
+              ...styles.button,
+              ...styles.successButton,
+              opacity: startingAll ? 0.6 : 1
+            }}
+          >
+            {startingAll ? (
+              <>
+                <Loader size={16} style={{ animation: 'spin 1s linear infinite' }} />
+                Starting All...
+              </>
+            ) : (
+              <>
+                <LayoutGrid size={16} />
+                Start All Previews
+              </>
+            )}
+          </button>
+          {Object.keys(runningServers).length > 0 && (
+            <button
+              onClick={() => setGridViewMode(!gridViewMode)}
+              style={{
+                ...styles.button,
+                ...(gridViewMode ? styles.activeButton : {})
+              }}
+            >
+              <LayoutGrid size={16} />
+              {gridViewMode ? 'Single View' : 'Grid View'} ({Object.keys(runningServers).length})
+            </button>
+          )}
           <button onClick={handleExportReport} style={styles.button}>
             <Download size={16} />
             Export Report
@@ -234,6 +366,68 @@ export default function QADashboard() {
         </div>
       </header>
 
+      {/* Grid View Mode - Shows all running previews */}
+      {gridViewMode && Object.keys(runningServers).length > 0 ? (
+        <div style={styles.gridViewContainer}>
+          <div style={styles.gridViewHeader}>
+            <h2 style={styles.gridViewTitle}>
+              <LayoutGrid size={24} />
+              All Running Previews ({Object.keys(runningServers).length})
+            </h2>
+            <div style={styles.gridViewActions}>
+              <button
+                onClick={stopAllPreviews}
+                style={{ ...styles.button, ...styles.dangerButton }}
+              >
+                <Square size={16} />
+                Stop All
+              </button>
+              <button
+                onClick={() => setGridViewMode(false)}
+                style={styles.button}
+              >
+                <X size={16} />
+                Exit Grid View
+              </button>
+            </div>
+          </div>
+          <div style={styles.previewGrid}>
+            {Object.entries(runningServers).map(([key, server]) => (
+              <div key={key} style={styles.gridPreviewCard}>
+                <div style={styles.gridPreviewHeader}>
+                  <span style={styles.gridPreviewTitle}>
+                    {server.industry}
+                    <span style={styles.gridPreviewView}>{server.view}</span>
+                  </span>
+                  <div style={styles.gridPreviewActions}>
+                    <a
+                      href={server.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={styles.smallButton}
+                      title="Open in new tab"
+                    >
+                      <ExternalLink size={14} />
+                    </a>
+                    <button
+                      onClick={() => stopPreview(server.industry, server.view)}
+                      style={{ ...styles.smallButton, color: '#ef4444' }}
+                      title="Stop"
+                    >
+                      <Square size={14} />
+                    </button>
+                  </div>
+                </div>
+                <iframe
+                  src={server.url}
+                  style={styles.gridPreviewIframe}
+                  title={`${server.industry} ${server.view}`}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
       <div style={styles.main}>
         {/* Sidebar - Industry List */}
         <aside style={styles.sidebar}>
@@ -340,34 +534,89 @@ export default function QADashboard() {
               </div>
 
               {/* Preview Area */}
-              <div style={styles.previewContainer}>
+              <div style={{
+                ...styles.previewContainer,
+                ...(previewExpanded ? styles.previewExpanded : {})
+              }}>
                 {selected.generated ? (
-                  <div style={styles.previewPlaceholder}>
-                    <Monitor size={48} color="#64748b" />
-                    <h3>Preview: {selected.name}</h3>
-                    <p style={styles.previewPath}>
-                      View: {VIEWS[selectedView]?.label}
-                    </p>
-                    <p style={styles.previewNote}>
-                      To preview, run the generated site locally:
-                    </p>
-                    <code style={styles.codeBlock}>
-                      cd output/qa-suite/sites/{selected.id}/{selectedView === 'customer' ? 'frontend' : selectedView}
-                      {'\n'}npm install && npm run dev
-                    </code>
-                    <button
-                      onClick={() => {
-                        // Open file explorer or copy path
-                        const path = `output/qa-suite/sites/${selected.id}`;
-                        navigator.clipboard.writeText(path);
-                        alert(`Path copied: ${path}`);
-                      }}
-                      style={{ ...styles.button, marginTop: 16 }}
-                    >
-                      <FileText size={16} />
-                      Copy Path
-                    </button>
-                  </div>
+                  getCurrentPreviewUrl() ? (
+                    // Live preview iframe
+                    <div style={styles.livePreview}>
+                      <div style={styles.previewToolbar}>
+                        <div style={styles.previewInfo}>
+                          <span style={styles.previewLive}>● LIVE</span>
+                          <span>{selected.name} - {VIEWS[selectedView]?.label}</span>
+                          <a
+                            href={getCurrentPreviewUrl()}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={styles.previewLink}
+                          >
+                            <ExternalLink size={14} />
+                            Open in new tab
+                          </a>
+                        </div>
+                        <div style={styles.previewActions}>
+                          <button
+                            onClick={() => setPreviewExpanded(!previewExpanded)}
+                            style={styles.iconButton}
+                            title={previewExpanded ? 'Minimize' : 'Maximize'}
+                          >
+                            {previewExpanded ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+                          </button>
+                          <button
+                            onClick={() => stopPreview(selectedIndustry, selectedView)}
+                            style={{ ...styles.iconButton, color: '#ef4444' }}
+                            title="Stop preview"
+                          >
+                            <Square size={16} />
+                          </button>
+                        </div>
+                      </div>
+                      <iframe
+                        src={getCurrentPreviewUrl()}
+                        style={styles.previewIframe}
+                        title={`${selected.name} Preview`}
+                      />
+                    </div>
+                  ) : (
+                    // Not running - show start button
+                    <div style={styles.previewPlaceholder}>
+                      <Monitor size={48} color="#64748b" />
+                      <h3>Preview: {selected.name}</h3>
+                      <p style={styles.previewPath}>
+                        View: {VIEWS[selectedView]?.label}
+                      </p>
+                      <button
+                        onClick={() => startPreview(selectedIndustry, selectedView)}
+                        disabled={startingPreview === `${selectedIndustry}-${selectedView}`}
+                        style={{
+                          ...styles.button,
+                          ...styles.primaryButton,
+                          marginTop: 16
+                        }}
+                      >
+                        {startingPreview === `${selectedIndustry}-${selectedView}` ? (
+                          <>
+                            <Loader size={16} style={{ animation: 'spin 1s linear infinite' }} />
+                            Starting...
+                          </>
+                        ) : (
+                          <>
+                            <Play size={16} />
+                            Start Live Preview
+                          </>
+                        )}
+                      </button>
+                      <p style={styles.previewNote}>
+                        Or run manually:
+                      </p>
+                      <code style={styles.codeBlock}>
+                        cd output/qa-suite/sites/{selected.id}/{selectedView === 'customer' ? 'frontend' : selectedView}
+                        {'\n'}npm install && npm run dev
+                      </code>
+                    </div>
+                  )
                 ) : (
                   <div style={styles.previewPlaceholder}>
                     <AlertCircle size={48} color="#f59e0b" />
@@ -376,6 +625,80 @@ export default function QADashboard() {
                   </div>
                 )}
               </div>
+
+              {/* Running Servers Panel */}
+              {Object.keys(runningServers).length > 0 && (
+                <div style={styles.serversPanel}>
+                  <div
+                    style={styles.serversPanelHeader}
+                    onClick={() => setShowAllServers(!showAllServers)}
+                  >
+                    <div style={styles.serversPanelTitle}>
+                      <LayoutGrid size={16} />
+                      <span>{Object.keys(runningServers).length} Preview{Object.keys(runningServers).length > 1 ? 's' : ''} Running</span>
+                    </div>
+                    <div style={styles.serversPanelActions}>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); stopAllPreviews(); }}
+                        style={{ ...styles.smallButton, color: '#ef4444' }}
+                      >
+                        Stop All
+                      </button>
+                      <ChevronRight
+                        size={16}
+                        style={{
+                          transform: showAllServers ? 'rotate(90deg)' : 'rotate(0deg)',
+                          transition: 'transform 0.2s'
+                        }}
+                      />
+                    </div>
+                  </div>
+                  {showAllServers && (
+                    <div style={styles.serversList}>
+                      {Object.entries(runningServers).map(([key, server]) => (
+                        <div key={key} style={styles.serverItem}>
+                          <div style={styles.serverInfo}>
+                            <span style={styles.serverName}>{server.industry} / {server.view}</span>
+                            <a
+                              href={server.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={styles.serverUrl}
+                            >
+                              {server.url}
+                            </a>
+                          </div>
+                          <div style={styles.serverActions}>
+                            <button
+                              onClick={() => {
+                                setSelectedIndustry(server.industry);
+                                setSelectedView(server.view);
+                              }}
+                              style={styles.smallButton}
+                            >
+                              <Eye size={14} />
+                            </button>
+                            <a
+                              href={server.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={styles.smallButton}
+                            >
+                              <ExternalLink size={14} />
+                            </a>
+                            <button
+                              onClick={() => stopPreview(server.industry, server.view)}
+                              style={{ ...styles.smallButton, color: '#ef4444' }}
+                            >
+                              <Square size={14} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Issues for this industry */}
               {industryIssues.length > 0 && (
@@ -416,6 +739,7 @@ export default function QADashboard() {
           )}
         </main>
       </div>
+      )}
 
       {/* Issue Modal */}
       {showIssueModal && (
@@ -427,11 +751,15 @@ export default function QADashboard() {
         />
       )}
 
-      {/* CSS Animation */}
+      {/* CSS Animations */}
       <style>{`
         @keyframes spin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
         }
       `}</style>
     </div>
@@ -711,10 +1039,77 @@ const styles = {
   previewContainer: {
     background: '#1e293b',
     borderRadius: 12,
-    minHeight: 400,
+    minHeight: 500,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    overflow: 'hidden'
+  },
+  previewExpanded: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 900,
+    borderRadius: 0,
+    margin: 0
+  },
+  livePreview: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  previewToolbar: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '8px 12px',
+    background: '#0f172a',
+    borderBottom: '1px solid #334155'
+  },
+  previewInfo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+    fontSize: 13
+  },
+  previewLive: {
+    color: '#22c55e',
+    fontWeight: 600,
+    animation: 'pulse 2s infinite'
+  },
+  previewLink: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 4,
+    color: '#60a5fa',
+    textDecoration: 'none',
+    fontSize: 12
+  },
+  previewActions: {
+    display: 'flex',
+    gap: 4
+  },
+  iconButton: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 32,
+    height: 32,
+    background: 'transparent',
+    border: '1px solid #334155',
+    borderRadius: 6,
+    color: '#94a3b8',
+    cursor: 'pointer',
+    transition: 'all 0.2s'
+  },
+  previewIframe: {
+    flex: 1,
+    width: '100%',
+    border: 'none',
+    background: '#fff'
   },
   previewPlaceholder: {
     textAlign: 'center',
@@ -868,5 +1263,160 @@ const styles = {
     justifyContent: 'flex-end',
     gap: 12,
     marginTop: 20
+  },
+  // Running servers panel styles
+  serversPanel: {
+    marginTop: 16,
+    background: '#1e293b',
+    borderRadius: 8,
+    border: '1px solid #334155'
+  },
+  serversPanelHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '12px 16px',
+    cursor: 'pointer',
+    transition: 'background 0.2s'
+  },
+  serversPanelTitle: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    fontSize: 14,
+    fontWeight: 500
+  },
+  serversPanelActions: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8
+  },
+  serversList: {
+    borderTop: '1px solid #334155'
+  },
+  serverItem: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '10px 16px',
+    borderBottom: '1px solid #334155'
+  },
+  serverInfo: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 2
+  },
+  serverName: {
+    fontSize: 13,
+    fontWeight: 500
+  },
+  serverUrl: {
+    fontSize: 12,
+    color: '#60a5fa',
+    textDecoration: 'none'
+  },
+  serverActions: {
+    display: 'flex',
+    gap: 4
+  },
+  smallButton: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '6px 10px',
+    background: 'transparent',
+    border: '1px solid #334155',
+    borderRadius: 4,
+    color: '#94a3b8',
+    fontSize: 12,
+    cursor: 'pointer',
+    textDecoration: 'none'
+  },
+  // New button styles
+  successButton: {
+    background: '#22c55e',
+    borderColor: '#22c55e',
+    color: '#fff'
+  },
+  activeButton: {
+    background: '#3b82f6',
+    borderColor: '#3b82f6',
+    color: '#fff'
+  },
+  // Grid view styles
+  gridViewContainer: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden'
+  },
+  gridViewHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '16px 24px',
+    borderBottom: '1px solid #1e293b',
+    background: '#0f172a'
+  },
+  gridViewTitle: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+    fontSize: 20,
+    fontWeight: 600,
+    margin: 0
+  },
+  gridViewActions: {
+    display: 'flex',
+    gap: 12
+  },
+  previewGrid: {
+    flex: 1,
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))',
+    gap: 16,
+    padding: 16,
+    overflow: 'auto',
+    background: '#0f172a'
+  },
+  gridPreviewCard: {
+    display: 'flex',
+    flexDirection: 'column',
+    background: '#1e293b',
+    borderRadius: 8,
+    overflow: 'hidden',
+    border: '1px solid #334155'
+  },
+  gridPreviewHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '8px 12px',
+    background: '#0f172a',
+    borderBottom: '1px solid #334155'
+  },
+  gridPreviewTitle: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    fontSize: 13,
+    fontWeight: 600
+  },
+  gridPreviewView: {
+    fontSize: 11,
+    color: '#94a3b8',
+    background: '#334155',
+    padding: '2px 6px',
+    borderRadius: 4
+  },
+  gridPreviewActions: {
+    display: 'flex',
+    gap: 4
+  },
+  gridPreviewIframe: {
+    width: '100%',
+    height: 300,
+    border: 'none',
+    background: '#fff'
   }
 };

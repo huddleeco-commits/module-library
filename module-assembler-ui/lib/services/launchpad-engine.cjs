@@ -75,12 +75,12 @@ const INDUSTRY_KEYWORDS = {
   'healthcare': ['medical', 'clinic', 'doctor', 'health', 'physician', 'wellness', 'care'],
   'yoga': ['yoga', 'pilates', 'meditation', 'mindful', 'zen', 'stretch'],
   'barbershop': ['barber', 'barbershop', 'haircut', 'fade', 'shave', 'grooming'],
-  'law-firm': ['law', 'lawyer', 'attorney', 'legal', 'firm', 'counsel', 'litigation'],
-  'real-estate': ['real estate', 'realtor', 'realty', 'property', 'homes', 'broker'],
+  'law-firm': ['law', 'lawyer', 'attorney', 'legal', 'firm', 'counsel', 'litigation', 'associates', 'justice', 'paralegal'],
+  'real-estate': ['real estate', 'realtor', 'realty', 'property', 'properties', 'homes', 'broker', 'premier'],
   'plumber': ['plumb', 'plumber', 'plumbing', 'pipe', 'drain', 'water heater'],
   'cleaning': ['clean', 'cleaning', 'maid', 'janitorial', 'housekeep'],
   'auto-shop': ['auto', 'mechanic', 'car', 'automotive', 'repair', 'garage', 'tire'],
-  'saas': ['saas', 'software', 'app', 'platform', 'tech', 'startup', 'digital'],
+  'saas': ['saas', 'software', 'app', 'platform', 'tech', 'startup', 'digital', 'analytics', 'cloud', 'data-driven'],
   'ecommerce': ['shop', 'store', 'boutique', 'retail', 'ecommerce', 'online store'],
   'school': ['school', 'academy', 'learning', 'education', 'tutor', 'class', 'institute']
 };
@@ -373,10 +373,18 @@ const INDUSTRY_RESERVATION_STYLES = {
 async function generateSite(input, variant = 'A', mode = 'test', options = {}) {
   const startTime = Date.now();
 
-  // Step 1: Detect from input
+  // Step 1: Detect from input (or use override)
   console.log('\n🚀 LAUNCHPAD: Starting generation...');
   const detection = detectFromInput(input);
-  console.log(`   Industry: ${detection.industryName} (${detection.industry})`);
+
+  // Allow explicit industry override (used by QA suite for reliable generation)
+  if (options.industryOverride && INDUSTRY_PAGES[options.industryOverride]) {
+    detection.industry = options.industryOverride;
+    detection.industryName = options.industryOverride.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    console.log(`   Industry: ${detection.industryName} (${detection.industry}) [override]`);
+  } else {
+    console.log(`   Industry: ${detection.industryName} (${detection.industry})`);
+  }
   console.log(`   Business: ${detection.businessName}`);
   console.log(`   Location: ${detection.location}`);
   console.log(`   Variant: Layout ${variant}`);
@@ -7713,6 +7721,152 @@ const styles = {
  * "What can I do in the next 30 seconds?" - Reorder, Order, Reserve, Use Rewards
  */
 function generateDashboardPage(businessData, colors) {
+  const ind = businessData.industry || 'restaurant';
+  // Industry-aware dashboard data
+  const isFood = ['pizza-restaurant', 'steakhouse', 'coffee-cafe', 'restaurant', 'bakery'].includes(ind);
+  const isSalon = ['salon-spa', 'barbershop'].includes(ind);
+  const isFitness = ['fitness-gym', 'yoga'].includes(ind);
+  const isHealth = ['dental', 'healthcare'].includes(ind);
+  const isProfessional = ['law-firm'].includes(ind);
+  const isRealEstate = ['real-estate'].includes(ind);
+  const isTrade = ['plumber', 'cleaning', 'auto-shop'].includes(ind);
+  const isTech = ['saas', 'ecommerce'].includes(ind);
+  const isSchool = ['school'].includes(ind);
+
+  // Industry-specific reward names
+  let nextRewardName = 'Free Medium Drink';
+  let recentLabel = 'Order Again';
+  let recentLink = '/order-history';
+  let bookingLabel = 'Upcoming Reservation';
+  let bookingManageLink = '/my-reservations';
+  let recentItems, primaryActionsCode;
+
+  if (isSalon) {
+    nextRewardName = 'Free Blowout';
+    recentLabel = 'Recent Appointments';
+    recentLink = '/my-appointments';
+    bookingLabel = 'Upcoming Appointment';
+    bookingManageLink = '/my-appointments';
+    recentItems = `[
+      { id: 101, date: '2024-12-15', items: ['Haircut & Style', 'Deep Conditioning'], total: 85.00 },
+      { id: 102, date: '2024-12-01', items: ['Color Touch-Up', 'Blow Dry'], total: 120.00 }
+    ]`;
+    primaryActionsCode = `[
+    { label: 'Book Now', path: '/book', Icon: Calendar, primary: true },
+    { label: 'My Appointments', path: '/my-appointments', Icon: Clock },
+    { label: 'Use Reward', path: '/rewards', Icon: Gift },
+    { label: 'Services', path: '/services', Icon: Star }
+  ]`;
+  } else if (isFitness) {
+    nextRewardName = 'Free Personal Training Session';
+    recentLabel = 'Recent Classes';
+    recentLink = '/schedule';
+    bookingLabel = 'Next Class';
+    bookingManageLink = '/schedule';
+    recentItems = `[
+      { id: 101, date: '2024-12-15', items: ['HIIT Blast', 'Yoga Flow'], total: 0 },
+      { id: 102, date: '2024-12-12', items: ['Spin Class', 'Core & Stretch'], total: 0 }
+    ]`;
+    primaryActionsCode = `[
+    { label: 'Book Class', path: '/book-class', Icon: Calendar, primary: true },
+    { label: 'Schedule', path: '/schedule', Icon: Clock },
+    { label: 'Use Reward', path: '/rewards', Icon: Gift },
+    { label: 'Programs', path: '/programs', Icon: Star }
+  ]`;
+  } else if (isHealth) {
+    nextRewardName = 'Free Consultation';
+    recentLabel = 'Recent Visits';
+    recentLink = '/my-appointments';
+    bookingLabel = 'Upcoming Appointment';
+    bookingManageLink = '/my-appointments';
+    recentItems = `[
+      { id: 101, date: '2024-12-15', items: ['Regular Checkup'], total: 150.00 },
+      { id: 102, date: '2024-11-20', items: ['Follow-up Visit'], total: 75.00 }
+    ]`;
+    primaryActionsCode = `[
+    { label: 'Book Appointment', path: '/book', Icon: Calendar, primary: true },
+    { label: 'My Appointments', path: '/my-appointments', Icon: Clock },
+    { label: 'Messages', path: '/messages', Icon: Star },
+    { label: 'Services', path: '/services', Icon: ShoppingBag }
+  ]`;
+  } else if (isProfessional) {
+    nextRewardName = 'Free Initial Review';
+    recentLabel = 'Recent Consultations';
+    recentLink = '/my-consultations';
+    bookingLabel = 'Upcoming Consultation';
+    bookingManageLink = '/my-consultations';
+    recentItems = `[
+      { id: 101, date: '2024-12-15', items: ['Case Review'], total: 250.00 },
+      { id: 102, date: '2024-12-01', items: ['Initial Consultation'], total: 0 }
+    ]`;
+    primaryActionsCode = `[
+    { label: 'Book Consultation', path: '/book', Icon: Calendar, primary: true },
+    { label: 'My Cases', path: '/my-consultations', Icon: Clock },
+    { label: 'Documents', path: '/documents', Icon: ShoppingBag },
+    { label: 'Services', path: '/services', Icon: Star }
+  ]`;
+  } else if (isRealEstate) {
+    nextRewardName = 'Priority Showing Access';
+    recentLabel = 'Saved Listings';
+    recentLink = '/saved';
+    bookingLabel = 'Upcoming Showing';
+    bookingManageLink = '/my-showings';
+    recentItems = `[
+      { id: 101, date: '2024-12-15', items: ['123 Oak St - 3BR/2BA'], total: 425000 },
+      { id: 102, date: '2024-12-10', items: ['456 Maple Ave - 4BR/3BA'], total: 550000 }
+    ]`;
+    primaryActionsCode = `[
+    { label: 'Browse Listings', path: '/listings', Icon: ShoppingBag, primary: true },
+    { label: 'My Showings', path: '/my-showings', Icon: Calendar },
+    { label: 'Saved Homes', path: '/saved', Icon: Star },
+    { label: 'Contact Agent', path: '/contact', Icon: Clock }
+  ]`;
+  } else if (isTrade) {
+    nextRewardName = '10% Off Next Service';
+    recentLabel = 'Recent Services';
+    recentLink = '/my-services';
+    bookingLabel = 'Upcoming Appointment';
+    bookingManageLink = '/my-appointments';
+    recentItems = `[
+      { id: 101, date: '2024-12-15', items: ['Emergency Repair'], total: 185.00 },
+      { id: 102, date: '2024-11-28', items: ['Routine Maintenance'], total: 95.00 }
+    ]`;
+    primaryActionsCode = `[
+    { label: 'Get Quote', path: '/quote', Icon: ShoppingBag, primary: true },
+    { label: 'Book Service', path: '/book', Icon: Calendar },
+    { label: 'My Services', path: '/my-services', Icon: Clock },
+    { label: 'Services', path: '/services', Icon: Star }
+  ]`;
+  } else if (isTech) {
+    nextRewardName = 'Free Month Upgrade';
+    recentLabel = 'Recent Activity';
+    recentLink = '/activity';
+    bookingLabel = 'Upcoming Demo';
+    bookingManageLink = '/my-demos';
+    recentItems = `[
+      { id: 101, date: '2024-12-15', items: ['Pro Plan Subscription'], total: 49.00 },
+      { id: 102, date: '2024-11-15', items: ['Pro Plan Subscription'], total: 49.00 }
+    ]`;
+    primaryActionsCode = `[
+    { label: 'Dashboard', path: '/app', Icon: Star, primary: true },
+    { label: 'Billing', path: '/billing', Icon: ShoppingBag },
+    { label: 'Support', path: '/support', Icon: Clock },
+    { label: 'Settings', path: '/settings', Icon: Calendar }
+  ]`;
+  } else {
+    // Food/default
+    recentItems = `[
+      { id: 101, date: '2024-12-15', items: ['${ind === 'coffee-cafe' ? 'Caramel Latte' : 'House Special'}', '${ind === 'coffee-cafe' ? 'Croissant' : 'Side Salad'}'], total: 12.50 },
+      { id: 102, date: '2024-12-10', items: ['${ind === 'coffee-cafe' ? 'Cold Brew' : 'Grilled Chicken'}', '${ind === 'coffee-cafe' ? 'Muffin' : 'Soup'}'], total: 9.75 }
+    ]`;
+    primaryActionsCode = `[
+    { label: 'Start Order', path: '/order', Icon: ShoppingBag, primary: true },
+    { label: 'Reserve Table', path: '/reservations', Icon: Calendar },
+    { label: 'Use Reward', path: '/rewards', Icon: Gift },
+    { label: 'Browse Menu', path: '/menu', Icon: Coffee }
+  ]`;
+  }
+
   return `/**
  * Dashboard Page - ${businessData.name}
  * Customer Portal Home
@@ -7731,14 +7885,11 @@ export default function DashboardPage() {
   const dashboardData = {
     points: user?.points || 240,
     pointsToNextReward: 60,
-    nextRewardName: 'Free Medium Drink',
+    nextRewardName: '${nextRewardName}',
     tier: user?.tier || 'Gold',
     tierProgress: 75,
     upcomingReservation: { id: 1, date: '2024-12-20', time: '10:00 AM', partySize: 2, status: 'confirmed' },
-    recentOrders: [
-      { id: 101, date: '2024-12-15', items: ['Caramel Latte', 'Croissant'], total: 12.50 },
-      { id: 102, date: '2024-12-10', items: ['Cold Brew', 'Muffin'], total: 9.75 }
-    ],
+    recentOrders: ${recentItems},
     latestOffer: { title: 'Double Points Weekend', description: 'Earn 2x points this Saturday & Sunday' }
   };
 
@@ -7750,12 +7901,7 @@ export default function DashboardPage() {
   }
 
   // "What can I do in 30 seconds?" - Primary actions
-  const primaryActions = [
-    { label: 'Start Order', path: '/order', Icon: ShoppingBag, primary: true },
-    { label: 'Reserve Table', path: '/reservations', Icon: Calendar },
-    { label: 'Use Reward', path: '/rewards', Icon: Gift },
-    { label: 'Browse Menu', path: '/menu', Icon: Coffee }
-  ];
+  const primaryActions = ${primaryActionsCode};
 
   return (
     <div style={styles.page}>
@@ -7797,12 +7943,12 @@ export default function DashboardPage() {
         </div>
 
         <div style={styles.sections}>
-          {/* Upcoming Reservation */}
+          {/* Upcoming Booking */}
           {dashboardData.upcomingReservation && (
             <div style={styles.section}>
               <div style={styles.sectionHeader}>
-                <h2 style={styles.sectionTitle}>Upcoming Reservation</h2>
-                <Link to="/my-reservations" style={styles.seeAll}>Manage <ChevronRight size={16} /></Link>
+                <h2 style={styles.sectionTitle}>${bookingLabel}</h2>
+                <Link to="${bookingManageLink}" style={styles.seeAll}>Manage <ChevronRight size={16} /></Link>
               </div>
               <div style={styles.reservationCard}>
                 <div style={styles.reservationDate}>
@@ -7817,11 +7963,11 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* Order Again */}
+          {/* Recent Activity */}
           <div style={styles.section}>
             <div style={styles.sectionHeader}>
-              <h2 style={styles.sectionTitle}>Order Again</h2>
-              <Link to="/order-history" style={styles.seeAll}>View All <ChevronRight size={16} /></Link>
+              <h2 style={styles.sectionTitle}>${recentLabel}</h2>
+              <Link to="${recentLink}" style={styles.seeAll}>View All <ChevronRight size={16} /></Link>
             </div>
             <div style={styles.ordersList}>
               {dashboardData.recentOrders.map((order) => (
@@ -8031,6 +8177,100 @@ const styles = {
  * Generate Rewards Page
  */
 function generateRewardsPage(businessData, colors) {
+  const ind = businessData.industry || 'restaurant';
+  const isSalon = ['salon-spa', 'barbershop'].includes(ind);
+  const isFitness = ['fitness-gym', 'yoga'].includes(ind);
+  const isHealth = ['dental', 'healthcare'].includes(ind);
+  const isProfessional = ['law-firm'].includes(ind);
+  const isRealEstate = ['real-estate'].includes(ind);
+  const isTrade = ['plumber', 'cleaning', 'auto-shop'].includes(ind);
+  const isTech = ['saas', 'ecommerce'].includes(ind);
+
+  let tiersCode, rewardsCode, activityCode;
+
+  if (isSalon) {
+    tiersCode = `[
+    { name: 'Bronze', minPoints: 0, benefits: ['Earn 10 pts per visit', 'Birthday discount'] },
+    { name: 'Silver', minPoints: 200, benefits: ['Earn 12 pts per visit', 'Free add-on service', 'Early booking access'] },
+    { name: 'Gold', minPoints: 500, benefits: ['Earn 15 pts per visit', 'Free monthly blowout', 'Priority booking', 'Exclusive offers'] },
+    { name: 'Platinum', minPoints: 1000, benefits: ['Earn 20 pts per visit', 'Free weekly service', 'VIP events', 'Personal stylist'] }
+  ]`;
+    rewardsCode = `[
+    { id: 1, name: 'Free Blowout', description: 'Wash and style session', points: 100, available: true },
+    { id: 2, name: 'Free Add-On', description: 'Deep conditioning or scalp treatment', points: 75, available: true },
+    { id: 3, name: '20% Off Service', description: 'Save on any single service', points: 150, available: true },
+    { id: 4, name: 'Free Color Gloss', description: 'Shine-enhancing color treatment', points: 300, available: currentPoints >= 300 },
+    { id: 5, name: 'VIP Spa Day', description: 'Full day spa experience', points: 500, available: false, special: true }
+  ]`;
+    activityCode = `[
+    { id: 1, action: 'Earned points', details: 'Haircut & Style', points: '+45', date: 'Today' },
+    { id: 2, action: 'Redeemed reward', details: 'Free Blowout', points: '-100', date: 'Dec 15' },
+    { id: 3, action: 'Earned points', details: 'Color Treatment', points: '+80', date: 'Dec 12' },
+    { id: 4, action: 'Tier bonus', details: 'Gold member bonus', points: '+50', date: 'Dec 1' }
+  ]`;
+  } else if (isFitness) {
+    tiersCode = `[
+    { name: 'Bronze', minPoints: 0, benefits: ['Earn 10 pts per class', 'Birthday reward'] },
+    { name: 'Silver', minPoints: 200, benefits: ['Earn 12 pts per class', 'Free guest pass', 'Early class registration'] },
+    { name: 'Gold', minPoints: 500, benefits: ['Earn 15 pts per class', 'Free monthly PT session', 'Priority booking', 'Exclusive workshops'] },
+    { name: 'Platinum', minPoints: 1000, benefits: ['Earn 20 pts per class', 'Free weekly PT session', 'VIP lounge access', 'Personal trainer'] }
+  ]`;
+    rewardsCode = `[
+    { id: 1, name: 'Free Class', description: 'Any group fitness class', points: 100, available: true },
+    { id: 2, name: 'Free Smoothie', description: 'Post-workout smoothie bar', points: 75, available: true },
+    { id: 3, name: 'PT Session', description: '1-on-1 personal training', points: 200, available: true },
+    { id: 4, name: 'Guest Pass', description: 'Bring a friend for the day', points: 150, available: currentPoints >= 150 },
+    { id: 5, name: 'Retreat Weekend', description: 'Exclusive fitness retreat', points: 500, available: false, special: true }
+  ]`;
+    activityCode = `[
+    { id: 1, action: 'Earned points', details: 'HIIT Blast Class', points: '+30', date: 'Today' },
+    { id: 2, action: 'Redeemed reward', details: 'Free Class', points: '-100', date: 'Dec 15' },
+    { id: 3, action: 'Earned points', details: 'Spin Class', points: '+30', date: 'Dec 12' },
+    { id: 4, action: 'Tier bonus', details: 'Gold member bonus', points: '+50', date: 'Dec 1' }
+  ]`;
+  } else if (isHealth || isProfessional) {
+    tiersCode = `[
+    { name: 'Bronze', minPoints: 0, benefits: ['Earn 10 pts per visit', 'Birthday bonus'] },
+    { name: 'Silver', minPoints: 200, benefits: ['Earn 12 pts per visit', 'Priority scheduling', 'Free consultation add-on'] },
+    { name: 'Gold', minPoints: 500, benefits: ['Earn 15 pts per visit', 'Preferred rates', 'Priority scheduling', 'Exclusive resources'] },
+    { name: 'Platinum', minPoints: 1000, benefits: ['Earn 20 pts per visit', 'VIP scheduling', 'Dedicated advisor', 'Annual review'] }
+  ]`;
+    rewardsCode = `[
+    { id: 1, name: 'Free Consultation', description: 'Complimentary initial review', points: 100, available: true },
+    { id: 2, name: '15% Off Service', description: 'Discount on any service', points: 75, available: true },
+    { id: 3, name: 'Priority Access', description: 'Skip the waitlist for 30 days', points: 150, available: true },
+    { id: 4, name: 'Premium Review', description: 'In-depth case or health review', points: 300, available: currentPoints >= 300 },
+    { id: 5, name: 'VIP Package', description: 'Annual premium membership', points: 500, available: false, special: true }
+  ]`;
+    activityCode = `[
+    { id: 1, action: 'Earned points', details: 'Visit completed', points: '+45', date: 'Today' },
+    { id: 2, action: 'Redeemed reward', details: 'Free Consultation', points: '-100', date: 'Dec 15' },
+    { id: 3, action: 'Earned points', details: 'Referral bonus', points: '+50', date: 'Dec 12' },
+    { id: 4, action: 'Tier bonus', details: 'Gold member bonus', points: '+50', date: 'Dec 1' }
+  ]`;
+  } else {
+    // Food / default
+    tiersCode = `[
+    { name: 'Bronze', minPoints: 0, benefits: ['Earn 10 pts per $1', 'Birthday reward'] },
+    { name: 'Silver', minPoints: 200, benefits: ['Earn 12 pts per $1', 'Free drink upgrade', 'Early access to new items'] },
+    { name: 'Gold', minPoints: 500, benefits: ['Earn 15 pts per $1', 'Free monthly drink', 'Priority reservations', 'Exclusive offers'] },
+    { name: 'Platinum', minPoints: 1000, benefits: ['Earn 20 pts per $1', 'Free weekly drink', 'VIP events', 'Personal concierge'] }
+  ]`;
+    rewardsCode = `[
+    { id: 1, name: 'Free Medium Drink', description: 'Any handcrafted beverage', points: 100, available: true },
+    { id: 2, name: 'Free Pastry', description: 'Choose from our bakery selection', points: 75, available: true },
+    { id: 3, name: '20% Off Order', description: 'Save on your entire order', points: 150, available: true },
+    { id: 4, name: 'Free Bag of Coffee', description: '12oz bag of house blend', points: 300, available: currentPoints >= 300 },
+    { id: 5, name: 'VIP Experience', description: 'Barista for a day experience', points: 500, available: false, special: true }
+  ]`;
+    activityCode = `[
+    { id: 1, action: 'Earned points', details: 'Order #2847', points: '+45', date: 'Today' },
+    { id: 2, action: 'Redeemed reward', details: 'Free Medium Drink', points: '-100', date: 'Dec 15' },
+    { id: 3, action: 'Earned points', details: 'Order #2831', points: '+32', date: 'Dec 12' },
+    { id: 4, action: 'Tier bonus', details: 'Gold member bonus', points: '+50', date: 'Dec 1' }
+  ]`;
+  }
+
   return `/**
  * Rewards Page - ${businessData.name}
  * Generated by Launchpad
@@ -8049,27 +8289,11 @@ export default function RewardsPage() {
   const tierProgress = 75;
   const pointsToNextTier = 100;
 
-  const tiers = [
-    { name: 'Bronze', minPoints: 0, benefits: ['Earn 10 pts per $1', 'Birthday reward'] },
-    { name: 'Silver', minPoints: 200, benefits: ['Earn 12 pts per $1', 'Free drink upgrade', 'Early access to new items'] },
-    { name: 'Gold', minPoints: 500, benefits: ['Earn 15 pts per $1', 'Free monthly drink', 'Priority reservations', 'Exclusive offers'] },
-    { name: 'Platinum', minPoints: 1000, benefits: ['Earn 20 pts per $1', 'Free weekly drink', 'VIP events', 'Personal concierge'] }
-  ];
+  const tiers = ${tiersCode};
 
-  const rewards = [
-    { id: 1, name: 'Free Medium Drink', description: 'Any handcrafted beverage', points: 100, available: true },
-    { id: 2, name: 'Free Pastry', description: 'Choose from our bakery selection', points: 75, available: true },
-    { id: 3, name: '20% Off Order', description: 'Save on your entire order', points: 150, available: true },
-    { id: 4, name: 'Free Bag of Coffee', description: '12oz bag of house blend', points: 300, available: currentPoints >= 300 },
-    { id: 5, name: 'VIP Experience', description: 'Barista for a day experience', points: 500, available: false, special: true }
-  ];
+  const rewards = ${rewardsCode};
 
-  const activityLog = [
-    { id: 1, action: 'Earned points', details: 'Order #2847', points: '+45', date: 'Today' },
-    { id: 2, action: 'Redeemed reward', details: 'Free Medium Drink', points: '-100', date: 'Dec 15' },
-    { id: 3, action: 'Earned points', details: 'Order #2831', points: '+32', date: 'Dec 12' },
-    { id: 4, action: 'Tier bonus', details: 'Gold member bonus', points: '+50', date: 'Dec 1' }
-  ];
+  const activityLog = ${activityCode};
 
   const handleRedeem = (reward) => {
     if (currentPoints >= reward.points) {
@@ -8252,6 +8476,23 @@ const styles = {
  * 2-step flow: Select date/time → Confirm details
  */
 function generateReservationsPage(businessData, colors) {
+  const ind = businessData.industry || 'restaurant';
+  const isSalon = ['salon-spa', 'barbershop'].includes(ind);
+  const isFitness = ['fitness-gym', 'yoga'].includes(ind);
+  const isHealth = ['dental', 'healthcare'].includes(ind);
+  const isProfessional = ['law-firm'].includes(ind);
+  const isTrade = ['plumber', 'cleaning', 'auto-shop'].includes(ind);
+  const isBookingType = isSalon || isFitness || isHealth || isProfessional || isTrade;
+
+  const bookingTitle = isSalon ? 'Book an Appointment' : isFitness ? 'Book a Class' : isHealth ? 'Schedule an Appointment' : isProfessional ? 'Book a Consultation' : isTrade ? 'Schedule a Service' : 'Make a Reservation';
+  const bookingAuthMsg = isBookingType ? 'Sign in to book' : 'Sign in to make a reservation';
+  const bookingAuthDesc = isBookingType ? 'Manage your upcoming bookings' : 'Save your favorite times and manage your bookings';
+  const partySizeLabel = isBookingType ? '' : 'Party Size';
+  const confirmLabel = isBookingType ? 'Confirm Booking' : 'Confirm Reservation';
+  const successLabel = isBookingType ? 'Booking Confirmed!' : 'Reservation Confirmed!';
+  const newBookingLabel = isBookingType ? 'Make Another Booking' : 'Make Another Reservation';
+  const yourBookingsLabel = isBookingType ? 'Your Bookings' : 'Your Reservations';
+
   return `/**
  * Reservations Page - ${businessData.name}
  * Generated by Launchpad
@@ -8303,7 +8544,7 @@ export default function ReservationsPage() {
   };
 
   if (!isAuthenticated) {
-    return (<div style={styles.page}><div style={styles.container}><div style={styles.authPrompt}><Calendar size={48} color="#d1d5db" /><h2>Sign in to make a reservation</h2><p>Save your favorite times and manage your bookings</p><Link to="/login" style={styles.signInBtn}>Sign In</Link></div></div></div>);
+    return (<div style={styles.page}><div style={styles.container}><div style={styles.authPrompt}><Calendar size={48} color="#d1d5db" /><h2>${bookingAuthMsg}</h2><p>${bookingAuthDesc}</p><Link to="/login" style={styles.signInBtn}>Sign In</Link></div></div></div>);
   }
 
   if (confirmed) {
@@ -8312,11 +8553,11 @@ export default function ReservationsPage() {
         <div style={styles.container}>
           <div style={styles.successCard}>
             <div style={styles.successIcon}><Check size={32} /></div>
-            <h2 style={styles.successTitle}>Reservation Confirmed!</h2>
+            <h2 style={styles.successTitle}>${successLabel}</h2>
             <p style={styles.successDetails}>{formatSelectedDate()} at {selectedTime}<br />Party of {partySize}</p>
             <p style={styles.confirmationNote}>A confirmation email has been sent to {user?.email}</p>
             <div style={styles.successActions}>
-              <button onClick={() => { setConfirmed(false); setStep(1); setSelectedDate(null); setSelectedTime(null); }} style={styles.newReservationBtn}>Make Another Reservation</button>
+              <button onClick={() => { setConfirmed(false); setStep(1); setSelectedDate(null); setSelectedTime(null); }} style={styles.newReservationBtn}>${newBookingLabel}</button>
               <Link to="/dashboard" style={styles.dashboardLink}>Back to Dashboard</Link>
             </div>
           </div>
@@ -8328,7 +8569,7 @@ export default function ReservationsPage() {
   return (
     <div style={styles.page}>
       <div style={styles.container}>
-        <h1 style={styles.title}>Make a Reservation</h1>
+        <h1 style={styles.title}>${bookingTitle}</h1>
         <div style={styles.progressBar}>
           <div style={{...styles.progressStep, ...(step >= 1 ? styles.progressStepActive : {})}}><span style={styles.stepNumber}>1</span><span style={styles.stepLabel}>Select Time</span></div>
           <div style={styles.progressLine}></div>
@@ -8384,14 +8625,14 @@ export default function ReservationsPage() {
             </div>
             <div style={styles.actionRow}>
               <button onClick={() => setStep(1)} style={styles.backBtn}><ChevronLeft size={18} /> Back</button>
-              <button onClick={handleConfirm} style={styles.confirmBtn}>Confirm Reservation</button>
+              <button onClick={handleConfirm} style={styles.confirmBtn}>${confirmLabel}</button>
             </div>
           </div>
         )}
 
         {userReservations.length > 0 && (
           <div style={styles.existingSection}>
-            <h2 style={styles.existingTitle}>Your Reservations</h2>
+            <h2 style={styles.existingTitle}>${yourBookingsLabel}</h2>
             <div style={styles.reservationsList}>
               {userReservations.map(res => (
                 <div key={res.id} style={styles.reservationCard}>
@@ -8474,6 +8715,68 @@ const styles = {
  * Generate Order History Page
  */
 function generateOrderHistoryPage(businessData, colors) {
+  const ind = businessData.industry || 'restaurant';
+  const isSalon = ['salon-spa', 'barbershop'].includes(ind);
+  const isFitness = ['fitness-gym', 'yoga'].includes(ind);
+  const isHealth = ['dental', 'healthcare'].includes(ind);
+  const isProfessional = ['law-firm'].includes(ind);
+  const isTrade = ['plumber', 'cleaning', 'auto-shop'].includes(ind);
+
+  let pageTitle = 'Order History';
+  let ordersCode, emptyMsg, authMsg;
+
+  if (isSalon) {
+    pageTitle = 'Appointment History';
+    emptyMsg = 'No appointments found';
+    authMsg = 'Sign in to view your appointment history';
+    ordersCode = `[
+    { id: 'APT-2847', date: '2024-12-18', time: '10:30 AM', status: 'completed', total: 85.00, items: [{ name: 'Haircut & Style', qty: 1, price: 45.00 }, { name: 'Deep Conditioning', qty: 1, price: 40.00 }], pointsEarned: 45 },
+    { id: 'APT-2831', date: '2024-12-15', time: '2:00 PM', status: 'completed', total: 120.00, items: [{ name: 'Color Touch-Up', qty: 1, price: 80.00 }, { name: 'Blow Dry', qty: 1, price: 40.00 }], pointsEarned: 60 },
+    { id: 'APT-2798', date: '2024-12-10', time: '11:00 AM', status: 'completed', total: 65.00, items: [{ name: 'Manicure', qty: 1, price: 35.00 }, { name: 'Pedicure', qty: 1, price: 30.00 }], pointsEarned: 32 },
+    { id: 'APT-2756', date: '2024-12-05', time: '3:00 PM', status: 'cancelled', total: 45.00, items: [{ name: 'Haircut', qty: 1, price: 45.00 }], pointsEarned: 0, refundNote: 'Cancelled by client' }
+  ]`;
+  } else if (isFitness) {
+    pageTitle = 'Class History';
+    emptyMsg = 'No classes found';
+    authMsg = 'Sign in to view your class history';
+    ordersCode = `[
+    { id: 'CLS-2847', date: '2024-12-18', time: '6:00 AM', status: 'completed', total: 0, items: [{ name: 'HIIT Blast', qty: 1, price: 0 }, { name: 'Core & Stretch', qty: 1, price: 0 }], pointsEarned: 60 },
+    { id: 'CLS-2831', date: '2024-12-15', time: '7:30 AM', status: 'completed', total: 0, items: [{ name: 'Spin Cycle', qty: 1, price: 0 }], pointsEarned: 30 },
+    { id: 'CLS-2798', date: '2024-12-10', time: '12:00 PM', status: 'completed', total: 35.00, items: [{ name: 'Personal Training', qty: 1, price: 35.00 }], pointsEarned: 45 },
+    { id: 'CLS-2756', date: '2024-12-05', time: '5:30 PM', status: 'cancelled', total: 0, items: [{ name: 'Power Yoga', qty: 1, price: 0 }], pointsEarned: 0, refundNote: 'Class cancelled' }
+  ]`;
+  } else if (isHealth || isProfessional) {
+    pageTitle = 'Visit History';
+    emptyMsg = 'No visits found';
+    authMsg = 'Sign in to view your visit history';
+    ordersCode = `[
+    { id: 'VST-2847', date: '2024-12-18', time: '10:00 AM', status: 'completed', total: 150.00, items: [{ name: 'Regular Checkup', qty: 1, price: 150.00 }], pointsEarned: 45 },
+    { id: 'VST-2831', date: '2024-12-01', time: '2:00 PM', status: 'completed', total: 75.00, items: [{ name: 'Follow-up Consultation', qty: 1, price: 75.00 }], pointsEarned: 32 },
+    { id: 'VST-2798', date: '2024-11-15', time: '11:00 AM', status: 'completed', total: 200.00, items: [{ name: 'Comprehensive Review', qty: 1, price: 200.00 }], pointsEarned: 60 },
+    { id: 'VST-2756', date: '2024-11-01', time: '9:00 AM', status: 'cancelled', total: 0, items: [{ name: 'Initial Consultation', qty: 1, price: 0 }], pointsEarned: 0, refundNote: 'Rescheduled' }
+  ]`;
+  } else if (isTrade) {
+    pageTitle = 'Service History';
+    emptyMsg = 'No services found';
+    authMsg = 'Sign in to view your service history';
+    ordersCode = `[
+    { id: 'SVC-2847', date: '2024-12-18', time: '10:00 AM', status: 'completed', total: 185.00, items: [{ name: 'Emergency Repair', qty: 1, price: 185.00 }], pointsEarned: 45 },
+    { id: 'SVC-2831', date: '2024-11-28', time: '9:00 AM', status: 'completed', total: 95.00, items: [{ name: 'Routine Maintenance', qty: 1, price: 95.00 }], pointsEarned: 25 },
+    { id: 'SVC-2798', date: '2024-11-10', time: '2:00 PM', status: 'completed', total: 350.00, items: [{ name: 'Full Service', qty: 1, price: 250.00 }, { name: 'Parts', qty: 1, price: 100.00 }], pointsEarned: 60 },
+    { id: 'SVC-2756', date: '2024-10-20', time: '11:00 AM', status: 'refunded', total: 75.00, items: [{ name: 'Inspection', qty: 1, price: 75.00 }], pointsEarned: 0, refundNote: 'No issues found - complimentary' }
+  ]`;
+  } else {
+    // Food / default
+    emptyMsg = 'No orders found';
+    authMsg = 'Sign in to view your orders';
+    ordersCode = `[
+    { id: 'ORD-2847', date: '2024-12-18', time: '10:32 AM', status: 'completed', total: 18.50, items: [{ name: '${ind === 'coffee-cafe' ? 'Caramel Latte' : 'House Special'}', qty: 1, price: 5.50 }, { name: '${ind === 'coffee-cafe' ? 'Chocolate Croissant' : 'Side Dish'}', qty: 2, price: 4.00 }, { name: '${ind === 'coffee-cafe' ? 'Cold Brew' : 'Beverage'}', qty: 1, price: 5.00 }], pointsEarned: 45 },
+    { id: 'ORD-2831', date: '2024-12-15', time: '2:15 PM', status: 'completed', total: 12.75, items: [{ name: '${ind === 'coffee-cafe' ? 'Vanilla Oat Latte' : 'Lunch Special'}', qty: 1, price: 6.25 }, { name: '${ind === 'coffee-cafe' ? 'Blueberry Muffin' : 'Appetizer'}', qty: 1, price: 3.50 }, { name: '${ind === 'coffee-cafe' ? 'Espresso Shot' : 'Drink'}', qty: 1, price: 3.00 }], pointsEarned: 32 },
+    { id: 'ORD-2798', date: '2024-12-10', time: '9:05 AM', status: 'completed', total: 24.00, items: [{ name: '${ind === 'coffee-cafe' ? 'Mocha' : 'Entree'}', qty: 2, price: 6.00 }, { name: '${ind === 'coffee-cafe' ? 'Bagel with Cream Cheese' : 'Side'}', qty: 2, price: 4.50 }, { name: '${ind === 'coffee-cafe' ? 'Orange Juice' : 'Drink'}', qty: 1, price: 3.00 }], pointsEarned: 60 },
+    { id: 'ORD-2756', date: '2024-12-05', time: '11:45 AM', status: 'refunded', total: 8.50, items: [{ name: '${ind === 'coffee-cafe' ? 'Iced Americano' : 'Special'}', qty: 1, price: 4.50 }, { name: '${ind === 'coffee-cafe' ? 'Almond Biscotti' : 'Snack'}', qty: 2, price: 2.00 }], pointsEarned: 0, refundNote: 'Item unavailable' }
+  ]`;
+  }
+
   return `/**
  * Order History Page - ${businessData.name}
  * Generated by Launchpad
@@ -8491,12 +8794,7 @@ export default function OrderHistoryPage() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [expandedOrder, setExpandedOrder] = useState(null);
 
-  const orders = [
-    { id: 'ORD-2847', date: '2024-12-18', time: '10:32 AM', status: 'completed', total: 18.50, items: [{ name: 'Caramel Latte', qty: 1, price: 5.50 }, { name: 'Chocolate Croissant', qty: 2, price: 4.00 }, { name: 'Cold Brew', qty: 1, price: 5.00 }], pointsEarned: 45 },
-    { id: 'ORD-2831', date: '2024-12-15', time: '2:15 PM', status: 'completed', total: 12.75, items: [{ name: 'Vanilla Oat Latte', qty: 1, price: 6.25 }, { name: 'Blueberry Muffin', qty: 1, price: 3.50 }, { name: 'Espresso Shot', qty: 1, price: 3.00 }], pointsEarned: 32 },
-    { id: 'ORD-2798', date: '2024-12-10', time: '9:05 AM', status: 'completed', total: 24.00, items: [{ name: 'Mocha', qty: 2, price: 6.00 }, { name: 'Bagel with Cream Cheese', qty: 2, price: 4.50 }, { name: 'Orange Juice', qty: 1, price: 3.00 }], pointsEarned: 60 },
-    { id: 'ORD-2756', date: '2024-12-05', time: '11:45 AM', status: 'refunded', total: 8.50, items: [{ name: 'Iced Americano', qty: 1, price: 4.50 }, { name: 'Almond Biscotti', qty: 2, price: 2.00 }], pointsEarned: 0, refundNote: 'Item unavailable' }
-  ];
+  const orders = ${ordersCode};
 
   const filteredOrders = orders
     .filter(order => filterStatus === 'all' || order.status === filterStatus)
@@ -8506,19 +8804,19 @@ export default function OrderHistoryPage() {
   const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 
   if (!isAuthenticated) {
-    return (<div style={styles.page}><div style={styles.container}><div style={styles.authPrompt}><ShoppingBag size={48} color="#d1d5db" /><h2>Sign in to view your orders</h2><p>Track your order history and reorder favorites</p><Link to="/login" style={styles.signInBtn}>Sign In</Link></div></div></div>);
+    return (<div style={styles.page}><div style={styles.container}><div style={styles.authPrompt}><ShoppingBag size={48} color="#d1d5db" /><h2>${authMsg}</h2><p>Track your history and manage your account</p><Link to="/login" style={styles.signInBtn}>Sign In</Link></div></div></div>);
   }
 
   return (
     <div style={styles.page}>
       <div style={styles.container}>
-        <h1 style={styles.title}>Order History</h1>
+        <h1 style={styles.title}>${pageTitle}</h1>
         <div style={styles.toolbar}>
           <div style={styles.searchBox}><Search size={18} color="#9ca3af" /><input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search orders or items..." style={styles.searchInput} /></div>
           <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} style={styles.select}><option value="all">All Orders</option><option value="completed">Completed</option><option value="refunded">Refunded</option></select>
         </div>
         <div style={styles.ordersList}>
-          {filteredOrders.length === 0 ? (<div style={styles.emptyState}><ShoppingBag size={48} color="#d1d5db" /><p>No orders found</p></div>) : (
+          {filteredOrders.length === 0 ? (<div style={styles.emptyState}><ShoppingBag size={48} color="#d1d5db" /><p>${emptyMsg}</p></div>) : (
             filteredOrders.map(order => (
               <div key={order.id} style={styles.orderCard}>
                 <div style={styles.orderHeader} onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}>

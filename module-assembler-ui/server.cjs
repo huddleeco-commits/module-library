@@ -635,6 +635,11 @@ const { createQASuiteRoutes } = require('./lib/routes/qa-suite.cjs');
 const qaSuiteRouter = createQASuiteRoutes();
 app.use('/api/qa-suite', qaSuiteRouter);
 
+// QA Preview Server routes (live Vite dev server management)
+const { createQAPreviewRoutes } = require('./lib/routes/qa-preview-server.cjs');
+const qaPreviewRouter = createQAPreviewRoutes();
+app.use('/api/qa-preview', qaPreviewRouter);
+
 // Browser test routes (ClawdBot / Claude --chrome integration)
 const browserTestRouter = require('./lib/routes/browser-test.cjs');
 app.use('/api/browser-test', browserTestRouter);

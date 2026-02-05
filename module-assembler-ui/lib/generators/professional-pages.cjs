@@ -106,11 +106,21 @@ function generateHomePage(archetype, businessData, colors, styleOverrides = {}) 
   const phone = businessData.phone || '(555) 123-4567';
   const industry = (businessData.industry || 'professional').toLowerCase();
 
-  const images = industry.includes('law') || industry.includes('attorney') ? IMAGES.law :
+  // Use fixture hero text if available
+  const heroHeadline = businessData.heroHeadline || businessName;
+  const heroSubheadline = businessData.heroSubheadline || "Trusted legal counsel for individuals and businesses. We're committed to protecting your interests and achieving the best possible outcomes.";
+
+  const defaultImages = industry.includes('law') || industry.includes('attorney') ? IMAGES.law :
                  industry.includes('account') || industry.includes('cpa') || industry.includes('tax') ? IMAGES.accounting :
                  industry.includes('consult') ? IMAGES.consulting :
                  industry.includes('real') || industry.includes('estate') || industry.includes('realtor') ? IMAGES.realestate :
                  IMAGES.finance;
+
+  // Use fixture hero image if available
+  const images = {
+    ...defaultImages,
+    hero: businessData.heroImage || defaultImages.hero
+  };
 
   let c = { ...style.colors, ...colors };
   const isDark = styleOverrides.isDark || false;
@@ -180,8 +190,8 @@ export default function HomePage() {
       <section style={styles.hero}>
         <div style={styles.heroInner}>
           <div style={styles.heroContent}>
-            <h1 style={styles.heroTitle}>${businessName}</h1>
-            <p style={styles.heroSubtitle}>Trusted legal counsel for individuals and businesses. We're committed to protecting your interests and achieving the best possible outcomes.</p>
+            <h1 style={styles.heroTitle}>${heroHeadline.replace(/'/g, "\\'")}</h1>
+            <p style={styles.heroSubtitle}>${heroSubheadline.replace(/'/g, "\\'")}</p>
             <div style={styles.heroButtons}>
               <Link to="/contact" style={styles.btnPrimary}>Free Consultation <ChevronRight size={18} /></Link>
               <a href="tel:${phone}" style={styles.btnSecondary}><Phone size={18} /> ${phone}</a>

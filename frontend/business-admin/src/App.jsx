@@ -58,12 +58,22 @@ import { AIManagerPage } from '@components/ai';
 import { AIChat } from '@components/ai';
 import { AIInsights } from '@components/ai';
 import { AITasks } from '@components/ai';
+import AgentChat from '@components/ai/AgentChat';
 
 import { SettingsPage } from '@components/settings';
 import { SettingsGeneral } from '@components/settings';
 import { SettingsUsers } from '@components/settings';
 import { SettingsPayments } from '@components/settings';
 import { SettingsIntegrations } from '@components/settings';
+
+// Menu Management
+import { MenuEditor } from '@components/menu/MenuEditor';
+
+// Reservations
+import { ReservationCalendar } from '@components/reservations/ReservationCalendar';
+
+// Notifications
+import { NotificationCenter } from '@components/notifications/NotificationCenter';
 
 function App() {
   return (
@@ -123,8 +133,20 @@ function App() {
         {/* AI Manager */}
         <Route path="ai" element={<AIManagerPage />} />
         <Route path="ai/chat" element={<AIChat />} />
+        <Route path="ai/agents" element={<AgentChat />} />
         <Route path="ai/insights" element={<AIInsights />} />
         <Route path="ai/tasks" element={<AITasks />} />
+
+        {/* Menu Management */}
+        <Route path="menu" element={<MenuEditor />} />
+        <Route path="menu/editor" element={<MenuEditor />} />
+
+        {/* Reservations */}
+        <Route path="reservations" element={<ReservationCalendar />} />
+        <Route path="reservations/calendar" element={<ReservationCalendar />} />
+
+        {/* Notifications */}
+        <Route path="notifications" element={<NotificationCenter />} />
 
         {/* Settings */}
         <Route path="settings" element={<SettingsPage />} />

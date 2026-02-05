@@ -21,7 +21,7 @@ const MODULE_LIBRARY = path.join(__dirname, '..', '..', '..');
 const ASSEMBLE_SCRIPT = path.join(MODULE_LIBRARY, 'scripts', 'assemble-project.cjs');
 
 // Test fixtures
-const { loadFixture, applyCustomizations } = require('../../test-fixtures/index.cjs');
+const { loadFixture, applyCustomizations, getAvailableFixtures } = require('../../test-fixtures/index.cjs');
 
 // Test dashboard generator
 const { writeTestDashboard } = require('../generators/test-dashboard-generator.cjs');
@@ -52,6 +52,298 @@ const { deleteProject } = require('../services/project-deleter.cjs');
 
 // Config file for persisting API keys
 const CONFIG_FILE = path.join(__dirname, '../../.scout-config.json');
+
+// ═══════════════════════════════════════════════════════════════════════════
+// VARIANT KEY SHORTENING - Reduces Windows path length issues
+// Converts "luxury-appetizing-visual" to "lux-vis" (saves ~40 characters)
+// ═══════════════════════════════════════════════════════════════════════════
+const PRESET_ABBREV = {
+  'luxury': 'lux',
+  'friendly': 'fri',
+  'modern-minimal': 'mod',
+  'sharp-corporate': 'corp',
+  'bold-energetic': 'bold',
+  'bold': 'bld',
+  'classic-elegant': 'clas',
+  'warm': 'warm',
+  'minimal': 'min'
+};
+
+const LAYOUT_ABBREV = {
+  // Food/Restaurant
+  'appetizing-visual': 'vis',
+  'menu-focused': 'menu',
+  'story-driven': 'story',
+  // Service-based
+  'booking-focused': 'book',
+  'portfolio-showcase': 'port',
+  'team-highlight': 'team',
+  // General
+  'trust-and-call': 'trust',
+  'quote-generator': 'quote',
+  'visual-first': 'vfirst',
+  'conversion-focused': 'conv',
+  'content-heavy': 'content'
+};
+
+/**
+ * Shorten a variant key for Windows path compatibility
+ * "luxury-appetizing-visual" → "lux-vis"
+ */
+function shortenVariantKey(variantKey) {
+  if (!variantKey) return variantKey;
+
+  // Check if it's already shortened
+  const shortValues = [...Object.values(PRESET_ABBREV), ...Object.values(LAYOUT_ABBREV)];
+  const parts = variantKey.split('-');
+  if (parts.length === 2 && shortValues.includes(parts[0]) || shortValues.includes(parts[1])) {
+    return variantKey; // Already short
+  }
+
+  // Try to match preset-layout pattern
+  for (const [preset, presetAbbrev] of Object.entries(PRESET_ABBREV)) {
+    if (variantKey.startsWith(preset + '-')) {
+      const layoutPart = variantKey.substring(preset.length + 1);
+      const layoutAbbrev = LAYOUT_ABBREV[layoutPart] || layoutPart.substring(0, 4);
+      return `${presetAbbrev}-${layoutAbbrev}`;
+    }
+  }
+
+  // Fallback: just truncate
+  return variantKey.substring(0, 12);
+}
+
+/**
+ * Expand a shortened variant key back to full form (for display)
+ * "lux-vis" → "luxury-appetizing-visual"
+ */
+function expandVariantKey(shortKey) {
+  if (!shortKey) return shortKey;
+
+  const parts = shortKey.split('-');
+  if (parts.length !== 2) return shortKey;
+
+  // Reverse lookup preset
+  let preset = parts[0];
+  for (const [full, abbrev] of Object.entries(PRESET_ABBREV)) {
+    if (abbrev === parts[0]) {
+      preset = full;
+      break;
+    }
+  }
+
+  // Reverse lookup layout
+  let layout = parts[1];
+  for (const [full, abbrev] of Object.entries(LAYOUT_ABBREV)) {
+    if (abbrev === parts[1]) {
+      layout = full;
+      break;
+    }
+  }
+
+  return `${preset}-${layout}`;
+}
+
+/**
+ * Find variant directory, checking both short and long formats
+ */
+function findVariantDir(prospectDir, variantKey) {
+  const shortKey = shortenVariantKey(variantKey);
+  const longKey = variantKey;
+
+  // Check short format first (new style)
+  const shortDir = path.join(prospectDir, shortKey);
+  if (fs.existsSync(shortDir)) return { dir: shortDir, key: shortKey };
+
+  // Check long format (legacy full-test- prefix)
+  const longDir = path.join(prospectDir, `full-test-${longKey}`);
+  if (fs.existsSync(longDir)) return { dir: longDir, key: `full-test-${longKey}` };
+
+  // Check long format without prefix (in case it exists)
+  const plainLongDir = path.join(prospectDir, longKey);
+  if (fs.existsSync(plainLongDir)) return { dir: plainLongDir, key: longKey };
+
+  return null;
+}
+
+/**
+ * Check if a directory name is a variant directory (short or long format)
+ */
+function isVariantDir(dirName) {
+  // New short format: preset-layout abbreviations
+  const shortPresets = Object.values(PRESET_ABBREV);
+  const shortLayouts = Object.values(LAYOUT_ABBREV);
+  const parts = dirName.split('-');
+
+  if (parts.length === 2 && shortPresets.includes(parts[0])) {
+    return true;
+  }
+
+  // Legacy format: full-test-* prefix
+  if (dirName.startsWith('full-test-') && dirName !== 'full-test') {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Extract variant key from directory name (handles both formats)
+ */
+function getVariantKeyFromDir(dirName) {
+  if (dirName.startsWith('full-test-')) {
+    return dirName.replace('full-test-', '');
+  }
+  return dirName;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// INDUSTRY MAPPING - Maps Google/Yelp categories to fixture IDs
+// This ensures correct industry detection regardless of how prospect was saved
+// ═══════════════════════════════════════════════════════════════════════════
+const CATEGORY_TO_FIXTURE = {
+  // Automotive (Google Places returns car_repair, auto_repair, etc.)
+  'car_repair': 'auto-shop',
+  'car repair': 'auto-shop',
+  'auto_repair': 'auto-shop',
+  'auto repair': 'auto-shop',
+  'automotive': 'auto-shop',
+  'auto': 'auto-shop',
+  'mechanic': 'auto-shop',
+  'auto shop': 'auto-shop',
+  'auto_shop': 'auto-shop',
+  'car_dealer': 'auto-shop',
+  'car dealer': 'auto-shop',
+  'car_wash': 'auto-shop',
+  'car wash': 'auto-shop',
+  'tire_shop': 'auto-shop',
+  'tire shop': 'auto-shop',
+  'oil change': 'auto-shop',
+  'body shop': 'auto-shop',
+  'body_shop': 'auto-shop',
+  'motorsport vehicle repairs': 'auto-shop',
+  'motorcycle repair': 'auto-shop',
+
+  // Restaurant & Food
+  'restaurant': 'restaurant',
+  'cafe': 'restaurant',
+  'coffee_shop': 'restaurant',
+  'coffee shop': 'restaurant',
+  'bakery': 'bakery',
+  'bar': 'restaurant',
+  'food': 'restaurant',
+  'pizza': 'restaurant',
+  'pizzeria': 'restaurant',
+
+  // Healthcare
+  'doctor': 'healthcare-medical',
+  'hospital': 'healthcare-medical',
+  'clinic': 'healthcare-medical',
+  'medical': 'healthcare-medical',
+  'health': 'healthcare-medical',
+  'dentist': 'dental',
+  'dental': 'dental',
+  'dental_clinic': 'dental',
+  'veterinary_care': 'veterinary',
+  'veterinarian': 'veterinary',
+  'vet': 'veterinary',
+
+  // Beauty & Grooming
+  'hair_salon': 'salon-spa',
+  'hair salon': 'salon-spa',
+  'beauty_salon': 'salon-spa',
+  'beauty salon': 'salon-spa',
+  'salon': 'salon-spa',
+  'spa': 'salon-spa',
+  'barber_shop': 'barbershop',
+  'barber shop': 'barbershop',
+  'barbershop': 'barbershop',
+  'nail_salon': 'salon-spa',
+  'nail salon': 'salon-spa',
+
+  // Home Services
+  'plumber': 'plumber',
+  'plumbing': 'plumber',
+  'electrician': 'electrician',
+  'electrical': 'electrician',
+  'hvac': 'hvac',
+  'roofing': 'contractor',
+  'contractor': 'contractor',
+  'general_contractor': 'contractor',
+  'cleaning': 'cleaning',
+  'locksmith': 'locksmith',
+
+  // Real Estate
+  'real_estate_agency': 'real-estate',
+  'real estate agency': 'real-estate',
+  'real_estate_agent': 'real-estate',
+  'real estate': 'real-estate',
+  'realtor': 'real-estate',
+
+  // Fitness
+  'gym': 'fitness-gym',
+  'fitness': 'fitness-gym',
+  'yoga': 'yoga',
+  'yoga_studio': 'yoga',
+
+  // Legal & Professional
+  'lawyer': 'law-firm',
+  'attorney': 'law-firm',
+  'law_firm': 'law-firm',
+  'law firm': 'law-firm',
+  'accountant': 'accounting',
+  'accounting': 'accounting',
+
+  // Retail
+  'store': 'ecommerce',
+  'shop': 'ecommerce',
+  'retail': 'ecommerce',
+  'clothing_store': 'ecommerce',
+  'jewelry_store': 'ecommerce',
+  'florist': 'florist'
+};
+
+/**
+ * Re-calculate fixture ID from raw category data
+ * This fixes prospects that were saved with incorrect fixtureId
+ *
+ * @param {string} googleCategory - The primary category from Google (e.g., "car_repair")
+ * @param {string[]} yelpCategories - Array of Yelp categories (e.g., ["Auto Repair", "Motorcycle Repair"])
+ * @returns {string|null} The correct fixture ID, or null if can't determine
+ */
+function recalculateFixtureId(googleCategory, yelpCategories = []) {
+  // 1. Try direct match with Google category
+  const normalizedGoogle = (googleCategory || '').toLowerCase().trim();
+  if (CATEGORY_TO_FIXTURE[normalizedGoogle]) {
+    return CATEGORY_TO_FIXTURE[normalizedGoogle];
+  }
+
+  // 2. Try partial match with Google category
+  for (const [key, fixture] of Object.entries(CATEGORY_TO_FIXTURE)) {
+    if (normalizedGoogle.includes(key) || key.includes(normalizedGoogle)) {
+      return fixture;
+    }
+  }
+
+  // 3. Try Yelp categories (normalize and check)
+  if (Array.isArray(yelpCategories)) {
+    for (const yelpCat of yelpCategories) {
+      const normalizedYelp = (yelpCat || '').toLowerCase().trim();
+      if (CATEGORY_TO_FIXTURE[normalizedYelp]) {
+        return CATEGORY_TO_FIXTURE[normalizedYelp];
+      }
+      // Partial match
+      for (const [key, fixture] of Object.entries(CATEGORY_TO_FIXTURE)) {
+        if (normalizedYelp.includes(key) || key.includes(normalizedYelp)) {
+          return fixture;
+        }
+      }
+    }
+  }
+
+  // 4. No match found - return null (caller should use existing fixtureId or default)
+  return null;
+}
 
 // Load saved config or use env
 function loadConfig() {
@@ -515,11 +807,12 @@ router.get('/prospects', (req, res) => {
         const prospectDir = path.join(PROSPECTS_DIR, folder);
         const prospectDirs = fs.readdirSync(prospectDir);
 
-        // Count preset-layout variants (new format: full-test-{preset}-{layout})
-        // Also count old archetype variants for backwards compatibility
+        // Count preset-layout variants (both short and long formats)
+        // Short format: lux-vis, fri-menu (new)
+        // Long format: full-test-luxury-appetizing-visual (legacy)
         let variantCount = 0;
         for (const dir of prospectDirs) {
-          if (dir.startsWith('full-test-') && dir !== 'full-test') {
+          if (isVariantDir(dir)) {
             // Check if it has a frontend directory (may not have dist if skipBuild was used)
             const hasFrontend = fs.existsSync(path.join(prospectDir, dir, 'frontend'));
             if (hasFrontend) {
@@ -1047,9 +1340,26 @@ router.post('/prospects/:folder/unified-generate', async (req, res) => {
     }
 
     const prospect = JSON.parse(fs.readFileSync(prospectFile, 'utf-8'));
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // FIX: Re-calculate fixtureId from raw Google/Yelp category data
+    // This ensures we use the correct industry even if the prospect was saved
+    // with a stale or incorrect fixtureId
+    // ═══════════════════════════════════════════════════════════════════════
+    const rawCategory = prospect.category || prospect.raw?.primaryType || prospect.raw?.types?.[0] || '';
+    const recalculatedFixtureId = recalculateFixtureId(rawCategory, prospect.research?.categories);
+
+    if (recalculatedFixtureId && recalculatedFixtureId !== prospect.fixtureId) {
+      console.log(`   🔧 FIXING fixtureId: "${prospect.fixtureId}" → "${recalculatedFixtureId}" (from category: ${rawCategory})`);
+      prospect.fixtureId = recalculatedFixtureId;
+      // Save the corrected fixtureId back to the prospect file
+      fs.writeFileSync(prospectFile, JSON.stringify(prospect, null, 2));
+    }
+
     console.log(`\n🚀 UNIFIED GENERATION: ${prospect.name}`);
     console.log(`   Mode: ${isAIMode ? `🤖 AI (Level ${aiLevel}: ${AI_LEVEL_NAMES[aiLevel]})` : '🧪 Test (Free)'}`);
     console.log(`   Input Level: ${inputLevel}`);
+    console.log(`   Industry: ${prospect.fixtureId} (from category: ${rawCategory})`);
     console.log(`   Variants: ${variants.enabled ? 'Yes' : 'No'}`);
 
     // 2. Generate inputs based on level (or use custom)
@@ -1090,15 +1400,60 @@ router.post('/prospects/:folder/unified-generate', async (req, res) => {
     let variantsToGenerate = [{ suffix: '', preset: null, layout: null }]; // Default: single generation
 
     // Smart layout-preset pairings: each layout has an ideal preset that matches its character
+    // IMPORTANT: These must match actual layout IDs from industry-layouts.cjs
     const LAYOUT_PRESET_PAIRINGS = {
-      // Artisan food layouts
+      // ═══════════════════════════════════════════════════════════════════════════
+      // RESTAURANTS/FOOD (from restaurants-food category)
+      // ═══════════════════════════════════════════════════════════════════════════
       'appetizing-visual': 'friendly',     // Local/community vibe → warm, friendly
       'menu-focused': 'bold-energetic',    // Conversion/ecommerce → bold, action-oriented
       'story-driven': 'luxury',            // Premium/luxury → elegant, refined
-      // General layouts
+
+      // ═══════════════════════════════════════════════════════════════════════════
+      // AUTOMOTIVE (from automotive category)
+      // ═══════════════════════════════════════════════════════════════════════════
+      'service-focused': 'friendly',       // Trust-builder for repair shops → friendly, reliable
+      'inventory-showcase': 'bold-energetic', // Dealership browsing → bold, action-oriented
+      'premium-detail': 'luxury',          // Detailing/custom work → premium, refined
+
+      // ═══════════════════════════════════════════════════════════════════════════
+      // BEAUTY & GROOMING (salons, spas, barbershops) - NEW DEDICATED CATEGORY
+      // ═══════════════════════════════════════════════════════════════════════════
+      'serene-luxury-spa': 'luxury',          // High-end spas, med spas → elegant, refined
+      'modern-minimal-salon': 'bold-energetic', // Hair/nail salons → bold, contemporary
+      'masculine-classic-barber': 'friendly', // Barbershops → traditional, community-focused
+
+      // ═══════════════════════════════════════════════════════════════════════════
+      // FITNESS-WELLNESS (gyms, yoga, fitness studios)
+      // ═══════════════════════════════════════════════════════════════════════════
+      'motivation-driven': 'bold-energetic', // Inspiring visuals → energetic, bold
+      'class-scheduler': 'friendly',        // Booking focus → approachable, easy
+      'wellness-calm': 'luxury',            // Peaceful design → refined, calming
+
+      // ═══════════════════════════════════════════════════════════════════════════
+      // DENTAL (from dental category)
+      // ═══════════════════════════════════════════════════════════════════════════
+      'smile-showcase': 'friendly',        // Visual-first, before/after → warm, confident
+      'family-dental': 'friendly',         // Family practice → warm, welcoming
+      'clinical-excellence': 'modern-minimal', // High-tech focus → clean, professional
+
+      // ═══════════════════════════════════════════════════════════════════════════
+      // HOME SERVICES (plumber, cleaning, etc.)
+      // ═══════════════════════════════════════════════════════════════════════════
+      'trust-and-call': 'friendly',        // Build trust fast → reliable, local
+      'quote-generator': 'bold-energetic', // Lead generation → action-oriented
+      'portfolio-showcase': 'luxury',      // Show quality work → premium craftsmanship
+
+      // ═══════════════════════════════════════════════════════════════════════════
+      // GENERAL / FALLBACK LAYOUTS
+      // ═══════════════════════════════════════════════════════════════════════════
       'visual-first': 'friendly',
       'conversion-focused': 'bold-energetic',
       'content-heavy': 'modern-minimal',
+      'layout-a': 'friendly',              // Fallback layout
+      'layout-b': 'bold-energetic',        // Fallback layout
+      'layout-c': 'luxury',                // Fallback layout
+
       // Fallback
       'default': 'friendly'
     };
@@ -1108,7 +1463,14 @@ router.post('/prospects/:folder/unified-generate', async (req, res) => {
 
       // Check if smart pairing is requested (new default behavior)
       const useSmartPairing = variants.smartPairing !== false;
-      const layouts = variants.layouts || ['appetizing-visual', 'menu-focused', 'story-driven'];
+
+      // Get industry-specific layouts dynamically (NO MORE HARDCODED RESTAURANT LAYOUTS!)
+      const fixtureIdForLayouts = prospect.fixtureId || 'restaurant';
+      const industryLayouts = getIndustryLayouts(fixtureIdForLayouts);
+      const defaultLayouts = industryLayouts.map(l => l.id);
+      const layouts = variants.layouts || defaultLayouts;
+
+      console.log(`   🏭 Industry: ${fixtureIdForLayouts} → Layouts: ${defaultLayouts.join(', ')}`);
 
       if (useSmartPairing) {
         // Smart pairing: each layout gets its ideal preset automatically
@@ -1197,7 +1559,10 @@ router.post('/prospects/:folder/unified-generate', async (req, res) => {
         variant: variantLabel
       });
 
-      const testDirName = variant.suffix ? `full-test${variant.suffix}` : 'full-test';
+      // Use shortened directory names for Windows path compatibility
+      // variant.suffix is like "-luxury-appetizing-visual" → extract "luxury-appetizing-visual" → shorten to "lux-vis"
+      const variantKey = variant.suffix ? variant.suffix.replace(/^-/, '') : null;
+      const testDirName = variantKey ? shortenVariantKey(variantKey) : 'main';
       const testDir = path.join(prospectDir, testDirName);
 
       // Clear existing directory
@@ -1226,7 +1591,7 @@ router.post('/prospects/:folder/unified-generate', async (req, res) => {
       const industry = FIXTURE_TO_ASSEMBLER[fixtureId] || fixtureId;
 
       await new Promise((resolve, reject) => {
-        const args = [ASSEMBLE_SCRIPT, '--name', testDirName.replace('full-test', 'full-test') || 'full-test', '--industry', industry];
+        const args = [ASSEMBLE_SCRIPT, '--name', testDirName, '--industry', industry];
         const child = spawn('node', args, {
           cwd: MODULE_LIBRARY,
           env: { ...process.env, MODULE_LIBRARY_PATH: MODULE_LIBRARY, OUTPUT_PATH: prospectDir }
@@ -2165,10 +2530,13 @@ router.get('/prospects/:folder/variants', (req, res) => {
       }
     }
 
-    // Check for new 18-variant system (preset-theme combinations)
+    // Check for new variant system (both short and long formats)
+    // Short: lux-vis, fri-menu (new shorter format for Windows)
+    // Long: full-test-luxury-appetizing-visual (legacy format)
     for (const dir of dirs) {
-      if (dir.startsWith('full-test-') && !archetypeConfig[dir]) {
-        const variantKey = dir.replace('full-test-', '');
+      if (isVariantDir(dir) && !archetypeConfig[dir]) {
+        const variantKey = getVariantKeyFromDir(dir);
+        const fullKey = expandVariantKey(variantKey); // Expand short keys for display
         const distDir = path.join(prospectDir, dir, 'frontend', 'dist');
 
         // Try to load variant metrics for detailed info
@@ -2185,12 +2553,13 @@ router.get('/prospects/:folder/variants', (req, res) => {
           variants.push({
             id: variantKey,
             key: variantKey,
-            preset: variantInfo?.preset || variantKey.split('-').slice(0, -1).join('-'),
-            presetName: variantInfo?.presetName || variantKey,
+            dirName: dir,  // Actual directory name for URL building
+            preset: variantInfo?.preset || fullKey.split('-').slice(0, -1).join('-'),
+            presetName: variantInfo?.presetName || fullKey,
             presetIcon: variantInfo?.presetIcon || '🎨',
             presetColor: variantInfo?.presetColor || '#6B7280',
-            theme: variantInfo?.theme || variantKey.split('-').pop(),
-            name: variantInfo?.presetName ? `${variantInfo.presetName} (${variantInfo.theme})` : variantKey,
+            theme: variantInfo?.theme || fullKey.split('-').pop(),
+            name: variantInfo?.presetName ? `${variantInfo.presetName} (${variantInfo.theme})` : fullKey,
             color: variantInfo?.presetColor || '#6B7280',
             icon: variantInfo?.presetIcon || '🎨',
             success: true,
@@ -2968,24 +3337,39 @@ const VARIANT_PRESETS = [
 
 // Get layouts for an industry (returns 3 layout options)
 function getIndustryLayouts(fixtureId) {
-  // Map fixture IDs to industry layout categories
+  // Map fixture IDs to industry layout categories (must match keys in INDUSTRY_LAYOUTS)
   const fixtureToCategory = {
+    // Food & Beverage
     'bakery': 'restaurants-food',
     'restaurant': 'restaurants-food',
     'coffee-cafe': 'restaurants-food',
     'pizza-restaurant': 'restaurants-food',
     'steakhouse': 'restaurants-food',
+
+    // Healthcare
     'dental': 'dental',
     'healthcare': 'healthcare-medical',
-    'salon-spa': 'grooming',
-    'barbershop': 'grooming',
+
+    // Beauty & Grooming (dedicated category with 3 specialized layouts)
+    'salon-spa': 'beauty-grooming',
+    'barbershop': 'beauty-grooming',
+
+    // Fitness & Wellness (gyms, yoga, etc.)
     'fitness-gym': 'fitness-wellness',
     'yoga': 'fitness-wellness',
+
+    // Professional Services
     'law-firm': 'professional-services',
     'real-estate': 'real-estate',
+
+    // Home Services
     'plumber': 'home-services',
     'cleaning': 'home-services',
+
+    // Automotive
     'auto-shop': 'automotive',
+
+    // Tech & Commerce
     'saas': 'saas-tech',
     'ecommerce': 'ecommerce-retail',
     'school': 'education'
@@ -3470,7 +3854,8 @@ router.get('/prospects/:folder/master-metrics', (req, res) => {
     let totalFiles = 0;
 
     for (const dir of dirs) {
-      if (dir.startsWith('full-test-')) {
+      // Check both short (lux-vis) and long (full-test-*) formats
+      if (isVariantDir(dir)) {
         const variantDir = path.join(prospectDir, dir);
         const variantMetricsFile = path.join(variantDir, 'variant-metrics.json');
         const metricsFile = path.join(variantDir, 'metrics.json'); // Also check metrics.json
@@ -3509,9 +3894,10 @@ router.get('/prospects/:folder/master-metrics', (req, res) => {
           totalFiles += files;
         } else {
           // No metrics file - extract variant key from directory name
-          const variantKey = dir.replace('full-test-', '');
+          const variantKey = getVariantKeyFromDir(dir);
           variants.push({
             key: variantKey,
+            dirName: dir,
             success: fs.existsSync(path.join(variantDir, 'frontend', 'dist')),
             previewUrl: `/prospect-preview/${folder}/${dir}/frontend/`
           });
@@ -3540,6 +3926,7 @@ router.get('/prospects/:folder/master-metrics', (req, res) => {
 /**
  * POST /api/scout/prospects/:folder/build-variant
  * Build a single variant's frontend
+ * Supports both short (lux-vis) and long (full-test-luxury-appetizing-visual) formats
  */
 router.post('/prospects/:folder/build-variant', async (req, res) => {
   const { folder } = req.params;
@@ -3551,14 +3938,21 @@ router.post('/prospects/:folder/build-variant', async (req, res) => {
 
   try {
     const prospectDir = path.join(PROSPECTS_DIR, folder);
-    const variantDir = path.join(prospectDir, `full-test-${variantKey}`);
+
+    // Find variant directory (supports both short and long formats)
+    const variantResult = findVariantDir(prospectDir, variantKey);
+    if (!variantResult) {
+      return res.status(404).json({ error: 'Variant not found' });
+    }
+
+    const { dir: variantDir, key: actualDirName } = variantResult;
     const frontendDir = path.join(variantDir, 'frontend');
 
     if (!fs.existsSync(frontendDir)) {
       return res.status(404).json({ error: 'Variant frontend not found' });
     }
 
-    console.log(`\n📦 Building variant: ${variantKey}`);
+    console.log(`\n📦 Building variant: ${variantKey} (dir: ${actualDirName})`);
 
     const { execSync } = require('child_process');
 
@@ -3583,7 +3977,7 @@ router.post('/prospects/:folder/build-variant', async (req, res) => {
     res.json({
       success: true,
       message: `Built ${variantKey}`,
-      previewUrl: `/prospect-preview/${folder}/full-test-${variantKey}/frontend/`
+      previewUrl: `/prospect-preview/${folder}/${actualDirName}/frontend/`
     });
 
   } catch (err) {
@@ -3596,6 +3990,7 @@ router.post('/prospects/:folder/build-variant', async (req, res) => {
  * DELETE /api/scout/prospects/:folder/bulk-delete-variants
  * Delete all variants or specific ones
  * Also cleans up deployed variants from Railway/GitHub/Cloudflare
+ * Supports both short (lux-vis) and long (full-test-luxury-appetizing-visual) formats
  *
  * Query params:
  *   - all=true: Delete all variants
@@ -3615,31 +4010,38 @@ router.delete('/prospects/:folder/bulk-delete-variants', async (req, res) => {
     const deleted = [];
     const failed = [];
 
-    // Get list of variants to delete
-    let variantsToDelete = [];
+    // Get list of variant directories to delete
+    let variantDirsToDelete = [];
 
     if (all === 'true') {
-      // Find all variant directories
+      // Find all variant directories (both short and long formats)
       const dirs = fs.readdirSync(prospectDir);
       for (const dir of dirs) {
-        if (dir.startsWith('full-test-')) {
-          variantsToDelete.push(dir.replace('full-test-', ''));
+        if (isVariantDir(dir)) {
+          variantDirsToDelete.push({ dir, key: getVariantKeyFromDir(dir) });
         }
       }
     } else if (variants) {
-      variantsToDelete = variants.split(',').map(v => v.trim());
+      // Find each specified variant (supports both formats)
+      const requestedVariants = variants.split(',').map(v => v.trim());
+      for (const variant of requestedVariants) {
+        const result = findVariantDir(prospectDir, variant);
+        if (result) {
+          variantDirsToDelete.push({ dir: result.key, key: variant });
+        }
+      }
     }
 
-    console.log(`🗑️ Deleting ${variantsToDelete.length} variants for ${folder}`);
+    console.log(`🗑️ Deleting ${variantDirsToDelete.length} variants for ${folder}`);
 
-    for (const variant of variantsToDelete) {
-      const variantDir = path.join(prospectDir, `full-test-${variant}`);
+    for (const { dir: dirName, key: variant } of variantDirsToDelete) {
+      const variantDir = path.join(prospectDir, dirName);
 
       try {
         // Delete local directory
         if (fs.existsSync(variantDir)) {
           fs.rmSync(variantDir, { recursive: true, force: true });
-          console.log(`   ✅ Deleted local: full-test-${variant}`);
+          console.log(`   ✅ Deleted local: ${dirName}`);
         }
 
         // Try to delete deployed version if it exists
@@ -3730,7 +4132,8 @@ router.post('/prospects/:folder/deploy-variants', async (req, res) => {
       let existingDeployment = null;
 
       for (const dir of dirs) {
-        if (dir.startsWith('full-test-')) {
+        // Check both short (lux-vis) and long (full-test-*) formats
+        if (isVariantDir(dir)) {
           const metricsPath = path.join(prospectDir, dir, 'variant-metrics.json');
           const altMetricsPath = path.join(prospectDir, dir, 'metrics.json');
 
@@ -3740,7 +4143,8 @@ router.post('/prospects/:folder/deploy-variants', async (req, res) => {
                 const metrics = JSON.parse(fs.readFileSync(mPath, 'utf-8'));
                 if (metrics.deployed && metrics.deployedUrl) {
                   existingDeployment = {
-                    variant: dir.replace('full-test-', ''),
+                    variant: getVariantKeyFromDir(dir),
+                    dirName: dir,
                     url: metrics.deployedUrl,
                     deployedAt: metrics.deployedAt
                   };
@@ -3771,8 +4175,9 @@ router.post('/prospects/:folder/deploy-variants', async (req, res) => {
     if (force) {
       const dirs = fs.readdirSync(prospectDir);
       for (const dir of dirs) {
-        if (dir.startsWith('full-test-')) {
-          const variantKey = dir.replace('full-test-', '');
+        // Check both short (lux-vis) and long (full-test-*) formats
+        if (isVariantDir(dir)) {
+          const variantKey = getVariantKeyFromDir(dir);
           // Don't clear the variant we're about to deploy
           if (variants.includes(variantKey)) continue;
 
@@ -3803,9 +4208,10 @@ router.post('/prospects/:folder/deploy-variants', async (req, res) => {
     console.log(`🚀 Deploying ${variants.length} variants for ${prospect.name}${force ? ' (forced)' : ''}`);
 
     for (const variant of variants) {
-      const variantDir = path.join(prospectDir, `full-test-${variant}`);
+      // Find variant directory (supports both short and long formats)
+      const variantResult = findVariantDir(prospectDir, variant);
 
-      if (!fs.existsSync(variantDir)) {
+      if (!variantResult) {
         deployResults.push({
           variant,
           success: false,
@@ -3813,6 +4219,8 @@ router.post('/prospects/:folder/deploy-variants', async (req, res) => {
         });
         continue;
       }
+
+      const variantDir = variantResult.dir;
 
       // Create subdomain from business name only (variant is just for internal selection)
       // Test: test-cristys-cake-shop.be1st.io
@@ -4620,6 +5028,1378 @@ router.get('/leaderboard', (req, res) => {
     console.error('Leaderboard error:', err);
     res.status(500).json({ error: err.message });
   }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// INDUSTRY TEST SUITE
+// Generate one variant for each industry type for comparison testing
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * POST /api/scout/industry-test-suite
+ * Generate one variant for each industry to test/compare across all categories
+ *
+ * Request body:
+ * {
+ *   skipBuild: false,         // Skip npm build validation
+ *   preset: 'friendly',       // Force specific preset (optional)
+ *   layoutIndex: 0,           // Which layout to use (0, 1, or 2)
+ *   industries: null,         // Specific industries to test (null = all)
+ *   namePrefix: 'test-'       // Prefix for generated test prospects
+ * }
+ *
+ * Response: SSE stream with progress updates, then final results
+ */
+router.post('/industry-test-suite', async (req, res) => {
+  const {
+    skipBuild = false,
+    preset = null,           // null = use smart pairing
+    layoutIndex = 0,         // First layout from each industry
+    industries = null,       // null = all industries
+    namePrefix = 'industry-test-',
+    layoutVariant = null     // 'A', 'B', or 'C' - use design research layouts
+  } = req.body || {};
+
+  // Set up SSE for progress streaming
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
+  const sendProgress = (data) => {
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+  };
+
+  const sendComplete = (result) => {
+    res.write(`data: ${JSON.stringify({ step: 'complete', ...result })}\n\n`);
+    res.end();
+  };
+
+  const sendError = (error) => {
+    res.write(`data: ${JSON.stringify({ step: 'error', error: error.message || error })}\n\n`);
+    res.end();
+  };
+
+  try {
+    const startTime = Date.now();
+    sendProgress({ step: 'init', status: 'Starting Industry Test Suite...', progress: 0 });
+
+    // Get available fixtures
+    const availableFixtures = getAvailableFixtures();
+    const fixturesToTest = industries
+      ? availableFixtures.filter(f => industries.includes(f.id) && f.available)
+      : availableFixtures.filter(f => f.available);
+
+    const totalIndustries = fixturesToTest.length;
+    console.log(`\n🧪 INDUSTRY TEST SUITE: Testing ${totalIndustries} industries`);
+
+    const results = {
+      success: [],
+      failed: [],
+      skipped: [],
+      metrics: {
+        totalTime: 0,
+        totalLinesOfCode: 0,
+        totalFiles: 0,
+        totalPages: 0
+      }
+    };
+
+    // Smart layout-preset pairings (copied from unified-generate)
+    const LAYOUT_PRESET_PAIRINGS = {
+      'appetizing-visual': 'friendly',
+      'menu-focused': 'bold-energetic',
+      'story-driven': 'luxury',
+      'service-focused': 'friendly',
+      'inventory-showcase': 'bold-energetic',
+      'premium-detail': 'luxury',
+      'serene-luxury-spa': 'luxury',
+      'modern-minimal-salon': 'bold-energetic',
+      'masculine-classic-barber': 'friendly',
+      'motivation-driven': 'bold-energetic',
+      'class-scheduler': 'friendly',
+      'wellness-calm': 'luxury',
+      'smile-showcase': 'friendly',
+      'family-dental': 'friendly',
+      'clinical-excellence': 'modern-minimal',
+      'trust-and-call': 'friendly',
+      'quote-generator': 'bold-energetic',
+      'portfolio-showcase': 'luxury',
+      'visual-first': 'friendly',
+      'conversion-focused': 'bold-energetic',
+      'content-heavy': 'modern-minimal',
+      'default': 'friendly'
+    };
+
+    // Generate each industry
+    for (let i = 0; i < fixturesToTest.length; i++) {
+      const fixture = fixturesToTest[i];
+      const progressPct = Math.round(((i + 1) / totalIndustries) * 100);
+
+      sendProgress({
+        step: 'generating',
+        status: `${fixture.icon} Generating ${fixture.name}...`,
+        progress: progressPct,
+        current: i + 1,
+        total: totalIndustries,
+        industry: fixture.id
+      });
+
+      console.log(`\n   [${i + 1}/${totalIndustries}] ${fixture.icon} ${fixture.name} (${fixture.id})`);
+
+      try {
+        // Load the fixture
+        const fixtureData = loadFixture(fixture.id);
+
+        // Get industry layouts
+        const industryLayouts = getIndustryLayouts(fixture.id);
+        let selectedLayout = industryLayouts[Math.min(layoutIndex, industryLayouts.length - 1)];
+        let variantLabel = null;
+
+        // If layoutVariant is specified (A, B, C), use design research layouts
+        let extractedTheme = null;  // Theme from analyzed reference site
+        if (layoutVariant && fixtureData.designResearch?.layoutVariations?.[layoutVariant]) {
+          const researchLayout = fixtureData.designResearch.layoutVariations[layoutVariant];
+          variantLabel = `layout-${layoutVariant.toLowerCase()}`;
+          // Map design research layout name to an existing layout if possible
+          const layoutNameLower = (researchLayout.name || '').toLowerCase();
+          const matchingLayout = industryLayouts.find(l =>
+            l.name.toLowerCase().includes(layoutNameLower.split(' ')[0]) ||
+            layoutNameLower.includes(l.name.toLowerCase().split(' ')[0])
+          );
+          if (matchingLayout) {
+            selectedLayout = matchingLayout;
+          }
+          console.log(`      Using design research Layout ${layoutVariant}: ${researchLayout.name}`);
+
+          // Get the theme from the corresponding reference website
+          const refIndex = researchLayout.referenceIndex ?? ({'A': 0, 'B': 1, 'C': 2}[layoutVariant] ?? 0);
+          const refSites = fixtureData.designResearch.referenceWebsites || [];
+          const refSite = refSites[Math.min(refIndex, refSites.length - 1)];
+
+          if (refSite?.extractedTheme) {
+            extractedTheme = refSite.extractedTheme;
+            console.log(`      🎨 Using theme from: ${refSite.name}`);
+            console.log(`         Primary: ${extractedTheme.colors?.primary || 'N/A'}, Style: ${extractedTheme.style || 'N/A'}`);
+          } else if (refSite) {
+            console.log(`      ⚠️ Reference site "${refSite.name}" not analyzed yet (run: node scripts/analyze-reference-sites.cjs)`);
+          }
+        }
+
+        // Determine preset (smart pairing or forced)
+        const selectedPreset = preset || LAYOUT_PRESET_PAIRINGS[selectedLayout.id] || 'friendly';
+
+        // Create test prospect folder
+        const prospectFolder = layoutVariant
+          ? `research-${fixture.id}`
+          : `${namePrefix}${fixture.id}`;
+        const prospectDir = path.join(PROSPECTS_DIR, prospectFolder);
+        const prospectFile = path.join(prospectDir, 'prospect.json');
+
+        // Ensure directory exists
+        if (!fs.existsSync(prospectDir)) {
+          fs.mkdirSync(prospectDir, { recursive: true });
+        }
+
+        // Create prospect.json
+        const prospect = {
+          name: fixtureData.business?.name || fixture.name,
+          businessName: fixtureData.business?.name || fixture.name,
+          fixtureId: fixture.id,
+          category: fixture.name,
+          industryIcon: fixture.icon,
+          isIndustryTest: true,
+          createdAt: new Date().toISOString(),
+          address: fixtureData.business?.address || '123 Test St',
+          phone: fixtureData.business?.phone || '555-0100',
+          website: fixtureData.business?.website || null
+        };
+        fs.writeFileSync(prospectFile, JSON.stringify(prospect, null, 2));
+
+        // Generate the variant
+        const variantSuffix = variantLabel || `${selectedPreset}-${selectedLayout.id}`;
+        const testDir = path.join(prospectDir, variantLabel || `full-test-${selectedPreset}-${selectedLayout.id}`);
+
+        const master = new MasterAgent({ verbose: false });
+        const genStartTime = Date.now();
+
+        // Build style overrides - merge extracted theme if available
+        const baseStyleOverrides = {
+          preset: selectedPreset,
+          moodSliders: getMoodSlidersFromVariant(selectedPreset)
+        };
+
+        // If we have an extracted theme from a reference site, apply it
+        if (extractedTheme) {
+          if (extractedTheme.colors) {
+            baseStyleOverrides.colors = extractedTheme.colors;
+          }
+          if (extractedTheme.fonts) {
+            baseStyleOverrides.fontHeading = extractedTheme.fonts.heading
+              ? `'${extractedTheme.fonts.heading}', system-ui, sans-serif`
+              : undefined;
+            baseStyleOverrides.fontBody = extractedTheme.fonts.body
+              ? `'${extractedTheme.fonts.body}', system-ui, sans-serif`
+              : undefined;
+          }
+          // Use the extracted colors as-is - don't force dark mode
+          // The reference site's actual colors are what we want to match
+        }
+
+        const generationResult = await master.generateProject({
+          projectName: prospectFolder,
+          fixtureId: fixture.id,
+          testMode: true,
+          runBuild: !skipBuild,
+          outputPath: testDir,
+          prospectData: prospect,
+          // Style overrides (includes extracted theme if available)
+          styleOverrides: baseStyleOverrides,
+          // Layout archetype
+          layoutArchetype: selectedLayout.id,
+          archetypePages: selectedLayout.sectionOrder || null,
+          // Pass reference site info for potential use
+          designReference: extractedTheme ? {
+            theme: extractedTheme,
+            source: fixtureData.designResearch?.referenceWebsites?.[
+              fixtureData.designResearch?.layoutVariations?.[layoutVariant]?.referenceIndex ??
+              ({'A': 0, 'B': 1, 'C': 2}[layoutVariant] ?? 0)
+            ]
+          } : null
+        });
+
+        const genTime = Date.now() - genStartTime;
+
+        if (generationResult.success) {
+          // Calculate metrics for this generation
+          const linesOfCode = countLinesOfCode(testDir);
+          const fileCount = countFiles(testDir);
+          const pageCount = generationResult.pageCount || Object.keys(fixtureData.pages || {}).length;
+
+          results.success.push({
+            industry: fixture.id,
+            name: fixture.name,
+            icon: fixture.icon,
+            preset: selectedPreset,
+            layout: selectedLayout.id,
+            folder: prospectFolder,
+            variant: `full-test-${variantSuffix}`,
+            path: testDir,
+            metrics: {
+              generationTimeMs: genTime,
+              linesOfCode,
+              fileCount,
+              pageCount,
+              pagesPerSecond: pageCount / (genTime / 1000)
+            }
+          });
+
+          // Update aggregate metrics
+          results.metrics.totalLinesOfCode += linesOfCode;
+          results.metrics.totalFiles += fileCount;
+          results.metrics.totalPages += pageCount;
+
+          // Update prospect with generation info
+          prospect.testGenerated = true;
+          prospect.testGeneratedAt = new Date().toISOString();
+          prospect.generationTimeMs = genTime;
+          prospect.testPath = testDir;
+          prospect.testPreset = selectedPreset;
+          prospect.testLayout = selectedLayout.id;
+          fs.writeFileSync(prospectFile, JSON.stringify(prospect, null, 2));
+
+          console.log(`      ✅ Success: ${pageCount} pages, ${linesOfCode} LOC, ${genTime}ms`);
+        } else {
+          results.failed.push({
+            industry: fixture.id,
+            name: fixture.name,
+            icon: fixture.icon,
+            errors: generationResult.errors || ['Unknown error']
+          });
+          console.log(`      ❌ Failed: ${generationResult.errors?.join(', ') || 'Unknown error'}`);
+        }
+
+      } catch (err) {
+        results.failed.push({
+          industry: fixture.id,
+          name: fixture.name,
+          icon: fixture.icon,
+          errors: [err.message]
+        });
+        console.log(`      ❌ Error: ${err.message}`);
+      }
+    }
+
+    // Calculate final metrics
+    results.metrics.totalTime = Date.now() - startTime;
+    results.metrics.industriesPerSecond = results.success.length / (results.metrics.totalTime / 1000);
+
+    console.log(`\n🏁 INDUSTRY TEST SUITE COMPLETE`);
+    console.log(`   ✅ Success: ${results.success.length}/${totalIndustries}`);
+    console.log(`   ❌ Failed: ${results.failed.length}`);
+    console.log(`   📊 Total: ${results.metrics.totalLinesOfCode.toLocaleString()} LOC, ${results.metrics.totalPages} pages`);
+    console.log(`   ⏱️  Time: ${(results.metrics.totalTime / 1000).toFixed(1)}s\n`);
+
+    // Generate the viewer HTML page
+    const viewerPath = generateIndustryTestViewer(results, PROSPECTS_DIR);
+    console.log(`   📄 Viewer: ${viewerPath}`);
+
+    sendComplete({
+      success: true,
+      summary: {
+        successCount: results.success.length,
+        failedCount: results.failed.length,
+        totalIndustries
+      },
+      results,
+      metrics: results.metrics,
+      viewerUrl: '/output/prospects/_industry-test-viewer.html'
+    });
+
+  } catch (err) {
+    console.error('Industry test suite error:', err);
+    sendError(err);
+  }
+});
+
+/**
+ * GET /api/scout/industry-test-suite/viewer
+ * Regenerate and return the viewer HTML page from existing tests
+ */
+router.get('/industry-test-suite/viewer', (req, res) => {
+  try {
+    const availableFixtures = getAvailableFixtures();
+    const industries = [];
+
+    // Include industry-test-* folders
+    for (const fixture of availableFixtures) {
+      if (!fixture.available) continue;
+
+      const prospectFolder = `industry-test-${fixture.id}`;
+      const prospectDir = path.join(PROSPECTS_DIR, prospectFolder);
+      const prospectFile = path.join(prospectDir, 'prospect.json');
+
+      if (fs.existsSync(prospectFile)) {
+        const prospect = JSON.parse(fs.readFileSync(prospectFile, 'utf-8'));
+        if (prospect.testGenerated) {
+          const variantSuffix = `${prospect.testPreset}-${prospect.testLayout}`;
+          industries.push({
+            industry: fixture.id,
+            name: fixture.name,
+            icon: fixture.icon,
+            preset: prospect.testPreset,
+            layout: prospect.testLayout,
+            folder: prospectFolder,
+            variant: `full-test-${variantSuffix}`,
+            path: prospect.testPath,
+            metrics: {
+              generationTimeMs: prospect.generationTimeMs,
+              linesOfCode: countLinesOfCode(prospect.testPath),
+              pageCount: Object.keys(require(path.join(PROSPECTS_DIR, '..', '..', 'test-fixtures', `${fixture.id}.json`)).pages || {}).length
+            }
+          });
+        }
+      }
+    }
+
+    // Also include research-* folders (Design Research layouts A/B/C)
+    const prospectFolders = fs.readdirSync(PROSPECTS_DIR).filter(f => f.startsWith('research-'));
+    for (const folder of prospectFolders) {
+      const folderPath = path.join(PROSPECTS_DIR, folder);
+      if (!fs.statSync(folderPath).isDirectory()) continue;
+
+      const industryId = folder.replace('research-', '');
+      const fixture = availableFixtures.find(f => f.id === industryId);
+
+      // Find layout-a, layout-b, layout-c subfolders
+      const layoutFolders = fs.readdirSync(folderPath).filter(f => f.startsWith('layout-'));
+      for (const layoutFolder of layoutFolders) {
+        const layoutPath = path.join(folderPath, layoutFolder);
+        const distPath = path.join(layoutPath, 'frontend', 'dist', 'index.html');
+
+        if (fs.existsSync(distPath)) {
+          const layoutLetter = layoutFolder.replace('layout-', '').toUpperCase();
+          industries.push({
+            industry: industryId,
+            name: `${fixture?.name || industryId} (Layout ${layoutLetter})`,
+            icon: fixture?.icon || '📦',
+            preset: 'research',
+            layout: `Layout ${layoutLetter}`,
+            folder: folder,
+            variant: layoutFolder,
+            path: layoutPath,
+            metrics: {
+              linesOfCode: countLinesOfCode(layoutPath),
+              pageCount: 4
+            }
+          });
+        }
+      }
+    }
+
+    if (industries.length === 0) {
+      return res.status(404).json({ error: 'No industry tests found. Run the test suite first.' });
+    }
+
+    // Generate the viewer
+    const results = { success: industries };
+    const viewerPath = generateIndustryTestViewer(results, PROSPECTS_DIR);
+
+    // Redirect to the viewer
+    res.redirect('/output/prospects/_industry-test-viewer.html');
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/scout/industry-test-suite/status
+ * Get status of previously generated industry tests
+ */
+router.get('/industry-test-suite/status', (req, res) => {
+  try {
+    const availableFixtures = getAvailableFixtures();
+    const status = [];
+
+    for (const fixture of availableFixtures) {
+      if (!fixture.available) continue;
+
+      const prospectFolder = `industry-test-${fixture.id}`;
+      const prospectDir = path.join(PROSPECTS_DIR, prospectFolder);
+      const prospectFile = path.join(prospectDir, 'prospect.json');
+
+      if (fs.existsSync(prospectFile)) {
+        const prospect = JSON.parse(fs.readFileSync(prospectFile, 'utf-8'));
+        status.push({
+          industry: fixture.id,
+          name: fixture.name,
+          icon: fixture.icon,
+          generated: prospect.testGenerated || false,
+          generatedAt: prospect.testGeneratedAt || null,
+          preset: prospect.testPreset || null,
+          layout: prospect.testLayout || null,
+          generationTimeMs: prospect.generationTimeMs || null,
+          path: prospect.testPath || null
+        });
+      } else {
+        status.push({
+          industry: fixture.id,
+          name: fixture.name,
+          icon: fixture.icon,
+          generated: false
+        });
+      }
+    }
+
+    res.json({
+      total: availableFixtures.filter(f => f.available).length,
+      generated: status.filter(s => s.generated).length,
+      status
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/scout/industry-test-suite/rebuild
+ * Fix vite configs and rebuild all existing industry tests
+ * (Needed after updating base path for preview support)
+ */
+router.post('/industry-test-suite/rebuild', async (req, res) => {
+  // Set up SSE for progress streaming
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
+  const sendProgress = (data) => {
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+  };
+
+  try {
+    const availableFixtures = getAvailableFixtures();
+    const toRebuild = [];
+
+    // Find all generated industry tests
+    for (const fixture of availableFixtures) {
+      if (!fixture.available) continue;
+      const prospectFolder = `industry-test-${fixture.id}`;
+      const prospectDir = path.join(PROSPECTS_DIR, prospectFolder);
+      const prospectFile = path.join(prospectDir, 'prospect.json');
+
+      if (fs.existsSync(prospectFile)) {
+        const prospect = JSON.parse(fs.readFileSync(prospectFile, 'utf-8'));
+        if (prospect.testGenerated && prospect.testPath) {
+          toRebuild.push({
+            fixture,
+            prospect,
+            prospectFolder,
+            testPath: prospect.testPath
+          });
+        }
+      }
+    }
+
+    console.log(`\n🔧 REBUILDING ${toRebuild.length} INDUSTRY TESTS`);
+    sendProgress({ step: 'init', status: `Found ${toRebuild.length} tests to rebuild`, progress: 0 });
+
+    let rebuilt = 0;
+    let failed = 0;
+
+    for (let i = 0; i < toRebuild.length; i++) {
+      const { fixture, testPath } = toRebuild[i];
+      const frontendPath = path.join(testPath, 'frontend');
+      const progressPct = Math.round(((i + 1) / toRebuild.length) * 100);
+
+      sendProgress({
+        step: 'rebuilding',
+        status: `${fixture.icon} Rebuilding ${fixture.name}...`,
+        progress: progressPct,
+        current: i + 1,
+        total: toRebuild.length
+      });
+
+      console.log(`   [${i + 1}/${toRebuild.length}] ${fixture.icon} ${fixture.name}`);
+
+      try {
+        // Fix vite.config.js to use base: './'
+        const viteConfigPath = path.join(frontendPath, 'vite.config.js');
+        if (fs.existsSync(viteConfigPath)) {
+          let viteConfig = fs.readFileSync(viteConfigPath, 'utf-8');
+          if (!viteConfig.includes("base: './'")) {
+            viteConfig = viteConfig.replace(
+              'export default defineConfig({',
+              "export default defineConfig({\n  base: './',"
+            );
+            fs.writeFileSync(viteConfigPath, viteConfig);
+            console.log(`      ✏️ Fixed vite.config.js`);
+          }
+        }
+
+        // Run npm build
+        const { execSync } = require('child_process');
+        execSync('npm run build', {
+          cwd: frontendPath,
+          stdio: 'pipe',
+          timeout: 120000
+        });
+
+        rebuilt++;
+        console.log(`      ✅ Rebuilt successfully`);
+      } catch (err) {
+        failed++;
+        console.log(`      ❌ Build failed: ${err.message}`);
+      }
+    }
+
+    // Regenerate the viewer
+    const results = { success: toRebuild.map(t => ({
+      industry: t.fixture.id,
+      name: t.fixture.name,
+      icon: t.fixture.icon,
+      preset: t.prospect.testPreset,
+      layout: t.prospect.testLayout,
+      folder: t.prospectFolder,
+      variant: `full-test-${t.prospect.testPreset}-${t.prospect.testLayout}`,
+      path: t.testPath,
+      metrics: {
+        generationTimeMs: t.prospect.generationTimeMs,
+        linesOfCode: countLinesOfCode(t.testPath),
+        pageCount: 5
+      }
+    }))};
+    generateIndustryTestViewer(results, PROSPECTS_DIR);
+
+    console.log(`\n🏁 REBUILD COMPLETE: ${rebuilt} success, ${failed} failed\n`);
+
+    res.write(`data: ${JSON.stringify({
+      step: 'complete',
+      success: true,
+      rebuilt,
+      failed,
+      total: toRebuild.length,
+      viewerUrl: '/output/prospects/_industry-test-viewer.html'
+    })}\n\n`);
+    res.end();
+
+  } catch (err) {
+    console.error('Rebuild error:', err);
+    res.write(`data: ${JSON.stringify({ step: 'error', error: err.message })}\n\n`);
+    res.end();
+  }
+});
+
+/**
+ * Generate Industry Test Viewer HTML page
+ * Creates a gallery with iframe preview and next/prev navigation
+ */
+function generateIndustryTestViewer(results, prospectsDir) {
+  const industries = results.success || [];
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Industry Test Viewer</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f172a;
+      color: #f1f5f9;
+      min-height: 100vh;
+    }
+    .header {
+      background: #1e293b;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #334155;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+    }
+    .title { font-size: 1.25rem; font-weight: 600; }
+    .nav-controls { display: flex; gap: 12px; align-items: center; }
+    .nav-btn {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-btn:hover { background: #2563eb; }
+    .nav-btn:disabled { background: #475569; cursor: not-allowed; }
+    .counter {
+      background: #334155;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+    .main {
+      display: flex;
+      padding-top: 68px;
+      height: 100vh;
+    }
+    .sidebar {
+      width: 280px;
+      background: #1e293b;
+      border-right: 1px solid #334155;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .industry-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid #334155;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: background 0.15s;
+    }
+    .industry-item:hover { background: #334155; }
+    .industry-item.active { background: #3b82f6; }
+    .industry-icon { font-size: 1.5rem; }
+    .industry-info { flex: 1; }
+    .industry-name { font-weight: 500; }
+    .industry-meta { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+    .industry-item.active .industry-meta { color: #bfdbfe; }
+    .preview-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #0f172a;
+    }
+    .preview-header {
+      background: #1e293b;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #334155;
+    }
+    .preview-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .preview-title-icon { font-size: 2rem; }
+    .preview-title-text h2 { font-size: 1.25rem; font-weight: 600; }
+    .preview-title-text p { font-size: 0.875rem; color: #94a3b8; }
+    .preview-stats {
+      display: flex;
+      gap: 24px;
+    }
+    .stat { text-align: center; }
+    .stat-value { font-size: 1.25rem; font-weight: 700; color: #3b82f6; }
+    .stat-label { font-size: 0.75rem; color: #94a3b8; }
+    .preview-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .action-btn {
+      background: #334155;
+      color: #f1f5f9;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .action-btn:hover { background: #475569; }
+    .iframe-container {
+      flex: 1;
+      background: white;
+      margin: 16px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .no-preview {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      font-size: 1.25rem;
+    }
+    .keyboard-hint {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #1e293b;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      color: #94a3b8;
+      border: 1px solid #334155;
+    }
+    .keyboard-hint kbd {
+      background: #334155;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin: 0 4px;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="title">🧪 Industry Test Viewer</div>
+    <div class="nav-controls">
+      <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">← Previous</button>
+      <span class="counter" id="counter">0 / 0</span>
+      <button class="nav-btn" id="nextBtn" onclick="navigate(1)">Next →</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="preview-container">
+      <div class="preview-header" id="previewHeader" style="display: none;">
+        <div class="preview-title">
+          <span class="preview-title-icon" id="previewIcon"></span>
+          <div class="preview-title-text">
+            <h2 id="previewName"></h2>
+            <p id="previewMeta"></p>
+          </div>
+        </div>
+        <div class="preview-stats" id="previewStats"></div>
+        <div class="preview-actions">
+          <button class="action-btn" onclick="openInNewTab()">🔗 Open in New Tab</button>
+          <button class="action-btn" onclick="openFolder()">📁 Open Folder</button>
+        </div>
+      </div>
+      <div class="iframe-container" id="iframeContainer">
+        <div class="no-preview" id="noPreview">Select an industry to preview</div>
+        <iframe id="preview" style="display: none;"></iframe>
+      </div>
+    </div>
+  </main>
+
+  <div class="keyboard-hint">
+    <kbd>←</kbd> Previous &nbsp;&nbsp; <kbd>→</kbd> Next &nbsp;&nbsp; <kbd>Enter</kbd> Open in New Tab
+  </div>
+
+  <script>
+    const industries = ${JSON.stringify(industries, null, 2)};
+
+    let currentIndex = 0;
+
+    function renderSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.innerHTML = industries.map((ind, i) => \`
+        <div class="industry-item \${i === currentIndex ? 'active' : ''}" onclick="selectIndustry(\${i})">
+          <span class="industry-icon">\${ind.icon}</span>
+          <div class="industry-info">
+            <div class="industry-name">\${ind.name}</div>
+            <div class="industry-meta">\${ind.preset} · \${ind.layout}</div>
+          </div>
+        </div>
+      \`).join('');
+    }
+
+    function selectIndustry(index) {
+      currentIndex = index;
+      renderSidebar();
+      loadPreview();
+      updateCounter();
+    }
+
+    function navigate(dir) {
+      const newIndex = currentIndex + dir;
+      if (newIndex >= 0 && newIndex < industries.length) {
+        selectIndustry(newIndex);
+      }
+    }
+
+    function updateCounter() {
+      document.getElementById('counter').textContent = \`\${currentIndex + 1} / \${industries.length}\`;
+      document.getElementById('prevBtn').disabled = currentIndex === 0;
+      document.getElementById('nextBtn').disabled = currentIndex === industries.length - 1;
+    }
+
+    function loadPreview() {
+      const ind = industries[currentIndex];
+      if (!ind) return;
+
+      // Update header
+      document.getElementById('previewHeader').style.display = 'flex';
+      document.getElementById('previewIcon').textContent = ind.icon;
+      document.getElementById('previewName').textContent = ind.name;
+      document.getElementById('previewMeta').textContent = \`\${ind.industry} · \${ind.preset} preset · \${ind.layout} layout\`;
+
+      // Update stats
+      const stats = ind.metrics || {};
+      document.getElementById('previewStats').innerHTML = \`
+        <div class="stat">
+          <div class="stat-value">\${stats.pageCount || '-'}</div>
+          <div class="stat-label">Pages</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">\${(stats.linesOfCode || 0).toLocaleString()}</div>
+          <div class="stat-label">LOC</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">\${((stats.generationTimeMs || 0) / 1000).toFixed(1)}s</div>
+          <div class="stat-label">Time</div>
+        </div>
+      \`;
+
+      // Load iframe
+      document.getElementById('noPreview').style.display = 'none';
+      const iframe = document.getElementById('preview');
+      iframe.style.display = 'block';
+
+      // Build the preview URL - try dist/index.html first
+      const previewUrl = \`/output/prospects/\${ind.folder}/\${ind.variant}/frontend/dist/index.html\`;
+      iframe.src = previewUrl;
+    }
+
+    function openInNewTab() {
+      const ind = industries[currentIndex];
+      if (ind) {
+        window.open(\`/output/prospects/\${ind.folder}/\${ind.variant}/frontend/dist/index.html\`, '_blank');
+      }
+    }
+
+    function openFolder() {
+      const ind = industries[currentIndex];
+      if (ind) {
+        alert('Folder: ' + ind.path);
+      }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') navigate(-1);
+      if (e.key === 'ArrowRight') navigate(1);
+      if (e.key === 'Enter') openInNewTab();
+    });
+
+    // Initialize
+    renderSidebar();
+    updateCounter();
+    if (industries.length > 0) {
+      loadPreview();
+    }
+  </script>
+</body>
+</html>`;
+
+  const viewerPath = path.join(prospectsDir, '_industry-test-viewer.html');
+  fs.writeFileSync(viewerPath, html);
+  return viewerPath;
+}
+
+// Helper function to count lines of code
+function countLinesOfCode(dir) {
+  let total = 0;
+  const extensions = ['.jsx', '.js', '.cjs', '.ts', '.tsx', '.css'];
+
+  function walkDir(currentDir) {
+    if (!fs.existsSync(currentDir)) return;
+    const files = fs.readdirSync(currentDir);
+    for (const file of files) {
+      const filePath = path.join(currentDir, file);
+      const stat = fs.statSync(filePath);
+      if (stat.isDirectory() && !file.includes('node_modules') && !file.startsWith('.')) {
+        walkDir(filePath);
+      } else if (stat.isFile() && extensions.some(ext => file.endsWith(ext))) {
+        try {
+          const content = fs.readFileSync(filePath, 'utf8');
+          total += content.split('\n').length;
+        } catch {}
+      }
+    }
+  }
+
+  walkDir(dir);
+  return total;
+}
+
+// Helper function to count files
+function countFiles(dir) {
+  let total = 0;
+
+  function walkDir(currentDir) {
+    if (!fs.existsSync(currentDir)) return;
+    const files = fs.readdirSync(currentDir);
+    for (const file of files) {
+      const filePath = path.join(currentDir, file);
+      const stat = fs.statSync(filePath);
+      if (stat.isDirectory() && !file.includes('node_modules') && !file.startsWith('.')) {
+        walkDir(filePath);
+      } else if (stat.isFile()) {
+        total++;
+      }
+    }
+  }
+
+  walkDir(dir);
+  return total;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DESIGN RESEARCH API - Serves design research data from fixtures
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * GET /design-research
+ * Returns all industries with their design research data
+ */
+router.get('/design-research', (req, res) => {
+  try {
+    const fixturesDir = path.join(__dirname, '..', '..', 'test-fixtures');
+    const files = fs.readdirSync(fixturesDir).filter(f => f.endsWith('.json'));
+
+    const industries = [];
+
+    for (const file of files) {
+      try {
+        const filePath = path.join(fixturesDir, file);
+        const fixture = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+
+        industries.push({
+          id: fixture.id || file.replace('.json', ''),
+          name: fixture.name || fixture.business?.name || file.replace('.json', ''),
+          icon: fixture.icon || '📦',
+          designResearch: fixture.designResearch || null,
+          business: fixture.business || {},
+          theme: fixture.theme || {}
+        });
+      } catch (err) {
+        console.error(`Error loading fixture ${file}:`, err.message);
+      }
+    }
+
+    // Sort alphabetically by name
+    industries.sort((a, b) => a.name.localeCompare(b.name));
+
+    res.json({ success: true, industries });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * GET /design-research/:industry
+ * Returns design research data for a specific industry
+ */
+router.get('/design-research/:industry', (req, res) => {
+  try {
+    const { industry } = req.params;
+    const fixturesDir = path.join(__dirname, '..', '..', 'test-fixtures');
+
+    // Try to find the fixture file
+    const possibleFiles = [
+      `${industry}.json`,
+      `${industry.replace(/-/g, '_')}.json`,
+      `${industry.replace(/_/g, '-')}.json`
+    ];
+
+    let fixture = null;
+    for (const file of possibleFiles) {
+      const filePath = path.join(fixturesDir, file);
+      if (fs.existsSync(filePath)) {
+        fixture = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        break;
+      }
+    }
+
+    if (!fixture) {
+      return res.status(404).json({ success: false, error: `Industry fixture not found: ${industry}` });
+    }
+
+    res.json({
+      success: true,
+      industry: {
+        id: fixture.id || industry,
+        name: fixture.name || fixture.business?.name || industry,
+        icon: fixture.icon || '📦',
+        designResearch: fixture.designResearch || null,
+        business: fixture.business || {},
+        theme: fixture.theme || {},
+        pages: fixture.pages || {}
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * POST /generate-from-research
+ * Generates a site using design research layout variants
+ */
+router.post('/generate-from-research', async (req, res) => {
+  try {
+    const { industry, layoutVariant = 'A', useDesignResearch = true } = req.body;
+
+    console.log(`[Design Research] Received request: industry=${industry}, layoutVariant=${layoutVariant}`);
+
+    if (!industry) {
+      return res.status(400).json({ success: false, error: 'Industry is required' });
+    }
+
+    // Load the fixture
+    const fixturesDir = path.join(__dirname, '..', '..', 'test-fixtures');
+    const fixturePath = path.join(fixturesDir, `${industry}.json`);
+
+    console.log(`[Design Research] Looking for fixture at: ${fixturePath}`);
+
+    if (!fs.existsSync(fixturePath)) {
+      return res.status(404).json({ success: false, error: `Industry fixture not found: ${industry}` });
+    }
+
+    const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
+
+    // Get layout info from design research
+    const layoutInfo = fixture.designResearch?.layoutVariations?.[layoutVariant];
+    const layoutName = layoutInfo?.name || `Layout ${layoutVariant}`;
+
+    // Create output folder - assembler creates OUTPUT_PATH/projectName/...
+    // Use module-assembler-ui/output so server can serve it
+    const outputBase = path.join(__dirname, '..', '..', 'output', 'prospects', `research-${industry}`);
+    const projectName = `layout-${layoutVariant.toLowerCase()}`;
+    const variantDir = path.join(outputBase, projectName);
+
+    console.log(`[Design Research] Output base: ${outputBase}`);
+    console.log(`[Design Research] Project name: ${projectName}`);
+    console.log(`[Design Research] Full path will be: ${variantDir}`);
+
+    if (!fs.existsSync(outputBase)) {
+      fs.mkdirSync(outputBase, { recursive: true });
+    }
+
+    // Write brain.json to outputBase (assembler will copy it)
+    const brain = {
+      ...fixture.business,
+      industry: fixture.id,
+      theme: fixture.theme,
+      pages: fixture.pages,
+      designResearch: fixture.designResearch,
+      selectedLayout: layoutVariant,
+      layoutInfo: layoutInfo,
+      generatedAt: new Date().toISOString()
+    };
+
+    const brainPath = path.join(outputBase, `brain-${layoutVariant.toLowerCase()}.json`);
+    fs.writeFileSync(brainPath, JSON.stringify(brain, null, 2));
+
+    // Run the assembler script
+    const assembleArgs = [
+      ASSEMBLE_SCRIPT,
+      '--name', projectName,
+      '--brain', brainPath,
+      '--fixture', industry,
+      '--skip-backend'
+    ];
+
+    console.log(`[Design Research] Generating ${industry} with Layout ${layoutVariant}...`);
+    console.log(`[Design Research] Command: node ${assembleArgs.join(' ')}`);
+
+    const assembleProcess = spawn('node', assembleArgs, {
+      cwd: MODULE_LIBRARY,
+      env: { ...process.env, FORCE_COLOR: '0', OUTPUT_PATH: outputBase },
+      shell: true // Windows compatibility
+    });
+
+    let output = '';
+    assembleProcess.stdout.on('data', (data) => {
+      output += data.toString();
+      console.log(`[Design Research] ${data.toString()}`);
+    });
+    assembleProcess.stderr.on('data', (data) => {
+      output += data.toString();
+      console.error(`[Design Research] ${data.toString()}`);
+    });
+
+    assembleProcess.on('error', (err) => {
+      console.error(`[Design Research] Spawn error:`, err);
+      res.status(500).json({
+        success: false,
+        error: `Spawn error: ${err.message}`,
+        output
+      });
+    });
+
+    assembleProcess.on('close', (code) => {
+      console.log(`[Design Research] Assembler exited with code ${code}`);
+
+      if (code === 0) {
+        // Run vite build
+        const frontendDir = path.join(variantDir, 'frontend');
+
+        if (!fs.existsSync(frontendDir)) {
+          return res.status(500).json({
+            success: false,
+            error: 'Frontend directory not created',
+            output
+          });
+        }
+
+        // Inject base: './' into vite.config.js for proper static serving
+        const viteConfigPath = path.join(frontendDir, 'vite.config.js');
+        if (fs.existsSync(viteConfigPath)) {
+          let viteConfig = fs.readFileSync(viteConfigPath, 'utf8');
+          if (!viteConfig.includes("base:")) {
+            // Add base: './' after defineConfig({
+            viteConfig = viteConfig.replace(
+              /defineConfig\(\{/,
+              "defineConfig({\n  base: './',"
+            );
+            fs.writeFileSync(viteConfigPath, viteConfig);
+            console.log(`[Design Research] Injected base: './' into vite.config.js`);
+          }
+        }
+
+        console.log(`[Design Research] Running vite build in ${frontendDir}`);
+
+        const buildProcess = spawn('npx', ['vite', 'build'], {
+          cwd: frontendDir,
+          shell: true
+        });
+
+        let buildOutput = '';
+        buildProcess.stdout.on('data', (data) => {
+          buildOutput += data.toString();
+        });
+        buildProcess.stderr.on('data', (data) => {
+          buildOutput += data.toString();
+        });
+
+        buildProcess.on('close', (buildCode) => {
+          // Use /output path - same pattern as industry tests
+          const previewUrl = `/output/prospects/research-${industry}/${projectName}/frontend/dist/index.html`;
+
+          console.log(`[Design Research] Build completed with code ${buildCode}`);
+          console.log(`[Design Research] Preview URL: ${previewUrl}`);
+
+          res.json({
+            success: buildCode === 0,
+            previewUrl,
+            layoutVariant,
+            layoutName,
+            outputDir: variantDir,
+            message: buildCode === 0 ? 'Site generated successfully' : 'Build completed with warnings'
+          });
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          error: `Generation failed with code ${code}`,
+          output
+        });
+      }
+    });
+
+  } catch (err) {
+    console.error(`[Design Research] Error:`, err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * POST /generate-from-research/batch
+ * Batch generates sites for multiple industries with streaming progress
+ */
+router.post('/generate-from-research/batch', async (req, res) => {
+  const { industries, layouts = ['A', 'B', 'C'] } = req.body;
+
+  if (!industries || !Array.isArray(industries) || industries.length === 0) {
+    return res.status(400).json({ success: false, error: 'Industries array is required' });
+  }
+
+  // Set up SSE
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
+  const send = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
+
+  const fixturesDir = path.join(__dirname, '..', '..', 'test-fixtures');
+  const total = industries.length * layouts.length;
+  let current = 0;
+  const results = [];
+
+  send({ step: 'init', total, status: 'Starting batch generation...' });
+
+  for (const industryId of industries) {
+    const fixturePath = path.join(fixturesDir, `${industryId}.json`);
+
+    if (!fs.existsSync(fixturePath)) {
+      for (const layout of layouts) {
+        current++;
+        results.push({ industry: industryId, layout, success: false, error: 'Fixture not found' });
+        send({ step: 'progress', current, total, industry: industryId, layout, success: false, error: 'Fixture not found' });
+      }
+      continue;
+    }
+
+    const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
+
+    for (const layout of layouts) {
+      current++;
+      send({ step: 'progress', current, total, status: `Generating ${fixture.name || industryId} - Layout ${layout}...` });
+
+      try {
+        const layoutInfo = fixture.designResearch?.layoutVariations?.[layout];
+        // Use module-assembler-ui/output so server can serve it
+        const outputBase = path.join(__dirname, '..', '..', 'output', 'prospects', `research-${industryId}`);
+        const projectName = `layout-${layout.toLowerCase()}`;
+        const variantDir = path.join(outputBase, projectName);
+
+        if (!fs.existsSync(outputBase)) {
+          fs.mkdirSync(outputBase, { recursive: true });
+        }
+
+        // Write brain.json
+        const brain = {
+          ...fixture.business,
+          industry: fixture.id,
+          theme: fixture.theme,
+          pages: fixture.pages,
+          designResearch: fixture.designResearch,
+          selectedLayout: layout,
+          layoutInfo: layoutInfo,
+          generatedAt: new Date().toISOString()
+        };
+
+        const brainPath = path.join(outputBase, `brain-${layout.toLowerCase()}.json`);
+        fs.writeFileSync(brainPath, JSON.stringify(brain, null, 2));
+
+        // Run assembler
+        const assembleResult = await new Promise((resolve) => {
+          const assembleProcess = spawn('node', [
+            ASSEMBLE_SCRIPT,
+            '--name', projectName,
+            '--brain', brainPath,
+            '--fixture', industryId,
+            '--skip-backend'
+          ], {
+            cwd: MODULE_LIBRARY,
+            env: { ...process.env, FORCE_COLOR: '0', OUTPUT_PATH: outputBase },
+            shell: true
+          });
+
+          let output = '';
+          assembleProcess.stdout.on('data', (data) => { output += data.toString(); });
+          assembleProcess.stderr.on('data', (data) => { output += data.toString(); });
+          assembleProcess.on('close', (code) => resolve({ code, output }));
+        });
+
+        if (assembleResult.code !== 0) {
+          results.push({ industry: industryId, name: fixture.name, layout, success: false, error: 'Assembler failed' });
+          send({ step: 'progress', current, total, industry: industryId, layout, success: false });
+          continue;
+        }
+
+        // Run vite build with relative base path
+        const frontendDir = path.join(variantDir, 'frontend');
+
+        // Inject base: './' into vite.config.js for proper static serving
+        const viteConfigPath = path.join(frontendDir, 'vite.config.js');
+        if (fs.existsSync(viteConfigPath)) {
+          let viteConfig = fs.readFileSync(viteConfigPath, 'utf8');
+          if (!viteConfig.includes("base:")) {
+            viteConfig = viteConfig.replace(
+              /defineConfig\(\{/,
+              "defineConfig({\n  base: './',"
+            );
+            fs.writeFileSync(viteConfigPath, viteConfig);
+          }
+        }
+
+        const buildResult = await new Promise((resolve) => {
+          const buildProcess = spawn('npx', ['vite', 'build'], {
+            cwd: frontendDir,
+            shell: true
+          });
+          buildProcess.on('close', (code) => resolve({ code }));
+        });
+
+        // Use /output path - same pattern as industry tests
+        const previewUrl = `/output/prospects/research-${industryId}/${projectName}/frontend/dist/index.html`;
+        results.push({
+          industry: industryId,
+          name: fixture.name,
+          layout,
+          success: buildResult.code === 0,
+          previewUrl
+        });
+        send({ step: 'progress', current, total, industry: industryId, name: fixture.name, layout, success: buildResult.code === 0, previewUrl });
+
+      } catch (err) {
+        results.push({ industry: industryId, layout, success: false, error: err.message });
+        send({ step: 'progress', current, total, industry: industryId, layout, success: false, error: err.message });
+      }
+    }
+  }
+
+  send({
+    step: 'complete',
+    total,
+    successCount: results.filter(r => r.success).length,
+    failedCount: results.filter(r => !r.success).length,
+    results
+  });
+
+  res.end();
 });
 
 module.exports = router;

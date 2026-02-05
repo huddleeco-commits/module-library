@@ -197,9 +197,11 @@ function createQASuiteRoutes() {
 
           // Generate site using launchpad engine
           // generateSite(input, variant, mode, options)
+          // Pass industryOverride so detection doesn't rely on keyword matching
           await generateSite(businessInput, 'A', 'test', {
             outputDir: siteDir,
-            enablePortal: true
+            enablePortal: true,
+            industryOverride: industryId
           });
 
           batchStatus.completed.push({ id: industryId, success: true });
@@ -235,9 +237,11 @@ function createQASuiteRoutes() {
       const businessInput = `${sample?.name || id} - ${sample?.tagline || ''} in ${sample?.location || 'Test City, USA'}`;
 
       // Generate site using launchpad engine
+      // Pass industryOverride so detection doesn't rely on keyword matching
       await generateSite(businessInput, 'A', 'test', {
         outputDir: siteDir,
-        enablePortal: true
+        enablePortal: true,
+        industryOverride: id
       });
 
       res.json({

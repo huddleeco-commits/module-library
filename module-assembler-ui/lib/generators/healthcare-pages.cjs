@@ -97,8 +97,18 @@ function generateHomePage(archetype, businessData, colors, styleOverrides = {}) 
   const phone = businessData.phone || '(555) 123-4567';
   const industry = (businessData.industry || 'healthcare').toLowerCase();
 
-  const images = industry.includes('dental') || industry.includes('dentist') ? IMAGES.dental :
+  // Use fixture hero text if available
+  const heroHeadline = businessData.heroHeadline || businessName;
+  const heroSubheadline = businessData.heroSubheadline || "Gentle, compassionate care for the whole family. We're committed to helping you achieve optimal health in a comfortable, modern environment.";
+
+  const defaultImages = industry.includes('dental') || industry.includes('dentist') ? IMAGES.dental :
                  industry.includes('chiro') ? IMAGES.chiropractic : IMAGES.medical;
+
+  // Use fixture hero image if available
+  const images = {
+    ...defaultImages,
+    hero: businessData.heroImage || defaultImages.hero
+  };
 
   let c = { ...style.colors, ...colors };
   if (styleOverrides.isDark) {
@@ -169,8 +179,8 @@ export default function HomePage() {
       <section style={styles.hero}>
         <div style={styles.heroInner}>
           <div style={styles.heroContent}>
-            <h1 style={styles.heroTitle}>${businessName}</h1>
-            <p style={styles.heroSubtitle}>Gentle, compassionate care for the whole family. We're committed to helping you achieve optimal health in a comfortable, modern environment.</p>
+            <h1 style={styles.heroTitle}>${heroHeadline.replace(/'/g, "\\'")}</h1>
+            <p style={styles.heroSubtitle}>${heroSubheadline.replace(/'/g, "\\'")}</p>
             <div style={styles.heroButtons}>
               <Link to="/contact" style={styles.btnPrimary}><Calendar size={20} /> Book Appointment</Link>
               <a href="tel:${phone}" style={styles.btnSecondary}><Phone size={18} /> ${phone}</a>
