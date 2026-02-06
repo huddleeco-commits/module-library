@@ -40,7 +40,7 @@ const {
 const { getHeroImages, getHeroImage, normalizeIndustry } = require('../config/hero-images.cjs');
 
 // Structural page generator
-const { generateStructuralPage, generateAllVariants } = require('../generators/structural-generator.cjs');
+const { generateStructuralPage, generateAllVariants, getSmartCTA, getSmartCtaPath, getSmartFeatures } = require('../generators/structural-generator.cjs');
 
 // Admin dashboard generator
 const { generateAdminDashboard } = require('../generators/admin-dashboard-generator.cjs');
@@ -48,8 +48,16 @@ const { generateAdminDashboard } = require('../generators/admin-dashboard-genera
 // Archetype page generators (order, about, gallery, etc.)
 const { generateOrderPage: generateArchetypeOrderPage } = require('../generators/archetype-pages.cjs');
 
+// Specialized page generators
+const { generateServicesPage: generateFitnessServices, detectFitnessArchetype } = require('../generators/fitness-pages.cjs');
+const { generateServicesPage: generateGroomingServices, detectGroomingArchetype } = require('../generators/grooming-pages.cjs');
+const { generateServicesPage: generateHealthcareServices, detectHealthcareArchetype } = require('../generators/healthcare-pages.cjs');
+const { generateServicesPage: generateProfessionalServices, detectProfessionalArchetype } = require('../generators/professional-pages.cjs');
+const { generateServicesPage: generateTechnologyServices, detectTechnologyArchetype } = require('../generators/technology-pages.cjs');
+const { generateServicesPage: generateHomeServices } = require('../generators/home-services-pages.cjs');
+
 // Layout archetype detection
-const { detectArchetype } = require('../config/layout-archetypes.cjs');
+const { detectArchetype, detectHomeServicesArchetype } = require('../config/layout-archetypes.cjs');
 
 // Slider style computation (maps vibe/energy/era/density/price to CSS values)
 const { getSliderStyles } = require('../prompt-builders/index.cjs');
@@ -517,6 +525,7 @@ async function generateSite(input, variant = 'A', mode = 'test', options = {}) {
   const generatedPages = {};
   const moodSliders = options.moodSliders || {};
   const enablePortal = options.enablePortal !== false; // Default to true
+  businessData.enablePortal = enablePortal;
 
   // Enrich moodSliders with computed design tokens from slider values
   // This makes all 5 sliders (vibe, energy, era, density, price) affect visual output
@@ -580,6 +589,10 @@ async function generateSite(input, variant = 'A', mode = 'test', options = {}) {
     console.log('   Generating AuthContext...');
     const authContextCode = generateAuthContext(colors);
     fs.writeFileSync(path.join(componentsDir, 'AuthContext.jsx'), authContextCode);
+
+    // Generate ChatWidget
+    console.log('   Generating ChatWidget...');
+    fs.writeFileSync(path.join(componentsDir, 'ChatWidget.jsx'), generateChatWidget(colors.primary));
   }
 
   // Step 6: Generate shared components
@@ -591,6 +604,16 @@ async function generateSite(input, variant = 'A', mode = 'test', options = {}) {
   console.log('   Generating Footer...');
   const footerCode = generateFooter(businessData);
   fs.writeFileSync(path.join(componentsDir, 'Footer.jsx'), footerCode);
+
+  // Step 6c: Generate ContentProvider for data-driven pages
+  console.log('   Generating ContentProvider...');
+  const contentProviderCode = generateContentProvider();
+  fs.writeFileSync(path.join(componentsDir, 'ContentProvider.jsx'), contentProviderCode);
+
+  // Step 6d: Generate CartProvider for shared cart state
+  console.log('   Generating CartProvider...');
+  const cartProviderCode = generateCartProvider();
+  fs.writeFileSync(path.join(componentsDir, 'CartProvider.jsx'), cartProviderCode);
 
   // Step 6b: Generate API hooks for real-time sync
   console.log('   Generating API hooks...');
@@ -605,21 +628,26 @@ async function generateSite(input, variant = 'A', mode = 'test', options = {}) {
   const useReservationsCode = generateUseReservationsHook();
   fs.writeFileSync(path.join(hooksDir, 'useReservations.js'), useReservationsCode);
 
+  // Generate useApi hook (used by BookPage, etc.)
+  fs.writeFileSync(path.join(hooksDir, 'useApi.js'), generateUseApiHook());
+
   // Step 7: Generate App.jsx with routing
   console.log('   Generating App.jsx...');
   const appCode = generateAppWithRouting(pageTypes, businessData, enablePortal, portalPages);
   fs.writeFileSync(path.join(srcDir, 'App.jsx'), appCode);
 
-  // Step 8: Generate brain.json
+  // Step 8: Generate brain.json (with structured page content for Website Editor)
   console.log('   Generating brain.json...');
+  const pageContent = buildPageContent(businessData, detection.industry, generatedPages);
   const brainJson = {
     ...businessData,
+    pages: pageContent,
     _generated: {
       by: 'launchpad',
       at: new Date().toISOString(),
       variant,
       mode,
-      pages: Object.keys(generatedPages),
+      pageList: Object.keys(generatedPages),
       trendsApplied: !!trendOverrides
     }
   };
@@ -1198,8 +1226,10 @@ function generatePhotoGridMenu(industryId, variant, moodSliders, businessData, p
  */
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { Star, Sparkles, ChefHat, Leaf, Flame, WheatOff, Plus, Filter, X, Search, ChevronUp, ChevronDown, ShoppingBag, Check, RefreshCw } from 'lucide-react';
 import { useMenu } from '../hooks/useMenu';
+import { useCart } from '../components/CartProvider';
 
 // Fallback image for broken images
 const FALLBACK_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"%3E%3Crect fill="%23f3f4f6" width="120" height="120"/%3E%3Ctext fill="%239ca3af" font-family="system-ui" font-size="12" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E';
@@ -1298,7 +1328,7 @@ export default function MenuPage() {
   const [activeFilters, setActiveFilters] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [cart, setCart] = useState([]);
+  const { cart, addToCart: contextAddToCart, cartItemCount } = useCart();
   const [toast, setToast] = useState({ visible: false, message: '' });
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [showMoreCategories, setShowMoreCategories] = useState(false);
@@ -1361,17 +1391,11 @@ export default function MenuPage() {
   // Calculate total items for filter count
   const totalItems = menuCategories.reduce((sum, cat) => sum + cat.items.length, 0);
 
-  // Add to cart function
+  // Add to cart function (shared via CartProvider)
   const addToCart = useCallback((item) => {
-    setCart(prev => {
-      const existing = prev.find(i => i.name === item.name);
-      if (existing) {
-        return prev.map(i => i.name === item.name ? { ...i, quantity: i.quantity + 1 } : i);
-      }
-      return [...prev, { ...item, quantity: 1 }];
-    });
+    contextAddToCart(item);
     setToast({ visible: true, message: \`Added \${item.name} to cart\` });
-  }, []);
+  }, [contextAddToCart]);
 
   // Close toast
   const closeToast = useCallback(() => {
@@ -1485,7 +1509,6 @@ export default function MenuPage() {
 
   const filteredCount = getFilteredCount();
   const isFiltering = activeFilters.length > 0 || searchQuery.trim();
-  const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div style={styles.page}>
@@ -1566,10 +1589,10 @@ export default function MenuPage() {
             )}
           </div>
           {cartItemCount > 0 && (
-            <button style={styles.cartButton} aria-label={\`Cart with \${cartItemCount} items\`}>
+            <Link to="/order" style={styles.cartButton} aria-label={\`Cart with \${cartItemCount} items\`}>
               <ShoppingBag size={20} />
               <span style={styles.cartBadge}>{cartItemCount}</span>
-            </button>
+            </Link>
           )}
         </div>
       </section>
@@ -2415,7 +2438,9 @@ function generateElegantListMenu(industryId, variant, moodSliders, businessData,
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { Star, Sparkles, ChefHat, Leaf, Flame, WheatOff, Filter, X, Search, ChevronUp, ChevronDown, Check, Plus, ShoppingBag } from 'lucide-react';
+import { useCart } from '../components/CartProvider';
 
 // Fallback image for broken images
 const FALLBACK_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50"%3E%3Crect fill="%23f3f4f6" width="50" height="50"/%3E%3C/svg%3E';
@@ -2479,7 +2504,7 @@ export default function MenuPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [showMoreCategories, setShowMoreCategories] = useState(false);
-  const [cart, setCart] = useState([]);
+  const { cart, addToCart: contextAddToCart, cartItemCount } = useCart();
   const [toast, setToast] = useState({ visible: false, message: '' });
   const categoryRefs = useRef({});
   const moreDropdownRef = useRef(null);
@@ -2512,25 +2537,16 @@ export default function MenuPage() {
     ${allergenLegendCode}
   };
 
-  // Add to cart function
+  // Add to cart function (shared via CartProvider)
   const addToCart = useCallback((item) => {
-    setCart(prev => {
-      const existing = prev.find(i => i.name === item.name);
-      if (existing) {
-        return prev.map(i => i.name === item.name ? { ...i, quantity: i.quantity + 1 } : i);
-      }
-      return [...prev, { ...item, quantity: 1 }];
-    });
+    contextAddToCart(item);
     setToast({ visible: true, message: \`Added \${item.name} to your order\` });
-  }, []);
+  }, [contextAddToCart]);
 
   // Close toast
   const closeToast = useCallback(() => {
     setToast({ visible: false, message: '' });
   }, []);
-
-  // Cart item count
-  const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   // Filter items
   const filterItems = (items) => {
@@ -2657,10 +2673,10 @@ export default function MenuPage() {
             <Filter size={16} /> Dietary
           </button>` : ''}
           {cartItemCount > 0 && (
-            <button style={styles.cartButton} aria-label={\`Cart with \${cartItemCount} items\`}>
+            <Link to="/order" style={styles.cartButton} aria-label={\`Cart with \${cartItemCount} items\`}>
               <ShoppingBag size={18} />
               <span style={styles.cartBadge}>{cartItemCount}</span>
-            </button>
+            </Link>
           )}
         </div>
         ${settings.enableFilters !== false ? `{showFilters && (
@@ -3328,7 +3344,9 @@ function generateCompactTableMenu(industryId, variant, moodSliders, businessData
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { Star, Sparkles, ChefHat, Leaf, Flame, WheatOff, Filter, X, Search, ChevronUp, ChevronDown, Plus, Check, ShoppingBag } from 'lucide-react';
+import { useCart } from '../components/CartProvider';
 
 // Fallback image
 const FALLBACK_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"%3E%3Crect fill="%23f3f4f6" width="40" height="40"/%3E%3C/svg%3E';
@@ -3417,7 +3435,7 @@ export default function MenuPage() {
   const [activeFilters, setActiveFilters] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('default'); // 'default', 'price-asc', 'price-desc', 'name'
-  const [cart, setCart] = useState([]);
+  const { cart, addToCart: contextAddToCart, cartItemCount } = useCart();
   const [toast, setToast] = useState({ visible: false, message: '' });
   const [showBackToTop, setShowBackToTop] = useState(false);
 
@@ -3483,15 +3501,9 @@ export default function MenuPage() {
   };
 
   const addToCart = useCallback((item) => {
-    setCart(prev => {
-      const existing = prev.find(i => i.name === item.name);
-      if (existing) {
-        return prev.map(i => i.name === item.name ? { ...i, quantity: i.quantity + 1 } : i);
-      }
-      return [...prev, { ...item, quantity: 1 }];
-    });
+    contextAddToCart(item);
     setToast({ visible: true, message: \`Added \${item.name} to cart\` });
-  }, []);
+  }, [contextAddToCart]);
 
   // Back to top
   useEffect(() => {
@@ -3499,8 +3511,6 @@ export default function MenuPage() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div style={styles.page}>
@@ -3566,10 +3576,10 @@ export default function MenuPage() {
 
           {/* Cart */}
           {cartItemCount > 0 && (
-            <button style={styles.cartBtn} aria-label={\`Cart: \${cartItemCount} items\`}>
+            <Link to="/order" style={styles.cartBtn} aria-label={\`Cart: \${cartItemCount} items\`}>
               <ShoppingBag size={18} />
               <span style={styles.cartCount}>{cartItemCount}</span>
-            </button>
+            </Link>
           )}
         </div>
       </section>
@@ -4006,7 +4016,9 @@ function generateStorytellingMenu(industryId, variant, moodSliders, businessData
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { Star, Sparkles, ChefHat, Leaf, Flame, WheatOff, Filter, X, Search, ChevronUp, ChevronDown, ChevronRight, Plus, Check, ShoppingBag } from 'lucide-react';
+import { useCart } from '../components/CartProvider';
 
 // Fallback image
 const FALLBACK_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"%3E%3Crect fill="%23f3f4f6" width="400" height="300"/%3E%3Ctext fill="%239ca3af" font-family="system-ui" font-size="16" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E';
@@ -4088,7 +4100,7 @@ export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState(0);
   const [activeFilters, setActiveFilters] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [cart, setCart] = useState([]);
+  const { cart, addToCart: contextAddToCart, cartItemCount } = useCart();
   const [toast, setToast] = useState({ visible: false, message: '' });
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [showMoreCategories, setShowMoreCategories] = useState(false);
@@ -4142,15 +4154,9 @@ export default function MenuPage() {
   };
 
   const addToCart = useCallback((item) => {
-    setCart(prev => {
-      const existing = prev.find(i => i.name === item.name);
-      if (existing) {
-        return prev.map(i => i.name === item.name ? { ...i, quantity: i.quantity + 1 } : i);
-      }
-      return [...prev, { ...item, quantity: 1 }];
-    });
+    contextAddToCart(item);
     setToast({ visible: true, message: \`Added \${item.name} to cart\` });
-  }, []);
+  }, [contextAddToCart]);
 
   // Back to top
   useEffect(() => {
@@ -4181,8 +4187,6 @@ export default function MenuPage() {
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
   };
-
-  const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div style={styles.page}>
@@ -4286,10 +4290,10 @@ export default function MenuPage() {
             ))}
           </div>
           {cartItemCount > 0 && (
-            <button style={styles.cartPill}>
+            <Link to="/order" style={styles.cartPill}>
               <ShoppingBag size={18} />
               <span>{cartItemCount} items</span>
-            </button>
+            </Link>
           )}
         </div>
       </section>
@@ -4404,10 +4408,10 @@ export default function MenuPage() {
 
       {/* Floating Cart Pill */}
       {cartItemCount > 0 && (
-        <div style={styles.floatingCart}>
+        <Link to="/order" style={styles.floatingCart}>
           <ShoppingBag size={20} />
           <span>View Order ({cartItemCount})</span>
-        </div>
+        </Link>
       )}
 
       {/* Back to Top */}
@@ -4826,9 +4830,48 @@ const styles = {
 }
 
 /**
- * Generate Services Page
+ * Generate Services Page - Industry-aware dispatcher
+ * Routes to specialized generators for 10+ industries, falls back to generic for the rest
  */
 function generateServicesPage(industryId, variant, moodSliders, businessData, pageType) {
+  const colors = getColors(moodSliders, businessData);
+  const overrides = buildStyleOverrides(moodSliders, colors);
+  const bData = { ...businessData, industry: industryId };
+
+  // Dispatch to specialized generators by industry
+  if (['fitness-gym', 'yoga'].includes(industryId)) {
+    const arch = detectFitnessArchetype(bData);
+    return generateFitnessServices(arch, bData, colors, overrides);
+  }
+  if (['salon-spa', 'barbershop'].includes(industryId)) {
+    const arch = detectGroomingArchetype(bData);
+    return generateGroomingServices(arch, bData, colors, overrides);
+  }
+  if (['dental', 'healthcare'].includes(industryId)) {
+    const arch = detectHealthcareArchetype(bData);
+    return generateHealthcareServices(arch, bData, colors, overrides);
+  }
+  if (['law-firm', 'real-estate', 'accounting'].includes(industryId)) {
+    const arch = detectProfessionalArchetype(bData);
+    return generateProfessionalServices(arch, bData, colors, overrides);
+  }
+  if (['saas', 'ecommerce'].includes(industryId)) {
+    const arch = detectTechnologyArchetype(bData);
+    return generateTechnologyServices(arch, bData, colors, overrides);
+  }
+  if (['plumber', 'cleaning', 'auto-shop'].includes(industryId)) {
+    const arch = detectHomeServicesArchetype(bData);
+    return generateHomeServices(arch, bData, colors, overrides);
+  }
+
+  // Fallback: generic stub for remaining industries (school, etc.)
+  return generateServicesPageFallback(industryId, variant, moodSliders, businessData, pageType);
+}
+
+/**
+ * Generate Services Page - Fallback (original stub)
+ */
+function generateServicesPageFallback(industryId, variant, moodSliders, businessData, pageType) {
   const colors = getColors(moodSliders, businessData);
   const dt = getDesignTokens(moodSliders, businessData);
   const fixture = loadFixture(industryId);
@@ -5053,26 +5096,31 @@ function generateAboutPageStoryFirst(industryId, variant, moodSliders, businessD
 import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Star, Award, Users, Heart, Leaf, Sparkles } from 'lucide-react';
+import { usePageContent } from '../components/ContentProvider';
 
 export default function AboutPage() {
   const [activeTeamIndex, setActiveTeamIndex] = useState(0);
   const teamCarouselRef = useRef(null);
+  const pageContent = usePageContent('about');
 
   const founder = ${founderData};
 
-  const story = "${escapeQuotes(data.story)}";
+  const story = pageContent.story?.text || "${escapeQuotes(data.story)}";
 
-  const team = [
+  const _defaultTeam = [
     ${teamData}
   ];
+  const team = (pageContent.team && pageContent.team.length > 0) ? pageContent.team : _defaultTeam;
 
-  const values = [
+  const _defaultValues = [
     ${valuesData}
   ];
+  const values = (pageContent.values && pageContent.values.length > 0) ? pageContent.values : _defaultValues;
 
-  const timeline = [
+  const _defaultTimeline = [
     ${timelineData}
   ];
+  const timeline = (pageContent.timeline && pageContent.timeline.length > 0) ? pageContent.timeline : _defaultTimeline;
 
   const press = [
     ${pressData}
@@ -5656,18 +5704,23 @@ function generateAboutPageValuesForward(industryId, variant, moodSliders, busine
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Star, Heart, Users, Leaf, Award } from 'lucide-react';
+import { usePageContent } from '../components/ContentProvider';
 
 export default function AboutPage() {
-  const mission = "${escapeQuotes(data.mission)}";
-  const story = "${escapeQuotes(data.story)}";
+  const pageContent = usePageContent('about');
 
-  const values = [
+  const mission = "${escapeQuotes(data.mission)}";
+  const story = pageContent.story?.text || "${escapeQuotes(data.story)}";
+
+  const _defaultValues = [
     ${valuesData}
   ];
+  const values = (pageContent.values && pageContent.values.length > 0) ? pageContent.values : _defaultValues;
 
-  const team = [
+  const _defaultTeam = [
     ${teamData}
   ];
+  const team = (pageContent.team && pageContent.team.length > 0) ? pageContent.team : _defaultTeam;
 
   const community = [
     ${communityData}
@@ -6121,27 +6174,32 @@ function generateAboutPageVisualJourney(industryId, variant, moodSliders, busine
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { usePageContent } from '../components/ContentProvider';
 
 export default function AboutPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const pageContent = usePageContent('about');
 
   const heroImages = [
     ${heroImagesData}
   ];
 
-  const story = "${escapeQuotes(data.story)}";
+  const story = pageContent.story?.text || "${escapeQuotes(data.story)}";
 
-  const timeline = [
+  const _defaultTimeline = [
     ${timelineData}
   ];
+  const timeline = (pageContent.timeline && pageContent.timeline.length > 0) ? pageContent.timeline : _defaultTimeline;
 
-  const teamSpotlights = [
+  const _defaultTeam = [
     ${teamData}
   ];
+  const teamSpotlights = (pageContent.team && pageContent.team.length > 0) ? pageContent.team : _defaultTeam;
 
-  const values = [
+  const _defaultValues = [
     ${valuesData}
   ];
+  const values = (pageContent.values && pageContent.values.length > 0) ? pageContent.values : _defaultValues;
 
   // Auto-advance slideshow
   useEffect(() => {
@@ -6631,10 +6689,13 @@ function generateContactPage(industryId, variant, moodSliders, businessData, pag
  */
 
 import React, { useState } from 'react';
+import { usePageContent } from '../components/ContentProvider';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+  const pageContent = usePageContent('contact');
+  const contactInfo = pageContent.info || {};
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -6644,10 +6705,10 @@ export default function ContactPage() {
 
   const businessInfo = {
     name: '${escapeQuotes(businessData.name)}',
-    address: '${escapeQuotes(businessData.address)}',
-    phone: '${businessData.phone}',
-    email: '${businessData.email}',
-    hours: ${JSON.stringify(businessData.hours)}
+    address: contactInfo.address || '${escapeQuotes(businessData.address)}',
+    phone: contactInfo.phone || '${businessData.phone}',
+    email: contactInfo.email || '${businessData.email}',
+    hours: contactInfo.hours || ${JSON.stringify(businessData.hours)}
   };
 
   return (
@@ -6913,14 +6974,9 @@ const styles = {
 `;
 }
 
-// Alias generators to generic
-const generateClassesPage = generateGenericPage;
-const generateTeamPage = generateGenericPage;
-const generateBookingPage = generateGenericPage;
-function generateOrderPage(industryId, variant, moodSliders, businessData, pageType) {
-  const archetype = detectArchetype(businessData);
-  const colors = getColors(moodSliders, businessData);
-  const styleOverrides = {
+// Shared adapter: converts moodSliders + colors into styleOverrides for specialized generators
+function buildStyleOverrides(moodSliders, colors) {
+  return {
     isDark: moodSliders.isDark || false,
     isMedium: moodSliders.isMedium || false,
     primaryColor: colors.primary,
@@ -6933,20 +6989,583 @@ function generateOrderPage(industryId, variant, moodSliders, businessData, pageT
     headlineStyle: moodSliders.headlineStyle,
     buttonStyle: moodSliders.buttonStyle
   };
-  return generateArchetypeOrderPage(archetype, { ...businessData, industry: industryId }, colors, styleOverrides);
 }
+
+// Classes pages use the same services generator for their industry
+function generateClassesPage(industryId, variant, moodSliders, businessData, pageType) {
+  return generateServicesPage(industryId, variant, moodSliders, businessData, 'services');
+}
+
+/**
+ * Generate Team Page
+ * Displays team/staff member cards with credentials and bios
+ * Uses usePageContent('team') for CMS editing
+ */
+function generateTeamPage(industryId, variant, moodSliders, businessData, pageType) {
+  const dt = getDesignTokens(moodSliders, businessData);
+  const businessName = escapeQuotes(businessData.name);
+
+  // Industry-specific team content
+  const teamContentByIndustry = {
+    'law-firm': {
+      title: 'Our Attorneys',
+      subtitle: 'Experienced legal professionals dedicated to your case',
+      ctaHeadline: 'Let Us Fight For You',
+      ctaText: 'Our experienced attorneys are ready to review your case and discuss your options.',
+      ctaButton: 'Schedule Consultation',
+      ctaPath: '/consultation',
+      members: [
+        { name: 'Robert Mitchell', role: 'Managing Partner', bio: 'Over 25 years of trial experience in personal injury and civil litigation.', credentials: ['J.D. Harvard Law', 'Super Lawyer', 'Top 100 Trial Lawyers'] },
+        { name: 'Sarah Chen', role: 'Senior Partner', bio: 'Specializing in family law with a focus on divorce and custody matters.', credentials: ['J.D. Stanford Law', 'Family Law Specialist', 'Certified Mediator'] },
+        { name: 'Michael Torres', role: 'Partner', bio: 'Criminal defense attorney with an exceptional track record.', credentials: ['J.D. Columbia Law', 'Ex-District Attorney', 'Criminal Law Expert'] },
+        { name: 'Jennifer Adams', role: 'Associate Attorney', bio: 'Business law specialist helping entrepreneurs protect their interests.', credentials: ['J.D. UCLA Law', 'MBA Finance', 'Corporate Law'] }
+      ]
+    },
+    'real-estate': {
+      title: 'Our Agents',
+      subtitle: 'Experienced agents ready to help you find your dream home',
+      ctaHeadline: 'Work With the Best',
+      ctaText: 'Our team has the experience and dedication to help you achieve your real estate goals.',
+      ctaButton: 'Contact Us',
+      ctaPath: '/contact',
+      members: [
+        { name: 'Jennifer Williams', role: 'Principal Broker', bio: 'Over 20 years in real estate with $200M+ in career sales.', credentials: ['Licensed Broker', 'Top Producer', 'Luxury Certified'] },
+        { name: 'David Park', role: 'Senior Agent', bio: 'Specializing in first-time buyers and investment properties.', credentials: ['15+ Years Experience', 'Buyer Specialist'] },
+        { name: 'Amanda Rodriguez', role: 'Listing Specialist', bio: 'Marketing expert who gets homes sold fast and for top dollar.', credentials: ['Listing Expert', 'Digital Marketing'] },
+        { name: 'Marcus Johnson', role: 'Buyer Agent', bio: 'Dedicated to finding the perfect home for every client.', credentials: ['Buyer Representative', 'Relocation Specialist'] }
+      ]
+    },
+    'dental': {
+      title: 'Our Dental Team',
+      subtitle: 'Caring professionals committed to your oral health',
+      ctaHeadline: 'Schedule Your Visit',
+      ctaText: 'Our friendly team is ready to welcome you and your family.',
+      ctaButton: 'Book Appointment',
+      ctaPath: '/book',
+      members: [
+        { name: 'Dr. Sarah Mitchell', role: 'Lead Dentist', bio: 'Over 15 years of experience in general and cosmetic dentistry.', credentials: ['DDS', 'Cosmetic Specialist'] },
+        { name: 'Dr. James Park', role: 'Orthodontist', bio: 'Specializing in Invisalign and traditional braces for all ages.', credentials: ['DMD', 'Orthodontics Board Certified'] },
+        { name: 'Lisa Chen', role: 'Dental Hygienist', bio: 'Gentle, thorough cleanings with a focus on patient comfort.', credentials: ['RDH', '10+ Years Experience'] }
+      ]
+    },
+    'auto-shop': {
+      title: 'Our Mechanics',
+      subtitle: 'ASE certified technicians you can trust',
+      ctaHeadline: 'Mechanics You Can Trust',
+      ctaText: 'Our ASE certified team has the training and experience to service any vehicle.',
+      ctaButton: 'Schedule Service',
+      ctaPath: '/book',
+      members: [
+        { name: 'Tony Ramirez', role: 'Owner / Master Technician', bio: 'ASE Master Tech with 30+ years of experience.', credentials: ['ASE Master', 'Shop Owner'] },
+        { name: 'Steve Miller', role: 'Lead Technician', bio: 'Engine diagnostics and repair specialist.', credentials: ['ASE Certified', 'Diagnostics Expert'] },
+        { name: 'Kevin Park', role: 'Technician', bio: 'Expert in electrical systems and hybrid vehicles.', credentials: ['ASE Certified', 'Hybrid Specialist'] }
+      ]
+    }
+  };
+
+  const defaultContent = {
+    title: 'Our Team',
+    subtitle: 'Meet the people behind ' + businessName,
+    ctaHeadline: 'Ready to Get Started?',
+    ctaText: 'Our team is here to help. Reach out today.',
+    ctaButton: 'Contact Us',
+    ctaPath: '/contact',
+    members: [
+      { name: 'Owner', role: 'Founder & Owner', bio: 'Leading ' + businessName + ' with passion and dedication.', credentials: [] },
+      { name: 'Team Lead', role: 'Senior Staff', bio: 'Bringing years of experience and expertise.', credentials: [] },
+      { name: 'Team Member', role: 'Staff', bio: 'Committed to delivering excellent service.', credentials: [] }
+    ]
+  };
+
+  const content = teamContentByIndustry[industryId] || defaultContent;
+  const membersJson = JSON.stringify(content.members);
+
+  return `/**
+ * Team Page - ${businessName}
+ * Team member cards with credentials and bios
+ * Generated by Launchpad
+ */
+
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Mail, Award, ChevronRight } from 'lucide-react';
+import { usePageContent } from '../components/ContentProvider';
+
+const FALLBACK_MEMBERS = ${membersJson};
+
+export default function TeamPage() {
+  const pageContent = usePageContent('team');
+  const members = pageContent?.members || FALLBACK_MEMBERS;
+  const title = pageContent?.hero?.title || '${escapeQuotes(content.title)}';
+  const subtitle = pageContent?.hero?.subtitle || '${escapeQuotes(content.subtitle)}';
+
+  return (
+    <div style={styles.page}>
+      <section style={styles.hero}>
+        <h1 style={styles.heroTitle}>{title}</h1>
+        <p style={styles.heroSubtitle}>{subtitle}</p>
+      </section>
+
+      <section style={styles.teamSection}>
+        <div style={styles.grid}>
+          {members.map((member, idx) => (
+            <div key={idx} style={styles.card}>
+              <div style={styles.avatarWrap}>
+                {member.image ? (
+                  <img src={member.image} alt={member.name} style={styles.avatarImg} />
+                ) : (
+                  <div style={styles.avatarInitials}>
+                    {member.name.split(' ').map(n => n[0]).join('')}
+                  </div>
+                )}
+              </div>
+              <div style={styles.cardBody}>
+                <h3 style={styles.memberName}>{member.name}</h3>
+                <p style={styles.memberRole}>{member.role}</p>
+                <p style={styles.memberBio}>{member.bio}</p>
+                {member.credentials && member.credentials.length > 0 && (
+                  <div style={styles.credentials}>
+                    {member.credentials.map((cred, i) => (
+                      <span key={i} style={styles.credBadge}>{cred}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={styles.cta}>
+        <Award size={48} color={'${dt.primary}'} style={{ marginBottom: '24px' }} />
+        <h2 style={styles.ctaTitle}>${escapeQuotes(content.ctaHeadline)}</h2>
+        <p style={styles.ctaText}>${escapeQuotes(content.ctaText)}</p>
+        <Link to="${content.ctaPath}" style={styles.ctaBtn}>
+          ${escapeQuotes(content.ctaButton)} <ChevronRight size={20} />
+        </Link>
+      </section>
+    </div>
+  );
+}
+
+const styles = {
+  page: { background: '${dt.background}', minHeight: '100vh', fontFamily: "${dt.fontBody}" },
+  hero: { textAlign: 'center', padding: '${dt.sectionPadding}', background: '${dt.primary}', color: '#fff' },
+  heroTitle: { fontFamily: "${dt.fontHeading}", fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: '700', marginBottom: '12px' },
+  heroSubtitle: { fontSize: '1.15rem', opacity: 0.9 },
+  teamSection: { padding: '${dt.sectionPadding}' },
+  grid: { maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '${dt.gap}' },
+  card: { background: '${dt.cardBg}', borderRadius: '${dt.borderRadius}', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.06)', border: '1px solid ${dt.border}' },
+  avatarWrap: { height: '200px', background: '${dt.surface}', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  avatarImg: { width: '120px', height: '120px', borderRadius: '50%', objectFit: 'cover' },
+  avatarInitials: { width: '120px', height: '120px', borderRadius: '50%', background: '${dt.primary}22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px', fontWeight: '700', color: '${dt.primary}' },
+  cardBody: { padding: '${dt.cardPadding}' },
+  memberName: { fontFamily: "${dt.fontHeading}", fontSize: '1.35rem', fontWeight: '700', color: '${dt.text}', marginBottom: '4px' },
+  memberRole: { color: '${dt.primary}', fontWeight: '600', marginBottom: '16px', fontSize: '0.95rem' },
+  memberBio: { color: '${dt.textMuted}', lineHeight: 1.6, fontSize: '0.95rem', marginBottom: '16px' },
+  credentials: { display: 'flex', flexWrap: 'wrap', gap: '8px' },
+  credBadge: { padding: '4px 12px', background: '${dt.primary}12', color: '${dt.primary}', borderRadius: '20px', fontSize: '12px', fontWeight: '600' },
+  cta: { padding: '${dt.sectionPadding}', background: '${dt.cardBg}', textAlign: 'center' },
+  ctaTitle: { fontFamily: "${dt.fontHeading}", fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: '700', color: '${dt.text}', marginBottom: '16px' },
+  ctaText: { color: '${dt.textMuted}', fontSize: '1.1rem', lineHeight: 1.7, marginBottom: '32px', maxWidth: '600px', margin: '0 auto 32px' },
+  ctaBtn: { display: 'inline-flex', alignItems: 'center', gap: '8px', background: '${dt.primary}', color: '#fff', padding: '${dt.buttonPadding}', borderRadius: '${dt.borderRadius}', fontWeight: '${dt.buttonWeight}', textDecoration: 'none' }
+};
+`;
+}
+/**
+ * Generate Booking/Appointment Page
+ * Full booking form with service selection, date/time picker, and API integration
+ */
+function generateBookingPage(industryId, variant, moodSliders, businessData, pageType) {
+  const dt = getDesignTokens(moodSliders, businessData);
+  const colors = getColors(moodSliders, businessData);
+
+  // Industry-specific services for the booking dropdown
+  const servicesByIndustry = {
+    'salon-spa': [
+      { name: 'Classic Haircut', duration: 30 },
+      { name: 'Fade', duration: 45 },
+      { name: 'Color & Highlights', duration: 90 },
+      { name: 'Beard Trim', duration: 20 },
+      { name: 'Hot Towel Shave', duration: 45 },
+      { name: 'The Works (Cut + Beard + Towel)', duration: 75 },
+      { name: 'Deep Conditioning Treatment', duration: 45 },
+      { name: 'Blowout & Style', duration: 40 }
+    ],
+    'barbershop': [
+      { name: 'Classic Haircut', duration: 30 },
+      { name: 'Fade', duration: 45 },
+      { name: 'Beard Trim', duration: 20 },
+      { name: 'Hot Towel Shave', duration: 45 },
+      { name: 'Beard Design', duration: 30 },
+      { name: 'The Works (Cut + Beard + Towel)', duration: 75 },
+      { name: 'Kids Cut', duration: 20 }
+    ],
+    'dental': [
+      { name: 'Routine Cleaning', duration: 60 },
+      { name: 'New Patient Exam', duration: 90 },
+      { name: 'Teeth Whitening', duration: 60 },
+      { name: 'Filling', duration: 45 },
+      { name: 'Crown Consultation', duration: 30 },
+      { name: 'Emergency Visit', duration: 30 },
+      { name: 'Orthodontic Consultation', duration: 45 }
+    ],
+    'healthcare': [
+      { name: 'Annual Physical', duration: 60 },
+      { name: 'Sick Visit', duration: 30 },
+      { name: 'Follow-Up Appointment', duration: 20 },
+      { name: 'Lab Work', duration: 15 },
+      { name: 'Vaccination', duration: 15 },
+      { name: 'Wellness Consultation', duration: 45 },
+      { name: 'Specialist Referral', duration: 30 }
+    ],
+    'yoga': [
+      { name: 'Beginner Yoga Class', duration: 60 },
+      { name: 'Vinyasa Flow', duration: 75 },
+      { name: 'Hot Yoga', duration: 60 },
+      { name: 'Private Session', duration: 60 },
+      { name: 'Meditation Workshop', duration: 45 },
+      { name: 'Restorative Yoga', duration: 75 },
+      { name: 'Prenatal Yoga', duration: 60 }
+    ],
+    'fitness-gym': [
+      { name: 'Personal Training Session', duration: 60 },
+      { name: 'Group Fitness Class', duration: 45 },
+      { name: 'Nutrition Consultation', duration: 30 },
+      { name: 'Body Composition Assessment', duration: 30 },
+      { name: 'Gym Orientation', duration: 45 },
+      { name: 'Recovery Session', duration: 30 }
+    ],
+    'auto-shop': [
+      { name: 'Oil Change', duration: 30 },
+      { name: 'Tire Rotation', duration: 30 },
+      { name: 'Brake Inspection', duration: 45 },
+      { name: 'Full Diagnostic', duration: 60 },
+      { name: 'A/C Service', duration: 60 },
+      { name: 'State Inspection', duration: 30 }
+    ],
+    'law-firm': [
+      { name: 'Free Initial Consultation', duration: 15 },
+      { name: 'Case Evaluation', duration: 30 },
+      { name: 'Legal Consultation', duration: 60 },
+      { name: 'Contract Review', duration: 45 },
+      { name: 'Estate Planning Session', duration: 60 },
+      { name: 'Business Formation Consult', duration: 45 }
+    ]
+  };
+
+  const services = servicesByIndustry[industryId] || [
+    { name: 'Consultation', duration: 30 },
+    { name: 'Standard Appointment', duration: 60 },
+    { name: 'Extended Session', duration: 90 }
+  ];
+
+  const servicesJson = JSON.stringify(services);
+
+  // Determine the booking module name from industry config
+  const moduleNames = {
+    'salon-spa': 'appointments', 'barbershop': 'appointments',
+    'dental': 'appointments', 'healthcare': 'appointments',
+    'yoga': 'bookings', 'fitness-gym': 'bookings',
+    'auto-shop': 'appointments', 'law-firm': 'consultations',
+    'real-estate': 'appointments', 'accounting': 'consultations',
+    'saas': 'demos'
+  };
+  const moduleName = moduleNames[industryId] || 'appointments';
+
+  const pageLabel = pageType === 'appointment' ? 'Appointment' : capitalize(pageType);
+
+  return `/**
+ * Booking Page - ${businessData.name}
+ * Full booking form with date/time selection and API integration
+ * Generated by Launchpad
+ */
+
+import React, { useState, useEffect } from 'react';
+import { Calendar, Clock, User, Mail, Phone, FileText, CheckCircle, ArrowRight, Loader } from 'lucide-react';
+import { useApi } from '../hooks/useApi';
+
+export default function BookPage() {
+  const [step, setStep] = useState(1);
+  const [form, setForm] = useState({
+    service: '', date: '', time: '', duration: 60,
+    customer_name: '', customer_email: '', customer_phone: '', notes: ''
+  });
+  const [slots, setSlots] = useState([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [confirmation, setConfirmation] = useState(null);
+  const [error, setError] = useState('');
+  const api = useApi();
+
+  const services = ${servicesJson};
+
+  // Get today's date in YYYY-MM-DD
+  const today = new Date().toISOString().split('T')[0];
+  const maxDate = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+  // Fetch available slots when date changes
+  useEffect(() => {
+    if (!form.date) return;
+    setLoadingSlots(true);
+    setForm(f => ({ ...f, time: '' }));
+    api.get('/api/${moduleName}/availability?date=' + form.date)
+      .then(data => {
+        setSlots(data.slots || []);
+        setLoadingSlots(false);
+      })
+      .catch(() => {
+        // Fallback slots if API isn't running
+        const fallback = ['09:00','09:30','10:00','10:30','11:00','11:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00'].map(t => ({ time: t, available: true }));
+        setSlots(fallback);
+        setLoadingSlots(false);
+      });
+  }, [form.date]);
+
+  const handleServiceSelect = (svc) => {
+    setForm(f => ({ ...f, service: svc.name, duration: svc.duration }));
+    setStep(2);
+  };
+
+  const handleTimeSelect = (time) => {
+    setForm(f => ({ ...f, time }));
+    setStep(3);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setError('');
+    try {
+      const res = await api.post('/api/${moduleName}', form);
+      setConfirmation(res.booking || res);
+      setStep(4);
+    } catch (err) {
+      setError(err.message || 'Something went wrong. Please try again.');
+    }
+    setSubmitting(false);
+  };
+
+  const update = (key, val) => setForm(f => ({ ...f, [key]: val }));
+
+  // Confirmation screen
+  if (step === 4 && confirmation) {
+    return (
+      <div style={styles.page}>
+        <section style={styles.confirmSection}>
+          <div style={styles.confirmCard}>
+            <CheckCircle size={64} color="${colors.primary}" />
+            <h1 style={styles.confirmTitle}>Booking Confirmed!</h1>
+            <p style={styles.confirmRef}>Reference: <strong>{confirmation.reference_code}</strong></p>
+            <div style={styles.confirmDetails}>
+              <p><strong>Service:</strong> {confirmation.service}</p>
+              <p><strong>Date:</strong> {confirmation.date}</p>
+              <p><strong>Time:</strong> {confirmation.time}</p>
+              <p><strong>Name:</strong> {confirmation.customer_name}</p>
+            </div>
+            <p style={styles.confirmNote}>You will receive a confirmation email shortly. Save your reference code to manage your booking.</p>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  return (
+    <div style={styles.page}>
+      <section style={styles.hero}>
+        <h1 style={styles.heroTitle}>Book ${pageLabel === 'Book' ? 'an Appointment' : 'Your ' + pageLabel}</h1>
+        <p style={styles.heroSubtitle}>Choose a service, pick a time, and you are all set</p>
+      </section>
+
+      {/* Progress Steps */}
+      <div style={styles.progress}>
+        {['Service', 'Date & Time', 'Your Info'].map((label, i) => (
+          <div key={i} style={{ ...styles.progressStep, opacity: step > i ? 1 : 0.4 }}>
+            <div style={{ ...styles.progressDot, background: step > i ? '${colors.primary}' : '${dt.border}' }}>{step > i + 1 ? '\\u2713' : i + 1}</div>
+            <span style={styles.progressLabel}>{label}</span>
+          </div>
+        ))}
+      </div>
+
+      <main style={styles.main}>
+        {error && <div style={styles.error}>{error}</div>}
+
+        {/* Step 1: Service Selection */}
+        {step >= 1 && (
+          <section style={{ ...styles.stepSection, display: step === 1 ? 'block' : 'none' }}>
+            <h2 style={styles.stepTitle}>Select a Service</h2>
+            <div style={styles.serviceGrid}>
+              {services.map((svc, i) => (
+                <button key={i} onClick={() => handleServiceSelect(svc)}
+                  style={{ ...styles.serviceBtn, border: form.service === svc.name ? '2px solid ${colors.primary}' : '1px solid ${dt.border}' }}>
+                  <span style={styles.serviceName}>{svc.name}</span>
+                  <span style={styles.serviceDuration}><Clock size={14} /> {svc.duration} min</span>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Step 2: Date & Time */}
+        {step >= 2 && (
+          <section style={{ ...styles.stepSection, display: step === 2 ? 'block' : 'none' }}>
+            <button onClick={() => setStep(1)} style={styles.backBtn}>\\u2190 Change service: {form.service}</button>
+            <h2 style={styles.stepTitle}>Pick a Date & Time</h2>
+            <div style={styles.dateTimeGrid}>
+              <div>
+                <label style={styles.label}><Calendar size={16} /> Select Date</label>
+                <input type="date" min={today} max={maxDate} value={form.date}
+                  onChange={e => update('date', e.target.value)} style={styles.dateInput} />
+              </div>
+              {form.date && (
+                <div>
+                  <label style={styles.label}><Clock size={16} /> Available Times</label>
+                  {loadingSlots ? (
+                    <div style={styles.loading}><Loader size={20} /> Loading times...</div>
+                  ) : (
+                    <div style={styles.timeGrid}>
+                      {slots.filter(s => s.available).map((slot, i) => (
+                        <button key={i} onClick={() => handleTimeSelect(slot.time)}
+                          style={{ ...styles.timeBtn, background: form.time === slot.time ? '${colors.primary}' : '${dt.cardBg}',
+                            color: form.time === slot.time ? '#fff' : '${dt.text}' }}>
+                          {slot.time}
+                        </button>
+                      ))}
+                      {slots.filter(s => s.available).length === 0 && (
+                        <p style={styles.noSlots}>No available times on this date. Please try another day.</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* Step 3: Contact Info */}
+        {step >= 3 && (
+          <section style={{ ...styles.stepSection, display: step === 3 ? 'block' : 'none' }}>
+            <button onClick={() => setStep(2)} style={styles.backBtn}>\\u2190 Change time: {form.date} at {form.time}</button>
+            <h2 style={styles.stepTitle}>Your Information</h2>
+            <form onSubmit={handleSubmit} style={styles.form}>
+              <div style={styles.fieldGroup}>
+                <label style={styles.label}><User size={16} /> Full Name *</label>
+                <input type="text" required value={form.customer_name}
+                  onChange={e => update('customer_name', e.target.value)}
+                  placeholder="Your full name" style={styles.input} />
+              </div>
+              <div style={styles.fieldGroup}>
+                <label style={styles.label}><Mail size={16} /> Email *</label>
+                <input type="email" required value={form.customer_email}
+                  onChange={e => update('customer_email', e.target.value)}
+                  placeholder="your@email.com" style={styles.input} />
+              </div>
+              <div style={styles.fieldGroup}>
+                <label style={styles.label}><Phone size={16} /> Phone</label>
+                <input type="tel" value={form.customer_phone}
+                  onChange={e => update('customer_phone', e.target.value)}
+                  placeholder="(555) 123-4567" style={styles.input} />
+              </div>
+              <div style={styles.fieldGroup}>
+                <label style={styles.label}><FileText size={16} /> Notes</label>
+                <textarea value={form.notes} onChange={e => update('notes', e.target.value)}
+                  placeholder="Any special requests or notes..." rows={3} style={{ ...styles.input, resize: 'vertical' }} />
+              </div>
+
+              <div style={styles.summary}>
+                <h3 style={styles.summaryTitle}>Booking Summary</h3>
+                <p><strong>Service:</strong> {form.service} ({form.duration} min)</p>
+                <p><strong>Date:</strong> {form.date}</p>
+                <p><strong>Time:</strong> {form.time}</p>
+              </div>
+
+              <button type="submit" disabled={submitting} style={{ ...styles.submitBtn, opacity: submitting ? 0.7 : 1 }}>
+                {submitting ? 'Booking...' : 'Confirm Booking'} {!submitting && <ArrowRight size={18} />}
+              </button>
+            </form>
+          </section>
+        )}
+      </main>
+    </div>
+  );
+}
+
+const styles = {
+  page: { background: '${dt.background}', fontFamily: "${dt.fontBody}", minHeight: '100vh' },
+  hero: { textAlign: 'center', padding: '100px 20px 48px', background: '${dt.surface}' },
+  heroTitle: { fontSize: 'clamp(2rem, 5vw, 2.75rem)', fontFamily: "${dt.fontHeading}", fontWeight: '700', color: '${dt.text}', marginBottom: '12px', textTransform: '${dt.headlineStyle}' },
+  heroSubtitle: { fontSize: '1.1rem', color: '${dt.textMuted}' },
+  progress: { display: 'flex', justifyContent: 'center', gap: '48px', padding: '32px 20px', borderBottom: '1px solid ${dt.border}' },
+  progressStep: { display: 'flex', alignItems: 'center', gap: '8px', transition: 'opacity 0.3s' },
+  progressDot: { width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: '700', fontSize: '14px' },
+  progressLabel: { fontSize: '0.9rem', fontWeight: '600', color: '${dt.text}' },
+  main: { maxWidth: '700px', margin: '0 auto', padding: '40px 20px 80px' },
+  error: { background: '#FEE2E2', color: '#991B1B', padding: '12px 16px', borderRadius: '${dt.borderRadius}', marginBottom: '24px', fontSize: '0.95rem' },
+  stepSection: { },
+  stepTitle: { fontSize: '1.5rem', fontFamily: "${dt.fontHeading}", fontWeight: '600', color: '${dt.text}', marginBottom: '24px' },
+  backBtn: { background: 'none', border: 'none', color: '${dt.primary}', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '500', padding: '0', marginBottom: '16px', fontFamily: "${dt.fontBody}" },
+  serviceGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '12px' },
+  serviceBtn: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderRadius: '${dt.borderRadius}', background: '${dt.cardBg}', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'left', fontFamily: "${dt.fontBody}" },
+  serviceName: { fontWeight: '600', color: '${dt.text}', fontSize: '0.95rem' },
+  serviceDuration: { display: 'flex', alignItems: 'center', gap: '4px', color: '${dt.textMuted}', fontSize: '0.85rem' },
+  dateTimeGrid: { display: 'grid', gap: '24px' },
+  label: { display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', fontWeight: '600', color: '${dt.text}', marginBottom: '8px' },
+  dateInput: { width: '100%', padding: '14px 16px', border: '1px solid ${dt.border}', borderRadius: '${dt.borderRadius}', fontSize: '1rem', fontFamily: "${dt.fontBody}", background: '${dt.inputBg}', color: '${dt.text}', boxSizing: 'border-box' },
+  loading: { display: 'flex', alignItems: 'center', gap: '8px', color: '${dt.textMuted}', padding: '20px 0' },
+  timeGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '8px' },
+  timeBtn: { padding: '12px 8px', border: '1px solid ${dt.border}', borderRadius: '${dt.borderRadius}', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem', fontFamily: "${dt.fontBody}", transition: 'all 0.2s' },
+  noSlots: { color: '${dt.textMuted}', fontStyle: 'italic', padding: '16px 0' },
+  form: { display: 'grid', gap: '20px' },
+  fieldGroup: { },
+  input: { width: '100%', padding: '14px 16px', border: '1px solid ${dt.border}', borderRadius: '${dt.borderRadius}', fontSize: '1rem', fontFamily: "${dt.fontBody}", background: '${dt.inputBg}', color: '${dt.text}', boxSizing: 'border-box' },
+  summary: { background: '${dt.surface}', border: '1px solid ${dt.border}', borderRadius: '${dt.borderRadius}', padding: '20px', marginTop: '8px' },
+  summaryTitle: { fontSize: '1.1rem', fontFamily: "${dt.fontHeading}", fontWeight: '600', color: '${dt.text}', marginBottom: '12px' },
+  submitBtn: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%', background: '${dt.primary}', color: '#fff', padding: '${dt.buttonPadding}', borderRadius: '${dt.borderRadius}', fontWeight: '${dt.buttonWeight}', fontSize: '1.05rem', border: 'none', cursor: 'pointer', fontFamily: "${dt.fontBody}", textTransform: '${dt.buttonTransform}', marginTop: '8px' },
+  confirmSection: { display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', padding: '40px 20px' },
+  confirmCard: { textAlign: 'center', maxWidth: '500px', background: '${dt.cardBg}', border: '1px solid ${dt.border}', borderRadius: '${dt.borderRadius}', padding: '48px 32px', boxShadow: '${dt.shadow}' },
+  confirmTitle: { fontSize: '2rem', fontFamily: "${dt.fontHeading}", fontWeight: '700', color: '${dt.text}', margin: '24px 0 8px' },
+  confirmRef: { fontSize: '1.1rem', color: '${dt.primary}', marginBottom: '24px' },
+  confirmDetails: { textAlign: 'left', background: '${dt.surface}', borderRadius: '${dt.borderRadius}', padding: '20px', marginBottom: '24px' },
+  confirmNote: { fontSize: '0.9rem', color: '${dt.textMuted}', lineHeight: 1.6 }
+};
+`;
+}
+
+function generateOrderPage(industryId, variant, moodSliders, businessData, pageType) {
+  const archetype = detectArchetype(businessData);
+  const colors = getColors(moodSliders, businessData);
+  const overrides = buildStyleOverrides(moodSliders, colors);
+  return generateArchetypeOrderPage(archetype, { ...businessData, industry: industryId }, colors, overrides);
+}
+
 const generateMembershipPage = generateGenericPage;
 const generatePricingPage = generateGenericPage;
-const generateFeaturesPage = generateGenericPage;
+
+// Features page (SaaS/ecommerce) uses technology services generator
+function generateFeaturesPage(industryId, variant, moodSliders, businessData, pageType) {
+  if (['saas', 'ecommerce'].includes(industryId)) {
+    const colors = getColors(moodSliders, businessData);
+    const overrides = buildStyleOverrides(moodSliders, colors);
+    const arch = detectTechnologyArchetype({ ...businessData, industry: industryId });
+    return generateTechnologyServices(arch, { ...businessData, industry: industryId }, colors, overrides);
+  }
+  return generateGenericPage(industryId, variant, moodSliders, businessData, pageType);
+}
+
 const generateListingsPage = generateGenericPage;
-const generateProductsPage = generateGenericPage;
+
+// Products page (ecommerce) also uses technology services
+function generateProductsPage(industryId, variant, moodSliders, businessData, pageType) {
+  return generateFeaturesPage(industryId, variant, moodSliders, businessData, pageType);
+}
+
 const generateQuotePage = generateGenericPage;
 const generateAreasPage = generateGenericPage;
 const generateSchedulePage = generateGenericPage;
 const generateProgramsPage = generateGenericPage;
 const generateAdmissionsPage = generateGenericPage;
 const generateDemoPage = generateGenericPage;
-const generateConsultationPage = generateGenericPage;
+const generateConsultationPage = generateBookingPage;
 const generateValuationPage = generateGenericPage;
 const generateCartPage = generateGenericPage;
 const generateAccountPage = generateGenericPage;
@@ -7060,8 +7679,11 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Clock, Users, ChevronRight, ChevronLeft, Check, Phone, Mail, User, MessageSquare, CalendarPlus, Star, RefreshCw, AlertCircle } from 'lucide-react';
 import { useReservations } from '../hooks/useReservations';
+${businessData.enablePortal ? "import { useAuth } from '../components/AuthContext';" : ''}
 
 export default function ReservationsPage() {
+  ${businessData.enablePortal ? "const { user, isAuthenticated } = useAuth();" : "const user = null; const isAuthenticated = false;"}
+
   const [step, setStep] = useState(1);
   const [partySize, setPartySize] = useState(2);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -7081,6 +7703,18 @@ export default function ReservationsPage() {
     availability,
     clearError
   } = useReservations();
+
+  // Auto-fill form for logged-in users
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        name: user.name || prev.name,
+        email: user.email || prev.email,
+        phone: user.phone || prev.phone
+      }));
+    }
+  }, [user]);
 
   // Generate next 14 days
   const dates = Array.from({ length: 14 }, (_, i) => {
@@ -7152,13 +7786,12 @@ export default function ReservationsPage() {
         specialRequests: formData.specialRequests
       });
 
-      setConfirmationNumber(result.reference_code);
+      setConfirmationNumber(result.booking?.reference_code || result.reference_code || 'N/A');
       setConfirmed(true);
     } catch (err) {
-      // Fallback to local confirmation if API fails
-      console.warn('API booking failed, using fallback:', err.message);
-      setConfirmationNumber('RES-' + Math.random().toString(36).substring(2, 8).toUpperCase());
-      setConfirmed(true);
+      // Show error to user instead of faking success
+      console.error('Reservation failed:', err.message);
+      setErrors(prev => ({ ...prev, submit: err.message || 'Failed to create reservation. Please try again.' }));
     }
   };
 
@@ -7381,9 +8014,15 @@ export default function ReservationsPage() {
               </label>
             </div>
 
+            {errors.submit && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', color: '#dc2626', fontSize: '0.9rem', marginBottom: '16px' }}>
+                <AlertCircle size={16} /> {errors.submit}
+              </div>
+            )}
+
             <div style={styles.actionRow}>
               <button onClick={() => setStep(1)} style={styles.backBtn}><ChevronLeft size={18} /> Back</button>
-              <button onClick={handleConfirm} style={styles.confirmBtn}>Confirm Reservation</button>
+              <button onClick={handleConfirm} disabled={apiLoading} style={{...styles.confirmBtn, opacity: apiLoading ? 0.7 : 1}}>{apiLoading ? 'Submitting...' : 'Confirm Reservation'}</button>
             </div>
 
             <p style={styles.policyText}>By confirming, you agree to our cancellation policy. Please arrive on time; tables are held for 15 minutes.</p>
@@ -7477,6 +8116,277 @@ const styles = {
   accountPrompt: { padding: '24px', background: '#f0f9ff', borderRadius: '12px', textAlign: 'center' },
   createAccountBtn: { display: 'inline-block', marginTop: '12px', padding: '12px 32px', background: config.accentColor, color: '#fff', borderRadius: config.buttonRadius, textDecoration: 'none', fontWeight: '600' },
   homeLink: { display: 'block', marginTop: '12px', color: config.accentColor, textDecoration: 'none', fontWeight: '500' }
+};
+`;
+}
+
+/**
+ * Generate ChatWidget component for portal customers
+ */
+function generateChatWidget(primaryColor) {
+  return `/**
+ * ChatWidget - Floating customer chat
+ * Generated by Launchpad
+ */
+
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useAuth } from './AuthContext';
+
+const API = '';
+
+export default function ChatWidget() {
+  const { user, isAuthenticated } = useAuth();
+  const [open, setOpen] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [sending, setSending] = useState(false);
+  const [unread, setUnread] = useState(0);
+  const messagesEndRef = useRef(null);
+
+  const fetchConversation = useCallback(async () => {
+    if (!user?.id) return;
+    try {
+      const res = await fetch(\`\${API}/api/chat/conversations/\${user.id}\`);
+      const data = await res.json();
+      if (data.success && data.conversation) {
+        setMessages(data.conversation.messages || []);
+      }
+    } catch (e) { console.error('Chat fetch error:', e); }
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (isAuthenticated && user?.id) fetchConversation();
+  }, [isAuthenticated, user?.id, fetchConversation]);
+
+  // SSE for real-time updates
+  useEffect(() => {
+    if (!isAuthenticated || !user?.id) return;
+    const es = new EventSource(\`\${API}/api/chat/events\`);
+    es.onmessage = (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        if (data.type === 'chat_update' && String(data.customerId) === String(user.id)) {
+          fetchConversation().then(() => {
+            if (!open) setUnread(u => u + 1);
+          });
+        }
+      } catch {}
+    };
+    return () => es.close();
+  }, [isAuthenticated, user?.id, open, fetchConversation]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const handleOpen = () => {
+    setOpen(true);
+    setUnread(0);
+  };
+
+  const sendMessage = async () => {
+    if (!input.trim() || sending) return;
+    setSending(true);
+    try {
+      const res = await fetch(\`\${API}/api/chat/send\`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerId: user.id,
+          customerName: user.name || user.full_name || 'Customer',
+          customerEmail: user.email,
+          sender: 'customer',
+          text: input.trim()
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMessages(data.conversation.messages || []);
+        setInput('');
+      }
+    } catch (e) { console.error('Send error:', e); }
+    setSending(false);
+  };
+
+  if (!isAuthenticated) return null;
+
+  return (
+    <>
+      {/* Floating bubble */}
+      {!open && (
+        <button onClick={handleOpen} style={styles.bubble}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          {unread > 0 && <span style={styles.badge}>{unread}</span>}
+        </button>
+      )}
+
+      {/* Chat panel */}
+      {open && (
+        <div style={styles.panel}>
+          <div style={styles.header}>
+            <span style={{ fontWeight: 700, fontSize: 15 }}>Chat with us</span>
+            <button onClick={() => setOpen(false)} style={styles.closeBtn}>&times;</button>
+          </div>
+
+          <div style={styles.messagesArea}>
+            {messages.length === 0 && (
+              <div style={{ textAlign: 'center', color: '#9ca3af', padding: '40px 16px', fontSize: 14 }}>
+                Send us a message and we'll get back to you!
+              </div>
+            )}
+            {messages.map(m => (
+              <div key={m.id} style={{
+                display: 'flex',
+                justifyContent: m.sender === 'customer' ? 'flex-end' : 'flex-start',
+                marginBottom: 8
+              }}>
+                <div style={{
+                  maxWidth: '80%',
+                  padding: '8px 14px',
+                  borderRadius: 14,
+                  fontSize: 14,
+                  lineHeight: 1.4,
+                  ...(m.sender === 'customer'
+                    ? { background: '${primaryColor}', color: '#fff', borderBottomRightRadius: 4 }
+                    : m.sender === 'system'
+                    ? { background: '#f3f4f6', color: '#6b7280', fontStyle: 'italic', borderBottomLeftRadius: 4 }
+                    : { background: '#fff', border: '1px solid #e5e7eb', color: '#111827', borderBottomLeftRadius: 4 })
+                }}>
+                  {m.sender === 'admin' && <div style={{ fontSize: 11, fontWeight: 600, color: '${primaryColor}', marginBottom: 2 }}>Support</div>}
+                  {m.text}
+                  <div style={{ fontSize: 10, marginTop: 4, opacity: 0.7, textAlign: m.sender === 'customer' ? 'right' : 'left' }}>
+                    {new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                </div>
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+
+          <div style={styles.inputArea}>
+            <input
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && sendMessage()}
+              placeholder="Type a message..."
+              style={styles.input}
+            />
+            <button onClick={sendMessage} disabled={sending || !input.trim()} style={{
+              ...styles.sendBtn,
+              opacity: (sending || !input.trim()) ? 0.5 : 1
+            }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+const styles = {
+  bubble: {
+    position: 'fixed',
+    bottom: 24,
+    right: 24,
+    width: 56,
+    height: 56,
+    borderRadius: '50%',
+    background: '${primaryColor}',
+    color: '#fff',
+    border: 'none',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+    zIndex: 1000,
+    transition: 'transform 0.2s'
+  },
+  badge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    background: '#ef4444',
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: 700,
+    width: 22,
+    height: 22,
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: '2px solid #fff'
+  },
+  panel: {
+    position: 'fixed',
+    bottom: 24,
+    right: 24,
+    width: 380,
+    height: 520,
+    background: '#fff',
+    borderRadius: 16,
+    boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden',
+    zIndex: 1000
+  },
+  header: {
+    padding: '16px 20px',
+    background: '${primaryColor}',
+    color: '#fff',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  closeBtn: {
+    background: 'none',
+    border: 'none',
+    color: '#fff',
+    fontSize: 22,
+    cursor: 'pointer',
+    lineHeight: 1,
+    padding: 0
+  },
+  messagesArea: {
+    flex: 1,
+    overflowY: 'auto',
+    padding: 16,
+    background: '#f9fafb'
+  },
+  inputArea: {
+    display: 'flex',
+    gap: 8,
+    padding: 12,
+    borderTop: '1px solid #e5e7eb',
+    background: '#fff'
+  },
+  input: {
+    flex: 1,
+    padding: '10px 14px',
+    borderRadius: 20,
+    border: '1px solid #d1d5db',
+    fontSize: 14,
+    outline: 'none'
+  },
+  sendBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: '50%',
+    background: '${primaryColor}',
+    color: '#fff',
+    border: 'none',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
 };
 `;
 }
@@ -8590,19 +9500,28 @@ function generateReservationsPage(businessData, colors) {
  * Generated by Launchpad
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
-import { Calendar, Clock, Users, ChevronLeft, ChevronRight, Check, X } from 'lucide-react';
+import { useReservations } from '../hooks/useReservations';
+import { Calendar, Clock, Users, ChevronLeft, ChevronRight, Check, X, AlertCircle } from 'lucide-react';
 
 export default function ReservationsPage() {
   const { user, isAuthenticated } = useAuth();
+  const { createReservation, loading: apiLoading, error: apiError } = useReservations();
   const [step, setStep] = useState(1);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [partySize, setPartySize] = useState(2);
   const [specialRequests, setSpecialRequests] = useState('');
   const [confirmed, setConfirmed] = useState(false);
+  const [confirmationNumber, setConfirmationNumber] = useState('');
+  const [submitError, setSubmitError] = useState('');
+
+  // Auto-fill name/email from logged-in user
+  const userName = user?.name || '';
+  const userEmail = user?.email || '';
+  const userPhone = user?.phone || '';
 
   const dates = Array.from({ length: 14 }, (_, i) => {
     const date = new Date();
@@ -8628,7 +9547,34 @@ export default function ReservationsPage() {
     { id: 2, date: '2024-12-25', time: '2:00 PM', partySize: 4, status: 'pending' }
   ];
 
-  const handleConfirm = () => setConfirmed(true);
+  const convertTo24Hour = (time12h) => {
+    const [time, modifier] = time12h.split(' ');
+    let [hours, minutes] = time.split(':');
+    if (modifier === 'PM' && hours !== '12') hours = parseInt(hours, 10) + 12;
+    if (modifier === 'AM' && hours === '12') hours = '00';
+    return \`\${hours}:\${minutes}\`;
+  };
+
+  const handleConfirm = async () => {
+    setSubmitError('');
+    try {
+      const result = await createReservation({
+        customerName: userName,
+        customerEmail: userEmail,
+        customerPhone: userPhone,
+        date: selectedDate,
+        time: convertTo24Hour(selectedTime),
+        partySize: partySize,
+        specialRequests: specialRequests
+      });
+      setConfirmationNumber(result.booking?.reference_code || result.reference_code || 'N/A');
+      setConfirmed(true);
+    } catch (err) {
+      console.error('Reservation failed:', err.message);
+      setSubmitError(err.message || 'Failed to create reservation. Please try again.');
+    }
+  };
+
   const formatSelectedDate = () => {
     if (!selectedDate) return '';
     const d = dates.find(d => d.date === selectedDate);
@@ -8646,6 +9592,7 @@ export default function ReservationsPage() {
           <div style={styles.successCard}>
             <div style={styles.successIcon}><Check size={32} /></div>
             <h2 style={styles.successTitle}>${successLabel}</h2>
+            <p style={{ fontSize: '1.1rem', fontWeight: '600', color: '${colors.primary}', marginBottom: '12px' }}>Confirmation #{confirmationNumber}</p>
             <p style={styles.successDetails}>{formatSelectedDate()} at {selectedTime}<br />Party of {partySize}</p>
             <p style={styles.confirmationNote}>A confirmation email has been sent to {user?.email}</p>
             <div style={styles.successActions}>
@@ -8715,9 +9662,14 @@ export default function ReservationsPage() {
               <label style={styles.label}>Special Requests (optional)</label>
               <textarea value={specialRequests} onChange={(e) => setSpecialRequests(e.target.value)} style={styles.textarea} placeholder="High chair needed, birthday celebration, dietary restrictions..." />
             </div>
+            {submitError && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', color: '#dc2626', fontSize: '0.9rem', marginBottom: '16px' }}>
+                <AlertCircle size={16} /> {submitError}
+              </div>
+            )}
             <div style={styles.actionRow}>
               <button onClick={() => setStep(1)} style={styles.backBtn}><ChevronLeft size={18} /> Back</button>
-              <button onClick={handleConfirm} style={styles.confirmBtn}>${confirmLabel}</button>
+              <button onClick={handleConfirm} disabled={apiLoading} style={{...styles.confirmBtn, opacity: apiLoading ? 0.7 : 1}}>{apiLoading ? 'Booking...' : '${confirmLabel}'}</button>
             </div>
           </div>
         )}
@@ -9198,6 +10150,86 @@ export default AuthContext;
 }
 
 // ============================================
+// CART PROVIDER
+// ============================================
+
+/**
+ * Generate CartProvider - shared cart context with localStorage persistence
+ */
+function generateCartProvider() {
+  return `import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+
+const CartContext = createContext(null);
+
+const STORAGE_KEY = 'launchpad_cart';
+
+function loadCart() {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch { return []; }
+}
+
+function saveCart(cart) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(cart)); } catch {}
+}
+
+export function CartProvider({ children }) {
+  const [cart, setCart] = useState(loadCart);
+
+  useEffect(() => { saveCart(cart); }, [cart]);
+
+  const addToCart = useCallback((item) => {
+    setCart(prev => {
+      const id = item.id || item.name;
+      const existing = prev.find(i => (i.id || i.name) === id);
+      if (existing) {
+        return prev.map(i => (i.id || i.name) === id ? { ...i, quantity: i.quantity + 1 } : i);
+      }
+      return [...prev, { ...item, quantity: 1 }];
+    });
+  }, []);
+
+  const removeFromCart = useCallback((id) => {
+    setCart(prev => prev.filter(i => (i.id || i.name) !== id));
+  }, []);
+
+  const updateQuantity = useCallback((id, qty) => {
+    if (qty <= 0) {
+      setCart(prev => prev.filter(i => (i.id || i.name) !== id));
+    } else {
+      setCart(prev => prev.map(i => (i.id || i.name) === id ? { ...i, quantity: qty } : i));
+    }
+  }, []);
+
+  const clearCart = useCallback(() => {
+    setCart([]);
+    localStorage.removeItem(STORAGE_KEY);
+  }, []);
+
+  const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const cartTotal = cart.reduce((sum, item) => sum + (parseFloat(item.price) || 0) * item.quantity, 0);
+
+  return (
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, clearCart, cartItemCount, cartTotal }}>
+      {children}
+    </CartContext.Provider>
+  );
+}
+
+export function useCart() {
+  const ctx = useContext(CartContext);
+  if (!ctx) {
+    return { cart: [], addToCart: () => {}, removeFromCart: () => {}, updateQuantity: () => {}, clearCart: () => {}, cartItemCount: 0, cartTotal: 0 };
+  }
+  return ctx;
+}
+
+export default CartContext;
+`;
+}
+
+// ============================================
 // SHARED COMPONENTS
 // ============================================
 
@@ -9213,10 +10245,12 @@ function generateNavbar(businessData, pageTypes, enablePortal = false, moodSlide
   // Get trend-aware primary CTA
   const trendCta = getTrendNavCta(businessData);
 
-  const navLinks = pageTypes.map(p => ({
+  const navLinks = pageTypes.filter(p => p !== 'order').map(p => ({
     path: p === 'home' ? '/' : `/${p}`,
     label: capitalize(p)
   }));
+
+  const hasOrderPage = pageTypes.includes('order');
 
   // Add auth import if portal enabled
   const authImport = enablePortal ? `
@@ -9297,11 +10331,21 @@ import { User, ChevronDown, LogOut } from 'lucide-react';` : '';
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Phone } from 'lucide-react';${authImport}
+import { Menu, X, Phone, ShoppingBag } from 'lucide-react';${authImport}
+import { usePageContent } from './ContentProvider';
+import { useCart } from './CartProvider';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();${authHook}
+  const { cartItemCount } = useCart();
+  const globalContent = usePageContent('_global');
+  const navData = globalContent.navbar || {};
+
+  const logoText = navData.logoText || '${escapeQuotes(businessData.name)}';
+  const ctaLabel = navData.ctaText || '${escapeQuotes(trendCta?.label || '')}';
+  const ctaPath = navData.ctaPath || '${trendCta?.path || ''}';
+  const phoneNum = navData.phone || '${businessData.phone || ''}';
 
   const links = ${JSON.stringify(navLinks, null, 4)};
 
@@ -9309,7 +10353,7 @@ export default function Navbar() {
     <nav style={styles.nav}>
       <div style={styles.container}>
         <Link to="/" style={styles.logoLink}>
-          ${businessData.logo ? `<img src="${escapeQuotes(businessData.logo)}" alt="${escapeQuotes(businessData.name)}" style={styles.logoImg} />` : `<span style={styles.logoText}>${escapeQuotes(businessData.name)}</span>`}
+          ${businessData.logo ? `<img src="${escapeQuotes(businessData.logo)}" alt={logoText} style={styles.logoImg} />` : `<span style={styles.logoText}>{logoText}</span>`}
         </Link>
 
         <div className="desktop-links" style={styles.desktopLinks}>
@@ -9328,6 +10372,12 @@ export default function Navbar() {
         </div>
 
         <div style={styles.rightSection}>
+          ${hasOrderPage ? `{cartItemCount > 0 && (
+            <Link to="/order" style={styles.cartBadge} className="cart-badge" aria-label={\`Cart: \${cartItemCount} items\`}>
+              <ShoppingBag size={18} />
+              <span style={styles.cartCount}>{cartItemCount}</span>
+            </Link>
+          )}` : ''}
           ${trendCta ? `<Link to="${trendCta.path}" style={styles.primaryCta} className="nav-cta">${trendCta.label}</Link>` : ''}
           ${businessData.phone ? `<a href="tel:${businessData.phone.replace(/[^0-9]/g, '')}" style={styles.phone} className="phone-link">
             <Phone size={16} /> <span className="phone-text" style={styles.phoneText}>${businessData.phone}</span>
@@ -9371,6 +10421,8 @@ const styles = {
   desktopLinks: { display: 'flex', gap: '32px', flex: 1, justifyContent: 'center' },
   link: { textDecoration: 'none', fontWeight: '500', fontSize: '15px', letterSpacing: ${dt.isLuxury ? "'1px'" : "'0.5px'"}, transition: 'color 0.2s', fontFamily: "${dt.fontBody}"${dt.isLuxury ? ", textTransform: 'uppercase', fontSize: '13px'" : ''} },
   rightSection: { display: 'flex', alignItems: 'center', gap: '16px' },
+  cartBadge: { position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '${dt.isDark ? '#e5e7eb' : '#374151'}', textDecoration: 'none', padding: '6px', cursor: 'pointer' },
+  cartCount: { position: 'absolute', top: '-2px', right: '-6px', background: '${dt.primary}', color: '#fff', fontSize: '11px', fontWeight: '700', minWidth: '18px', height: '18px', borderRadius: '9px', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 },
   phone: { display: 'flex', alignItems: 'center', gap: '6px', color: '${dt.primary}', textDecoration: 'none', fontWeight: '500', fontSize: '14px' },
   phoneText: { display: 'inline' },
   primaryCta: { background: '${dt.primary}', color: '#fff', padding: '10px 20px', borderRadius: '${dt.borderRadius}', textDecoration: 'none', fontWeight: '${dt.buttonWeight}', fontSize: '14px', transition: 'opacity 0.2s', textTransform: '${dt.buttonTransform}', letterSpacing: ${dt.isLuxury ? "'1px'" : "'0'"} },
@@ -9456,16 +10508,20 @@ function generateFooter(businessData) {
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Clock } from 'lucide-react';
+import { usePageContent } from './ContentProvider';
 
 export default function Footer() {
+  const globalContent = usePageContent('_global');
+  const footerData = globalContent.footer || {};
+
   const businessInfo = {
-    name: '${escapeQuotes(businessData.name)}',
-    address: '${escapeQuotes(businessData.address)}',
-    phone: '${businessData.phone}',
-    email: '${businessData.email}'
+    name: footerData.logoText || '${escapeQuotes(businessData.name)}',
+    address: footerData.address || '${escapeQuotes(businessData.address)}',
+    phone: footerData.phone || '${businessData.phone}',
+    email: footerData.email || '${businessData.email}'
   };
 
-  const trustText = '${escapeQuotes(trustText)}';
+  const trustText = footerData.trustText || '${escapeQuotes(trustText)}';
 
   return (
     <footer style={styles.footer}>
@@ -9473,8 +10529,8 @@ export default function Footer() {
         <div style={styles.grid}>
           <div style={styles.column}>
             <h3 style={styles.logo}>{businessInfo.name}</h3>
-            <p style={styles.tagline}>${escapeQuotes(businessData.tagline)}</p>
-            ${trustText ? `<p style={styles.trustText}>${escapeQuotes(trustText)}</p>` : ''}
+            <p style={styles.tagline}>{footerData.tagline || '${escapeQuotes(businessData.tagline)}'}</p>
+            {trustText && <p style={styles.trustText}>{trustText}</p>}
           </div>
 
           <div style={styles.column}>
@@ -9557,6 +10613,7 @@ function generateAppWithRouting(pageTypes, businessData, enablePortal = false, p
   }).join('\n') : '';
 
   const authContextImport = enablePortal ? `import { AuthProvider } from './components/AuthContext';` : '';
+  const chatWidgetImport = enablePortal ? `import ChatWidget from './components/ChatWidget';` : '';
 
   const portalRoutes = enablePortal ? portalPages.map(p => {
     const name = capitalize(p) + 'Page';
@@ -9565,31 +10622,40 @@ function generateAppWithRouting(pageTypes, businessData, enablePortal = false, p
 
   // App content with or without AuthProvider wrapper
   const appContent = enablePortal ? `
-    <AuthProvider>
-      <BrowserRouter>
-        <div style={styles.app}>
-          <Navbar />
-          <main style={styles.main}>
-            <Routes>
+    <ContentProvider>
+      <CartProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <div style={styles.app}>
+              <Navbar />
+              <main style={styles.main}>
+                <Routes>
 ${routes}
 ${portalRoutes}
-            </Routes>
-          </main>
-          <Footer />
-        </div>
-      </BrowserRouter>
-    </AuthProvider>` : `
-    <BrowserRouter>
-      <div style={styles.app}>
-        <Navbar />
-        <main style={styles.main}>
-          <Routes>
+                </Routes>
+              </main>
+              <Footer />
+            </div>
+          </BrowserRouter>
+          <ChatWidget />
+        </AuthProvider>
+      </CartProvider>
+    </ContentProvider>` : `
+    <ContentProvider>
+      <CartProvider>
+        <BrowserRouter>
+          <div style={styles.app}>
+            <Navbar />
+            <main style={styles.main}>
+              <Routes>
 ${routes}
-          </Routes>
-        </main>
-        <Footer />
-      </div>
-    </BrowserRouter>`;
+              </Routes>
+            </main>
+            <Footer />
+          </div>
+        </BrowserRouter>
+      </CartProvider>
+    </ContentProvider>`;
 
   return `/**
  * App.jsx - ${businessData.name}
@@ -9600,7 +10666,10 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import { ContentProvider } from './components/ContentProvider';
+import { CartProvider } from './components/CartProvider';
 ${authContextImport}
+${chatWidgetImport}
 
 ${imports}
 ${portalImports}
@@ -9750,23 +10819,28 @@ ReactDOM.createRoot(document.getElementById('root')).render(
  * Generate vite.config.js
  */
 function generateViteConfig() {
-  return `import { defineConfig } from 'vite';
+  return `import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    port: 5000,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:5001',
-        changeOrigin: true
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+  const apiTarget = env.API_TARGET || 'http://localhost:5001';
+
+  return {
+    plugins: [react()],
+    server: {
+      port: 5000,
+      proxy: {
+        '/api': {
+          target: apiTarget,
+          changeOrigin: true
+        }
       }
+    },
+    build: {
+      outDir: 'dist'
     }
-  },
-  build: {
-    outDir: 'dist'
-  }
+  };
 });
 `;
 }
@@ -10644,6 +11718,21 @@ function generateBackend(backendDir, businessData, industry, enablePortal = true
   fs.writeFileSync(path.join(routesDir, 'settings.js'), settingsRouteCode);
   generatedFiles.push('routes/settings.js');
 
+  // 7c. Generate content routes (Website Editor API)
+  const contentRouteCode = generateContentRoutes(businessData);
+  fs.writeFileSync(path.join(routesDir, 'content.js'), contentRouteCode);
+  generatedFiles.push('routes/content.js');
+
+  // 7d. Generate customer & loyalty routes
+  const customerRouteCode = generateCustomerRoutes(businessData, industry);
+  fs.writeFileSync(path.join(routesDir, 'customers.js'), customerRouteCode);
+  generatedFiles.push('routes/customers.js');
+
+  // 7e. Generate chat routes
+  const chatRouteCode = generateChatRoutes(businessData);
+  fs.writeFileSync(path.join(routesDir, 'chat.js'), chatRouteCode);
+  generatedFiles.push('routes/chat.js');
+
   // Generate agents.json in admin directory (sibling to backend)
   const adminDir = path.join(backendDir, '..', 'admin');
   if (!fs.existsSync(adminDir)) fs.mkdirSync(adminDir, { recursive: true });
@@ -10753,6 +11842,42 @@ try {
   console.log('[Settings] Settings routes loaded');
 } catch (e) {
   console.log('[Settings] Settings routes not available:', e.message);
+}
+
+// ============================================
+// CONTENT ROUTES (Website Editor)
+// ============================================
+
+try {
+  const contentRoutes = require('./routes/content.js');
+  app.use('/api/content', contentRoutes);
+  console.log('[Content] Website editor routes loaded');
+} catch (e) {
+  console.log('[Content] Content routes not available:', e.message);
+}
+
+// ============================================
+// CUSTOMER & LOYALTY ROUTES
+// ============================================
+
+try {
+  const customerRoutes = require('./routes/customers.js');
+  app.use('/api/admin', customerRoutes);
+  console.log('[Customers] Customer & loyalty routes loaded');
+} catch (e) {
+  console.log('[Customers] Customer routes not available:', e.message);
+}
+
+// ============================================
+// CHAT ROUTES
+// ============================================
+
+try {
+  const chatRoutes = require('./routes/chat.js');
+  app.use('/api/chat', chatRoutes);
+  console.log('[Chat] Customer-admin chat routes loaded');
+} catch (e) {
+  console.log('[Chat] Chat routes not available:', e.message);
 }
 
 // ============================================
@@ -11044,6 +12169,12 @@ router.put('/profile', authenticateToken, async (req, res) => {
 
 router.post('/logout', (req, res) => res.json({ success: true, message: 'Logged out' }));
 router.get('/verify', authenticateToken, (req, res) => res.json({ success: true, valid: true, user: { id: req.user.id, email: req.user.email } }));
+
+// Expose internals for other modules (e.g. customers.js)
+router.testUsers = testUsers;
+router.DEMO_ACCOUNTS = DEMO_ACCOUNTS;
+router.db = db;
+router.isDatabaseAvailable = isDatabaseAvailable;
 
 module.exports = router;
 `;
@@ -11619,7 +12750,7 @@ function generateReferenceCode() {
 
 // POST /api/${moduleName} - Create new ${singular.toLowerCase()}
 router.post('/', (req, res) => {
-  const { customer_name, customer_email, customer_phone, date, time, ${partyField}, service, notes } = req.body;
+  const { customer_name, customer_email, customer_phone, date, time, ${partyField}, service, notes, special_requests } = req.body;
 
   if (!customer_name || !customer_email || !date || !time) {
     return res.status(400).json({ success: false, error: 'Missing required fields' });
@@ -11636,7 +12767,7 @@ router.post('/', (req, res) => {
     ${partyField}: parseInt(${partyField}) || ${defaultParty},
     service: service || '${singular}',
     status: 'pending',
-    notes: notes || '',
+    notes: notes || special_requests || '',
     created_at: new Date().toISOString()
   };
 
@@ -12744,6 +13875,911 @@ function ensureContrast(foreground, background) {
   return foreground;
 }
 
+// ============================================
+// CONTENT API & PAGE CONTENT BUILDER
+// ============================================
+
+/**
+ * Build structured page content for brain.json
+ * Extracts data that's currently hardcoded in page generators
+ * and organizes it by page/section for the Website Editor
+ */
+function buildPageContent(businessData, industryId, generatedPages) {
+  const pages = {};
+  const pageList = INDUSTRY_PAGES[industryId] || INDUSTRY_PAGES['restaurant'];
+  const trustText = generateFooterTrustText(businessData);
+  const smartCta = getSmartCTA(businessData);
+  const smartCtaPath = getSmartCtaPath(businessData);
+
+  // HOME page content
+  pages.home = {
+    hero: {
+      headline: businessData.heroHeadline || businessData.name,
+      tagline: businessData.tagline || `Welcome to ${businessData.name}`,
+      backgroundImage: businessData.heroImage || '',
+      ctaText: smartCta,
+      ctaPath: smartCtaPath
+    },
+    features: getSmartFeatures(businessData, 6).map(f => ({
+      icon: f.icon || 'Star',
+      title: f.title || f,
+      description: f.description || ''
+    })),
+    reviews: buildDefaultReviews(businessData),
+    faq: buildDefaultFAQ(businessData, industryId),
+    gallery: (businessData.heroImages || []).slice(0, 6).map((src, i) => ({
+      src,
+      caption: `${businessData.name} - Image ${i + 1}`
+    }))
+  };
+
+  // ABOUT page content
+  const established = businessData.established || '2020';
+  const yearsInBusiness = new Date().getFullYear() - parseInt(established);
+  pages.about = {
+    story: {
+      heading: 'How It All Started',
+      text: `${businessData.name} began with a simple dream and a passion for excellence. What started as a small operation has grown into a trusted name in our community.\n\nFor over ${yearsInBusiness} years, we've been dedicated to providing the highest quality service. We take pride in our craft and in building lasting relationships with our customers.`,
+      image: businessData.images?.interior?.[0] || businessData.heroImage || ''
+    },
+    values: [
+      { icon: 'Heart', title: 'Made with Love', description: 'Every detail is crafted with care and passion' },
+      { icon: 'Award', title: 'Quality First', description: 'We use only the finest materials and methods' },
+      { icon: 'Users', title: 'Community', description: 'Our neighbors are our family' }
+    ],
+    timeline: [
+      { year: established, title: 'Founded', description: 'Founded with a dream and a vision' },
+      { year: String(parseInt(established) + 2), title: 'Growing', description: 'Expanded to serve more customers' },
+      { year: String(parseInt(established) + 5), title: 'Thriving', description: 'Became a community staple' },
+      { year: 'Today', title: 'Today', description: 'Proudly serving our community' }
+    ],
+    team: buildDefaultTeam(businessData, industryId)
+  };
+
+  // CONTACT page content
+  pages.contact = {
+    info: {
+      phone: businessData.phone || '(555) 123-4567',
+      email: businessData.email || `hello@${businessData.name.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`,
+      address: businessData.address || '123 Main St',
+      hours: businessData.hours || { 'monday-friday': '9am-6pm' }
+    }
+  };
+
+  // SERVICES/MENU page content (if applicable)
+  const servicePages = ['menu', 'services', 'classes', 'features', 'products', 'programs'];
+  for (const sp of servicePages) {
+    if (pageList.includes(sp)) {
+      pages[sp] = {
+        hero: {
+          title: capitalize(sp) + (sp === 'menu' ? '' : ''),
+          subtitle: `Explore our ${sp}`
+        },
+        categories: buildServiceCategories(businessData, sp, industryId)
+      };
+    }
+  }
+
+  // GALLERY page
+  if (pageList.includes('gallery')) {
+    pages.gallery = {
+      hero: {
+        title: 'Gallery',
+        subtitle: `See what makes ${businessData.name} special`
+      },
+      images: (businessData.heroImages || []).map((src, i) => ({
+        src,
+        caption: `${businessData.name} - Photo ${i + 1}`
+      }))
+    };
+  }
+
+  // TEAM page
+  if (pageList.includes('team')) {
+    const teamMembers = buildDefaultTeam(businessData, industryId);
+    const teamTitles = {
+      'law-firm': { title: 'Our Attorneys', subtitle: 'Experienced legal professionals dedicated to your case' },
+      'real-estate': { title: 'Our Agents', subtitle: 'Experienced agents ready to help you' },
+      'dental': { title: 'Our Dental Team', subtitle: 'Caring professionals committed to your oral health' },
+      'auto-shop': { title: 'Our Mechanics', subtitle: 'ASE certified technicians you can trust' }
+    };
+    const tt = teamTitles[industryId] || { title: 'Our Team', subtitle: `Meet the people behind ${businessData.name}` };
+    pages.team = {
+      hero: { title: tt.title, subtitle: tt.subtitle },
+      members: teamMembers
+    };
+  }
+
+  // _global: navbar + footer
+  pages._global = {
+    navbar: {
+      logoText: businessData.name,
+      phone: businessData.phone || '',
+      ctaText: smartCta,
+      ctaPath: smartCtaPath
+    },
+    footer: {
+      tagline: businessData.tagline || `Welcome to ${businessData.name}`,
+      phone: businessData.phone || '',
+      email: businessData.email || '',
+      address: businessData.address || '',
+      trustText: trustText || ''
+    }
+  };
+
+  return pages;
+}
+
+/**
+ * Build default reviews for brain.json
+ */
+function buildDefaultReviews(businessData) {
+  const name = businessData.name || 'this place';
+  return [
+    { text: `Absolutely amazing experience at ${name}! The quality and service exceeded all expectations.`, author: 'Sarah M.', rating: 5 },
+    { text: `We\'ve been coming here for years. Always consistent, always excellent. Highly recommend!`, author: 'Mike R.', rating: 5 },
+    { text: `Best in town! The attention to detail and customer care is unmatched.`, author: 'Lisa T.', rating: 5 }
+  ];
+}
+
+/**
+ * Build default FAQ for brain.json
+ */
+function buildDefaultFAQ(businessData, industryId) {
+  const name = businessData.name || 'we';
+  const phone = businessData.phone || '(555) 123-4567';
+
+  const industryFAQs = {
+    'salon-spa': [
+      { question: 'Do I need an appointment?', answer: 'While walk-ins are welcome, we recommend booking in advance to ensure availability.' },
+      { question: 'What services do you offer?', answer: 'We offer a full range of hair, skin, and nail services. Visit our Services page for details.' },
+      { question: 'What is your cancellation policy?', answer: 'We ask for 24 hours notice for cancellations to avoid a cancellation fee.' }
+    ],
+    'restaurant': [
+      { question: 'Do you take reservations?', answer: 'Yes! You can reserve a table through our website or by calling us.' },
+      { question: 'Do you offer catering?', answer: 'Yes, we offer catering for events of all sizes. Contact us for a custom quote.' },
+      { question: 'Do you have dietary options?', answer: 'We offer vegetarian, vegan, and gluten-free options. Let your server know about any allergies.' }
+    ],
+    'law-firm': [
+      { question: 'Do you offer free consultations?', answer: 'Yes, we offer a free initial consultation to discuss your case and legal options.' },
+      { question: 'What areas of law do you practice?', answer: 'We handle a wide range of legal matters. Visit our Services page for our practice areas.' },
+      { question: 'How do I get started?', answer: `Call us at ${phone} or fill out our contact form to schedule your consultation.` }
+    ]
+  };
+
+  // Try industry-specific, fall back to generic
+  if (industryFAQs[industryId]) return industryFAQs[industryId];
+
+  // Generic FAQ
+  return [
+    { question: 'What are your hours?', answer: `Please visit our Contact page or call us at ${phone} for current hours.` },
+    { question: 'How do I book an appointment?', answer: 'You can book online through our website or give us a call.' },
+    { question: 'Where are you located?', answer: businessData.address || 'Visit our Contact page for directions.' }
+  ];
+}
+
+/**
+ * Build default team members for brain.json
+ */
+function buildDefaultTeam(businessData, industryId) {
+  const teamImages = businessData.images?.team || [];
+
+  const teamByIndustry = {
+    'law-firm': [
+      { name: 'Robert Mitchell', role: 'Managing Partner', bio: 'Over 25 years of trial experience in personal injury and civil litigation.', credentials: ['J.D. Harvard Law', 'Super Lawyer', 'Top 100 Trial Lawyers'] },
+      { name: 'Sarah Chen', role: 'Senior Partner', bio: 'Specializing in family law with a focus on divorce and custody matters.', credentials: ['J.D. Stanford Law', 'Family Law Specialist', 'Certified Mediator'] },
+      { name: 'Michael Torres', role: 'Partner', bio: 'Criminal defense attorney with an exceptional track record.', credentials: ['J.D. Columbia Law', 'Ex-District Attorney', 'Criminal Law Expert'] },
+      { name: 'Jennifer Adams', role: 'Associate Attorney', bio: 'Business law specialist helping entrepreneurs protect their interests.', credentials: ['J.D. UCLA Law', 'MBA Finance', 'Corporate Law'] }
+    ],
+    'real-estate': [
+      { name: 'Jennifer Williams', role: 'Principal Broker', bio: 'Over 20 years in real estate with $200M+ in career sales.', credentials: ['Licensed Broker', 'Top Producer'] },
+      { name: 'David Park', role: 'Senior Agent', bio: 'Specializing in first-time buyers and investment properties.', credentials: ['15+ Years Experience', 'Buyer Specialist'] },
+      { name: 'Amanda Rodriguez', role: 'Listing Specialist', bio: 'Marketing expert who gets homes sold fast and for top dollar.', credentials: ['Listing Expert', 'Digital Marketing'] }
+    ],
+    'dental': [
+      { name: 'Dr. Sarah Mitchell', role: 'Lead Dentist', bio: 'Over 15 years of experience in general and cosmetic dentistry.', credentials: ['DDS', 'Cosmetic Specialist'] },
+      { name: 'Dr. James Park', role: 'Orthodontist', bio: 'Specializing in Invisalign and traditional braces.', credentials: ['DMD', 'Board Certified'] },
+      { name: 'Lisa Chen', role: 'Dental Hygienist', bio: 'Gentle, thorough cleanings with a focus on patient comfort.', credentials: ['RDH', '10+ Years Experience'] }
+    ],
+    'auto-shop': [
+      { name: 'Tony Ramirez', role: 'Owner / Master Technician', bio: 'ASE Master Tech with 30+ years of experience.', credentials: ['ASE Master', 'Shop Owner'] },
+      { name: 'Steve Miller', role: 'Lead Technician', bio: 'Engine diagnostics and repair specialist.', credentials: ['ASE Certified', 'Diagnostics Expert'] },
+      { name: 'Kevin Park', role: 'Technician', bio: 'Expert in electrical systems and hybrid vehicles.', credentials: ['ASE Certified', 'Hybrid Specialist'] }
+    ]
+  };
+
+  const members = teamByIndustry[industryId] || [
+    { name: 'Owner', role: 'Founder & Owner', bio: `Leading ${businessData.name} with passion and dedication.` },
+    { name: 'Team Member', role: 'Senior Staff', bio: 'Bringing years of experience and expertise.' }
+  ];
+
+  return members.map((m, i) => ({ ...m, image: teamImages[i] || '' }));
+}
+
+/**
+ * Build service categories for brain.json
+ */
+function buildServiceCategories(businessData, pageType, industryId) {
+  // Try to pull from existing fixture data
+  if (pageType === 'menu' && businessData.menu?.categories) {
+    return businessData.menu.categories.map(cat => ({
+      name: cat.name,
+      items: (cat.items || []).map(item => ({
+        name: item.name,
+        description: item.description || '',
+        price: item.price || ''
+      }))
+    }));
+  }
+
+  // Generic fallback
+  return [
+    {
+      name: 'Popular',
+      items: [
+        { name: 'Service 1', description: 'Our most popular option', price: '' },
+        { name: 'Service 2', description: 'A great choice', price: '' },
+        { name: 'Service 3', description: 'Premium quality', price: '' }
+      ]
+    }
+  ];
+}
+
+/**
+ * Generate content API routes (content.js)
+ * Produces backend/routes/content.js with CRUD for brain.json pages
+ */
+function generateContentRoutes(businessData) {
+  const businessName = escapeQuotes(businessData.name);
+  return `/**
+ * Content Routes - ${businessName}
+ * Website Editor API for reading/writing brain.json page content
+ * Generated by Launchpad
+ */
+
+const express = require('express');
+const router = express.Router();
+const path = require('path');
+const fs = require('fs');
+
+const BRAIN_PATH = path.join(__dirname, '../../brain.json');
+
+// SSE clients for real-time sync
+let sseClients = [];
+
+function loadBrain() {
+  try {
+    return JSON.parse(fs.readFileSync(BRAIN_PATH, 'utf8'));
+  } catch (e) {
+    return null;
+  }
+}
+
+function saveBrain(data) {
+  fs.writeFileSync(BRAIN_PATH, JSON.stringify(data, null, 2));
+  // Notify SSE clients
+  sseClients.forEach(res => {
+    try { res.write('data: ' + JSON.stringify({ type: 'content-updated', ts: Date.now() }) + '\\n\\n'); }
+    catch (e) { /* client disconnected */ }
+  });
+}
+
+// SSE endpoint for real-time preview sync
+router.get('/events', (req, res) => {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    Connection: 'keep-alive',
+    'Access-Control-Allow-Origin': '*'
+  });
+  res.write('data: ' + JSON.stringify({ type: 'connected' }) + '\\n\\n');
+  sseClients.push(res);
+  req.on('close', () => {
+    sseClients = sseClients.filter(c => c !== res);
+  });
+});
+
+// GET /api/content - full brain.json
+router.get('/', (req, res) => {
+  const brain = loadBrain();
+  if (!brain) return res.status(404).json({ success: false, error: 'brain.json not found' });
+  res.json({ success: true, content: brain });
+});
+
+// GET /api/content/pages - just the pages object
+router.get('/pages', (req, res) => {
+  const brain = loadBrain();
+  if (!brain) return res.status(404).json({ success: false, error: 'brain.json not found' });
+  res.json({ success: true, pages: brain.pages || {} });
+});
+
+// GET /api/content/:page - single page data
+router.get('/:page', (req, res) => {
+  const brain = loadBrain();
+  if (!brain) return res.status(404).json({ success: false, error: 'brain.json not found' });
+  const pageData = brain.pages?.[req.params.page];
+  if (!pageData) return res.status(404).json({ success: false, error: 'Page not found' });
+  res.json({ success: true, page: req.params.page, data: pageData });
+});
+
+// PUT /api/content/:page/:section - update a section within a page
+router.put('/:page/:section', (req, res) => {
+  const brain = loadBrain();
+  if (!brain) return res.status(404).json({ success: false, error: 'brain.json not found' });
+
+  if (!brain.pages) brain.pages = {};
+  if (!brain.pages[req.params.page]) brain.pages[req.params.page] = {};
+
+  brain.pages[req.params.page][req.params.section] = req.body.data;
+  brain._lastEdited = { page: req.params.page, section: req.params.section, at: new Date().toISOString() };
+
+  saveBrain(brain);
+  res.json({ success: true, message: 'Section updated' });
+});
+
+// PUT /api/content/business - update root-level business fields
+router.put('/business', (req, res) => {
+  const brain = loadBrain();
+  if (!brain) return res.status(404).json({ success: false, error: 'brain.json not found' });
+
+  const allowed = ['name', 'tagline', 'phone', 'email', 'address', 'hours', 'established'];
+  for (const key of allowed) {
+    if (req.body[key] !== undefined) brain[key] = req.body[key];
+  }
+  brain._lastEdited = { type: 'business', at: new Date().toISOString() };
+
+  saveBrain(brain);
+  res.json({ success: true, message: 'Business info updated' });
+});
+
+// PUT /api/content/theme - update theme
+router.put('/theme', (req, res) => {
+  const brain = loadBrain();
+  if (!brain) return res.status(404).json({ success: false, error: 'brain.json not found' });
+
+  brain.theme = { ...(brain.theme || {}), ...req.body };
+  brain._lastEdited = { type: 'theme', at: new Date().toISOString() };
+
+  saveBrain(brain);
+  res.json({ success: true, message: 'Theme updated' });
+});
+
+module.exports = router;
+`;
+}
+
+/**
+ * Generate customer & loyalty routes for admin dashboard
+ */
+function generateCustomerRoutes(businessData, industryId) {
+  const businessName = escapeQuotes(businessData.name);
+
+  // Map industry to reward template
+  const templateMap = {
+    'pizza-restaurant': 'food', 'steakhouse': 'food', 'coffee-cafe': 'food',
+    'restaurant': 'food', 'bakery': 'food',
+    'salon-spa': 'salon', 'barbershop': 'salon',
+    'fitness-gym': 'fitness', 'yoga': 'fitness',
+    'dental': 'professional', 'healthcare': 'professional', 'law-firm': 'professional',
+    'plumber': 'trade', 'cleaning': 'trade', 'auto-shop': 'trade',
+    'saas': 'tech', 'ecommerce': 'tech', 'school': 'tech',
+    'real-estate': 'realestate'
+  };
+  const defaultTemplate = templateMap[industryId] || 'food';
+
+  return `/**
+ * Customer & Loyalty Routes - ${businessName}
+ * Generated by Launchpad
+ */
+
+const express = require('express');
+const router = express.Router();
+const fs = require('fs');
+const path = require('path');
+
+// Import auth module for user data access
+const authModule = require('../modules/auth/routes/auth.js');
+
+// ============================================
+// HELPERS
+// ============================================
+
+function loadBrain() {
+  try {
+    const brainPath = path.join(__dirname, '..', 'data', 'brain.json');
+    if (fs.existsSync(brainPath)) {
+      return JSON.parse(fs.readFileSync(brainPath, 'utf-8'));
+    }
+  } catch (e) { /* ignore */ }
+  return {};
+}
+
+function saveBrain(brain) {
+  const dataDir = path.join(__dirname, '..', 'data');
+  if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+  fs.writeFileSync(path.join(dataDir, 'brain.json'), JSON.stringify(brain, null, 2));
+}
+
+function getAllCustomers() {
+  const customers = [];
+
+  // Gather from demo accounts + runtime signups
+  if (authModule.DEMO_ACCOUNTS) {
+    for (const [email, user] of Object.entries(authModule.DEMO_ACCOUNTS)) {
+      customers.push({
+        id: user.id,
+        email: user.email,
+        full_name: user.full_name || 'Unknown',
+        tier: user.tier || 'bronze',
+        points: user.points || 0,
+        is_admin: user.is_admin || false,
+        joined: user.created_at || new Date().toISOString(),
+        last_active: user.last_login || new Date().toISOString(),
+        source: 'demo'
+      });
+    }
+  }
+
+  // Add runtime signups from testUsers Map
+  if (authModule.testUsers) {
+    for (const [email, user] of authModule.testUsers) {
+      // Avoid duplicating demo accounts
+      if (authModule.DEMO_ACCOUNTS && authModule.DEMO_ACCOUNTS[email]) continue;
+      customers.push({
+        id: user.id,
+        email: user.email,
+        full_name: user.full_name || 'Unknown',
+        tier: user.tier || 'bronze',
+        points: user.points || 0,
+        is_admin: user.is_admin || false,
+        joined: user.created_at || new Date().toISOString(),
+        last_active: user.last_login || new Date().toISOString(),
+        source: 'signup'
+      });
+    }
+  }
+
+  return customers;
+}
+
+// SSE clients
+const sseClients = [];
+
+function broadcastCustomerUpdate(data) {
+  sseClients.forEach(res => {
+    res.write(\`data: \${JSON.stringify(data)}\\n\\n\`);
+  });
+}
+
+// ============================================
+// CUSTOMER ENDPOINTS
+// ============================================
+
+// SSE stream for real-time updates
+router.get('/customers/events', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.write('data: {"type":"connected"}\\n\\n');
+  sseClients.push(res);
+  req.on('close', () => {
+    const idx = sseClients.indexOf(res);
+    if (idx > -1) sseClients.splice(idx, 1);
+  });
+});
+
+// GET /customers - list with search, pagination, tier filter
+router.get('/customers', (req, res) => {
+  try {
+    const { search, tier, page = 1, limit = 20 } = req.query;
+    let customers = getAllCustomers();
+
+    if (search) {
+      const q = search.toLowerCase();
+      customers = customers.filter(c =>
+        c.full_name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q)
+      );
+    }
+    if (tier) {
+      customers = customers.filter(c => c.tier === tier);
+    }
+
+    const total = customers.length;
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+    const paginated = customers.slice(offset, offset + parseInt(limit));
+
+    res.json({ success: true, customers: paginated, total, page: parseInt(page), limit: parseInt(limit) });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// GET /customers/stats
+router.get('/customers/stats', (req, res) => {
+  try {
+    const customers = getAllCustomers();
+    const now = new Date();
+    const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+
+    const tiers = { bronze: 0, silver: 0, gold: 0, platinum: 0 };
+    let totalPoints = 0;
+    let newThisWeek = 0;
+
+    customers.forEach(c => {
+      tiers[c.tier] = (tiers[c.tier] || 0) + 1;
+      totalPoints += c.points || 0;
+      if (new Date(c.joined) >= weekAgo) newThisWeek++;
+    });
+
+    res.json({
+      success: true,
+      stats: {
+        total: customers.length,
+        tiers,
+        newThisWeek,
+        avgPoints: customers.length ? Math.round(totalPoints / customers.length) : 0
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// GET /customers/:id
+router.get('/customers/:id', (req, res) => {
+  try {
+    const customers = getAllCustomers();
+    const customer = customers.find(c => String(c.id) === req.params.id);
+    if (!customer) return res.status(404).json({ success: false, error: 'Customer not found' });
+    res.json({ success: true, customer });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// PUT /customers/:id/points - adjust points
+router.put('/customers/:id/points', (req, res) => {
+  try {
+    const { amount, reason } = req.body;
+    const id = parseInt(req.params.id);
+
+    // Update in demo accounts
+    if (authModule.DEMO_ACCOUNTS) {
+      for (const user of Object.values(authModule.DEMO_ACCOUNTS)) {
+        if (user.id === id) {
+          user.points = Math.max(0, (user.points || 0) + parseInt(amount));
+          broadcastCustomerUpdate({ type: 'points_updated', customerId: id, points: user.points, reason });
+          return res.json({ success: true, points: user.points });
+        }
+      }
+    }
+
+    // Update in testUsers
+    if (authModule.testUsers) {
+      for (const [, user] of authModule.testUsers) {
+        if (user.id === id) {
+          user.points = Math.max(0, (user.points || 0) + parseInt(amount));
+          broadcastCustomerUpdate({ type: 'points_updated', customerId: id, points: user.points, reason });
+          return res.json({ success: true, points: user.points });
+        }
+      }
+    }
+
+    res.status(404).json({ success: false, error: 'Customer not found' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// PUT /customers/:id/tier - override tier
+router.put('/customers/:id/tier', (req, res) => {
+  try {
+    const { tier } = req.body;
+    const id = parseInt(req.params.id);
+    const validTiers = ['bronze', 'silver', 'gold', 'platinum'];
+    if (!validTiers.includes(tier)) {
+      return res.status(400).json({ success: false, error: 'Invalid tier' });
+    }
+
+    // Update in demo accounts
+    if (authModule.DEMO_ACCOUNTS) {
+      for (const user of Object.values(authModule.DEMO_ACCOUNTS)) {
+        if (user.id === id) {
+          user.tier = tier;
+          broadcastCustomerUpdate({ type: 'tier_updated', customerId: id, tier });
+          return res.json({ success: true, tier });
+        }
+      }
+    }
+
+    // Update in testUsers
+    if (authModule.testUsers) {
+      for (const [, user] of authModule.testUsers) {
+        if (user.id === id) {
+          user.tier = tier;
+          broadcastCustomerUpdate({ type: 'tier_updated', customerId: id, tier });
+          return res.json({ success: true, tier });
+        }
+      }
+    }
+
+    res.status(404).json({ success: false, error: 'Customer not found' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ============================================
+// REWARDS CONFIG ENDPOINTS
+// ============================================
+
+// GET /rewards/config
+router.get('/rewards/config', (req, res) => {
+  try {
+    const brain = loadBrain();
+    const config = brain.rewardsConfig || getDefaultRewardsConfig();
+    res.json({ success: true, config });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// PUT /rewards/config
+router.put('/rewards/config', (req, res) => {
+  try {
+    const brain = loadBrain();
+    brain.rewardsConfig = req.body;
+    saveBrain(brain);
+    res.json({ success: true, message: 'Rewards config saved' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+function getDefaultRewardsConfig() {
+  return ${JSON.stringify({
+    templateId: defaultTemplate,
+    programName: 'Rewards Club',
+    pointsModel: 'per-dollar',
+    pointsRate: 10,
+    tiers: [
+      { name: 'Bronze', minPoints: 0, multiplier: 1.0, benefits: ['Earn points on every purchase'] },
+      { name: 'Silver', minPoints: 200, multiplier: 1.2, benefits: ['1.2x point multiplier', 'Birthday bonus'] },
+      { name: 'Gold', minPoints: 500, multiplier: 1.5, benefits: ['1.5x point multiplier', 'Priority service', 'Exclusive offers'] },
+      { name: 'Platinum', minPoints: 1000, multiplier: 2.0, benefits: ['2x point multiplier', 'VIP access', 'Free upgrades', 'Dedicated support'] }
+    ],
+    rewards: [],
+    rules: { signupBonus: 50, referralBonus: 100, birthdayBonus: 200, pointExpiry: 365 }
+  }, null, 2)};
+}
+
+module.exports = router;
+`;
+}
+
+/**
+ * Generate Chat Routes for real-time customer-admin messaging
+ */
+function generateChatRoutes(businessData) {
+  const businessName = escapeQuotes(businessData.name);
+
+  return `/**
+ * Chat Routes - ${businessName}
+ * Real-time customer-admin messaging
+ * Generated by Launchpad
+ */
+
+const express = require('express');
+const router = express.Router();
+const fs = require('fs');
+const path = require('path');
+
+const BRAIN_PATH = path.join(__dirname, '..', '..', 'brain.json');
+
+function loadBrain() {
+  try { return JSON.parse(fs.readFileSync(BRAIN_PATH, 'utf8')); }
+  catch { return {}; }
+}
+
+function saveBrain(data) {
+  fs.writeFileSync(BRAIN_PATH, JSON.stringify(data, null, 2));
+}
+
+// SSE clients
+const sseClients = [];
+
+function broadcastChat(data) {
+  const msg = \`data: \${JSON.stringify(data)}\\n\\n\`;
+  sseClients.forEach(res => res.write(msg));
+}
+
+// SSE endpoint
+router.get('/events', (req, res) => {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    Connection: 'keep-alive',
+    'Access-Control-Allow-Origin': '*'
+  });
+  res.write('data: {"type":"connected"}\\n\\n');
+  sseClients.push(res);
+  req.on('close', () => {
+    const idx = sseClients.indexOf(res);
+    if (idx !== -1) sseClients.splice(idx, 1);
+  });
+});
+
+// List all conversations (admin)
+router.get('/conversations', (req, res) => {
+  const brain = loadBrain();
+  const convos = brain.chatConversations || {};
+  const list = Object.values(convos).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+  res.json({ success: true, conversations: list });
+});
+
+// Get conversation for a specific customer
+router.get('/conversations/:customerId', (req, res) => {
+  const brain = loadBrain();
+  const convos = brain.chatConversations || {};
+  const convo = Object.values(convos).find(c => String(c.customerId) === String(req.params.customerId));
+  res.json({ success: true, conversation: convo || null });
+});
+
+// Send a message
+router.post('/send', (req, res) => {
+  const { customerId, customerName, customerEmail, sender, text } = req.body;
+  if (!customerId || !sender || !text) {
+    return res.status(400).json({ success: false, error: 'Missing required fields' });
+  }
+
+  const brain = loadBrain();
+  if (!brain.chatConversations) brain.chatConversations = {};
+
+  // Find or create conversation
+  let convo = Object.values(brain.chatConversations).find(c => String(c.customerId) === String(customerId));
+  const now = new Date().toISOString();
+
+  if (!convo) {
+    const id = 'conv_' + Date.now();
+    convo = {
+      id,
+      customerId,
+      customerName: customerName || 'Customer',
+      customerEmail: customerEmail || '',
+      status: 'active',
+      unreadByAdmin: 0,
+      createdAt: now,
+      updatedAt: now,
+      messages: []
+    };
+    brain.chatConversations[convo.id] = convo;
+  }
+
+  // Add message
+  const msg = {
+    id: 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+    sender,
+    text,
+    timestamp: now
+  };
+  convo.messages.push(msg);
+  convo.updatedAt = now;
+
+  if (sender === 'customer') {
+    convo.unreadByAdmin = (convo.unreadByAdmin || 0) + 1;
+
+    // Auto-reply
+    const autoReply = {
+      id: 'msg_' + (Date.now() + 1) + '_' + Math.random().toString(36).slice(2, 6),
+      sender: 'system',
+      text: "Thanks for reaching out! We'll get back to you shortly.",
+      timestamp: new Date(Date.now() + 1).toISOString()
+    };
+    convo.messages.push(autoReply);
+    convo.updatedAt = autoReply.timestamp;
+  }
+
+  if (sender === 'admin') {
+    convo.unreadByAdmin = 0;
+  }
+
+  saveBrain(brain);
+  broadcastChat({ type: 'chat_update', conversationId: convo.id, customerId: convo.customerId });
+  res.json({ success: true, conversation: convo });
+});
+
+// Update conversation status
+router.put('/conversations/:id/status', (req, res) => {
+  const brain = loadBrain();
+  const convo = (brain.chatConversations || {})[req.params.id];
+  if (!convo) return res.status(404).json({ success: false, error: 'Not found' });
+  convo.status = req.body.status || 'active';
+  convo.updatedAt = new Date().toISOString();
+  saveBrain(brain);
+  broadcastChat({ type: 'chat_update', conversationId: convo.id, customerId: convo.customerId });
+  res.json({ success: true, conversation: convo });
+});
+
+// Unread count
+router.get('/unread-count', (req, res) => {
+  const brain = loadBrain();
+  const convos = brain.chatConversations || {};
+  const total = Object.values(convos).reduce((sum, c) => sum + (c.unreadByAdmin || 0), 0);
+  res.json({ success: true, unreadCount: total });
+});
+
+module.exports = router;
+`;
+}
+
+/**
+ * Generate ContentProvider component for frontend
+ * Provides page content from brain.json to all components via React context
+ */
+function generateContentProvider() {
+  return `/**
+ * ContentProvider - Data layer for editable content
+ * Fetches page content from /api/content and provides it via React context.
+ * Page components use usePageContent('home') to get their data,
+ * falling back to hardcoded defaults if the API is unreachable.
+ *
+ * Generated by Launchpad
+ */
+
+import React, { createContext, useContext, useState, useEffect } from 'react';
+
+const ContentContext = createContext(null);
+
+export function ContentProvider({ children }) {
+  const [content, setContent] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/content')
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) setContent(data.content);
+      })
+      .catch(() => {}); // Silently fall back to defaults
+
+    // Listen for SSE updates from admin editor
+    let es;
+    try {
+      es = new EventSource('/api/content/events');
+      es.onmessage = (e) => {
+        const msg = JSON.parse(e.data);
+        if (msg.type === 'content-updated') {
+          // Re-fetch content on update
+          fetch('/api/content')
+            .then(r => r.json())
+            .then(data => {
+              if (data.success) setContent(data.content);
+            })
+            .catch(() => {});
+        }
+      };
+    } catch (e) { /* SSE not available */ }
+
+    return () => { if (es) es.close(); };
+  }, []);
+
+  return (
+    <ContentContext.Provider value={content}>
+      {children}
+    </ContentContext.Provider>
+  );
+}
+
+export function useContent() {
+  return useContext(ContentContext);
+}
+
+export function usePageContent(page) {
+  const content = useContent();
+  return content?.pages?.[page] || {};
+}
+`;
+}
+
 function capitalize(str) {
   // Handle hyphenated strings like 'order-history' -> 'OrderHistory'
   if (str.includes('-')) {
@@ -12995,6 +15031,33 @@ function parseTrendColors(colorTrends) {
 // ============================================
 // API HOOK GENERATORS
 // ============================================
+
+/**
+ * Generate useApi hook for simple API calls
+ */
+function generateUseApiHook() {
+  return `/**
+ * Simple API hook for making fetch requests
+ * Generated by Launchpad
+ */
+export function useApi() {
+  const base = '';
+  return {
+    get: (url) => fetch(base + url).then(r => r.json()),
+    post: (url, data) => fetch(base + url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).then(r => r.json()),
+    put: (url, data) => fetch(base + url, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).then(r => r.json())
+  };
+}
+`;
+}
 
 /**
  * Generate useMenu hook code for real-time menu sync
@@ -13252,8 +15315,10 @@ function generateRootPackageJson(businessName, projectSlug) {
       "dev:frontend": "cd frontend && npm run dev",
       "dev:backend": "cd backend && npm run dev",
       "dev:admin": "cd admin && npm run dev",
-      // Combined commands
-      "dev:all": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run dev:admin\"",
+      // Kill lingering processes on ports 5000/5001/5002
+      "kill": "npx kill-port 5000 5001 5002",
+      // Combined commands (kills old ports first)
+      "dev:all": "npm run kill && concurrently \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run dev:admin\"",
       "dev": "npm run dev:all",
       // Install all dependencies (run this manually, not as postinstall to avoid circular deps)
       "install:all": "cd frontend && npm install && cd ../backend && npm install && cd ../admin && npm install",
