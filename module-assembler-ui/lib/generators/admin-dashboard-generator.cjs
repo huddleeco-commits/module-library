@@ -119,6 +119,9 @@ function generateAdminDashboard(adminDir, businessData, industryId) {
   fs.writeFileSync(path.join(pagesDir, 'AgentChat.jsx'), generateAgentChatPage(businessName, primaryColor, industryModules));
   files.push('src/pages/AgentChat.jsx');
 
+  fs.writeFileSync(path.join(pagesDir, 'AICosts.jsx'), generateAICostsPage(businessName, primaryColor));
+  files.push('src/pages/AICosts.jsx');
+
   fs.writeFileSync(path.join(pagesDir, 'Settings.jsx'), generateSettingsPage(businessName, primaryColor));
   files.push('src/pages/Settings.jsx');
 
@@ -309,6 +312,7 @@ import DashboardHome from './pages/DashboardHome';
 ${moduleImports}
 import Notifications from './pages/Notifications';
 import AgentChat from './pages/AgentChat';
+import AICosts from './pages/AICosts';
 import Settings from './pages/Settings';
 
 export default function App() {
@@ -320,6 +324,7 @@ ${moduleRoutes}
         <Route path="notifications" element={<Notifications />} />
         <Route path="ai" element={<AgentChat />} />
         <Route path="ai/:agentId" element={<AgentChat />} />
+        <Route path="ai-costs" element={<AICosts />} />
         <Route path="settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
@@ -404,7 +409,7 @@ function generateSidebar(businessName, primaryColor, industryModules = {}) {
   }).join(',\n');
 
   // Build icons import
-  const usedIcons = ['LayoutDashboard', 'Bell', 'Bot', 'Settings', 'ExternalLink', 'ChevronRight'];
+  const usedIcons = ['LayoutDashboard', 'Bell', 'Bot', 'DollarSign', 'Settings', 'ExternalLink', 'ChevronRight'];
   moduleNames.forEach(mod => {
     const icon = iconMap[mod] || 'FileText';
     if (!usedIcons.includes(icon)) usedIcons.push(icon);
@@ -422,6 +427,7 @@ const navItems = [
 ${moduleNavItems},
   { path: '/notifications', icon: Bell, label: 'Notifications' },
   { path: '/ai', icon: Bot, label: 'AI Agents' },
+  { path: '/ai-costs', icon: DollarSign, label: 'AI Costs' },
   { path: '/settings', icon: Settings, label: 'Settings' }
 ];
 
@@ -1532,8 +1538,8 @@ const styles = {
 }
 
 function generateSettingsPage(businessName, primaryColor) {
-  return `import React, { useState } from 'react';
-import { Save, Building, Clock, Globe, Bell, Palette } from 'lucide-react';
+  return `import React, { useState, useEffect } from 'react';
+import { Save, Building, Clock, Globe, Bell, Palette, Key, Eye, EyeOff, Trash2, ExternalLink } from 'lucide-react';
 
 export default function Settings() {
   const [settings, setSettings] = useState({
@@ -1559,10 +1565,67 @@ export default function Settings() {
 
   const [saved, setSaved] = useState(false);
 
+  // API Key state
+  const [apiKeyStatus, setApiKeyStatus] = useState({ configured: false, masked: null });
+  const [apiKeyInput, setApiKeyInput] = useState('');
+  const [showApiKey, setShowApiKey] = useState(false);
+  const [apiKeyLoading, setApiKeyLoading] = useState(false);
+  const [apiKeyMsg, setApiKeyMsg] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/admin/settings')
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) setApiKeyStatus(data.anthropicKey);
+      })
+      .catch(() => {});
+  }, []);
+
   const handleSave = () => {
-    // In production, this would save to API
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleSaveApiKey = async () => {
+    if (!apiKeyInput.trim()) return;
+    setApiKeyLoading(true);
+    setApiKeyMsg(null);
+    try {
+      const res = await fetch('/api/admin/settings/api-key', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: apiKeyInput.trim() })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setApiKeyStatus(data.anthropicKey);
+        setApiKeyInput('');
+        setApiKeyMsg({ type: 'success', text: 'API key saved successfully' });
+      } else {
+        setApiKeyMsg({ type: 'error', text: data.error || 'Failed to save key' });
+      }
+    } catch (e) {
+      setApiKeyMsg({ type: 'error', text: 'Network error saving key' });
+    }
+    setApiKeyLoading(false);
+    setTimeout(() => setApiKeyMsg(null), 4000);
+  };
+
+  const handleRemoveApiKey = async () => {
+    setApiKeyLoading(true);
+    setApiKeyMsg(null);
+    try {
+      const res = await fetch('/api/admin/settings/api-key', { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        setApiKeyStatus(data.anthropicKey);
+        setApiKeyMsg({ type: 'success', text: 'API key removed' });
+      }
+    } catch (e) {
+      setApiKeyMsg({ type: 'error', text: 'Network error removing key' });
+    }
+    setApiKeyLoading(false);
+    setTimeout(() => setApiKeyMsg(null), 4000);
   };
 
   return (
@@ -1572,6 +1635,93 @@ export default function Settings() {
         <button onClick={handleSave} style={styles.saveBtn}>
           <Save size={18} /> {saved ? 'Saved!' : 'Save Changes'}
         </button>
+      </div>
+
+      {/* API Keys */}
+      <div style={styles.section}>
+        <div style={styles.sectionHeader}>
+          <Key size={20} />
+          <h2 style={styles.sectionTitle}>API Keys</h2>
+          <span style={{
+            marginLeft: 'auto',
+            fontSize: '12px',
+            fontWeight: '600',
+            padding: '3px 10px',
+            borderRadius: '12px',
+            background: apiKeyStatus.configured ? '#dcfce7' : '#fef9c3',
+            color: apiKeyStatus.configured ? '#166534' : '#854d0e'
+          }}>
+            {apiKeyStatus.configured ? 'Configured' : 'Not configured'}
+          </span>
+        </div>
+
+        {apiKeyStatus.configured && (
+          <div style={{ marginBottom: '16px', padding: '12px', background: '#f9fafb', borderRadius: '8px', fontSize: '14px', color: '#6b7280' }}>
+            Current key: <code style={{ background: '#e5e7eb', padding: '2px 6px', borderRadius: '4px' }}>{apiKeyStatus.masked}</code>
+          </div>
+        )}
+
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+          <div style={{ position: 'relative', flex: 1 }}>
+            <input
+              type={showApiKey ? 'text' : 'password'}
+              value={apiKeyInput}
+              onChange={e => setApiKeyInput(e.target.value)}
+              placeholder="sk-ant-api03-..."
+              style={{ ...styles.input, paddingRight: '40px' }}
+            />
+            <button
+              onClick={() => setShowApiKey(!showApiKey)}
+              style={{
+                position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)',
+                background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af', padding: '4px'
+              }}
+            >
+              {showApiKey ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
+          <button
+            onClick={handleSaveApiKey}
+            disabled={apiKeyLoading || !apiKeyInput.trim()}
+            style={{
+              ...styles.saveBtn,
+              opacity: apiKeyLoading || !apiKeyInput.trim() ? 0.5 : 1,
+              minWidth: '80px', justifyContent: 'center'
+            }}
+          >
+            {apiKeyLoading ? '...' : 'Save'}
+          </button>
+          {apiKeyStatus.configured && (
+            <button
+              onClick={handleRemoveApiKey}
+              disabled={apiKeyLoading}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '6px',
+                padding: '10px 16px', background: '#fee2e2', color: '#991b1b',
+                border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '500',
+                opacity: apiKeyLoading ? 0.5 : 1
+              }}
+            >
+              <Trash2 size={16} /> Remove
+            </button>
+          )}
+        </div>
+
+        {apiKeyMsg && (
+          <div style={{
+            padding: '10px 14px', borderRadius: '8px', fontSize: '13px', marginBottom: '12px',
+            background: apiKeyMsg.type === 'success' ? '#dcfce7' : '#fee2e2',
+            color: apiKeyMsg.type === 'success' ? '#166534' : '#991b1b'
+          }}>
+            {apiKeyMsg.text}
+          </div>
+        )}
+
+        <p style={{ fontSize: '13px', color: '#9ca3af', margin: 0 }}>
+          <a href="https://console.anthropic.com/" target="_blank" rel="noopener noreferrer" style={{ color: '${primaryColor}', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+            Get a key at console.anthropic.com <ExternalLink size={12} />
+          </a>
+        </p>
       </div>
 
       {/* Business Info */}
@@ -2900,6 +3050,286 @@ const styles = {
   itemName: { fontWeight: '600', marginBottom: '4px' },
   itemDesc: { fontSize: '14px', color: '#6b7280' },
   emptyState: { padding: '60px 20px', textAlign: 'center', color: '#6b7280', background: '#fff', borderRadius: '12px' }
+};
+`;
+}
+
+// ============================================
+// AI COSTS PAGE
+// ============================================
+
+function generateAICostsPage(businessName, primaryColor) {
+  return `import React, { useState, useEffect } from 'react';
+import { DollarSign, Activity, Cpu, Wrench, Clock, RefreshCw } from 'lucide-react';
+
+const API_BASE = '/api/admin';
+
+function formatCost(cost) {
+  return '$' + (Number(cost) || 0).toFixed(4);
+}
+
+function getCost(obj) {
+  return obj.cost != null ? obj.cost : obj.totalCost || 0;
+}
+
+function formatTokens(n) {
+  if (!n) return '0';
+  if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+  if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+  return String(n);
+}
+
+function timeAgo(ts) {
+  const diff = Date.now() - new Date(ts).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return mins + 'm ago';
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return hrs + 'h ago';
+  return Math.floor(hrs / 24) + 'd ago';
+}
+
+export default function AICosts() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  async function fetchUsage() {
+    try {
+      const res = await fetch(\`\${API_BASE}/ai/usage\`);
+      const json = await res.json();
+      if (json.success) setData(json);
+      else setError('Failed to load usage data');
+    } catch (err) {
+      setError('Could not reach API');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchUsage();
+    const interval = setInterval(fetchUsage, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (loading) return <div style={styles.loading}>Loading AI cost data\u2026</div>;
+  if (error) return <div style={styles.loading}>{error}</div>;
+
+  const totals = data.totals || {};
+  const byAgent = (Array.isArray(data.byAgent)
+    ? data.byAgent
+    : Object.entries(data.byAgent || {}).map(([id, v]) => ({ agentId: id, ...v }))
+  ).sort((a, b) => getCost(b) - getCost(a));
+  const byDay = (Array.isArray(data.byDay)
+    ? data.byDay
+    : Object.entries(data.byDay || {}).map(([date, v]) => ({ date, ...v }))
+  ).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  const recentCalls = Array.isArray(data.recentCalls) ? data.recentCalls : [];
+  const today = new Date().toISOString().split('T')[0];
+
+  const summaryCards = [
+    { label: 'Total Calls', value: totals.calls, icon: Activity, color: '#3b82f6' },
+    { label: 'Total Tokens', value: formatTokens(totals.inputTokens + totals.outputTokens), icon: Cpu, color: '#8b5cf6' },
+    { label: 'Total Cost', value: formatCost(getCost(totals)), icon: DollarSign, color: '#10b981' },
+    { label: 'Tool Calls', value: totals.toolCalls, icon: Wrench, color: '#f59e0b' }
+  ];
+
+  return (
+    <div style={styles.page}>
+      <div style={styles.header}>
+        <div>
+          <h1 style={styles.title}>AI Costs</h1>
+          <p style={styles.subtitle}>Usage and spending across all AI agents</p>
+        </div>
+        <button onClick={() => { setLoading(true); fetchUsage(); }} style={styles.refreshBtn}>
+          <RefreshCw size={16} /> Refresh
+        </button>
+      </div>
+
+      {/* Summary Cards */}
+      <div style={styles.cardRow}>
+        {summaryCards.map((card, i) => {
+          const Icon = card.icon;
+          return (
+            <div key={i} style={styles.summaryCard}>
+              <div style={{ ...styles.iconCircle, background: card.color + '18', color: card.color }}>
+                <Icon size={22} />
+              </div>
+              <div style={styles.cardValue}>{card.value}</div>
+              <div style={styles.cardLabel}>{card.label}</div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Per-Agent Breakdown */}
+      <div style={styles.section}>
+        <h2 style={styles.sectionTitle}>Per-Agent Breakdown</h2>
+        {byAgent.length === 0 ? (
+          <div style={styles.empty}>No agent usage yet</div>
+        ) : (
+          <div style={styles.tableWrap}>
+            <table style={styles.table}>
+              <thead>
+                <tr>
+                  <th style={styles.th}>Agent</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>Calls</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>Input Tokens</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>Output Tokens</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>Tool Calls</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>Cost</th>
+                </tr>
+              </thead>
+              <tbody>
+                {byAgent.map((row, i) => (
+                  <tr key={i} style={i % 2 === 0 ? {} : styles.altRow}>
+                    <td style={styles.td}>
+                      <span style={{ ...styles.agentBadge, background: '${primaryColor}18', color: '${primaryColor}' }}>{row.agentName || row.agentId}</span>
+                    </td>
+                    <td style={{ ...styles.td, textAlign: 'right' }}>{row.calls}</td>
+                    <td style={{ ...styles.td, textAlign: 'right' }}>{formatTokens(row.inputTokens)}</td>
+                    <td style={{ ...styles.td, textAlign: 'right' }}>{formatTokens(row.outputTokens)}</td>
+                    <td style={{ ...styles.td, textAlign: 'right' }}>{row.toolCalls}</td>
+                    <td style={{ ...styles.td, textAlign: 'right', fontWeight: '600' }}>{formatCost(getCost(row))}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Per-Day Breakdown */}
+      <div style={styles.section}>
+        <h2 style={styles.sectionTitle}>Per-Day Breakdown</h2>
+        {byDay.length === 0 ? (
+          <div style={styles.empty}>No daily data yet</div>
+        ) : (
+          <div style={styles.tableWrap}>
+            <table style={styles.table}>
+              <thead>
+                <tr>
+                  <th style={styles.th}>Date</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>Calls</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>Input Tokens</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>Output Tokens</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>Tool Calls</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>Cost</th>
+                </tr>
+              </thead>
+              <tbody>
+                {byDay.map((row, i) => (
+                  <tr key={i} style={row.date === today ? styles.todayRow : (i % 2 === 0 ? {} : styles.altRow)}>
+                    <td style={styles.td}>
+                      {row.date}
+                      {row.date === today && <span style={styles.todayBadge}>Today</span>}
+                    </td>
+                    <td style={{ ...styles.td, textAlign: 'right' }}>{row.calls}</td>
+                    <td style={{ ...styles.td, textAlign: 'right' }}>{formatTokens(row.inputTokens)}</td>
+                    <td style={{ ...styles.td, textAlign: 'right' }}>{formatTokens(row.outputTokens)}</td>
+                    <td style={{ ...styles.td, textAlign: 'right' }}>{row.toolCalls}</td>
+                    <td style={{ ...styles.td, textAlign: 'right', fontWeight: '600' }}>{formatCost(getCost(row))}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Recent Calls */}
+      <div style={styles.section}>
+        <h2 style={styles.sectionTitle}>Recent Calls</h2>
+        {recentCalls.length === 0 ? (
+          <div style={styles.empty}>No calls recorded yet. Chat with an AI agent to see usage here.</div>
+        ) : (
+          <div style={{ ...styles.tableWrap, maxHeight: '480px', overflowY: 'auto' }}>
+            <table style={styles.table}>
+              <thead>
+                <tr>
+                  <th style={styles.th}>Time</th>
+                  <th style={styles.th}>Agent</th>
+                  <th style={styles.th}>Model</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>In Tokens</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>Out Tokens</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>Tools</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>Cost</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>Duration</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentCalls.slice(0, 50).map((call, i) => (
+                  <tr key={i} style={i % 2 === 0 ? {} : styles.altRow}>
+                    <td style={{ ...styles.td, whiteSpace: 'nowrap' }}>
+                      <Clock size={12} style={{ marginRight: '4px', opacity: 0.5, verticalAlign: 'middle' }} />
+                      {timeAgo(call.timestamp)}
+                    </td>
+                    <td style={styles.td}>{call.agentName || call.agentId}</td>
+                    <td style={{ ...styles.td, fontSize: '12px', color: '#6b7280' }}>{(call.model || '').split('-').slice(-1)[0]}</td>
+                    <td style={{ ...styles.td, textAlign: 'right' }}>{formatTokens(call.inputTokens)}</td>
+                    <td style={{ ...styles.td, textAlign: 'right' }}>{formatTokens(call.outputTokens)}</td>
+                    <td style={{ ...styles.td, textAlign: 'right' }}>{call.toolCalls || 0}</td>
+                    <td style={{ ...styles.td, textAlign: 'right', fontWeight: '600' }}>{formatCost(getCost(call))}</td>
+                    <td style={{ ...styles.td, textAlign: 'right', color: '#6b7280' }}>{call.durationMs ? (call.durationMs / 1000).toFixed(1) + 's' : '\u2014'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+const styles = {
+  page: { padding: '32px', maxWidth: '1200px' },
+  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' },
+  title: { fontSize: '24px', fontWeight: '700', margin: 0, color: '#111827' },
+  subtitle: { color: '#6b7280', fontSize: '14px', marginTop: '4px' },
+  refreshBtn: {
+    display: 'flex', alignItems: 'center', gap: '6px',
+    padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '8px',
+    background: '#fff', cursor: 'pointer', fontSize: '13px', color: '#374151'
+  },
+  loading: { padding: '60px 20px', textAlign: 'center', color: '#6b7280' },
+
+  cardRow: { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' },
+  summaryCard: {
+    background: '#fff', borderRadius: '12px', padding: '20px',
+    border: '1px solid #e5e7eb', textAlign: 'center'
+  },
+  iconCircle: {
+    width: '44px', height: '44px', borderRadius: '50%',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    margin: '0 auto 12px'
+  },
+  cardValue: { fontSize: '28px', fontWeight: '700', color: '#111827' },
+  cardLabel: { fontSize: '13px', color: '#6b7280', marginTop: '4px' },
+
+  section: { marginBottom: '32px' },
+  sectionTitle: { fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: '#111827' },
+  tableWrap: { background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', overflow: 'hidden' },
+  table: { width: '100%', borderCollapse: 'collapse', fontSize: '14px' },
+  th: {
+    padding: '12px 16px', textAlign: 'left', fontWeight: '600',
+    fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em',
+    color: '#6b7280', borderBottom: '1px solid #e5e7eb', background: '#f9fafb',
+    position: 'sticky', top: 0
+  },
+  td: { padding: '10px 16px', borderBottom: '1px solid #f3f4f6', color: '#374151' },
+  altRow: { background: '#f9fafb' },
+  todayRow: { background: '${primaryColor}08' },
+  todayBadge: {
+    marginLeft: '8px', padding: '2px 8px', borderRadius: '9999px',
+    fontSize: '11px', fontWeight: '600',
+    background: '${primaryColor}18', color: '${primaryColor}'
+  },
+  agentBadge: {
+    padding: '3px 10px', borderRadius: '9999px', fontSize: '13px', fontWeight: '500'
+  },
+  empty: { padding: '40px 20px', textAlign: 'center', color: '#9ca3af', background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb' }
 };
 `;
 }
