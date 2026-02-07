@@ -37,7 +37,8 @@ import {
   Rocket,
   Sparkles,
   Camera,
-  ClipboardCheck
+  ClipboardCheck,
+  Monitor
 } from 'lucide-react';
 
 // Import Platform Health Page
@@ -54,6 +55,7 @@ import StylePreviewPage from './StylePreviewPage';
 import ResearchTestLab from './ResearchTestLab';
 import LaunchpadDashboard from './LaunchpadDashboard';
 import QADashboard from './QADashboard';
+import ShowcasePage from './ShowcasePage';
 
 // ============================================
 // CONTEXT & API
@@ -2183,7 +2185,7 @@ function LoginPage({ onLogin }) {
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.error || 'Login failed');
-      if (!data.user?.is_admin) throw new Error('Admin access required');
+      if (!data.user?.isAdmin && !data.user?.is_admin) throw new Error('Admin access required');
 
       localStorage.setItem('blink_admin_token', data.token);
       onLogin(data.user);
@@ -2247,6 +2249,7 @@ function Sidebar({ currentPage, setPage, onLogout }) {
   const navItems = [
     { id: 'overview', label: 'Overview', icon: <LayoutDashboard size={20} /> },
     { id: 'launchpad', label: 'Launchpad', icon: <Rocket size={20} />, highlight: true },
+    { id: 'showcase', label: 'Showcase', icon: <Monitor size={20} />, highlight: true },
     { id: 'qa-suite', label: 'QA Suite', icon: <ClipboardCheck size={20} />, highlight: true },
     { id: 'scout', label: 'Scout', icon: <Search size={20} />, highlight: true },
     { id: 'research-lab', label: 'Research Lab', icon: <FlaskConical size={20} />, highlight: true },
@@ -2257,7 +2260,7 @@ function Sidebar({ currentPage, setPage, onLogout }) {
     { id: 'smart-template', label: 'Smart Template', icon: <Sparkles size={20} /> },
     { id: 'business-generator', label: 'Business Gen', icon: <Building2 size={20} /> },
     { id: 'platform-health', label: 'Health Check', icon: <Activity size={20} /> },
-    { id: 'demo-tracker', label: 'Demo Tracker', icon: <Rocket size={20} /> },
+    { id: 'demo-tracker', label: 'Showcase', icon: <Rocket size={20} />, highlight: true },
     { id: 'users', label: 'Users', icon: <Users size={20} /> },
     { id: 'generations', label: 'Generations', icon: <Layers size={20} /> },
     { id: 'costs', label: 'API Costs', icon: <DollarSign size={20} /> },
@@ -2352,6 +2355,7 @@ export default function AdminApp({ skipAuth = false, startPage = 'overview' }) {
     switch (currentPage) {
       case 'overview': return <OverviewPage />;
       case 'launchpad': return <LaunchpadDashboard />;
+      case 'showcase': return <ShowcasePage />;
       case 'qa-suite': return <QADashboard />;
       case 'scout': return <ScoutDashboard />;
       case 'research-lab': return <ResearchTestLab />;

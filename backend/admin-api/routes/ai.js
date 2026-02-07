@@ -17,6 +17,52 @@ const fs = require('fs');
 // Import agent executor for action parsing
 const { createExecutor } = require('../services/agent-executor');
 
+// ── In-memory usage tracker ──────────────────────────────────────────
+const usageStore = {
+  calls: [],        // recent calls (capped at 200)
+  totals: { calls: 0, inputTokens: 0, outputTokens: 0, cost: 0, toolCalls: 0 },
+  byAgent: {},      // agentId → { calls, inputTokens, outputTokens, cost, toolCalls }
+  byDay: {}         // 'YYYY-MM-DD' → { calls, inputTokens, outputTokens, cost, toolCalls }
+};
+
+const PRICING = {
+  'claude-sonnet-4-20250514': { input: 3.00, output: 15.00 },
+  'claude-3-5-sonnet-20241022': { input: 3.00, output: 15.00 },
+  'claude-3-haiku-20240307': { input: 0.25, output: 1.25 }
+};
+
+function recordUsage({ agentId, agentName, model, inputTokens, outputTokens, toolCalls = 0, durationMs = 0 }) {
+  const pricing = PRICING[model] || { input: 3.00, output: 15.00 };
+  const cost = (inputTokens / 1e6) * pricing.input + (outputTokens / 1e6) * pricing.output;
+  const now = new Date();
+  const day = now.toISOString().split('T')[0];
+
+  // Totals
+  usageStore.totals.calls++;
+  usageStore.totals.inputTokens += inputTokens;
+  usageStore.totals.outputTokens += outputTokens;
+  usageStore.totals.cost += cost;
+  usageStore.totals.toolCalls += toolCalls;
+
+  // By agent
+  if (!usageStore.byAgent[agentId]) {
+    usageStore.byAgent[agentId] = { agentId, agentName, calls: 0, inputTokens: 0, outputTokens: 0, cost: 0, toolCalls: 0 };
+  }
+  const a = usageStore.byAgent[agentId];
+  a.calls++; a.inputTokens += inputTokens; a.outputTokens += outputTokens; a.cost += cost; a.toolCalls += toolCalls;
+
+  // By day
+  if (!usageStore.byDay[day]) {
+    usageStore.byDay[day] = { date: day, calls: 0, inputTokens: 0, outputTokens: 0, cost: 0, toolCalls: 0 };
+  }
+  const d = usageStore.byDay[day];
+  d.calls++; d.inputTokens += inputTokens; d.outputTokens += outputTokens; d.cost += cost; d.toolCalls += toolCalls;
+
+  // Recent calls (cap at 200)
+  usageStore.calls.unshift({ agentId, agentName, model, inputTokens, outputTokens, toolCalls, cost, durationMs, timestamp: now.toISOString() });
+  if (usageStore.calls.length > 200) usageStore.calls.length = 200;
+}
+
 // Find agents.json - check multiple locations
 function loadAgents(req) {
   // First try to get from brain.json if available
@@ -267,16 +313,16 @@ router.post('/chat', async (req, res) => {
     const maxTokens = agentsConfig.config?.maxTokens || 2048;
 
     // Call Claude
+    const chatStartTime = Date.now();
     const response = await anthropic.messages.create({
       model,
       max_tokens: maxTokens,
       system: systemPrompt,
       messages
     });
+    const chatDurationMs = Date.now() - chatStartTime;
 
     const assistantMessage = response.content[0].text;
-
-    // Log usage if cost tracking enabled
     if (agentsConfig.config?.costTracking) {
       console.log(`[AI] Agent: ${agent.id}, Input: ${response.usage.input_tokens}, Output: ${response.usage.output_tokens}`);
     }
@@ -295,6 +341,18 @@ router.post('/chat', async (req, res) => {
         console.log(`[AI] Actions executed: ${actionResults.executed} succeeded, ${actionResults.failed} failed`);
       }
     }
+
+    // Track usage in memory
+    const toolCallCount = actionResults ? (actionResults.executed || 0) + (actionResults.failed || 0) : 0;
+    recordUsage({
+      agentId: agent.id,
+      agentName: agent.name,
+      model,
+      inputTokens: response.usage.input_tokens,
+      outputTokens: response.usage.output_tokens,
+      toolCalls: toolCallCount,
+      durationMs: chatDurationMs
+    });
 
     // Return response
     res.json({
@@ -319,6 +377,17 @@ router.post('/chat', async (req, res) => {
       details: error.message
     });
   }
+});
+
+// GET /api/admin/ai/usage - Cost & usage analytics
+router.get('/usage', (req, res) => {
+  res.json({
+    success: true,
+    totals: usageStore.totals,
+    byAgent: Object.values(usageStore.byAgent).sort((a, b) => b.cost - a.cost),
+    byDay: Object.values(usageStore.byDay).sort((a, b) => b.date.localeCompare(a.date)),
+    recentCalls: usageStore.calls
+  });
 });
 
 // GET /api/admin/ai/health - Health check

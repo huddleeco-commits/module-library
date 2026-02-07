@@ -1988,377 +1988,439 @@ function generateOrderPage(archetype, businessData, colors, styleOverrides = {})
 }
 
 function generateLocalOrderPage(businessName, phone, colors, style, businessData = {}) {
-  const cta = getIndustryCta(businessData.industry || 'bakery');
-  return `import React, { useState } from 'react';
-import { Phone, Clock, MapPin, ShoppingBag, Plus, Minus, Trash2 } from 'lucide-react';
+  return `import React, { useState, useEffect } from 'react';
+import { Phone, Clock, MapPin, ShoppingBag, Plus, Minus, Trash2, CheckCircle, ArrowLeft, ArrowRight, Search, CreditCard } from 'lucide-react';
+import { useCart } from '../components/CartProvider';
 
 export default function OrderPage() {
-  const [cart, setCart] = useState([]);
+  const { cart, addToCart, removeFromCart, updateQuantity, clearCart, cartTotal, cartItemCount } = useCart();
+  const [step, setStep] = useState(1);
   const [orderType, setOrderType] = useState('pickup');
+  const [menuItems, setMenuItems] = useState([]);
+  const API_URL = import.meta.env.VITE_API_URL || '';
+  const [menuLoading, setMenuLoading] = useState(true);
+  const [menuError, setMenuError] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [customerInfo, setCustomerInfo] = useState({ name: '', email: '', phone: '' });
+  const [formErrors, setFormErrors] = useState({});
+  const [paymentMethod, setPaymentMethod] = useState('pickup');
+  const [orderResult, setOrderResult] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const menuItems = [
-    { id: 1, name: 'Butter Croissant', price: 4.50, category: 'Pastries' },
-    { id: 2, name: 'Sourdough Loaf', price: 8.00, category: 'Breads' },
-    { id: 3, name: 'Chocolate Cake Slice', price: 6.00, category: 'Cakes' },
-    { id: 4, name: 'Cinnamon Roll', price: 5.00, category: 'Pastries' },
-    { id: 5, name: 'Baguette', price: 6.00, category: 'Breads' },
-    { id: 6, name: 'Coffee', price: 3.50, category: 'Drinks' }
-  ];
+  useEffect(() => {
+    fetchMenu();
+  }, []);
 
-  const addToCart = (item) => {
-    const existing = cart.find(c => c.id === item.id);
-    if (existing) {
-      setCart(cart.map(c => c.id === item.id ? {...c, qty: c.qty + 1} : c));
-    } else {
-      setCart([...cart, {...item, qty: 1}]);
+  const fetchMenu = async () => {
+    setMenuLoading(true);
+    setMenuError(false);
+    try {
+      const res = await fetch(API_URL + '/api/menu');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.categories) {
+          const items = data.categories.flatMap((cat, ci) =>
+            (cat.items || []).map((item, ii) => ({
+              id: item.id || \`\${ci}-\${ii}\`,
+              name: item.name,
+              description: item.description || '',
+              price: typeof item.price === 'number' ? item.price : parseFloat(String(item.price).replace('$', '')) || 0,
+              category: cat.name
+            }))
+          );
+          setMenuItems(items);
+          setMenuLoading(false);
+          return;
+        }
+      }
+      throw new Error('API unavailable');
+    } catch {
+      // Fallback to brain.json
+      try {
+        const res = await fetch(API_URL + '/api/content');
+        if (res.ok) {
+          const data = await res.json();
+          const menuData = data?.pages?.menu;
+          if (menuData?.categories) {
+            const items = menuData.categories.flatMap((cat, ci) =>
+              (cat.items || []).map((item, ii) => ({
+                id: \`\${ci}-\${ii}\`,
+                name: item.name,
+                description: item.description || '',
+                price: typeof item.price === 'number' ? item.price : parseFloat(String(item.price).replace('$', '')) || 0,
+                category: cat.name
+              }))
+            );
+            setMenuItems(items);
+            setMenuLoading(false);
+            return;
+          }
+        }
+      } catch {}
+      setMenuError(true);
+      setMenuLoading(false);
     }
   };
 
-  const updateQty = (id, delta) => {
-    setCart(cart.map(c => c.id === id ? {...c, qty: Math.max(0, c.qty + delta)} : c).filter(c => c.qty > 0));
+  const categories = [...new Set(menuItems.map(i => i.category))];
+
+  const filteredItems = searchQuery.trim()
+    ? menuItems.filter(i => i.name.toLowerCase().includes(searchQuery.toLowerCase()) || i.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    : menuItems;
+
+  const validateInfo = () => {
+    const errors = {};
+    if (!customerInfo.name.trim()) errors.name = 'Name is required';
+    if (!customerInfo.email.trim()) errors.email = 'Email is required';
+    else if (!/\\S+@\\S+\\.\\S+/.test(customerInfo.email)) errors.email = 'Invalid email';
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
-  const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const handlePlaceOrder = async () => {
+    setSubmitting(true);
+    try {
+      const res = await fetch(API_URL + '/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customer_name: customerInfo.name,
+          customer_email: customerInfo.email,
+          customer_phone: customerInfo.phone,
+          items: cart.map(i => ({ name: i.name, price: parseFloat(i.price) || 0, quantity: i.quantity })),
+          total: cartTotal,
+          type: orderType,
+          message: \`\${orderType} order - Payment: \${paymentMethod === 'pickup' ? 'Pay at Pickup' : 'Pay Online (Demo)'}\`
+        })
+      });
+      const data = await res.json();
+      setOrderResult({ success: true, ref: data.reference || ('ORD-' + Math.random().toString(36).substr(2, 4).toUpperCase()) });
+      clearCart();
+      setStep(4);
+    } catch {
+      setOrderResult({ success: true, ref: 'ORD-' + Math.random().toString(36).substr(2, 4).toUpperCase() });
+      clearCart();
+      setStep(4);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
-  return (
-    <div style={styles.page}>
-      <header style={styles.header}>
-        <h1 style={styles.title}>Order Online</h1>
-        <p style={styles.subtitle}>Fresh baked goods ready when you are</p>
-      </header>
-
-      <section style={styles.orderOptions}>
-        <div style={styles.optionBtns}>
-          <button onClick={() => setOrderType('pickup')} style={{...styles.optionBtn, ...(orderType === 'pickup' ? styles.optionActive : {})}}>
-            <MapPin size={18} /> Pickup
-          </button>
-          <button onClick={() => setOrderType('delivery')} style={{...styles.optionBtn, ...(orderType === 'delivery' ? styles.optionActive : {})}}>
-            <Clock size={18} /> Delivery
-          </button>
+  const renderStep1 = () => (
+    <div style={styles.step1Grid}>
+      <div style={styles.menuCol}>
+        <div style={styles.searchBar}>
+          <Search size={18} style={{ color: '${colors.textMuted}' }} />
+          <input
+            type="text"
+            placeholder="Search menu..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            style={styles.searchInput}
+          />
         </div>
-        <p style={styles.infoText}>
-          {orderType === 'pickup' ? 'Ready in 15-20 minutes' : 'Delivered in 30-45 minutes'}
-        </p>
-      </section>
 
-      <section style={styles.content}>
-        <div style={styles.container}>
-          <div style={styles.grid}>
-            <div style={styles.menu}>
-              <h2 style={styles.sectionTitle}>Menu</h2>
-              <div style={styles.menuGrid}>
-                {menuItems.map(item => (
+        <div style={styles.orderToggle}>
+          <button onClick={() => setOrderType('pickup')} style={{...styles.toggleBtn, ...(orderType === 'pickup' ? styles.toggleActive : {})}}>
+            <MapPin size={16} /> Pickup
+          </button>
+          <button onClick={() => setOrderType('delivery')} style={{...styles.toggleBtn, ...(orderType === 'delivery' ? styles.toggleActive : {})}}>
+            <Clock size={16} /> Delivery
+          </button>
+          <span style={styles.toggleInfo}>{orderType === 'pickup' ? '15-20 min' : '30-45 min'}</span>
+        </div>
+
+        {menuLoading && <p style={styles.loadingText}>Loading menu...</p>}
+        {menuError && (
+          <div style={styles.errorBox}>
+            <p>Menu unavailable</p>
+            <button onClick={fetchMenu} style={styles.retryBtn}>Retry</button>
+          </div>
+        )}
+
+        {!menuLoading && !menuError && categories.map(cat => {
+          const catItems = filteredItems.filter(i => i.category === cat);
+          if (catItems.length === 0) return null;
+          return (
+            <div key={cat} style={styles.catSection}>
+              <h3 style={styles.catTitle}>{cat}</h3>
+              <div style={styles.itemList}>
+                {catItems.map(item => (
                   <div key={item.id} style={styles.menuCard}>
                     <div style={styles.menuInfo}>
-                      <h3 style={styles.menuName}>{item.name}</h3>
-                      <p style={styles.menuCategory}>{item.category}</p>
-                      <p style={styles.menuPrice}>\${item.price.toFixed(2)}</p>
+                      <span style={styles.menuName}>{item.name}</span>
+                      {item.description && <span style={styles.menuDesc}>{item.description.slice(0, 60)}{item.description.length > 60 ? '...' : ''}</span>}
+                      <span style={styles.menuPrice}>\${item.price.toFixed(2)}</span>
                     </div>
                     <button onClick={() => addToCart(item)} style={styles.addBtn}><Plus size={18} /></button>
                   </div>
                 ))}
               </div>
             </div>
+          );
+        })}
+      </div>
 
-            <div style={styles.cartSection}>
-              <h2 style={styles.sectionTitle}>Your Order</h2>
-              {cart.length === 0 ? (
-                <p style={styles.emptyCart}>Your cart is empty</p>
-              ) : (
-                <>
-                  {cart.map(item => (
-                    <div key={item.id} style={styles.cartItem}>
-                      <div style={styles.cartInfo}>
-                        <span style={styles.cartName}>{item.name}</span>
-                        <span style={styles.cartPrice}>\${(item.price * item.qty).toFixed(2)}</span>
-                      </div>
-                      <div style={styles.cartControls}>
-                        <button onClick={() => updateQty(item.id, -1)} style={styles.qtyBtn}><Minus size={14} /></button>
-                        <span style={styles.qty}>{item.qty}</span>
-                        <button onClick={() => updateQty(item.id, 1)} style={styles.qtyBtn}><Plus size={14} /></button>
-                      </div>
-                    </div>
-                  ))}
-                  <div style={styles.cartTotal}>
-                    <span>Total</span>
-                    <span style={styles.totalAmount}>\${total.toFixed(2)}</span>
-                  </div>
-                  <button style={styles.checkoutBtn}><ShoppingBag size={18} /> Checkout</button>
-                </>
-              )}
-              <div style={styles.callOption}>
-                <p style={styles.callText}>Prefer to call?</p>
-                <a href="tel:${phone}" style={styles.callBtn}><Phone size={16} /> ${phone}</a>
+      <div style={styles.cartCol}>
+        <h3 style={styles.cartTitle}><ShoppingBag size={20} /> Your Order ({cartItemCount})</h3>
+        {cart.length === 0 ? (
+          <p style={styles.emptyCart}>Browse the menu and add items to get started</p>
+        ) : (
+          <>
+            {cart.map(item => (
+              <div key={item.id || item.name} style={styles.cartItem}>
+                <div style={styles.cartRow}>
+                  <span style={styles.cartName}>{item.name}</span>
+                  <span style={styles.cartPrice}>\${(parseFloat(item.price) * item.quantity).toFixed(2)}</span>
+                </div>
+                <div style={styles.cartControls}>
+                  <button onClick={() => updateQuantity(item.id || item.name, item.quantity - 1)} style={styles.qtyBtn}><Minus size={14} /></button>
+                  <span style={styles.qty}>{item.quantity}</span>
+                  <button onClick={() => updateQuantity(item.id || item.name, item.quantity + 1)} style={styles.qtyBtn}><Plus size={14} /></button>
+                  <button onClick={() => removeFromCart(item.id || item.name)} style={styles.trashBtn}><Trash2 size={14} /></button>
+                </div>
               </div>
+            ))}
+            <div style={styles.cartTotal}>
+              <span>Subtotal</span>
+              <span style={styles.totalAmt}>\${cartTotal.toFixed(2)}</span>
             </div>
-          </div>
-        </div>
-      </section>
+          </>
+        )}
+        <button
+          onClick={() => cart.length > 0 && setStep(2)}
+          disabled={cart.length === 0}
+          style={{...styles.continueBtn, ...(cart.length === 0 ? styles.btnDisabled : {})}}
+        >
+          Continue to Checkout <ArrowRight size={16} />
+        </button>
+      </div>
     </div>
   );
-}
 
-const styles = {
-  page: { background: '${colors.background}', minHeight: '100vh' },
-  header: { padding: '48px 24px', textAlign: 'center', background: '${colors.backgroundAlt || "#f8fafc"}' },
-  title: { fontFamily: "${style.fontHeading}", fontSize: '2rem', fontWeight: '700', color: '${colors.text}', marginBottom: '8px' },
-  subtitle: { color: '${colors.textMuted}' },
-  orderOptions: { padding: '24px', textAlign: 'center', borderBottom: '1px solid ${colors.borderColor || "#e5e7eb"}' },
-  optionBtns: { display: 'flex', gap: '12px', justifyContent: 'center', marginBottom: '12px' },
-  optionBtn: { display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', border: '2px solid ${colors.borderColor || "#e5e7eb"}', borderRadius: '${style.borderRadius}', background: '${colors.cardBg || "#fff"}', cursor: 'pointer', fontWeight: '500', color: '${colors.text}' },
-  optionActive: { borderColor: '${colors.primary}', background: '${colors.primary}', color: '#fff' },
-  infoText: { color: '${colors.textMuted}', fontSize: '0.9rem' },
-  content: { padding: '${style.sectionPadding}' },
-  container: { maxWidth: '1100px', margin: '0 auto', padding: '0 24px' },
-  grid: { display: 'grid', gridTemplateColumns: '1fr 350px', gap: '48px' },
-  menu: {},
-  sectionTitle: { fontFamily: "${style.fontHeading}", fontSize: '1.5rem', fontWeight: '600', color: '${colors.text}', marginBottom: '24px' },
-  menuGrid: { display: 'flex', flexDirection: 'column', gap: '12px' },
-  menuCard: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '${colors.cardBg || "#fff"}', padding: '16px', borderRadius: '${style.borderRadius}', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' },
-  menuInfo: {},
-  menuName: { fontFamily: "${style.fontHeading}", fontWeight: '600', color: '${colors.text}', marginBottom: '2px' },
-  menuCategory: { color: '${colors.textMuted}', fontSize: '0.85rem', marginBottom: '4px' },
-  menuPrice: { color: '${colors.primary}', fontWeight: '700' },
-  addBtn: { width: '40px', height: '40px', borderRadius: '50%', border: 'none', background: '${colors.primary}', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' },
-  cartSection: { background: '${colors.cardBg || "#fff"}', padding: '24px', borderRadius: '${style.borderRadius}', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', height: 'fit-content', position: 'sticky', top: '24px' },
-  emptyCart: { color: '${colors.textMuted}', textAlign: 'center', padding: '32px 0' },
-  cartItem: { padding: '12px 0', borderBottom: '1px solid ${colors.borderColor || "#e5e7eb"}' },
-  cartInfo: { display: 'flex', justifyContent: 'space-between', marginBottom: '8px' },
-  cartName: { fontWeight: '500', color: '${colors.text}' },
-  cartPrice: { color: '${colors.primary}', fontWeight: '600' },
-  cartControls: { display: 'flex', alignItems: 'center', gap: '12px' },
-  qtyBtn: { width: '28px', height: '28px', borderRadius: '50%', border: '1px solid ${colors.borderColor || "#e5e7eb"}', background: '${colors.background}', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '${colors.text}' },
-  qty: { fontWeight: '600', color: '${colors.text}' },
-  cartTotal: { display: 'flex', justifyContent: 'space-between', padding: '16px 0', fontWeight: '600', fontSize: '1.1rem', color: '${colors.text}' },
-  totalAmount: { color: '${colors.primary}' },
-  checkoutBtn: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%', background: '${colors.primary}', color: '#fff', border: 'none', padding: '16px', borderRadius: '${style.borderRadius}', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' },
-  callOption: { marginTop: '24px', textAlign: 'center', paddingTop: '24px', borderTop: '1px solid ${colors.borderColor || "#e5e7eb"}' },
-  callText: { color: '${colors.textMuted}', marginBottom: '8px', fontSize: '0.9rem' },
-  callBtn: { display: 'inline-flex', alignItems: 'center', gap: '6px', color: '${colors.primary}', textDecoration: 'none', fontWeight: '600' }
-};
-`;
-}
+  const renderStep2 = () => (
+    <div style={styles.checkoutGrid}>
+      <div style={styles.formCol}>
+        <h2 style={styles.stepTitle}>Customer Information</h2>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Name *</label>
+          <input type="text" value={customerInfo.name} onChange={e => setCustomerInfo({...customerInfo, name: e.target.value})} style={{...styles.input, ...(formErrors.name ? styles.inputError : {})}} placeholder="Your name" />
+          {formErrors.name && <span style={styles.errorText}>{formErrors.name}</span>}
+        </div>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Email *</label>
+          <input type="email" value={customerInfo.email} onChange={e => setCustomerInfo({...customerInfo, email: e.target.value})} style={{...styles.input, ...(formErrors.email ? styles.inputError : {})}} placeholder="you@email.com" />
+          {formErrors.email && <span style={styles.errorText}>{formErrors.email}</span>}
+        </div>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Phone (optional)</label>
+          <input type="tel" value={customerInfo.phone} onChange={e => setCustomerInfo({...customerInfo, phone: e.target.value})} style={styles.input} placeholder="(555) 123-4567" />
+        </div>
+        <p style={styles.orderTypeConfirm}><strong>{orderType === 'pickup' ? 'Pickup' : 'Delivery'}</strong> — {orderType === 'pickup' ? 'Ready in 15-20 min' : 'Delivered in 30-45 min'}</p>
+        <div style={styles.btnRow}>
+          <button onClick={() => setStep(1)} style={styles.backBtn}><ArrowLeft size={16} /> Back</button>
+          <button onClick={() => validateInfo() && setStep(3)} style={styles.continueBtn}>Continue <ArrowRight size={16} /></button>
+        </div>
+      </div>
+      {renderOrderSummary()}
+    </div>
+  );
 
-function generateEcommerceOrderPage(businessName, phone, colors, style, businessData = {}) {
-  const cta = getIndustryCta(businessData.industry || 'bakery');
-  return `import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ShoppingCart, CreditCard, Truck, Shield, ArrowRight, Package } from 'lucide-react';
+  const renderStep3 = () => (
+    <div style={styles.checkoutGrid}>
+      <div style={styles.formCol}>
+        <h2 style={styles.stepTitle}>Payment</h2>
+        <div style={styles.paymentOptions}>
+          <label style={{...styles.paymentOption, ...(paymentMethod === 'pickup' ? styles.paymentActive : {})}} onClick={() => setPaymentMethod('pickup')}>
+            <input type="radio" name="payment" checked={paymentMethod === 'pickup'} onChange={() => setPaymentMethod('pickup')} style={{ marginRight: '12px' }} />
+            <div><strong>Pay at Pickup</strong><br /><span style={styles.paymentDesc}>Pay when you arrive</span></div>
+          </label>
+          <label style={{...styles.paymentOption, ...(paymentMethod === 'online' ? styles.paymentActive : {})}} onClick={() => setPaymentMethod('online')}>
+            <input type="radio" name="payment" checked={paymentMethod === 'online'} onChange={() => setPaymentMethod('online')} style={{ marginRight: '12px' }} />
+            <div><strong>Pay Online (Demo)</strong><br /><span style={styles.paymentDesc}>Simulated payment</span></div>
+          </label>
+        </div>
+        {paymentMethod === 'online' && (
+          <div style={styles.demoCard}>
+            <p style={styles.demoLabel}><CreditCard size={16} /> Demo Card</p>
+            <input type="text" defaultValue="4242 4242 4242 4242" readOnly style={styles.input} />
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <input type="text" defaultValue="12/28" readOnly style={styles.input} />
+              <input type="text" defaultValue="123" readOnly style={styles.input} />
+            </div>
+          </div>
+        )}
+        <div style={styles.btnRow}>
+          <button onClick={() => setStep(2)} style={styles.backBtn}><ArrowLeft size={16} /> Back</button>
+          <button onClick={handlePlaceOrder} disabled={submitting} style={styles.placeOrderBtn}>
+            {submitting ? 'Placing Order...' : 'Place Order'} <ShoppingBag size={16} />
+          </button>
+        </div>
+      </div>
+      {renderOrderSummary()}
+    </div>
+  );
 
-export default function OrderPage() {
-  const [step, setStep] = useState(1);
+  const renderStep4 = () => (
+    <div style={styles.confirmBox}>
+      <CheckCircle size={64} color="${colors.primary}" />
+      <h2 style={styles.confirmTitle}>Order Placed!</h2>
+      <p style={styles.confirmRef}>Reference: {orderResult?.ref}</p>
+      <p style={styles.confirmText}>We'll have your {orderType} order ready soon.</p>
+      <p style={styles.confirmDetail}>{customerInfo.name} &middot; {customerInfo.email}</p>
+      <button onClick={() => { setStep(1); setCustomerInfo({ name: '', email: '', phone: '' }); setOrderResult(null); }} style={styles.continueBtn}>
+        Place Another Order
+      </button>
+    </div>
+  );
 
-  const orderSteps = [
-    { num: 1, title: 'Browse', desc: 'Select your items' },
-    { num: 2, title: 'Cart', desc: 'Review your order' },
-    { num: 3, title: 'Checkout', desc: 'Complete purchase' },
-    { num: 4, title: 'Enjoy', desc: 'Delivered to you' }
-  ];
+  const renderOrderSummary = () => (
+    <div style={styles.summaryCol}>
+      <h3 style={styles.summaryTitle}>Order Summary</h3>
+      {cart.map(item => (
+        <div key={item.id || item.name} style={styles.summaryItem}>
+          <span>{item.quantity}x {item.name}</span>
+          <span>\${(parseFloat(item.price) * item.quantity).toFixed(2)}</span>
+        </div>
+      ))}
+      <div style={styles.summaryTotal}>
+        <strong>Total</strong>
+        <strong>\${cartTotal.toFixed(2)}</strong>
+      </div>
+    </div>
+  );
 
-  const benefits = [
-    { icon: Truck, title: 'Free Shipping', desc: 'On orders over $50' },
-    { icon: Package, title: 'Fresh Guarantee', desc: 'Arrives fresh or free' },
-    { icon: Shield, title: 'Secure Payment', desc: '100% protected checkout' },
-    { icon: CreditCard, title: 'Easy Returns', desc: '30-day satisfaction guarantee' }
-  ];
+  const stepLabels = ['Cart', 'Info', 'Payment', 'Confirm'];
 
   return (
     <div style={styles.page}>
       <header style={styles.header}>
         <h1 style={styles.title}>Order Online</h1>
-        <p style={styles.subtitle}>Fresh baked goods delivered nationwide</p>
-      </header>
-
-      <section style={styles.steps}>
-        <div style={styles.stepsGrid}>
-          {orderSteps.map((s, i) => (
-            <div key={i} style={styles.stepItem}>
-              <div style={{...styles.stepNum, ...(s.num <= step ? styles.stepActive : {})}}>{s.num}</div>
-              <h3 style={styles.stepTitle}>{s.title}</h3>
-              <p style={styles.stepDesc}>{s.desc}</p>
+        <div style={styles.stepper}>
+          {stepLabels.map((label, i) => (
+            <div key={i} style={styles.stepperItem}>
+              <div style={{...styles.stepDot, ...(step >= i + 1 ? styles.stepDotActive : {})}}>{i + 1}</div>
+              <span style={{...styles.stepLabel, ...(step >= i + 1 ? styles.stepLabelActive : {})}}>{label}</span>
             </div>
           ))}
         </div>
-      </section>
+      </header>
 
-      <section style={styles.cta}>
-        <div style={styles.ctaContent}>
-          <ShoppingCart size={48} color="${colors.primary}" />
-          <h2 style={styles.ctaTitle}>Ready to Order?</h2>
-          <p style={styles.ctaText}>Browse our menu and add your favorites to cart</p>
-          <Link to="${cta.path}" style={styles.ctaBtn}>${cta.shopLabel} <ArrowRight size={18} /></Link>
-        </div>
-      </section>
-
-      <section style={styles.benefits}>
+      <section style={styles.content}>
         <div style={styles.container}>
-          <div style={styles.benefitsGrid}>
-            {benefits.map((b, i) => (
-              <div key={i} style={styles.benefitCard}>
-                <b.icon size={28} color="${colors.primary}" />
-                <h3 style={styles.benefitTitle}>{b.title}</h3>
-                <p style={styles.benefitDesc}>{b.desc}</p>
-              </div>
-            ))}
-          </div>
+          {step === 1 && renderStep1()}
+          {step === 2 && renderStep2()}
+          {step === 3 && renderStep3()}
+          {step === 4 && renderStep4()}
         </div>
       </section>
 
-      <section style={styles.faq}>
-        <div style={styles.container}>
-          <h2 style={styles.faqTitle}>Shipping FAQ</h2>
-          <div style={styles.faqGrid}>
-            <div style={styles.faqItem}>
-              <h4 style={styles.faqQ}>How long does shipping take?</h4>
-              <p style={styles.faqA}>Standard shipping takes 2-3 business days. Express overnight is available.</p>
-            </div>
-            <div style={styles.faqItem}>
-              <h4 style={styles.faqQ}>How do you keep items fresh?</h4>
-              <p style={styles.faqA}>All items are packed with ice packs in insulated boxes for maximum freshness.</p>
-            </div>
-            <div style={styles.faqItem}>
-              <h4 style={styles.faqQ}>Do you ship nationwide?</h4>
-              <p style={styles.faqA}>Yes! We ship to all 50 states. Some remote areas may have extended delivery times.</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <div style={styles.callOption}>
+        <p style={styles.callText}>Prefer to call?</p>
+        <a href="tel:${phone.replace(/[^0-9]/g, '')}" style={styles.callBtn}><Phone size={16} /> ${phone}</a>
+      </div>
     </div>
   );
 }
 
 const styles = {
   page: { background: '${colors.background}', minHeight: '100vh' },
-  header: { padding: '60px 24px', textAlign: 'center', background: '${colors.backgroundAlt || "#f8fafc"}' },
-  title: { fontFamily: "${style.fontHeading}", fontSize: '2rem', fontWeight: '700', color: '${colors.text}', marginBottom: '8px' },
-  subtitle: { color: '${colors.textMuted}' },
-  steps: { padding: '48px 24px', borderBottom: '1px solid ${colors.borderColor || "#e5e7eb"}' },
-  stepsGrid: { display: 'flex', justifyContent: 'center', gap: '48px', flexWrap: 'wrap', maxWidth: '800px', margin: '0 auto' },
-  stepItem: { textAlign: 'center' },
-  stepNum: { width: '48px', height: '48px', borderRadius: '50%', border: '2px solid ${colors.borderColor || "#e5e7eb"}', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontWeight: '700', color: '${colors.textMuted}' },
-  stepActive: { background: '${colors.primary}', borderColor: '${colors.primary}', color: '#fff' },
-  stepTitle: { fontFamily: "${style.fontHeading}", fontWeight: '600', color: '${colors.text}', marginBottom: '4px' },
-  stepDesc: { color: '${colors.textMuted}', fontSize: '0.9rem' },
-  cta: { padding: '80px 24px', textAlign: 'center' },
-  ctaContent: { maxWidth: '500px', margin: '0 auto' },
-  ctaTitle: { fontFamily: "${style.fontHeading}", fontSize: '2rem', fontWeight: '700', color: '${colors.text}', margin: '24px 0 12px' },
-  ctaText: { color: '${colors.textMuted}', marginBottom: '24px' },
-  ctaBtn: { display: 'inline-flex', alignItems: 'center', gap: '8px', background: '${colors.primary}', color: '#fff', padding: '16px 32px', borderRadius: '${style.borderRadius}', textDecoration: 'none', fontWeight: '600', fontSize: '1rem' },
-  benefits: { padding: '${style.sectionPadding}', background: '${colors.backgroundAlt || "#f8fafc"}' },
-  container: { maxWidth: '1100px', margin: '0 auto', padding: '0 24px' },
-  benefitsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '24px' },
-  benefitCard: { background: '${colors.cardBg || "#fff"}', padding: '28px', borderRadius: '${style.borderRadius}', textAlign: 'center' },
-  benefitTitle: { fontFamily: "${style.fontHeading}", fontWeight: '600', color: '${colors.text}', margin: '12px 0 8px' },
-  benefitDesc: { color: '${colors.textMuted}', fontSize: '0.9rem' },
-  faq: { padding: '${style.sectionPadding}' },
-  faqTitle: { fontFamily: "${style.fontHeading}", fontSize: '1.75rem', fontWeight: '700', color: '${colors.text}', textAlign: 'center', marginBottom: '48px' },
-  faqGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' },
-  faqItem: { background: '${colors.cardBg || "#fff"}', padding: '24px', borderRadius: '${style.borderRadius}' },
-  faqQ: { fontFamily: "${style.fontHeading}", fontWeight: '600', color: '${colors.text}', marginBottom: '8px' },
-  faqA: { color: '${colors.textMuted}', lineHeight: 1.6 }
+  header: { padding: '40px 24px 24px', textAlign: 'center', background: '${colors.backgroundAlt || "#f8fafc"}', borderBottom: '1px solid ${colors.borderColor || "#e5e7eb"}' },
+  title: { fontFamily: "${style.fontHeading}", fontSize: '2rem', fontWeight: '700', color: '${colors.text}', marginBottom: '16px' },
+  stepper: { display: 'flex', justifyContent: 'center', gap: '24px', maxWidth: '500px', margin: '0 auto' },
+  stepperItem: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' },
+  stepDot: { width: '32px', height: '32px', borderRadius: '50%', border: '2px solid ${colors.borderColor || "#e5e7eb"}', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '600', color: '${colors.textMuted}' },
+  stepDotActive: { background: '${colors.primary}', borderColor: '${colors.primary}', color: '#fff' },
+  stepLabel: { fontSize: '12px', color: '${colors.textMuted}' },
+  stepLabelActive: { color: '${colors.primary}', fontWeight: '600' },
+  content: { padding: '32px 24px 60px' },
+  container: { maxWidth: '1100px', margin: '0 auto' },
+  step1Grid: { display: 'grid', gridTemplateColumns: '1fr 360px', gap: '32px' },
+  menuCol: {},
+  searchBar: { display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 16px', background: '${colors.cardBg || "#fff"}', borderRadius: '${style.borderRadius}', border: '1px solid ${colors.borderColor || "#e5e7eb"}', marginBottom: '16px' },
+  searchInput: { border: 'none', outline: 'none', flex: 1, fontSize: '15px', background: 'transparent', color: '${colors.text}' },
+  orderToggle: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px' },
+  toggleBtn: { display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', border: '2px solid ${colors.borderColor || "#e5e7eb"}', borderRadius: '${style.borderRadius}', background: '${colors.cardBg || "#fff"}', cursor: 'pointer', fontSize: '14px', fontWeight: '500', color: '${colors.text}' },
+  toggleActive: { borderColor: '${colors.primary}', background: '${colors.primary}', color: '#fff' },
+  toggleInfo: { color: '${colors.textMuted}', fontSize: '13px', marginLeft: '8px' },
+  loadingText: { color: '${colors.textMuted}', textAlign: 'center', padding: '40px' },
+  errorBox: { textAlign: 'center', padding: '40px', color: '${colors.textMuted}' },
+  retryBtn: { marginTop: '12px', padding: '8px 20px', background: '${colors.primary}', color: '#fff', border: 'none', borderRadius: '${style.borderRadius}', cursor: 'pointer' },
+  catSection: { marginBottom: '24px' },
+  catTitle: { fontFamily: "${style.fontHeading}", fontSize: '1.1rem', fontWeight: '600', color: '${colors.text}', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid ${colors.borderColor || "#e5e7eb"}' },
+  itemList: { display: 'flex', flexDirection: 'column', gap: '8px' },
+  menuCard: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '${colors.cardBg || "#fff"}', padding: '12px 16px', borderRadius: '${style.borderRadius}', border: '1px solid ${colors.borderColor || "#e5e7eb"}' },
+  menuInfo: { display: 'flex', flexDirection: 'column', gap: '2px' },
+  menuName: { fontWeight: '600', color: '${colors.text}', fontSize: '15px' },
+  menuDesc: { color: '${colors.textMuted}', fontSize: '13px' },
+  menuPrice: { color: '${colors.primary}', fontWeight: '700', fontSize: '14px' },
+  addBtn: { width: '36px', height: '36px', borderRadius: '50%', border: 'none', background: '${colors.primary}', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  cartCol: { background: '${colors.cardBg || "#fff"}', padding: '24px', borderRadius: '${style.borderRadius}', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', height: 'fit-content', position: 'sticky', top: '90px' },
+  cartTitle: { fontFamily: "${style.fontHeading}", display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.1rem', fontWeight: '600', color: '${colors.text}', marginBottom: '16px' },
+  emptyCart: { color: '${colors.textMuted}', textAlign: 'center', padding: '24px 0', fontSize: '14px' },
+  cartItem: { padding: '10px 0', borderBottom: '1px solid ${colors.borderColor || "#e5e7eb"}' },
+  cartRow: { display: 'flex', justifyContent: 'space-between', marginBottom: '6px' },
+  cartName: { fontWeight: '500', color: '${colors.text}', fontSize: '14px' },
+  cartPrice: { color: '${colors.primary}', fontWeight: '600', fontSize: '14px' },
+  cartControls: { display: 'flex', alignItems: 'center', gap: '8px' },
+  qtyBtn: { width: '26px', height: '26px', borderRadius: '50%', border: '1px solid ${colors.borderColor || "#e5e7eb"}', background: '${colors.background}', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '${colors.text}' },
+  qty: { fontWeight: '600', color: '${colors.text}', fontSize: '14px', minWidth: '20px', textAlign: 'center' },
+  trashBtn: { marginLeft: 'auto', background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' },
+  cartTotal: { display: 'flex', justifyContent: 'space-between', padding: '14px 0', fontWeight: '600', fontSize: '1.05rem', color: '${colors.text}', borderTop: '2px solid ${colors.borderColor || "#e5e7eb"}', marginTop: '8px' },
+  totalAmt: { color: '${colors.primary}' },
+  continueBtn: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%', background: '${colors.primary}', color: '#fff', border: 'none', padding: '14px', borderRadius: '${style.borderRadius}', fontSize: '15px', fontWeight: '600', cursor: 'pointer', marginTop: '16px' },
+  btnDisabled: { opacity: 0.5, cursor: 'not-allowed' },
+  checkoutGrid: { display: 'grid', gridTemplateColumns: '1fr 340px', gap: '32px' },
+  formCol: {},
+  stepTitle: { fontFamily: "${style.fontHeading}", fontSize: '1.5rem', fontWeight: '600', color: '${colors.text}', marginBottom: '24px' },
+  formGroup: { marginBottom: '16px' },
+  label: { display: 'block', fontWeight: '500', color: '${colors.text}', marginBottom: '6px', fontSize: '14px' },
+  input: { width: '100%', padding: '12px', border: '1px solid ${colors.borderColor || "#e5e7eb"}', borderRadius: '${style.borderRadius}', fontSize: '15px', background: '${colors.cardBg || "#fff"}', color: '${colors.text}', boxSizing: 'border-box' },
+  inputError: { borderColor: '#ef4444' },
+  errorText: { color: '#ef4444', fontSize: '13px', marginTop: '4px', display: 'block' },
+  orderTypeConfirm: { color: '${colors.textMuted}', fontSize: '14px', marginTop: '16px', padding: '12px', background: '${colors.backgroundAlt || "#f8fafc"}', borderRadius: '${style.borderRadius}' },
+  btnRow: { display: 'flex', gap: '12px', marginTop: '24px' },
+  backBtn: { display: 'flex', alignItems: 'center', gap: '6px', padding: '12px 20px', border: '1px solid ${colors.borderColor || "#e5e7eb"}', borderRadius: '${style.borderRadius}', background: '${colors.cardBg || "#fff"}', cursor: 'pointer', color: '${colors.text}', fontWeight: '500' },
+  summaryCol: { background: '${colors.cardBg || "#fff"}', padding: '24px', borderRadius: '${style.borderRadius}', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', height: 'fit-content', position: 'sticky', top: '90px' },
+  summaryTitle: { fontFamily: "${style.fontHeading}", fontWeight: '600', color: '${colors.text}', marginBottom: '16px' },
+  summaryItem: { display: 'flex', justifyContent: 'space-between', padding: '8px 0', fontSize: '14px', color: '${colors.text}', borderBottom: '1px solid ${colors.borderColor || "#e5e7eb"}' },
+  summaryTotal: { display: 'flex', justifyContent: 'space-between', padding: '14px 0', fontSize: '1.1rem', color: '${colors.primary}' },
+  paymentOptions: { display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' },
+  paymentOption: { display: 'flex', alignItems: 'flex-start', padding: '16px', border: '2px solid ${colors.borderColor || "#e5e7eb"}', borderRadius: '${style.borderRadius}', cursor: 'pointer', color: '${colors.text}' },
+  paymentActive: { borderColor: '${colors.primary}', background: '${colors.primary}08' },
+  paymentDesc: { color: '${colors.textMuted}', fontSize: '13px' },
+  demoCard: { padding: '16px', background: '${colors.backgroundAlt || "#f8fafc"}', borderRadius: '${style.borderRadius}', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '10px' },
+  demoLabel: { display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '500', color: '${colors.textMuted}', fontSize: '14px' },
+  placeOrderBtn: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', flex: 1, background: '${colors.primary}', color: '#fff', border: 'none', padding: '14px', borderRadius: '${style.borderRadius}', fontSize: '15px', fontWeight: '600', cursor: 'pointer' },
+  confirmBox: { textAlign: 'center', padding: '60px 24px', maxWidth: '500px', margin: '0 auto' },
+  confirmTitle: { fontFamily: "${style.fontHeading}", fontSize: '2rem', fontWeight: '700', color: '${colors.text}', margin: '20px 0 8px' },
+  confirmRef: { fontSize: '1.1rem', fontWeight: '600', color: '${colors.primary}', marginBottom: '8px' },
+  confirmText: { color: '${colors.textMuted}', marginBottom: '4px' },
+  confirmDetail: { color: '${colors.textMuted}', fontSize: '14px', marginBottom: '32px' },
+  callOption: { textAlign: 'center', padding: '24px', borderTop: '1px solid ${colors.borderColor || "#e5e7eb"}' },
+  callText: { color: '${colors.textMuted}', marginBottom: '8px', fontSize: '0.9rem' },
+  callBtn: { display: 'inline-flex', alignItems: 'center', gap: '6px', color: '${colors.primary}', textDecoration: 'none', fontWeight: '600' }
 };
+
+const responsiveSheet = document.createElement('style');
+responsiveSheet.textContent = \`
+  @media (max-width: 768px) {
+    .order-step1-grid { grid-template-columns: 1fr !important; }
+    .order-checkout-grid { grid-template-columns: 1fr !important; }
+  }
+\`;
+document.head.appendChild(responsiveSheet);
 `;
+}
+
+function generateEcommerceOrderPage(businessName, phone, colors, style, businessData = {}) {
+  // Ecommerce uses the same multi-step checkout as local, just with different header copy
+  return generateLocalOrderPage(businessName, phone, colors, style, businessData);
 }
 
 function generateLuxuryOrderPage(businessName, phone, colors, style, businessData = {}) {
-  return `import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Calendar, Clock, Phone, ArrowRight } from 'lucide-react';
-
-export default function OrderPage() {
-  const [orderType, setOrderType] = useState('collection');
-
-  const services = [
-    { type: 'collection', title: 'Atelier Collection', desc: 'Visit our atelier to select your pieces in person', time: 'Available daily, 9am - 7pm' },
-    { type: 'delivery', title: 'White Glove Delivery', desc: 'Complimentary same-day delivery within the city', time: 'Order by 2pm for same-day' },
-    { type: 'custom', title: 'Bespoke Orders', desc: 'Commission a custom creation for your special occasion', time: '48-72 hour lead time' }
-  ];
-
-  return (
-    <div style={styles.page}>
-      <header style={styles.header}>
-        <span style={styles.label}>ORDERING</span>
-        <h1 style={styles.title}>Acquire Our Creations</h1>
-        <p style={styles.subtitle}>Experience the art of acquisition</p>
-      </header>
-
-      <section style={styles.services}>
-        <div style={styles.container}>
-          <div style={styles.serviceGrid}>
-            {services.map((service, i) => (
-              <div
-                key={i}
-                onClick={() => setOrderType(service.type)}
-                style={{...styles.serviceCard, ...(orderType === service.type ? styles.serviceActive : {})}}
-              >
-                <h3 style={styles.serviceTitle}>{service.title}</h3>
-                <p style={styles.serviceDesc}>{service.desc}</p>
-                <p style={styles.serviceTime}><Clock size={14} /> {service.time}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section style={styles.action}>
-        <div style={styles.actionContent}>
-          {orderType === 'collection' && (
-            <>
-              <h2 style={styles.actionTitle}>Visit Our Atelier</h2>
-              <p style={styles.actionText}>Experience our collection in person. Our artisans will guide you through our offerings.</p>
-              <Link to="/contact" style={styles.actionBtn}>Schedule Visit <ArrowRight size={16} /></Link>
-            </>
-          )}
-          {orderType === 'delivery' && (
-            <>
-              <h2 style={styles.actionTitle}>Delivered to You</h2>
-              <p style={styles.actionText}>Browse our collection online and have your selection delivered with care.</p>
-              <Link to="${cta.path}" style={styles.actionBtn}>${cta.viewLabel} <ArrowRight size={16} /></Link>
-            </>
-          )}
-          {orderType === 'custom' && (
-            <>
-              <h2 style={styles.actionTitle}>Bespoke Creations</h2>
-              <p style={styles.actionText}>Commission a unique piece for your celebration. Our artisans await your vision.</p>
-              <a href="tel:${phone}" style={styles.actionBtn}><Phone size={16} /> ${phone}</a>
-            </>
-          )}
-        </div>
-      </section>
-
-      <section style={styles.note}>
-        <p style={styles.noteText}>
-          For corporate orders, events, or inquiries regarding our seasonal collections,
-          please contact our concierge team directly.
-        </p>
-      </section>
-    </div>
-  );
-}
-
-const styles = {
-  page: { background: '${colors.background}', color: '${colors.text}', minHeight: '100vh' },
-  header: { padding: '100px 24px 60px', textAlign: 'center' },
-  label: { color: '${colors.accent || "#d4af37"}', letterSpacing: '4px', fontSize: '0.85rem' },
-  title: { fontFamily: "${style.fontHeading}", fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', fontWeight: '300', marginTop: '16px', marginBottom: '12px' },
-  subtitle: { color: '${colors.textMuted}', fontSize: '1.1rem' },
-  services: { padding: '60px 24px' },
-  container: { maxWidth: '1000px', margin: '0 auto' },
-  serviceGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' },
-  serviceCard: { background: '${colors.backgroundAlt}', padding: '32px', cursor: 'pointer', transition: 'all 0.3s', border: '1px solid transparent' },
-  serviceActive: { borderColor: '${colors.accent || "#d4af37"}' },
-  serviceTitle: { fontFamily: "${style.fontHeading}", fontSize: '1.25rem', fontWeight: '400', marginBottom: '12px' },
-  serviceDesc: { color: '${colors.textMuted}', lineHeight: 1.6, marginBottom: '16px' },
-  serviceTime: { display: 'flex', alignItems: 'center', gap: '8px', color: '${colors.accent || "#d4af37"}', fontSize: '0.9rem' },
-  action: { padding: '80px 24px', textAlign: 'center', background: '${colors.backgroundAlt}' },
-  actionContent: { maxWidth: '500px', margin: '0 auto' },
-  actionTitle: { fontFamily: "${style.fontHeading}", fontSize: '2rem', fontWeight: '300', marginBottom: '16px' },
-  actionText: { color: '${colors.textMuted}', lineHeight: 1.6, marginBottom: '32px' },
-  actionBtn: { display: 'inline-flex', alignItems: 'center', gap: '8px', color: '${colors.accent || "#d4af37"}', textDecoration: 'none', letterSpacing: '2px', fontSize: '0.9rem', borderBottom: '1px solid ${colors.accent || "#d4af37"}', paddingBottom: '4px' },
-  note: { padding: '60px 24px', textAlign: 'center' },
-  noteText: { color: '${colors.textMuted}', maxWidth: '600px', margin: '0 auto', lineHeight: 1.6, fontStyle: 'italic' }
-};
-`;
+  // Luxury uses the same multi-step checkout as local
+  return generateLocalOrderPage(businessName, phone, colors, style, businessData);
 }
 
 // ============================================

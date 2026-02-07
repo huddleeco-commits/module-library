@@ -2401,6 +2401,7 @@ function generateStructuralPage(industryId, variant = 'A', moodSliders = {}, bus
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Star, MapPin, Phone, Clock, ArrowRight, Check, Users, Heart, Award, Zap, ShoppingBag, Calendar, Headphones, Shield, Smartphone } from 'lucide-react';
+import { usePageContent } from '../components/ContentProvider';
 
 // Icon map for rendering string icon names as components
 const iconMap = {
@@ -2418,6 +2419,9 @@ const RenderIcon = ({ name, size = 24, color, style: iconStyle }) => {
 };
 
 export default function HomePage() {
+  // Content from brain.json (editable via admin Website Editor)
+  const pageContent = usePageContent('home');
+
   // State for interactive elements
   const [currentSlide, setCurrentSlide] = useState(0);
   const [scrollY, setScrollY] = useState(0);
@@ -2813,9 +2817,12 @@ function generateDataFromFixture(richData, industryId) {
     { question: 'Where are you located?', answer: 'We are located at ${escapeQuotes(richData.address)}.' }`;
 
   return `  // Hero slideshow images
-  const heroImages = [
+  const _defaultHeroImages = [
     ${heroImagesCode}
   ];
+  const heroImages = (pageContent.gallery || []).length > 0
+    ? pageContent.gallery.map(g => g.src)
+    : _defaultHeroImages;
 
   // Menu categories with items
   const menuCategories = [
@@ -2849,15 +2856,21 @@ function generateDataFromFixture(richData, industryId) {
     url: '#'
   }));
 
-  // Customer reviews
-  const reviews = [
+  // Customer reviews (overridable from Website Editor)
+  const _defaultReviews = [
     ${reviewsCode}
   ];
+  const reviews = (pageContent.reviews && pageContent.reviews.length > 0)
+    ? pageContent.reviews
+    : _defaultReviews;
 
-  // Services/features
-  const services = [
+  // Services/features (overridable from Website Editor)
+  const _defaultServices = [
     ${servicesCode}
   ];
+  const services = (pageContent.features && pageContent.features.length > 0)
+    ? pageContent.features.map(f => ({ name: f.title || f.name, description: f.description, icon: f.icon }))
+    : _defaultServices;
 
   // Team members
   const teamMembers = [
@@ -2869,10 +2882,13 @@ function generateDataFromFixture(richData, industryId) {
     ${statsCode}
   ];
 
-  // FAQs
-  const faqs = [
+  // FAQs (overridable from Website Editor)
+  const _defaultFaqs = [
     ${faqsCode}
   ];
+  const faqs = (pageContent.faq && pageContent.faq.length > 0)
+    ? pageContent.faq
+    : _defaultFaqs;
 
   // Merchandise (placeholder) - using Unsplash placeholders for missing images
   const merchandise = [
@@ -3076,6 +3092,9 @@ function generateAllVariants(industryId, moodSliders = {}, businessData = {}) {
 module.exports = {
   generateStructuralPage,
   generateAllVariants,
+  getSmartCTA,
+  getSmartCtaPath,
+  getSmartFeatures,
   HERO_GENERATORS,
   SECTION_GENERATORS
 };

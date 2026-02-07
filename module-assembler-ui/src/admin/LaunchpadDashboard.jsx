@@ -1121,11 +1121,13 @@ export default function LaunchpadDashboard() {
       const data = await res.json();
       if (data.success) {
         setRunUrls(data.urls);
-        // Open all URLs in new tabs
-        if (data.urls.frontend) window.open(data.urls.frontend, '_blank');
+        // Open tabs after a brief delay to ensure servers are ready
+        setTimeout(() => {
+          if (data.urls.frontend) window.open(data.urls.frontend, '_blank');
+        }, 2000);
         setTimeout(() => {
           if (data.urls.admin) window.open(data.urls.admin, '_blank');
-        }, 500);
+        }, 3000);
       } else {
         alert('Run failed: ' + data.error);
       }

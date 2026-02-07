@@ -60,14 +60,14 @@ const {
  */
 function createLaunchpadRoutes(deps = {}) {
   const router = express.Router();
-  const { deployService, db } = deps;
+  const { deployService, getDb = () => null } = deps;
 
   // Initialize deploy service if available
   let oneClickService = null;
   if (process.env.RAILWAY_TOKEN && process.env.GITHUB_TOKEN) {
     oneClickService = createOneClickDeployService({
       deployService,
-      db,
+      db: null, // db resolved at runtime via getDb()
       railwayToken: process.env.RAILWAY_TOKEN,
       githubToken: process.env.GITHUB_TOKEN,
       cloudflareToken: process.env.CLOUDFLARE_TOKEN,
@@ -320,9 +320,9 @@ function createLaunchpadRoutes(deps = {}) {
       });
 
       // Save to database if available
-      if (db && result.success) {
+      if (getDb() && result.success) {
         try {
-          const insertResult = await db.query(
+          const insertResult = await getDb().query(
             `INSERT INTO generated_projects (name, project_path, status, metadata)
              VALUES ($1, $2, $3, $4)
              RETURNING id`,
@@ -578,12 +578,11 @@ function createLaunchpadRoutes(deps = {}) {
         percent: 35
       });
 
-      // Use the frontend directory for deployment
-      const frontendPath = path.join(generationResult.projectDir, 'frontend');
+      // Use the project root directory (contains backend/, frontend/, admin/)
       const projectName = generationResult.projectSlug;
 
       const deployResult = await oneClickService.deploy({
-        projectPath: frontendPath,
+        projectPath: generationResult.projectDir,
         projectName,
         adminEmail,
         appType: 'website'
@@ -603,9 +602,9 @@ function createLaunchpadRoutes(deps = {}) {
       });
 
       // Save to database
-      if (db && deployResult.success) {
+      if (getDb() && deployResult.success) {
         try {
-          await db.query(
+          await getDb().query(
             `INSERT INTO generated_projects (name, project_path, status, metadata, deployed_url, railway_project_id)
              VALUES ($1, $2, $3, $4, $5, $6)`,
             [
@@ -663,6 +662,335 @@ function createLaunchpadRoutes(deps = {}) {
       });
 
       res.end();
+    }
+  });
+
+  // ============================================
+  // THE 19 SHOWCASE INDUSTRY PROMPTS
+  // ============================================
+  const SHOWCASE_PROMPTS = [
+    { input: "Sals Brick Oven Pizza on Arthur Ave Bronx NY", industry: 'pizza-restaurant' },
+    { input: "The Capital Grille on E 42nd St NYC", industry: 'steakhouse' },
+    { input: "Blue Bottle Coffee on Berry St Brooklyn NY", industry: 'coffee-cafe' },
+    { input: "Harvest Table on Main St Hudson NY", industry: 'restaurant' },
+    { input: "Magnolia Bakery on Bleecker St NYC", industry: 'bakery' },
+    { input: "Glow Beauty Spa on Madison Ave NYC", industry: 'salon-spa' },
+    { input: "Iron Works Gym on 3rd Ave NYC", industry: 'fitness-gym' },
+    { input: "Bright Smile Dental on Court St Brooklyn NY", industry: 'dental' },
+    { input: "Westside Family Medicine on Broadway NYC", industry: 'healthcare' },
+    { input: "Lotus Flow Yoga on Smith St Brooklyn NY", industry: 'yoga' },
+    { input: "Classic Cuts Barbershop on 5th Ave Park Slope Brooklyn", industry: 'barbershop' },
+    { input: "Sterling & Associates on Wall St NYC", industry: 'law-firm' },
+    { input: "Skyline Realty on Park Ave NYC", industry: 'real-estate' },
+    { input: "FastFlow Plumbing on Atlantic Ave Brooklyn NY", industry: 'plumber' },
+    { input: "Sparkle Clean Co on Fulton St Brooklyn NY", industry: 'cleaning' },
+    { input: "Precision Auto Repair on Northern Blvd Queens NY", industry: 'auto-shop' },
+    { input: "Taskflow Project Management App San Francisco CA", industry: 'saas' },
+    { input: "Urban Thread Clothing on Broadway SoHo NYC", industry: 'ecommerce' },
+    { input: "Bright Minds Academy on Prospect Park West Brooklyn NY", industry: 'school' }
+  ];
+
+  /**
+   * GET /api/launchpad/showcase-prompts
+   * Return the 19 hardcoded showcase prompts
+   */
+  router.get('/showcase-prompts', (req, res) => {
+    res.json({ success: true, prompts: SHOWCASE_PROMPTS });
+  });
+
+  /**
+   * POST /api/launchpad/deploy-batch
+   * Generate + Deploy multiple sites with SSE streaming
+   *
+   * Body: { prompts: [{ input, variant }] } — or omit to use all 19 showcase prompts
+   */
+  router.post('/deploy-batch', async (req, res) => {
+    const { prompts, variant = 'A' } = req.body;
+    const batchPrompts = (prompts && prompts.length > 0)
+      ? prompts
+      : SHOWCASE_PROMPTS.map(p => ({ input: p.input, variant }));
+
+    // Check deploy service
+    if (!oneClickService || !oneClickService.isReady()) {
+      return res.status(503).json({
+        success: false,
+        error: 'Deploy service not configured. Check RAILWAY_TOKEN and GITHUB_TOKEN.'
+      });
+    }
+
+    const batchId = `showcase-${Date.now()}`;
+    console.log(`\n🎯 SHOWCASE BATCH: Deploying ${batchPrompts.length} sites (batch ${batchId})`);
+
+    // Set up SSE
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+    res.flushHeaders();
+
+    let clientDisconnected = false;
+    req.on('close', () => { clientDisconnected = true; });
+
+    const sendEvent = (data) => {
+      if (clientDisconnected) return;
+      try {
+        res.write(`data: ${JSON.stringify(data)}\n\n`);
+      } catch (e) {
+        clientDisconnected = true;
+      }
+    };
+
+    sendEvent({
+      type: 'batch-start',
+      batchId,
+      total: batchPrompts.length,
+      message: `Starting batch generation of ${batchPrompts.length} sites`
+    });
+
+    const results = [];
+
+    for (let i = 0; i < batchPrompts.length; i++) {
+      const prompt = batchPrompts[i];
+      const siteInput = prompt.input;
+      const siteVariant = (prompt.variant || variant || 'A').toUpperCase();
+
+      sendEvent({
+        type: 'site-start',
+        index: i,
+        total: batchPrompts.length,
+        input: siteInput,
+        percent: Math.round((i / batchPrompts.length) * 100)
+      });
+
+      try {
+        // Generate
+        const genResult = await generateSite(siteInput, siteVariant, 'test', {
+          enablePortal: true
+        });
+
+        if (!genResult.success) {
+          throw new Error('Generation failed: ' + (genResult.error || 'Unknown'));
+        }
+
+        // Insert preliminary DB record NOW so card appears in grid immediately
+        let demoRecordId = null;
+        if (getDb()) {
+          try {
+            const insertResult = await getDb().query(
+              `INSERT INTO generated_projects
+                (name, industry, status, is_demo, demo_batch_id, metadata)
+               VALUES ($1,$2,'deploying',TRUE,$3,$4) RETURNING id`,
+              [
+                genResult.businessData.name,
+                genResult.detection.industry,
+                batchId,
+                JSON.stringify({
+                  source: 'showcase-batch',
+                  variant: siteVariant,
+                  industry: genResult.detection.industry,
+                  detection: genResult.detection,
+                  pages: Object.keys(genResult.pages),
+                  metrics: genResult.metrics,
+                  duration: genResult.duration,
+                  tagline: genResult.businessData.tagline,
+                  location: genResult.businessData.location
+                })
+              ]
+            );
+            demoRecordId = (insertResult.rows || insertResult)[0]?.id;
+            console.log(`   📊 DB: Pre-saved demo record #${demoRecordId} for ${genResult.businessData.name}`);
+          } catch (dbErr) {
+            console.warn(`   ⚠️ DB pre-save failed for ${genResult.businessData.name}:`, dbErr.message);
+          }
+        }
+
+        sendEvent({
+          type: 'site-generated',
+          index: i,
+          name: genResult.businessData.name,
+          industry: genResult.detection.industry,
+          metrics: genResult.metrics,
+          percent: Math.round(((i + 0.4) / batchPrompts.length) * 100)
+        });
+
+        // Deploy
+        const deployResult = await oneClickService.deploy({
+          projectPath: genResult.projectDir,
+          projectName: genResult.projectSlug,
+          adminEmail: 'admin@be1st.io',
+          appType: 'website'
+        }, (progress) => {
+          sendEvent({
+            type: 'site-deploy-progress',
+            index: i,
+            name: genResult.businessData.name,
+            message: progress.message || 'Deploying...',
+            percent: Math.round(((i + 0.4 + (progress.percent || 0) / 100 * 0.55) / batchPrompts.length) * 100)
+          });
+        });
+
+        // Update the DB record with full deploy info
+        const siteResult = {
+          success: true,
+          name: genResult.businessData.name,
+          industry: genResult.detection.industry,
+          urls: deployResult.urls || {},
+          metrics: genResult.metrics,
+          duration: genResult.duration
+        };
+
+        if (getDb() && demoRecordId) {
+          try {
+            const urls = deployResult.urls || {};
+            await getDb().query(
+              `UPDATE generated_projects SET
+                status = $1, domain = $2, frontend_url = $3, admin_url = $4, backend_url = $5,
+                github_frontend = $6, github_backend = $7, github_admin = $8,
+                railway_project_id = $9, railway_project_url = $10,
+                metadata = $11, deployed_at = NOW()
+               WHERE id = $12`,
+              [
+                deployResult.success ? 'deployed' : 'failed',
+                urls.frontend?.replace('https://', '').replace('http://', '') || null,
+                urls.frontend || null,
+                urls.admin || null,
+                urls.backend || null,
+                urls.githubFrontend || null,
+                urls.githubBackend || null,
+                urls.githubAdmin || null,
+                deployResult.railwayProjectId || null,
+                urls.railway || null,
+                JSON.stringify({
+                  source: 'showcase-batch',
+                  variant: siteVariant,
+                  industry: genResult.detection.industry,
+                  detection: genResult.detection,
+                  pages: Object.keys(genResult.pages),
+                  metrics: genResult.metrics,
+                  duration: genResult.duration,
+                  deployDuration: deployResult.duration,
+                  tagline: genResult.businessData.tagline,
+                  location: genResult.businessData.location,
+                  railwayFrontend: urls.railwayFrontend || null,
+                  railwayBackend: urls.railwayBackend || null,
+                  railwayAdmin: urls.railwayAdmin || null
+                }),
+                demoRecordId
+              ]
+            );
+            console.log(`   📊 DB: Updated demo record #${demoRecordId} → deployed`);
+          } catch (dbErr) {
+            console.warn(`   ⚠️ DB update failed for ${genResult.businessData.name}:`, dbErr.message);
+          }
+        } else if (getDb() && !demoRecordId) {
+          // Fallback: pre-save didn't work, insert fresh
+          try {
+            const urls = deployResult.urls || {};
+            await getDb().query(
+              `INSERT INTO generated_projects
+                (name, industry, status, domain, frontend_url, admin_url, backend_url,
+                 github_frontend, github_backend, github_admin,
+                 railway_project_id, railway_project_url,
+                 is_demo, demo_batch_id, metadata, deployed_at)
+               VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,TRUE,$13,$14,NOW())`,
+              [
+                genResult.businessData.name,
+                genResult.detection.industry,
+                deployResult.success ? 'deployed' : 'failed',
+                urls.frontend?.replace('https://', '').replace('http://', '') || null,
+                urls.frontend || null,
+                urls.admin || null,
+                urls.backend || null,
+                urls.githubFrontend || null,
+                urls.githubBackend || null,
+                urls.githubAdmin || null,
+                deployResult.railwayProjectId || null,
+                urls.railway || null,
+                batchId,
+                JSON.stringify({
+                  source: 'showcase-batch',
+                  variant: siteVariant,
+                  industry: genResult.detection.industry,
+                  detection: genResult.detection,
+                  pages: Object.keys(genResult.pages),
+                  metrics: genResult.metrics,
+                  duration: genResult.duration,
+                  deployDuration: deployResult.duration,
+                  tagline: genResult.businessData.tagline,
+                  location: genResult.businessData.location,
+                  railwayFrontend: urls.railwayFrontend || null,
+                  railwayBackend: urls.railwayBackend || null,
+                  railwayAdmin: urls.railwayAdmin || null
+                })
+              ]
+            );
+          } catch (dbErr) {
+            console.warn(`   ⚠️ DB fallback save failed:`, dbErr.message);
+          }
+        }
+
+        results.push(siteResult);
+
+        sendEvent({
+          type: 'site-complete',
+          index: i,
+          total: batchPrompts.length,
+          result: siteResult,
+          percent: Math.round(((i + 1) / batchPrompts.length) * 100)
+        });
+
+      } catch (err) {
+        console.error(`Batch site ${i} failed:`, err.message);
+        const failResult = { success: false, input: siteInput, error: err.message };
+        results.push(failResult);
+
+        // Save failed record too
+        if (getDb()) {
+          try {
+            const detection = detectFromInput(siteInput);
+            await getDb().query(
+              `INSERT INTO generated_projects (name, industry, status, is_demo, demo_batch_id, metadata)
+               VALUES ($1, $2, 'failed', TRUE, $3, $4)`,
+              [
+                siteInput.split(' on ')[0] || siteInput,
+                detection.industry,
+                batchId,
+                JSON.stringify({ source: 'showcase-batch', error: err.message })
+              ]
+            );
+            console.log(`   📊 DB: Saved failed record for ${siteInput}`);
+          } catch (dbErr) {
+            console.warn(`   ⚠️ DB save failed:`, dbErr.message);
+          }
+        }
+
+        sendEvent({
+          type: 'site-failed',
+          index: i,
+          total: batchPrompts.length,
+          input: siteInput,
+          error: err.message,
+          percent: Math.round(((i + 1) / batchPrompts.length) * 100)
+        });
+      }
+    }
+
+    // Final summary
+    const succeeded = results.filter(r => r.success).length;
+    console.log(`\n🎯 SHOWCASE BATCH COMPLETE: ${succeeded}/${batchPrompts.length} succeeded (batch ${batchId})`);
+
+    sendEvent({
+      type: 'batch-complete',
+      batchId,
+      total: batchPrompts.length,
+      succeeded,
+      failed: batchPrompts.length - succeeded,
+      results,
+      percent: 100
+    });
+
+    if (!clientDisconnected) {
+      try { res.end(); } catch (e) { /* client gone */ }
     }
   });
 
@@ -808,6 +1136,24 @@ function createLaunchpadRoutes(deps = {}) {
         server.listen(p);
       });
 
+      // Wait for server to respond on health endpoint (up to 15s)
+      const waitForServer = async (port, maxWaitMs = 15000) => {
+        const start = Date.now();
+        const http = require('http');
+        while (Date.now() - start < maxWaitMs) {
+          const ok = await new Promise(resolve => {
+            const req = http.get(`http://localhost:${port}/health`, res => {
+              resolve(res.statusCode === 200);
+            });
+            req.on('error', () => resolve(false));
+            req.setTimeout(1000, () => { req.destroy(); resolve(false); });
+          });
+          if (ok) return true;
+          await new Promise(r => setTimeout(r, 300));
+        }
+        return false;
+      };
+
       let backendPort = null;
 
       // ============================================
@@ -845,9 +1191,13 @@ function createLaunchpadRoutes(deps = {}) {
         });
         backend.unref();
 
-        // Give backend time to start
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        console.log(`   ✅ Backend running at http://localhost:${backendPort}`);
+        // Wait for backend to actually respond
+        const backendReady = await waitForServer(backendPort);
+        if (backendReady) {
+          console.log(`   ✅ Backend running at http://localhost:${backendPort}`);
+        } else {
+          console.log(`   ⚠️ Backend may still be starting at http://localhost:${backendPort}`);
+        }
       }
 
       // ============================================
@@ -1078,6 +1428,24 @@ function createLaunchpadRoutes(deps = {}) {
         server.listen(p);
       });
 
+      // Wait for server to respond on health endpoint (up to 15s)
+      const waitForServer = async (port, maxWaitMs = 15000) => {
+        const start = Date.now();
+        const http = require('http');
+        while (Date.now() - start < maxWaitMs) {
+          const ok = await new Promise(resolve => {
+            const req = http.get(`http://localhost:${port}/health`, res => {
+              resolve(res.statusCode === 200);
+            });
+            req.on('error', () => resolve(false));
+            req.setTimeout(1000, () => { req.destroy(); resolve(false); });
+          });
+          if (ok) return true;
+          await new Promise(r => setTimeout(r, 300));
+        }
+        return false;
+      };
+
       // Helper to run npm install
       const npmInstall = (dir, name) => new Promise((resolve, reject) => {
         console.log(`   Installing ${name} dependencies...`);
@@ -1098,7 +1466,9 @@ function createLaunchpadRoutes(deps = {}) {
       // Helper to start a dev server
       const startServer = (dir, name, port, cmd, args) => {
         console.log(`   Starting ${name} on port ${port}...`);
-        const proc = spawn(isWindows ? cmd + '.cmd' : cmd, args, {
+        // On Windows: npm → npm.cmd, but node stays as node (no .cmd wrapper)
+        const resolvedCmd = isWindows && cmd !== 'node' ? cmd + '.cmd' : cmd;
+        const proc = spawn(resolvedCmd, args, {
           cwd: dir,
           shell: true,
           detached: !isWindows,
@@ -1111,6 +1481,7 @@ function createLaunchpadRoutes(deps = {}) {
 
       const urls = {};
       const processes = [];
+      let backendPort = 5001;
 
       // ============================================
       // INSTALL ROOT DEPENDENCIES (for concurrently)
@@ -1131,7 +1502,7 @@ function createLaunchpadRoutes(deps = {}) {
           await npmInstall(backendDir, 'backend');
         }
 
-        let backendPort = 5001;
+        backendPort = 5001;
         while (!(await isPortAvailable(backendPort)) && backendPort < 5010) {
           backendPort++;
         }
@@ -1141,8 +1512,12 @@ function createLaunchpadRoutes(deps = {}) {
         urls.backend = `http://localhost:${backendPort}`;
         urls.api = `http://localhost:${backendPort}/api`;
 
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        console.log(`   ✅ Backend running at ${urls.backend}`);
+        const backendReady = await waitForServer(backendPort);
+        if (backendReady) {
+          console.log(`   ✅ Backend running at ${urls.backend}`);
+        } else {
+          console.log(`   ⚠️ Backend may still be starting at ${urls.backend}`);
+        }
       }
 
       // ============================================
@@ -1158,9 +1533,9 @@ function createLaunchpadRoutes(deps = {}) {
         frontendPort++;
       }
 
-      // Write .env for frontend API URL
+      // Write .env for frontend proxy target (NOT VITE_ prefixed to avoid client exposure)
       if (urls.backend) {
-        fs.writeFileSync(path.join(frontendDir, '.env'), `VITE_API_URL=${urls.backend}\n`);
+        fs.writeFileSync(path.join(frontendDir, '.env'), `API_TARGET=${urls.backend}\n`);
       }
 
       const frontend = startServer(frontendDir, 'frontend', frontendPort, 'npm', ['run', 'dev', '--', '--port', frontendPort.toString()]);
@@ -1168,7 +1543,7 @@ function createLaunchpadRoutes(deps = {}) {
       urls.frontend = `http://localhost:${frontendPort}`;
 
       // ============================================
-      // START ADMIN DASHBOARD (port 5002)
+      // START ADMIN DASHBOARD (port 5002+)
       // ============================================
       if (fs.existsSync(adminDir) && fs.existsSync(path.join(adminDir, 'package.json'))) {
         const adminNodeModules = path.join(adminDir, 'node_modules');
@@ -1176,14 +1551,15 @@ function createLaunchpadRoutes(deps = {}) {
           await npmInstall(adminDir, 'admin');
         }
 
-        let adminPort = 5002;
-        while (!(await isPortAvailable(adminPort)) && adminPort < 5010) {
+        // Start above backend port to avoid collision
+        let adminPort = Math.max(5002, (backendPort || 5001) + 1);
+        while (!(await isPortAvailable(adminPort)) && adminPort < 5020) {
           adminPort++;
         }
 
-        // Write .env for admin API URL
+        // Write .env for admin proxy target (NOT VITE_ prefixed to avoid client exposure)
         if (urls.backend) {
-          fs.writeFileSync(path.join(adminDir, '.env'), `VITE_API_URL=${urls.backend}\n`);
+          fs.writeFileSync(path.join(adminDir, '.env'), `API_TARGET=${urls.backend}\n`);
         }
 
         const admin = startServer(adminDir, 'admin', adminPort, 'npm', ['run', 'dev', '--', '--port', adminPort.toString()]);
@@ -1191,8 +1567,19 @@ function createLaunchpadRoutes(deps = {}) {
         urls.admin = `http://localhost:${adminPort}`;
       }
 
-      // Give servers time to start
-      await new Promise(resolve => setTimeout(resolve, 2500));
+      // Wait for backend to be fully ready before declaring success
+      if (urls.backend) {
+        console.log('   Waiting for backend to be fully ready...');
+        const finalReady = await waitForServer(backendPort, 30000);
+        if (finalReady) {
+          console.log('   ✅ Backend confirmed ready');
+        } else {
+          console.log('   ⚠️ Backend health check timed out, continuing anyway');
+        }
+      }
+
+      // Give frontend/admin vite servers time to compile
+      await new Promise(resolve => setTimeout(resolve, 3000));
 
       console.log(`\n   ✅ All services running:`);
       console.log(`      Frontend: ${urls.frontend}`);
@@ -1270,6 +1657,94 @@ function createLaunchpadRoutes(deps = {}) {
       }
       res.json({ success: true });
     });
+  });
+
+  // ============================================
+  // GET /demos - Public demo listing (no auth required)
+  // Used by DemoTrackerPage which runs in skipAuth mode
+  // ============================================
+  router.get('/demos', async (req, res) => {
+    const db = getDb();
+    if (!db) return res.json({ success: true, demos: [], batches: [] });
+    try {
+      const demos = await db.query(`
+        SELECT id, name, industry, status, domain, frontend_url, admin_url, backend_url,
+               github_frontend, github_backend, github_admin,
+               railway_project_id, railway_project_url,
+               is_demo, demo_batch_id, metadata, deployed_at, created_at
+        FROM generated_projects WHERE is_demo = true
+        ORDER BY created_at DESC
+      `);
+      // Aggregate metrics
+      let totalLines = 0, totalFiles = 0, totalPages = 0;
+      for (const row of demos.rows) {
+        const meta = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : (row.metadata || {});
+        if (meta.metrics) {
+          totalLines += meta.metrics.totalLines || 0;
+          totalFiles += meta.metrics.totalFiles || 0;
+          totalPages += meta.metrics.frontendPages || 0;
+        }
+      }
+      res.json({
+        success: true,
+        demos: demos.rows,
+        batches: [],
+        metrics: {
+          totalSites: demos.rows.length,
+          totalApps: demos.rows.length * 3,
+          totalLines,
+          totalFiles,
+          totalPages,
+          avgGenTime: 0
+        }
+      });
+    } catch (err) {
+      console.error('Error fetching demos:', err.message);
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // DELETE /demos/all - Delete all demos (no auth, dev tool)
+  // Must be registered BEFORE /demos/:id so Express doesn't match "all" as an :id param
+  router.delete('/demos/all', async (req, res) => {
+    const db = getDb();
+    if (!db) return res.json({ success: false, error: 'No database' });
+    try {
+      const demos = await db.query('SELECT id, name, domain FROM generated_projects WHERE is_demo = true');
+      const { deleteProject } = require('../services/project-deleter.cjs');
+      let deleted = 0;
+      for (const demo of demos.rows) {
+        const subdomain = (demo.domain || '').replace('.be1st.io', '');
+        if (subdomain) {
+          try { await deleteProject(subdomain, { force: true, skipVerification: true }); } catch (e) { console.warn('Delete error:', e.message); }
+        }
+        await db.query('DELETE FROM generated_projects WHERE id = $1', [demo.id]);
+        deleted++;
+      }
+      res.json({ success: true, deleted });
+    } catch (err) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // DELETE /demos/:id - Delete single demo (no auth, dev tool)
+  router.delete('/demos/:id', async (req, res) => {
+    const db = getDb();
+    if (!db) return res.json({ success: false, error: 'No database' });
+    try {
+      const { id } = req.params;
+      const row = await db.query('SELECT name, domain FROM generated_projects WHERE id = $1', [id]);
+      if (row.rows.length === 0) return res.json({ success: false, error: 'Not found' });
+      const subdomain = (row.rows[0].domain || '').replace('.be1st.io', '');
+      if (subdomain && deployService) {
+        const { deleteProject } = require('../services/project-deleter.cjs');
+        try { await deleteProject(subdomain, { force: true, skipVerification: true }); } catch (e) { console.warn('Delete error:', e.message); }
+      }
+      await db.query('DELETE FROM generated_projects WHERE id = $1', [id]);
+      res.json({ success: true, deleted: 1 });
+    } catch (err) {
+      res.status(500).json({ success: false, error: err.message });
+    }
   });
 
   return router;

@@ -390,6 +390,60 @@ const INDUSTRY_RESERVATION_STYLES = {
  * @param {string} mode - Generation mode (test, enhanced, creative, premium)
  * @param {object} options - Additional options
  */
+/**
+ * Count project metrics: lines of code, files by category
+ * @param {string} projectDir - Root project directory
+ * @returns {{ totalLines: number, totalFiles: number, frontendFiles: number, backendFiles: number, adminFiles: number }}
+ */
+function countProjectMetrics(projectDir) {
+  const EXTENSIONS = new Set(['.jsx', '.js', '.json', '.css', '.html']);
+  const SKIP_DIRS = new Set(['node_modules', '.git', 'dist', 'build']);
+  let totalLines = 0;
+  let totalFiles = 0;
+  let frontendFiles = 0;
+  let backendFiles = 0;
+  let adminFiles = 0;
+
+  function walk(dir, category) {
+    if (!fs.existsSync(dir)) return;
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      if (SKIP_DIRS.has(entry.name)) continue;
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(fullPath, category);
+      } else if (EXTENSIONS.has(path.extname(entry.name).toLowerCase())) {
+        try {
+          const content = fs.readFileSync(fullPath, 'utf8');
+          const lines = content.split('\n').length;
+          totalLines += lines;
+          totalFiles++;
+          if (category === 'frontend') frontendFiles++;
+          else if (category === 'backend') backendFiles++;
+          else if (category === 'admin') adminFiles++;
+        } catch (e) { /* skip unreadable */ }
+      }
+    }
+  }
+
+  walk(path.join(projectDir, 'frontend'), 'frontend');
+  walk(path.join(projectDir, 'backend'), 'backend');
+  walk(path.join(projectDir, 'admin'), 'admin');
+  // Count root-level files (brain.json, package.json, etc.)
+  const rootFiles = fs.existsSync(projectDir) ? fs.readdirSync(projectDir).filter(f => {
+    const ext = path.extname(f).toLowerCase();
+    return EXTENSIONS.has(ext) && !fs.statSync(path.join(projectDir, f)).isDirectory();
+  }) : [];
+  for (const f of rootFiles) {
+    try {
+      totalLines += fs.readFileSync(path.join(projectDir, f), 'utf8').split('\n').length;
+      totalFiles++;
+    } catch (e) { /* skip */ }
+  }
+
+  return { totalLines, totalFiles, frontendFiles, backendFiles, adminFiles };
+}
+
 async function generateSite(input, variant = 'A', mode = 'test', options = {}) {
   const startTime = Date.now();
 
@@ -682,7 +736,8 @@ async function generateSite(input, variant = 'A', mode = 'test', options = {}) {
   // ============================================
   console.log('\n🎛️ Generating Admin Dashboard...');
   const adminDir = path.join(projectDir, 'admin');
-  const adminResult = generateAdminDashboard(adminDir, businessData, detection.industry);
+  const menuStyleId = businessData.menuStyle || businessData.menu?.style || getMenuStyleId(detection.industry, variant);
+  const adminResult = generateAdminDashboard(adminDir, businessData, detection.industry, menuStyleId);
   console.log(`   ✅ Admin Dashboard: ${adminResult.files} files`);
 
   // ============================================
@@ -721,11 +776,17 @@ async function generateSite(input, variant = 'A', mode = 'test', options = {}) {
   const endTime = Date.now();
   const duration = ((endTime - startTime) / 1000).toFixed(1);
 
+  // Collect project metrics
+  const projectMetrics = countProjectMetrics(projectDir);
+  projectMetrics.generationTime = parseFloat(duration);
+  projectMetrics.pageCount = Object.keys(generatedPages).length;
+
   console.log(`\n✅ LAUNCHPAD: Full-stack generation complete in ${duration}s`);
   console.log(`   Output: ${projectDir}`);
   console.log(`   Frontend: ${Object.keys(generatedPages).length} pages`);
   console.log(`   Backend: ${backendResult.files} files (${backendResult.modules.join(', ')})`);
   console.log(`   Admin: ${adminResult.files} files`);
+  console.log(`   Metrics: ${projectMetrics.totalLines} lines, ${projectMetrics.totalFiles} files`);
   console.log(`\n📖 To run the project:`);
   console.log(`   cd ${projectDir}`);
   console.log(`   npm install`);
@@ -758,6 +819,7 @@ async function generateSite(input, variant = 'A', mode = 'test', options = {}) {
       files: adminResult.files,
       url: 'http://localhost:5002'
     },
+    metrics: projectMetrics,
     trendsApplied: !!trendOverrides,
     appliedTrends: trendOverrides ? {
       colorCount: trendOverrides.colors?.length || 0,
@@ -1230,6 +1292,7 @@ import { Link } from 'react-router-dom';
 import { Star, Sparkles, ChefHat, Leaf, Flame, WheatOff, Plus, Filter, X, Search, ChevronUp, ChevronDown, ShoppingBag, Check, RefreshCw } from 'lucide-react';
 import { useMenu } from '../hooks/useMenu';
 import { useCart } from '../components/CartProvider';
+import { usePageContent } from '../components/ContentProvider';
 
 // Fallback image for broken images
 const FALLBACK_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"%3E%3Crect fill="%23f3f4f6" width="120" height="120"/%3E%3Ctext fill="%239ca3af" font-family="system-ui" font-size="12" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E';
@@ -1349,10 +1412,14 @@ export default function MenuPage() {
   // Falls back to embedded data if API unavailable
   const { categories: apiCategories, loading: menuLoading, error: menuError, connected, isFallback } = useMenu(fallbackMenuData);
 
+  // ContentProvider overlay for admin-edited images
+  const menuContent = usePageContent('menu');
+
   // Transform API data to match expected format, or use fallback
   const menuCategories = useMemo(() => {
+    let cats;
     if (apiCategories && apiCategories.length > 0) {
-      return apiCategories.map(cat => ({
+      cats = apiCategories.map(cat => ({
         name: cat.name,
         description: cat.description || '',
         items: (cat.items || []).map(item => ({
@@ -1365,9 +1432,24 @@ export default function MenuPage() {
           allergens: []
         }))
       }));
+    } else {
+      cats = fallbackMenuData.categories;
     }
-    return fallbackMenuData.categories;
-  }, [apiCategories]);
+    // Overlay brain.json edits (admin-edited text + images)
+    if (menuContent?.categories) {
+      const contentCats = menuContent.categories;
+      cats = cats.map(cat => {
+        const cc = contentCats.find(c => c.name === cat.name);
+        if (!cc?.items) return cat;
+        return { ...cat, items: cat.items.map(item => {
+          const ci = cc.items.find(i => i.name === item.name);
+          if (!ci) return item;
+          return { ...item, ...(ci.name && { name: ci.name }), ...(ci.description && { description: ci.description }), ...(ci.price && { price: ci.price }), ...(ci.image && { image: ci.image }) };
+        })};
+      });
+    }
+    return cats;
+  }, [apiCategories, menuContent]);
 
   // Featured items (Golden Triangle: chef-picks, popular, and new items)
   const featuredItems = menuCategories
@@ -2437,10 +2519,11 @@ function generateElegantListMenu(industryId, variant, moodSliders, businessData,
  * Generated by Launchpad Engine v2
  */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, Sparkles, ChefHat, Leaf, Flame, WheatOff, Filter, X, Search, ChevronUp, ChevronDown, Check, Plus, ShoppingBag } from 'lucide-react';
 import { useCart } from '../components/CartProvider';
+import { usePageContent } from '../components/ContentProvider';
 
 // Fallback image for broken images
 const FALLBACK_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50"%3E%3Crect fill="%23f3f4f6" width="50" height="50"/%3E%3C/svg%3E';
@@ -2512,10 +2595,30 @@ export default function MenuPage() {
   // Max visible categories before "More" dropdown
   const MAX_VISIBLE_CATEGORIES = 6;
 
-  // Menu data
-  const menuCategories = [
+  // Menu data (fallback)
+  const fallbackCategories = [
     ${menuDataCode}
   ];
+
+  // ContentProvider overlay for admin-edited text
+  const menuContent = usePageContent('menu');
+
+  const menuCategories = useMemo(() => {
+    let cats = fallbackCategories;
+    if (menuContent?.categories) {
+      const contentCats = menuContent.categories;
+      cats = cats.map(cat => {
+        const cc = contentCats.find(c => c.name === cat.name);
+        if (!cc?.items) return cat;
+        return { ...cat, items: cat.items.map(item => {
+          const ci = cc.items.find(i => i.name === item.name);
+          if (!ci) return item;
+          return { ...item, ...(ci.name && { name: ci.name }), ...(ci.description && { description: ci.description }), ...(ci.price && { price: ci.price }), ...(ci.image && { image: ci.image }) };
+        })};
+      });
+    }
+    return cats;
+  }, [menuContent]);
 
   // Chef's Selections (featured items for elegant presentation)
   const chefSelections = menuCategories
@@ -3343,10 +3446,11 @@ function generateCompactTableMenu(industryId, variant, moodSliders, businessData
  * Generated by Launchpad Engine v2
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, Sparkles, ChefHat, Leaf, Flame, WheatOff, Filter, X, Search, ChevronUp, ChevronDown, Plus, Check, ShoppingBag } from 'lucide-react';
 import { useCart } from '../components/CartProvider';
+import { usePageContent } from '../components/ContentProvider';
 
 // Fallback image
 const FALLBACK_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"%3E%3Crect fill="%23f3f4f6" width="40" height="40"/%3E%3C/svg%3E';
@@ -3439,10 +3543,30 @@ export default function MenuPage() {
   const [toast, setToast] = useState({ visible: false, message: '' });
   const [showBackToTop, setShowBackToTop] = useState(false);
 
-  // Menu data
-  const menuCategories = [
+  // Menu data (fallback)
+  const fallbackCategories = [
     ${menuDataCode}
   ];
+
+  // ContentProvider overlay for admin-edited text + images
+  const menuContent = usePageContent('menu');
+
+  const menuCategories = useMemo(() => {
+    let cats = fallbackCategories;
+    if (menuContent?.categories) {
+      const contentCats = menuContent.categories;
+      cats = cats.map(cat => {
+        const cc = contentCats.find(c => c.name === cat.name);
+        if (!cc?.items) return cat;
+        return { ...cat, items: cat.items.map(item => {
+          const ci = cc.items.find(i => i.name === item.name);
+          if (!ci) return item;
+          return { ...item, ...(ci.name && { name: ci.name }), ...(ci.description && { description: ci.description }), ...(ci.price && { price: ci.price }), ...(ci.image && { image: ci.image }) };
+        })};
+      });
+    }
+    return cats;
+  }, [menuContent]);
 
   // Legends
   const dietaryLegend = {
@@ -4015,10 +4139,11 @@ function generateStorytellingMenu(industryId, variant, moodSliders, businessData
  * Generated by Launchpad Engine v2
  */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, Sparkles, ChefHat, Leaf, Flame, WheatOff, Filter, X, Search, ChevronUp, ChevronDown, ChevronRight, Plus, Check, ShoppingBag } from 'lucide-react';
 import { useCart } from '../components/CartProvider';
+import { usePageContent } from '../components/ContentProvider';
 
 // Fallback image
 const FALLBACK_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"%3E%3Crect fill="%23f3f4f6" width="400" height="300"/%3E%3Ctext fill="%239ca3af" font-family="system-ui" font-size="16" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E';
@@ -4110,10 +4235,30 @@ export default function MenuPage() {
   // Max visible categories before "More" dropdown
   const MAX_VISIBLE_CATEGORIES = 6;
 
-  // Menu data
-  const menuCategories = [
+  // Menu data (fallback)
+  const fallbackCategories = [
     ${menuDataCode}
   ];
+
+  // ContentProvider overlay for admin-edited text + images
+  const menuContent = usePageContent('menu');
+
+  const menuCategories = useMemo(() => {
+    let cats = fallbackCategories;
+    if (menuContent?.categories) {
+      const contentCats = menuContent.categories;
+      cats = cats.map(cat => {
+        const cc = contentCats.find(c => c.name === cat.name);
+        if (!cc?.items) return cat;
+        return { ...cat, items: cat.items.map(item => {
+          const ci = cc.items.find(i => i.name === item.name);
+          if (!ci) return item;
+          return { ...item, ...(ci.name && { name: ci.name }), ...(ci.description && { description: ci.description }), ...(ci.price && { price: ci.price }), ...(ci.image && { image: ci.image }) };
+        })};
+      });
+    }
+    return cats;
+  }, [menuContent]);
 
   // Split categories into visible and overflow
   const visibleCategories = menuCategories.slice(0, MAX_VISIBLE_CATEGORIES);
@@ -7805,7 +7950,7 @@ export default function ReservationsPage() {
   const getCalendarUrl = (type) => {
     const dateObj = new Date(selectedDate + 'T' + convertTo24Hour(selectedTime));
     const endDate = new Date(dateObj.getTime() + 2 * 60 * 60 * 1000);
-    const title = encodeURIComponent('Reservation at ${businessName}');
+    const title = encodeURIComponent(\`Reservation at ${businessName.replace(/`/g, "\\`")}\`);
     const details = encodeURIComponent(\`Party of \${partySize}\\\\nConfirmation: \${confirmationNumber}\`);
 
     if (type === 'google') {
@@ -8132,7 +8277,7 @@ function generateChatWidget(primaryColor) {
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 
-const API = '';
+const API = import.meta.env.VITE_API_URL || '';
 
 export default function ChatWidget() {
   const { user, isAuthenticated } = useAuth();
@@ -11894,7 +12039,7 @@ app.use('/api/brain', brainRoutes);
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
-    project: '${businessName}',
+    project: '${businessName.replace(/'/g, "\\'")}',
     timestamp: new Date().toISOString()
   });
 });
@@ -11925,7 +12070,7 @@ const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log('');
   console.log('═══════════════════════════════════════════════');
-  console.log('  ${businessName} Backend');
+  console.log(\`  ${businessName.replace(/`/g, "\\`")} Backend\`);
   console.log('═══════════════════════════════════════════════');
   console.log(\`  🚀 Server running on port \${PORT}\`);
   console.log(\`  📍 http://localhost:\${PORT}\`);
@@ -12195,7 +12340,7 @@ const router = express.Router();
 router.get('/', (req, res) => {
   res.json({
     status: 'ok',
-    project: '${businessName}',
+    project: '${businessName.replace(/'/g, "\\'")}',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     memory: process.memoryUsage(),
@@ -12248,7 +12393,7 @@ router.get('/', (req, res) => {
     res.json({
       success: true,
       brain: {
-        name: '${businessName}',
+        name: '${businessName.replace(/'/g, "\\'")}',
         generatedBy: 'launchpad',
         note: 'brain.json not found, using defaults'
       }
@@ -14107,7 +14252,8 @@ function buildServiceCategories(businessData, pageType, industryId) {
       items: (cat.items || []).map(item => ({
         name: item.name,
         description: item.description || '',
-        price: item.price || ''
+        price: item.price || '',
+        image: item.image || ''
       }))
     }));
   }
@@ -14729,12 +14875,13 @@ function generateContentProvider() {
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const ContentContext = createContext(null);
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 export function ContentProvider({ children }) {
   const [content, setContent] = useState(null);
 
   useEffect(() => {
-    fetch('/api/content')
+    fetch(API_URL + '/api/content')
       .then(r => r.json())
       .then(data => {
         if (data.success) setContent(data.content);
@@ -14744,12 +14891,12 @@ export function ContentProvider({ children }) {
     // Listen for SSE updates from admin editor
     let es;
     try {
-      es = new EventSource('/api/content/events');
+      es = new EventSource(API_URL + '/api/content/events');
       es.onmessage = (e) => {
         const msg = JSON.parse(e.data);
         if (msg.type === 'content-updated') {
           // Re-fetch content on update
-          fetch('/api/content')
+          fetch(API_URL + '/api/content')
             .then(r => r.json())
             .then(data => {
               if (data.success) setContent(data.content);
@@ -15072,7 +15219,7 @@ function generateUseMenuHook() {
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-const API_BASE = import.meta.env?.VITE_API_URL || '/api';
+const API_BASE = (import.meta.env?.VITE_API_URL || '') + '/api';
 
 export function useMenu(fallbackData = null, options = {}) {
   const { enableSSE = true, retryDelay = 5000, maxRetries = 3 } = options;
@@ -15183,7 +15330,7 @@ function generateUseReservationsHook() {
 
 import { useState, useCallback, useEffect } from 'react';
 
-const API_BASE = import.meta.env?.VITE_API_URL || '/api';
+const API_BASE = (import.meta.env?.VITE_API_URL || '') + '/api';
 
 export function useReservations(options = {}) {
   const { onNewReservation = null } = options;
@@ -15466,6 +15613,7 @@ module.exports = {
   detectFromInput,
   buildBusinessData,
   generateSite,
+  countProjectMetrics,
   loadFixture,
   GENERATION_MODES,
   INDUSTRY_PAGES,

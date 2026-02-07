@@ -627,7 +627,7 @@ app.use('/api/research-lab', researchLabRouter);
 
 // Launchpad routes (unified generation + deployment pipeline)
 const { createLaunchpadRoutes } = require('./lib/routes/launchpad.cjs');
-const launchpadRouter = createLaunchpadRoutes({ deployService, db });
+const launchpadRouter = createLaunchpadRoutes({ deployService, getDb: () => db });
 app.use('/api/launchpad', launchpadRouter);
 
 // QA Suite routes (batch industry generation & testing)

@@ -993,6 +993,66 @@ router.get('/demos', async (req, res) => {
   }
 });
 
+// Get aggregated metrics for all demos
+router.get('/demos/metrics', async (req, res) => {
+  try {
+    const demos = await db.query(`
+      SELECT metadata FROM generated_projects
+      WHERE is_demo = TRUE AND status = 'deployed'
+    `);
+
+    let totalLines = 0;
+    let totalFiles = 0;
+    let totalGenTime = 0;
+    let totalPages = 0;
+    let sitesWithMetrics = 0;
+    const perIndustry = {};
+
+    for (const row of demos.rows) {
+      const meta = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : (row.metadata || {});
+      const m = meta.metrics;
+      if (m) {
+        totalLines += m.totalLines || 0;
+        totalFiles += m.totalFiles || 0;
+        totalGenTime += m.generationTime || meta.duration || 0;
+        totalPages += m.pageCount || 0;
+        sitesWithMetrics++;
+      } else if (meta.duration) {
+        totalGenTime += meta.duration;
+        sitesWithMetrics++;
+      }
+      // Count pages from metadata.pages array if pageCount not in metrics
+      if (!m?.pageCount && Array.isArray(meta.pages)) {
+        totalPages += meta.pages.length;
+      }
+
+      const ind = meta.industry || 'unknown';
+      if (!perIndustry[ind]) {
+        perIndustry[ind] = { lines: 0, files: 0, genTime: 0 };
+      }
+      if (m) {
+        perIndustry[ind].lines += m.totalLines || 0;
+        perIndustry[ind].files += m.totalFiles || 0;
+      }
+      perIndustry[ind].genTime += m?.generationTime || meta.duration || 0;
+    }
+
+    res.json({
+      success: true,
+      totalSites: demos.rows.length,
+      totalApps: demos.rows.length * 3, // frontend + backend + admin per site
+      totalLines,
+      totalFiles,
+      totalPages,
+      avgGenTime: sitesWithMetrics > 0 ? +(totalGenTime / sitesWithMetrics).toFixed(1) : 0,
+      perIndustry
+    });
+  } catch (err) {
+    console.error('Demo metrics error:', err);
+    res.status(500).json({ success: false, error: 'Failed to load demo metrics' });
+  }
+});
+
 // Delete a single demo
 router.delete('/demos/:id', async (req, res) => {
   try {

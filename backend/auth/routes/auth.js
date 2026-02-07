@@ -95,7 +95,7 @@ function isDatabaseAvailable() {
 
 function generateToken(user) {
   return jwt.sign(
-    { id: user.id, userId: user.id, email: user.email },
+    { id: user.id, userId: user.id, email: user.email, is_admin: user.is_admin || false, subscription_tier: user.subscription_tier || 'free' },
     JWT_SECRET,
     { expiresIn: JWT_EXPIRES }
   );

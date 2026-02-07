@@ -1,9 +1,9 @@
 /**
- * BE1st Auto-Deploy Service - FIXED VERSION v3
+ * BE1st Auto-Deploy Service - FIXED VERSION v4
  * Handles GitHub repo creation, Railway deployment, and Cloudflare DNS
- * 
+ *
  * FIXES INCORPORATED:
- * 1. Creates frontend/.env.production with correct API URL
+ * 1. Generates Railway domains BEFORE setting env vars (real backend URL for VITE_API_URL)
  * 2. Adds FRONTEND_URL to backend environment variables
  * 3. Adds ?sslmode=disable to DATABASE_URL
  * 4. Cleans up .git folder before deployment (prevents retry failures)
@@ -127,16 +127,9 @@ function regeneratePackageLock(folderPath, folderName) {
 function prepareProjectForDeployment(projectPath, subdomain) {
   console.log(`📋 Preparing project for deployment...`);
 
-  // FIX #1: Create frontend/.env.production with correct API URL
-  // Use Railway URL directly for reliability (custom domains may have DNS/SSL delays)
-  const railwayBackendUrl = `https://${subdomain}-backend.up.railway.app`;
-  const frontendEnvPath = path.join(projectPath, 'frontend', '.env.production');
-  const frontendEnvContent = `VITE_API_URL=${railwayBackendUrl}\n`;
-
-  if (fs.existsSync(path.join(projectPath, 'frontend'))) {
-    fs.writeFileSync(frontendEnvPath, frontendEnvContent);
-    console.log(`   ✅ Created frontend/.env.production`);
-  }
+  // Note: .env.production is NOT created here — the real Railway backend domain
+  // is only known after service creation. Railway env vars (VITE_API_URL) are set
+  // with the real domain and override any .env.production during Vite build.
   
   // FIX #4: Clean up any existing .git folders (prevents retry failures)
   const gitDirs = [
@@ -161,7 +154,7 @@ function prepareProjectForDeployment(projectPath, subdomain) {
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "node setup-db.js && node server.js",
+    "startCommand": "node server.js",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
@@ -205,11 +198,8 @@ function prepareProjectForDeployment(projectPath, subdomain) {
     );
     console.log(`   ✅ Created admin/railway.json`);
     
-    // Create admin/.env.production with API URL (use Railway URL for reliability)
-    const adminEnvPath = path.join(projectPath, 'admin', '.env.production');
-    const adminEnvContent = `VITE_API_URL=${railwayBackendUrl}\n`;
-    fs.writeFileSync(adminEnvPath, adminEnvContent);
-    console.log(`   ✅ Created admin/.env.production`);
+    // Note: admin/.env.production is NOT created here — Railway env vars will provide VITE_API_URL
+    console.log(`   ℹ️  Admin VITE_API_URL will be set via Railway env vars`);
   }
   
   // FIX #4b: Only update start script if setup-db.js exists
@@ -1803,6 +1793,17 @@ async function deployProject(projectPath, projectName, options = {}) {
       );
     }
 
+    // Generate Railway service domains EARLY so we get the REAL backend URL for VITE_API_URL
+    // (Railway assigns domains like backend-production-50ab.up.railway.app, NOT subdomain-backend.up.railway.app)
+    onProgress({ step: 'railway-domains', status: 'Generating service domains...', icon: '🔗', progress: 60 });
+    const backendRailwayDomain = await generateRailwayServiceDomain(railwayProject.id, environmentId, backendService.id);
+    const frontendRailwayDomain = await generateRailwayServiceDomain(railwayProject.id, environmentId, frontendService.id);
+    const adminRailwayDomain = adminService ? await generateRailwayServiceDomain(railwayProject.id, environmentId, adminService.id) : null;
+
+    // Use the REAL Railway backend domain for API URL (not a guessed one)
+    const railwayBackendUrl = backendRailwayDomain ? `https://${backendRailwayDomain}` : `https://api.${subdomain}.be1st.io`;
+    console.log(`   🔗 Real backend URL for VITE_API_URL: ${railwayBackendUrl}`);
+
     onProgress({ step: 'railway-env', status: 'Configuring environment variables...', icon: '🔐', progress: 62 });
     const jwtSecret = require('crypto').randomBytes(32).toString('hex');
     const adminPassword = require('crypto').randomBytes(8).toString('hex');
@@ -1817,9 +1818,6 @@ async function deployProject(projectPath, projectName, options = {}) {
       FRONTEND_URL: `https://${subdomain}.be1st.io`
     });
 
-    // Use Railway URL directly for API (more reliable than custom domain which may have DNS/SSL delays)
-    const railwayBackendUrl = `https://${subdomain}-backend.up.railway.app`;
-
     await setRailwayVariables(railwayProject.id, environmentId, frontendService.id, {
       NODE_ENV: 'production',
       VITE_API_URL: railwayBackendUrl
@@ -1827,9 +1825,11 @@ async function deployProject(projectPath, projectName, options = {}) {
 
     // Set admin environment variables if admin service exists
     if (adminService) {
+      const frontendSiteUrl = frontendRailwayDomain ? `https://${frontendRailwayDomain}` : `https://${subdomain}.be1st.io`;
       await setRailwayVariables(railwayProject.id, environmentId, adminService.id, {
         NODE_ENV: 'production',
-        VITE_API_URL: railwayBackendUrl
+        VITE_API_URL: railwayBackendUrl,
+        VITE_SITE_URL: frontendSiteUrl
       });
     }
 
@@ -1868,11 +1868,7 @@ async function deployProject(projectPath, projectName, options = {}) {
       }
     }
 
-    onProgress({ step: 'domains', status: 'Generating service domains...', icon: '🔗', progress: 82 });
-    const backendRailwayDomain = await generateRailwayServiceDomain(railwayProject.id, environmentId, backendService.id);
-    const frontendRailwayDomain = await generateRailwayServiceDomain(railwayProject.id, environmentId, frontendService.id);
-    const adminRailwayDomain = adminService ? await generateRailwayServiceDomain(railwayProject.id, environmentId, adminService.id) : null;
-
+    // Service domains already generated earlier (before env vars) — skip to custom domains
     onProgress({ step: 'custom-domains', status: 'Configuring custom domains...', icon: '🌍', progress: 86 });
     console.log(`\n📌 Configuring custom domains...`);
     
@@ -1890,7 +1886,7 @@ async function deployProject(projectPath, projectName, options = {}) {
     const adminTarget = adminCustom?.target || adminRailwayDomain;
 
     if (frontendTarget) {
-      await addCloudflareDNS(subdomain, frontendTarget, 'CNAME', true);
+      await addCloudflareDNS(subdomain, frontendTarget, 'CNAME', false);  // Must be DNS-only for Railway custom domain verification
     }
 
     if (backendTarget) {
